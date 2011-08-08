@@ -418,6 +418,8 @@ public class UnivariateStatisticsUtilTest
         final int N = 100;
         ArrayList<DefaultWeightedValue<? extends Number>> data =
             new ArrayList<DefaultWeightedValue<? extends Number>>( N );
+        ArrayList<DefaultWeightedValue<? extends Number>> negatedData =
+            new ArrayList<DefaultWeightedValue<? extends Number>>( N );
         double sum = 0.0;
         double weightSum = 0.0;
         for( int n = 0; n < N; n++ )
@@ -427,6 +429,7 @@ public class UnivariateStatisticsUtilTest
             weightSum += weight;
             sum += weight*value;
             data.add( new DefaultWeightedValue<Double>( value, weight ) );
+            negatedData.add(DefaultWeightedValue.create(value, -weight));
         }
         
         double mean = sum / weightSum;
@@ -445,29 +448,50 @@ public class UnivariateStatisticsUtilTest
         assertEquals( mean, result.getFirst(), EPS );
         assertEquals( variance, result.getSecond(), EPS );
 
+        result = UnivariateStatisticsUtil.computeWeightedMeanAndVariance(negatedData);
+        assertEquals( mean, result.getFirst(), EPS );
+        assertEquals( variance, result.getSecond(), EPS );
+
         while( data.size() > 1 )
         {
             data.remove(0);
+            negatedData.remove(0);
         }
 
         result = UnivariateStatisticsUtil.computeWeightedMeanAndVariance(data);
         assertEquals( CollectionUtil.getFirst(data).getValue().doubleValue(), result.getFirst() );
         assertEquals( 0.0, result.getSecond() );
 
+        result = UnivariateStatisticsUtil.computeWeightedMeanAndVariance(negatedData);
+        assertEquals( CollectionUtil.getFirst(data).getValue().doubleValue(), result.getFirst() );
+        assertEquals( 0.0, result.getSecond() );
+
         data.remove(0);
+        negatedData.remove(0);
         result = UnivariateStatisticsUtil.computeWeightedMeanAndVariance(data);
         assertEquals( 0.0, result.getFirst() );
         assertEquals( 0.0, result.getSecond() );
+        result = UnivariateStatisticsUtil.computeWeightedMeanAndVariance(negatedData);
+        assertEquals( 0.0, result.getFirst() );
+        assertEquals( 0.0, result.getSecond() );
+
 
         // This example is from the Wikipedia page: http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
         // First demonstrate that for these simple values the mean is 10 and variance is 30.
         Collection<Double> xd = Arrays.asList(4.0, 7.0, 13.0, 16.0);
         data.clear();
+        negatedData.clear();
         for (Double x : xd)
         {
             data.add(DefaultWeightedValue.create(x, 1.0));
+            negatedData.add(DefaultWeightedValue.create(x, 
+                negatedData.size() % 2 == 0 ? 1.0 : -1.0));
         }
         result = UnivariateStatisticsUtil.computeWeightedMeanAndVariance(data);
+        assertEquals(10.0, result.getFirst(), EPS);
+        assertEquals(22.5, result.getSecond(), EPS);
+        
+        result = UnivariateStatisticsUtil.computeWeightedMeanAndVariance(negatedData);
         assertEquals(10.0, result.getFirst(), EPS);
         assertEquals(22.5, result.getSecond(), EPS);
 
@@ -475,9 +499,12 @@ public class UnivariateStatisticsUtilTest
         // 30.
         xd = Arrays.asList(1.0e9 + 4.0, 1e9 + 7, 1e9 + 13, 1e9 + 16);
         data.clear();
+        negatedData.clear();
         for (Double x : xd)
         {
             data.add(DefaultWeightedValue.create(x, 1.0));
+            negatedData.add(DefaultWeightedValue.create(x,
+                negatedData.size() % 2 == 0 ? 1.0 : -1.0));
         }
         result = UnivariateStatisticsUtil.computeWeightedMeanAndVariance(data);
         assertEquals(1e9 + 10.0, result.getFirst(), EPS);
@@ -487,6 +514,10 @@ public class UnivariateStatisticsUtilTest
         data.add(0, DefaultWeightedValue.create(1.0, 0.0));
         data.add(4, DefaultWeightedValue.create(1.0, 0.0));
         result = UnivariateStatisticsUtil.computeWeightedMeanAndVariance(data);
+        assertEquals(1e9 + 10.0, result.getFirst(), EPS);
+        assertEquals(22.5, result.getSecond(), EPS);
+
+        result = UnivariateStatisticsUtil.computeWeightedMeanAndVariance(negatedData);
         assertEquals(1e9 + 10.0, result.getFirst(), EPS);
         assertEquals(22.5, result.getSecond(), EPS);
 

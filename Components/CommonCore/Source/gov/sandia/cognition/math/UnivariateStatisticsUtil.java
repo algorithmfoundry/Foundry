@@ -64,11 +64,13 @@ public class UnivariateStatisticsUtil
 
     /**
      * Computes the arithmetic mean (average, expectation, first central moment)
-     * of a dataset
-     * @param data
-     * Collection of Doubles to consider
+     * of a dataset. The absolute value of the weight is used to handle negative
+     * weights.
+     * 
+     * @param   data
+     *      Collection of Doubles to consider.
      * @return
-     * Arithmetic mean of the given dataset
+     *      Arithmetic mean of the given dataset.
      */
     static public double computeWeightedMean(
         Collection<? extends WeightedValue<? extends Number>> data )
@@ -78,9 +80,14 @@ public class UnivariateStatisticsUtil
         double weightSum = 0.0;
         for( WeightedValue<? extends Number> x : data )
         {
-            final double weight = x.getWeight();
+            double weight = x.getWeight();
             if( weight != 0.0 )
             {
+                if (weight < 0.0)
+                {
+                    weight = -weight;
+                }
+                
                 final double value = x.getValue().doubleValue();
                 final double wv = weight * value;
                 sum += wv;
@@ -501,6 +508,8 @@ public class UnivariateStatisticsUtil
 
     /**
      * Computes the desired biased estimate central moment of the given dataset.
+     * The absolute value of the weight is used to handle negative weights.
+     *
      * @param data
      * Data to compute the moment of.
      * @param mean
@@ -526,7 +535,7 @@ public class UnivariateStatisticsUtil
         double weightSum = 0.0;
         for( WeightedValue<? extends Number> value : data )
         {
-            final double weight = value.getWeight();
+            final double weight = Math.abs(value.getWeight());
             if( weight != 0.0 )
             {
                 double delta = value.getValue().doubleValue() - mean;
@@ -584,7 +593,9 @@ public class UnivariateStatisticsUtil
     /**
      * Computes the biased excess kurtosis of the given dataset.  Intuitively,
      * kurtosis quantifies the pointiness of the data by normalizing the fourth
-     * central moment.
+     * central moment. The absolute value of the weight is used to handle
+     * negative weights.
+     *
      * @param data
      * Dataset to compute its kurtosis.
      * @return
@@ -698,11 +709,13 @@ public class UnivariateStatisticsUtil
 
     /**
      * Computes the mean and unbiased variance of a Collection of data using
-     * the one-pass approach.
-     * @param data
-     * Data to consider
+     * the one-pass approach. The absolute value is used to handle negative
+     * weights.
+     *
+     * @param   data
+     *      Data to consider.
      * @return
-     * Mean and unbiased Variance Pair.
+     *      Mean and unbiased Variance Pair.
      */
     @PublicationReference(
         title="Algorithms for calculating variance",
@@ -713,6 +726,7 @@ public class UnivariateStatisticsUtil
     public static Pair<Double,Double> computeWeightedMeanAndVariance(
         Iterable<? extends WeightedValue<? extends Number>> data )
     {
+        
         // Note: This is more compilcated than a straight-forward algorithm
         // that just computes the sum and sum-of-squares to get around
         // numerical precision issues.
@@ -723,10 +737,16 @@ public class UnivariateStatisticsUtil
         for ( WeightedValue<? extends Number> v : data)
         {
             final double x = v.getValue().doubleValue();
-            final double weight = v.getWeight();
+            double weight = v.getWeight();
 
             if (weight != 0.0)
             {
+                if (weight < 0.0)
+                {
+                    // Use the absolute value of weights.
+                    weight = -weight;
+                }
+
                 final double newWeightSum = weightSum + weight;
                 final double delta = x - mean;
 
