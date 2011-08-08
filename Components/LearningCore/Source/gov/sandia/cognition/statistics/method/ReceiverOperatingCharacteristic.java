@@ -14,14 +14,18 @@
 
 package gov.sandia.cognition.statistics.method;
 
+import gov.sandia.cognition.learning.performance.categorization.DefaultBinaryConfusionMatrix;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.learning.function.categorization.ThresholdBinaryCategorizer;
+import gov.sandia.cognition.learning.function.categorization.ScalarThresholdBinaryCategorizer;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.evaluator.Evaluator;
+import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
+import gov.sandia.cognition.learning.data.TargetEstimatePair;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
+import gov.sandia.cognition.util.Pair;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -158,6 +162,36 @@ public class ReceiverOperatingCharacteristic
     {
         this.sortedROCData = sortedROCData;
     }
+
+    /**
+     * Creates an ROC curve based on the scored data with target information.
+     *
+     * @param data
+     *      Collection of target/estimate-score pairs.  The second element in 
+     *      the pair is an estimated score, the first is a flag to determine 
+     *      which group the score belongs to.  For example:
+     *      {(true, 1.0), (false, 0.9)}
+     *      means that data1=1.0 and data2=0.9 and so forth.  This is useful
+     *      for computing that classified data partitions data better than
+     *      chance.
+     * @return
+     *      ROC Curve describing the scoring system versus the targets.
+     */
+    public static ReceiverOperatingCharacteristic createFromTargetEstimatePairs(
+        final Collection<? extends Pair<Boolean, ? extends Number>> data)
+    {
+        // Transform the data to input-output pairs.
+        final ArrayList<InputOutputPair<Double, Boolean>> transformed =
+            new ArrayList<InputOutputPair<Double, Boolean>>(data.size());
+
+        for (Pair<Boolean, ? extends Number> entry : data)
+        {
+            transformed.add(DefaultInputOutputPair.create(
+                entry.getSecond().doubleValue(), entry.getFirst()));
+        }
+
+        return create(transformed);
+    }
     
     /**
      * Creates an ROC curve based on the scored data with target information
@@ -214,11 +248,14 @@ public class ReceiverOperatingCharacteristic
             {
                 // Only add a data point if we have evaluated a new
                 // threshold.
-                ConfusionMatrix confusion = new ConfusionMatrix(
-                    falsePositives, falseNegatives, 
-                    truePositives, trueNegatives);
+                final DefaultBinaryConfusionMatrix confusion =
+                    new DefaultBinaryConfusionMatrix();
+                confusion.setFalsePositivesCount(falsePositives);
+                confusion.setFalseNegativesCount(falseNegatives);
+                confusion.setTruePositivesCount(truePositives);
+                confusion.setTrueNegativesCount(trueNegatives);
                 rocData.add(new DataPoint(
-                    new ThresholdBinaryCategorizer(threshold), confusion));
+                    new ScalarThresholdBinaryCategorizer(threshold), confusion));
                 lastThreshold = threshold;
             }
             
@@ -416,9 +453,9 @@ public class ReceiverOperatingCharacteristic
             {
                 // Find the point that maximizes the perimeter "below and to the 
                 // right" of the point
-                ConfusionMatrix cm = data.getConfusionMatrix();
-                double y = truePositiveWeight * cm.getTruePositivesPct();
-                double x = trueNegativeWeight * cm.getTrueNegativesPct();
+                DefaultBinaryConfusionMatrix cm = data.getConfusionMatrix();
+                double y = truePositiveWeight * cm.getTruePositivesRate();
+                double x = trueNegativeWeight * cm.getTrueNegativesRate();
                 
                 double value = x + y;
                 if( bestValue < value )
@@ -448,7 +485,7 @@ public class ReceiverOperatingCharacteristic
             DataPoint data )
         {
             
-            double hitRate = data.getConfusionMatrix().getTruePositivesPct();
+            double hitRate = data.getConfusionMatrix().getTruePositivesRate();
             double faRate = data.getFalsePositiveRate();
             
             double zhr = UnivariateGaussian.CDF.Inverse.evaluate( hitRate, 0.0, 1.0 );
@@ -553,13 +590,13 @@ public class ReceiverOperatingCharacteristic
          * Binary classifier used to create the corresponding ConfusionMatrix,
          * which is really a wrapper for the threshold
          */
-        private ThresholdBinaryCategorizer classifier;
+        private ScalarThresholdBinaryCategorizer classifier;
         
         
         /**
          * Corresponding ConfusionMatrix with this datapoint
          */
-        private ConfusionMatrix confusionMatrix;
+        private DefaultBinaryConfusionMatrix confusionMatrix;
         
         
         /**
@@ -572,8 +609,8 @@ public class ReceiverOperatingCharacteristic
          * Corresponding ConfusionMatrix with this datapoint
          */
         public DataPoint(
-            ThresholdBinaryCategorizer classifier,
-            ConfusionMatrix confusionMatrix )
+            ScalarThresholdBinaryCategorizer classifier,
+            DefaultBinaryConfusionMatrix confusionMatrix )
         {
             this.setClassifier( classifier );
             this.setConfusionMatrix( confusionMatrix );
@@ -586,7 +623,7 @@ public class ReceiverOperatingCharacteristic
          * Binary classifier used to create the corresponding ConfusionMatrix,
          * which is really a wrapper for the threshold
          */
-        public ThresholdBinaryCategorizer getClassifier()
+        public ScalarThresholdBinaryCategorizer getClassifier()
         {
             return this.classifier;
         }
@@ -598,7 +635,7 @@ public class ReceiverOperatingCharacteristic
          * which is really a wrapper for the threshold
          */
         public void setClassifier(
-            ThresholdBinaryCategorizer classifier)
+            ScalarThresholdBinaryCategorizer classifier)
         {
             this.classifier = classifier;
         }        
@@ -609,7 +646,7 @@ public class ReceiverOperatingCharacteristic
          * @return 
          * Corresponding ConfusionMatrix with this datapoint
          */
-        public ConfusionMatrix getConfusionMatrix()
+        public DefaultBinaryConfusionMatrix getConfusionMatrix()
         {
             return this.confusionMatrix;
         }
@@ -620,7 +657,7 @@ public class ReceiverOperatingCharacteristic
          * Corresponding ConfusionMatrix with this datapoint
          */
         protected void setConfusionMatrix(
-            ConfusionMatrix confusionMatrix)
+            DefaultBinaryConfusionMatrix confusionMatrix)
         {
             this.confusionMatrix = confusionMatrix;
         }
@@ -632,7 +669,7 @@ public class ReceiverOperatingCharacteristic
          */
         public double getFalsePositiveRate()
         {
-            return this.getConfusionMatrix().getFalsePositivesPct();
+            return this.getConfusionMatrix().getFalsePositivesRate();
         }
         
         /**
@@ -642,7 +679,7 @@ public class ReceiverOperatingCharacteristic
          */
         public double getTruePositiveRate()
         {
-            return this.getConfusionMatrix().getTruePositivesPct();
+            return this.getConfusionMatrix().getTruePositivesRate();
         }
         
         

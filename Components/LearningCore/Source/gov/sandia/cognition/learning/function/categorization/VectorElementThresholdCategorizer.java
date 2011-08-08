@@ -78,7 +78,7 @@ public class VectorElementThresholdCategorizer
     }
 
     @Override
-    protected double evaluateAsDouble(
+    protected double evaluateWithoutThreshold(
         Vectorizable input)
     {
         final Vector vector = input.convertToVector();
@@ -88,7 +88,8 @@ public class VectorElementThresholdCategorizer
     /**
      * Gets the vector index that the threshold is being applied to.
      * 
-     * @return  The vector index to threshold.
+     * @return
+     *      The vector index to threshold.
      */
     public int getIndex()
     {
@@ -98,7 +99,8 @@ public class VectorElementThresholdCategorizer
     /**
      * Sets the vector index that the threshold is being applied to.
      * 
-     * @param   index The vector index to threshold.
+     * @param   index
+     *      The vector index to threshold.
      */
     public void setIndex(
         final int index)
@@ -106,11 +108,10 @@ public class VectorElementThresholdCategorizer
         this.index = index;
     }
     
-    /**
-     * Returns string representation of this threshold categorizer.
-     */
+    @Override
     public String toString()
     {
-	return "f(x) = x[" + index + "] >= " + getThreshold();
+        return "f(x) = x[" + this.index + "] >= " + this.getThreshold();
     }
+    
 }

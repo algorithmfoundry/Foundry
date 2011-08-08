@@ -15,9 +15,9 @@
 
 package gov.sandia.cognition.learning.function.vector;
 
-import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.math.matrix.VectorFactoryContainer;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 
 /**
@@ -30,10 +30,11 @@ import gov.sandia.cognition.math.matrix.Vectorizable;
  */
 public class VectorizableVectorConverterWithBias
     extends VectorizableVectorConverter
+    implements VectorFactoryContainer
 {
 
     /** The factory used to create the vector. */
-    protected VectorFactory vectorFactory;
+    protected VectorFactory<?> vectorFactory;
 
     /**
      * Creates a new instance of {@code VectorizableVectorConverterWithBias}.
@@ -51,7 +52,7 @@ public class VectorizableVectorConverterWithBias
      *      The vector factory to use.
      */
     public VectorizableVectorConverterWithBias(
-        final VectorFactory vectorFactory)
+        final VectorFactory<?> vectorFactory)
     {
         super();
 
@@ -105,7 +106,7 @@ public class VectorizableVectorConverterWithBias
      * 
      * @return The vector factory used to create the vector with the bias.
      */
-    public VectorFactory getVectorFactory()
+    public VectorFactory<?> getVectorFactory()
     {
         return this.vectorFactory;
     }
@@ -116,7 +117,7 @@ public class VectorizableVectorConverterWithBias
      *          The vector factory used to create the vector with the bias.
      */
     public void setVectorFactory(
-        final VectorFactory vectorFactory)
+        final VectorFactory<?> vectorFactory)
     {
         this.vectorFactory = vectorFactory;
     }

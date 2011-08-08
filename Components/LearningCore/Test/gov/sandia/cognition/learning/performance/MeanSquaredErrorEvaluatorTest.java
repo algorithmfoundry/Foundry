@@ -15,6 +15,7 @@
 
 package gov.sandia.cognition.learning.performance;
 
+import gov.sandia.cognition.learning.data.DefaultTargetEstimatePair;
 import gov.sandia.cognition.learning.data.TargetEstimatePair;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,28 +56,28 @@ public class MeanSquaredErrorEvaluatorTest
         double error = 0.0;
         assertEquals(error, instance.summarize(data));
         
-        data.add(new TargetEstimatePair<Double, Double>(4.7, 6.7));
+        data.add(new DefaultTargetEstimatePair<Double, Double>(4.7, 6.7));
         error += 2.0 * 2.0;
         assertEquals(error / 1.0, instance.summarize(data));
         
-        data.add(new TargetEstimatePair<Double, Double>(4.7, 1.7));
+        data.add(new DefaultTargetEstimatePair<Double, Double>(4.7, 1.7));
         error += 3.0 * 3.0;
         assertEquals(error / 2.0, instance.summarize(data));
         
-        data.add(new TargetEstimatePair<Double, Double>(7.0, 7.0));
+        data.add(new DefaultTargetEstimatePair<Double, Double>(7.0, 7.0));
         assertEquals(error / 3.0, instance.summarize(data));
         
-        data.add(new TargetEstimatePair<Double, Double>(4.0, 4.0));
+        data.add(new DefaultTargetEstimatePair<Double, Double>(4.0, 4.0));
         assertEquals(error / 4.0, instance.summarize(data));
         
-        data.add(new TargetEstimatePair<Double, Double>(10.0, 9.5));
+        data.add(new DefaultTargetEstimatePair<Double, Double>(10.0, 9.5));
         error += 0.5 * 0.5;
         assertEquals(error / 5.0, instance.summarize(data));
         
         boolean exceptionThrown = false;
         try
         {
-            data.add(new TargetEstimatePair<Double, Double>(null, 4.0));
+            data.add(new DefaultTargetEstimatePair<Double, Double>(null, 4.0));
             instance.summarize(data);
         }
         catch ( NullPointerException e )

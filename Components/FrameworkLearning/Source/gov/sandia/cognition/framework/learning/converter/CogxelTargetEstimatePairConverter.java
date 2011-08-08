@@ -15,6 +15,7 @@
 package gov.sandia.cognition.framework.learning.converter;
 
 import gov.sandia.cognition.framework.SemanticIdentifierMap;
+import gov.sandia.cognition.learning.data.DefaultTargetEstimatePair;
 import gov.sandia.cognition.learning.data.TargetEstimatePair;
 
 /**
@@ -77,7 +78,7 @@ public class CogxelTargetEstimatePairConverter<TargetType, EstimateType>
         final TargetType first,
         final EstimateType second)
     {
-        return new TargetEstimatePair<TargetType, EstimateType>(first, second);
+        return DefaultTargetEstimatePair.create(first, second);
     }
 
     @Override

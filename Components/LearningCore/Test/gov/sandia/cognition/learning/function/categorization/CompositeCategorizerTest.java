@@ -47,14 +47,14 @@ public class CompositeCategorizerTest
     public void testConstructors()
     {
         Evaluator<Double, Double> preprocessor = null;
-        ThresholdBinaryCategorizer categorizer = null;
+        ScalarThresholdBinaryCategorizer categorizer = null;
         CompositeCategorizer<Double, Double, Boolean> instance =
             new CompositeCategorizer<Double, Double, Boolean>();
         assertSame(preprocessor, instance.getPreprocessor());
         assertSame(categorizer, instance.getCategorizer());
 
         preprocessor = new CosineFunction();
-        categorizer = new ThresholdBinaryCategorizer(0.5);
+        categorizer = new ScalarThresholdBinaryCategorizer(0.5);
         instance = new CompositeCategorizer<Double, Double, Boolean>(
             preprocessor, categorizer);
         assertSame(preprocessor, instance.getPreprocessor());
@@ -67,7 +67,7 @@ public class CompositeCategorizerTest
     public void testClone()
     {
         Evaluator<Double, Double> preprocessor = new CosineFunction();
-        ThresholdBinaryCategorizer categorizer = new ThresholdBinaryCategorizer(0.5);
+        ScalarThresholdBinaryCategorizer categorizer = new ScalarThresholdBinaryCategorizer(0.5);
         CompositeCategorizer<Double, Double, Boolean> instance =
             new CompositeCategorizer<Double, Double, Boolean>(
                 preprocessor, categorizer);
@@ -92,7 +92,7 @@ public class CompositeCategorizerTest
     {
         CompositeCategorizer<Double, Double, Boolean> instance =
             new CompositeCategorizer<Double, Double, Boolean>(
-                new CosineFunction(), new ThresholdBinaryCategorizer(0.5));
+                new CosineFunction(), new ScalarThresholdBinaryCategorizer(0.5));
 
         assertTrue(instance.evaluate(0.0));
         assertFalse(instance.evaluate(Math.PI));
@@ -161,16 +161,16 @@ public class CompositeCategorizerTest
      */
     public void testSetCategorizer()
     {
-        ThresholdBinaryCategorizer categorizer = null;
+        ScalarThresholdBinaryCategorizer categorizer = null;
         CompositeCategorizer<Double, Double, Boolean> instance =
             new CompositeCategorizer<Double, Double, Boolean>();
         assertSame(categorizer, instance.getCategorizer());
 
-        categorizer = new ThresholdBinaryCategorizer(0.5);
+        categorizer = new ScalarThresholdBinaryCategorizer(0.5);
         instance.setCategorizer(categorizer);
         assertSame(categorizer, instance.getCategorizer());
 
-        categorizer = new ThresholdBinaryCategorizer(-1.0);
+        categorizer = new ScalarThresholdBinaryCategorizer(-1.0);
         instance.setCategorizer(categorizer);
         assertSame(categorizer, instance.getCategorizer());
 

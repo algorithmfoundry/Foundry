@@ -15,7 +15,7 @@
 package gov.sandia.cognition.learning.algorithm.ensemble;
 
 import gov.sandia.cognition.evaluator.Evaluator;
-import gov.sandia.cognition.learning.function.categorization.ThresholdBinaryCategorizer;
+import gov.sandia.cognition.learning.function.categorization.ScalarThresholdBinaryCategorizer;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -75,14 +75,14 @@ public class WeightedVotingCategorizerEnsembleTest
             new WeightedVotingCategorizerEnsemble<Double, Boolean, Evaluator<Double, Boolean>>();
         assertTrue(instance.getMembers().isEmpty());
 
-        ThresholdBinaryCategorizer member = new ThresholdBinaryCategorizer(
+        ScalarThresholdBinaryCategorizer member = new ScalarThresholdBinaryCategorizer(
             0.5);
         instance.add(member);
         assertEquals(1, instance.getMembers().size());
         assertEquals(1.0, instance.getMembers().get(0).getWeight());
         assertSame(member, instance.getMembers().get(0).getValue());
 
-        member = new ThresholdBinaryCategorizer(-0.6);
+        member = new ScalarThresholdBinaryCategorizer(-0.6);
         instance.add(member, 1234.6);
         assertEquals(2, instance.getMembers().size());
         assertEquals(1234.6, instance.getMembers().get(1).getWeight());
@@ -142,9 +142,9 @@ public class WeightedVotingCategorizerEnsembleTest
     {
         WeightedVotingCategorizerEnsemble<Double, Boolean, Evaluator<Double, Boolean>> instance =
             new WeightedVotingCategorizerEnsemble<Double, Boolean, Evaluator<Double, Boolean>>();
-        instance.add(new ThresholdBinaryCategorizer(0.0), 1.0);
-        instance.add(new ThresholdBinaryCategorizer(2.0), 1.0);
-        instance.add(new ThresholdBinaryCategorizer(-1.0), 1.0);
+        instance.add(new ScalarThresholdBinaryCategorizer(0.0), 1.0);
+        instance.add(new ScalarThresholdBinaryCategorizer(2.0), 1.0);
+        instance.add(new ScalarThresholdBinaryCategorizer(-1.0), 1.0);
 
         assertTrue(instance.evaluate(3.0));
         assertTrue(instance.evaluate(1.0));
@@ -157,41 +157,41 @@ public class WeightedVotingCategorizerEnsembleTest
     /**
      * Test of evaluateAsWeightedValue method, of class WeightedVotingCategorizerEnsemble.
      */
-    public void testEvaluateAsWeightedValue()
+    public void testEvaluateWithDiscriminant()
     {
         double epsilon = 0.00001;
         WeightedVotingCategorizerEnsemble<Double, Boolean, Evaluator<Double, Boolean>> instance =
             new WeightedVotingCategorizerEnsemble<Double, Boolean, Evaluator<Double, Boolean>>();
-        instance.add(new ThresholdBinaryCategorizer(0.0), 2.0);
-        instance.add(new ThresholdBinaryCategorizer(2.0), 1.0);
-        instance.add(new ThresholdBinaryCategorizer(-1.0), 1.0);
+        instance.add(new ScalarThresholdBinaryCategorizer(0.0), 2.0);
+        instance.add(new ScalarThresholdBinaryCategorizer(2.0), 1.0);
+        instance.add(new ScalarThresholdBinaryCategorizer(-1.0), 1.0);
 
-        WeightedValue<Boolean> result = instance.evaluateAsWeightedValue(3.0);
+        WeightedValue<Boolean> result = instance.evaluateWithDiscriminant(3.0);
         assertTrue(result.getValue());
         assertEquals(1.0, result.getWeight(), epsilon);
 
         assertTrue(instance.evaluate(1.0));
-        result = instance.evaluateAsWeightedValue(1.0);
+        result = instance.evaluateWithDiscriminant(1.0);
         assertTrue(result.getValue());
         assertEquals(0.75, result.getWeight(), epsilon);
 
         assertTrue(instance.evaluate(0.5));
-        result = instance.evaluateAsWeightedValue(0.5);
+        result = instance.evaluateWithDiscriminant(0.5);
         assertTrue(result.getValue());
         assertEquals(0.75, result.getWeight(), epsilon);
 
         assertTrue(instance.evaluate(0.0));
-        result = instance.evaluateAsWeightedValue(0.0);
+        result = instance.evaluateWithDiscriminant(0.0);
         assertTrue(result.getValue());
         assertEquals(0.75, result.getWeight(), epsilon);
 
         assertFalse(instance.evaluate(-0.5));
-        result = instance.evaluateAsWeightedValue(-0.5);
+        result = instance.evaluateWithDiscriminant(-0.5);
         assertFalse(result.getValue());
         assertEquals(0.75, result.getWeight(), epsilon);
 
         assertFalse(instance.evaluate(-3.0));
-        result = instance.evaluateAsWeightedValue(-3.0);
+        result = instance.evaluateWithDiscriminant(-3.0);
         assertFalse(result.getValue());
         assertEquals(1.0, result.getWeight(), epsilon);
     }

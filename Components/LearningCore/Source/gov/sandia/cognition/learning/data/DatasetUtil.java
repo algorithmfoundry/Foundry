@@ -23,6 +23,8 @@ import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorUtil;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
+import gov.sandia.cognition.statistics.DataHistogram;
+import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
 import gov.sandia.cognition.util.DefaultPair;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -428,7 +430,7 @@ public class DatasetUtil
      *      The set of unique output values. Implemented as a linked hash set.
      */
     public static <OutputType> Set<OutputType> findUniqueOutputs(
-        final Iterable<? extends InputOutputPair<?, OutputType>> data)
+        final Iterable<? extends InputOutputPair<?, ? extends OutputType>> data)
     {
         // Create the result set.
         final Set<OutputType> outputs = new LinkedHashSet<OutputType>();
@@ -436,12 +438,41 @@ public class DatasetUtil
         if (data != null)
         {
             // Go through and add each output.
-            for (InputOutputPair<?, OutputType> example : data)
+            for (InputOutputPair<?, ? extends OutputType> example : data)
             {
                 outputs.add(example.getOutput());
             }
         }
         
+        return outputs;
+    }
+
+    /**
+     * Creates a data histogram over the output values from the given data.
+     *
+     * @param   <OutputType>
+     *      The type of the output values.
+     * @param   data
+     *      The data to collect the output values from.
+     * @return
+     *      The histogram of output values.
+     */
+    public static <OutputType> DataHistogram<OutputType> countOutputValues(
+        final Iterable<? extends InputOutputPair<?, ? extends OutputType>> data)
+    {
+        // Create the result set.
+        final DataHistogram<OutputType> outputs =
+            new MapBasedDataHistogram<OutputType>();
+
+        if (data != null)
+        {
+            // Go through and add each output.
+            for (InputOutputPair<?, ? extends OutputType> example : data)
+            {
+                outputs.add(example.getOutput());
+            }
+        }
+
         return outputs;
     }
 

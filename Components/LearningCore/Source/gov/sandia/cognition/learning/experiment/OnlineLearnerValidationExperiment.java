@@ -1,5 +1,5 @@
 /*
- * File:                OnlineLearnerValidationExperiment.java
+ * File:                IncrementalLearnerValidationExperiment.java
  * Authors:             Justin Basilico
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
@@ -13,7 +13,7 @@
  */
 package gov.sandia.cognition.learning.experiment;
 
-import gov.sandia.cognition.learning.algorithm.OnlineLearner;
+import gov.sandia.cognition.learning.algorithm.IncrementalLearner;
 import gov.sandia.cognition.learning.performance.PerformanceEvaluator;
 import gov.sandia.cognition.util.Summarizer;
 import java.io.Serializable;
@@ -22,6 +22,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
+ * Implements an experiment where an incremental supervised machine learning
+ * algorithm is evaluated by applying it to a set of data by successively
+ * testing on each item and then training on it.
  *
  * @param   <DataType>
  *          The type of the data to perform the experiment with.
@@ -41,7 +44,7 @@ import java.util.Collections;
  */
 public class OnlineLearnerValidationExperiment<DataType, LearnedType, StatisticType, SummaryType>
     extends AbstractLearningExperiment
-    implements PerformanceEvaluator<OnlineLearner<? super DataType, LearnedType>, Collection<? extends DataType>, SummaryType>,
+    implements PerformanceEvaluator<IncrementalLearner<? super DataType, LearnedType>, Collection<? extends DataType>, SummaryType>,
         Serializable
 // TODO: This class is largely copied from LearnerValidationExperiment.
 // They should probably be merged into abstract classes.
@@ -71,7 +74,7 @@ public class OnlineLearnerValidationExperiment<DataType, LearnedType, StatisticT
     protected SummaryType summary;
 
     /**
-     * Creates a new instance of OnlineLearnerValidationExperiment.
+     * Creates a new instance of IncrementalLearnerValidationExperiment.
      */
     public OnlineLearnerValidationExperiment()
     {
@@ -79,7 +82,7 @@ public class OnlineLearnerValidationExperiment<DataType, LearnedType, StatisticT
     }
 
     /**
-     * Creates a new instance of OnlineLearnerValidationExperiment.
+     * Creates a new instance of IncrementalLearnerValidationExperiment.
      *
      * @param  performanceEvaluator The evaluator to use to compute the
      *         performance of the learned object on each fold.
@@ -111,7 +114,7 @@ public class OnlineLearnerValidationExperiment<DataType, LearnedType, StatisticT
      * @return The summary of the experiment.
      */
     public SummaryType evaluatePerformance(
-        final OnlineLearner<? super DataType, LearnedType> learner,
+        final IncrementalLearner<? super DataType, LearnedType> learner,
         final Collection<? extends DataType> data)
     {
         // Initialize the collection where we will store the statistics

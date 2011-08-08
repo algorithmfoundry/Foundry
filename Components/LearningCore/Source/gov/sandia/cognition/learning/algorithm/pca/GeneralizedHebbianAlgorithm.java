@@ -146,6 +146,7 @@ public class GeneralizedHebbianAlgorithm
     protected boolean initializeAlgorithm()
     {
         boolean retval = true;
+        this.setData(ObjectUtil.cloneSmartElementsAsArrayList(this.data));
         
         int M = this.getNumComponents();
         int N = this.getData().iterator().next().getDimensionality();

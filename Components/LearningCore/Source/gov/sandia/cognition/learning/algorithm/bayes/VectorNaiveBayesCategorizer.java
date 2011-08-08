@@ -16,15 +16,15 @@ import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
+import gov.sandia.cognition.learning.data.DefaultWeightedValueDiscriminant;
 import gov.sandia.cognition.learning.function.categorization.Categorizer;
+import gov.sandia.cognition.learning.function.categorization.DiscriminantCategorizer;
 import gov.sandia.cognition.math.RingAccumulator;
-import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorInputEvaluator;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.statistics.DataHistogram;
 import gov.sandia.cognition.statistics.DistributionEstimator;
-import gov.sandia.cognition.statistics.ScalarDistribution;
 import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
@@ -50,7 +50,8 @@ import java.util.Set;
 public class VectorNaiveBayesCategorizer<CategoryType>
     extends AbstractCloneableSerializable
     implements Categorizer<Vectorizable, CategoryType>,
-    VectorInputEvaluator<Vectorizable, CategoryType>
+        VectorInputEvaluator<Vectorizable, CategoryType>,
+        DiscriminantCategorizer<Vectorizable, CategoryType, Double>
 {
 
     /** The prior distribution for the categorizer. */
@@ -114,43 +115,72 @@ public class VectorNaiveBayesCategorizer<CategoryType>
     public CategoryType evaluate(
         final Vectorizable input)
     {
+        return this.evaluateWithDiscriminant(input).getValue();
+    }
+
+    @Override
+    public DefaultWeightedValueDiscriminant<CategoryType> evaluateWithDiscriminant(
+        final Vectorizable input)
+    {
         final Vector vector = input.convertToVector();
 
         // We want to find the category with the maximum posterior distribution.
         // This means we only have to compute the numerator of the class
         // probability formula, since the denominator is the same for every
         // class.
-        double maxPosterior = -1.0;
+        double maxPosterior = Double.NEGATIVE_INFINITY;
         CategoryType maxCategory = null;
         for (CategoryType category : this.getCategories())
         {
-            // Get the prior for the class.
-            final double priorProbability = this.priors.getFraction(category);
+            // Compute the posterior probability for the category.
+            final double posterior = this.computePosterior(vector, category);
 
-            // Now compute the posterior by looking at the probability density
-            // function for each dimension. We loop until
-            double posterior = priorProbability;
-            final List<ScalarProbabilityDensityFunction> probabilityFunctions =
-                this.conditionals.get(category);
-            final int size = probabilityFunctions.size();
-            for (int i = 0; i < size && posterior > 0.0; i++)
-            {
-                // Get the value for the element.
-                final double value = vector.getElement(i);
-
-                // Update the posterior.
-                posterior *= probabilityFunctions.get(i).evaluate(value);
-            }
-
-            // See if the new posterior
-            if (posterior > maxPosterior)
+            // See if the new posterior is the best found so far.
+            if (maxCategory == null || posterior > maxPosterior)
             {
                 maxPosterior = posterior;
                 maxCategory = category;
             }
         }
 
-        return maxCategory;
+        return DefaultWeightedValueDiscriminant.create(maxCategory, maxPosterior);
+    }
+
+    /**
+     * Computes the posterior probability that the input belongs to the
+     * given category.
+     *
+     * @param   input
+     *      The input vector.
+     * @param   category
+     *      The category to compute the posterior for.
+     * @return
+     *      The posterior probability that the input is part of the given
+     *      category. Between 0.0 and 1.0.
+     */
+    public double computePosterior(
+        final Vector input,
+        final CategoryType category)
+    {
+        // Get the prior for the class.
+        final double priorProbability = this.priors.getFraction(category);
+
+        // Now compute the posterior by looking at the probability density
+        // function for each dimension. We loop until
+        double posterior = priorProbability;
+        final List<ScalarProbabilityDensityFunction> probabilityFunctions =
+            this.conditionals.get(category);
+        final int size = probabilityFunctions.size();
+        for (int i = 0; i < size && posterior > 0.0; i++)
+        {
+            // Get the value for the element.
+            final double value = input.getElement(i);
+
+            // Update the posterior.
+            posterior *= probabilityFunctions.get(i).evaluate(value);
+        }
+        
+        return posterior;
     }
 
     @Override

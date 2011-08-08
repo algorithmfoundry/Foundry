@@ -85,9 +85,9 @@ public class WinnerTakeAllCategorizerTest
     }
 
     /**
-     * Test of evaluateWithWeight method, of class WinnerTakeAllCategorizer.
+     * Test of evaluateWithDiscriminant method, of class WinnerTakeAllCategorizer.
      */
-    public void testEvaluateWithWeight()
+    public void testEvaluateWithDiscriminant()
     {
         Set<String> categories = new LinkedHashSet<String>();
         categories.add("a");
@@ -98,21 +98,21 @@ public class WinnerTakeAllCategorizerTest
                 new VectorizableVectorConverter(),
                 categories);
 
-        WeightedValue<String> result = instance.evaluateWithWeight(new Vector3(1.0, 0.0, 0.0));
+        WeightedValue<String> result = instance.evaluateWithDiscriminant(new Vector3(1.0, 0.0, 0.0));
         assertEquals("a", result.getValue());
         assertEquals(1.0, result.getWeight());
 
 
-        result = instance.evaluateWithWeight(new Vector3(0.0, 0.1, 0.0));
+        result = instance.evaluateWithDiscriminant(new Vector3(0.0, 0.1, 0.0));
         assertEquals("b", result.getValue());
         assertEquals(0.1, result.getWeight());
 
-        result = instance.evaluateWithWeight(new Vector3(0.0, 0.1, 0.2));
+        result = instance.evaluateWithDiscriminant(new Vector3(0.0, 0.1, 0.2));
         assertEquals("c", result.getValue());
         assertEquals(0.2, result.getWeight());
 
 
-        result = instance.evaluateWithWeight(new Vector3(0.0, 0.0, 0.0));
+        result = instance.evaluateWithDiscriminant(new Vector3(0.0, 0.0, 0.0));
         assertEquals("a", result.getValue());
         assertEquals(0.0, result.getWeight());
 

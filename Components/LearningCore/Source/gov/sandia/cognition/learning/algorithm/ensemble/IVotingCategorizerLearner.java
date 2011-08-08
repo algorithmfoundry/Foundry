@@ -22,6 +22,7 @@ import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.factory.Factory;
 import gov.sandia.cognition.learning.algorithm.AbstractAnytimeSupervisedBatchLearner;
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
+import gov.sandia.cognition.learning.algorithm.BatchLearnerContainer;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
@@ -60,7 +61,8 @@ import java.util.Random;
 // --jdbasil (2009-11-29)
 public class IVotingCategorizerLearner<InputType, CategoryType>
     extends AbstractAnytimeSupervisedBatchLearner<InputType, CategoryType, WeightedVotingCategorizerEnsemble<InputType, CategoryType, Evaluator<? super InputType, ? extends CategoryType>>>
-    implements Randomized
+    implements Randomized,
+        BatchLearnerContainer<BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, CategoryType>>, ? extends Evaluator<? super InputType, ? extends CategoryType>>>
 {
 // TODO: Decide on appropriate default values.
 // --jdbasil (2009-11-29)
@@ -697,12 +699,25 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
         return this.currentEnsembleCorrect;
     }
 
-// TODO: Finish this out-of-bag stopping criteria.
-// -- jdbasil (2009-12-23)
+    /**
+     * Implements a stopping criteria for IVoting that uses the out-of-bag
+     * error to determine when to stop learning the ensemble. It tracks the
+     * out-of-bag error rate of the ensemble and keeps it in a given smoothing
+     * window. Once the smoothed error rate stops decreasing, it stops learning
+     * and removes all of the ensemble members back to the one that had the
+     * minimal error in that window.
+     *
+     * @param <InputType>
+     *      The input type the algorithm is learning over.
+     * @param <CategoryType>
+     *      The category type the algorithm is learning over.
+     */
     public static class OutOfBagErrorStoppingCriteria<InputType, CategoryType>
         extends AbstractCloneableSerializable
         implements IterativeAlgorithmListener
     {
+// TODO: Implement a look-ahead capability.
+// -- jdbasil (2011-02-18)
         /** The default smoothing window size is {@value}. */
         public static final int DEFAULT_SMOOTHING_WINDOW_SIZE = 25;
 

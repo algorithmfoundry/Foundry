@@ -641,6 +641,23 @@ public class MapBasedDataHistogramTest
         assertEquals(5.0 / 3.0, instance.getMeanCount(), TOLERANCE);
     }
 
+
+    /**
+     * Test of toString method, of class MapBasedDataHistogram.
+     */
+    public void testToString()
+    {
+        MapBasedDataHistogram<String> instance = this.createInstanceEmpty();
+        assertNotNull(instance.toString());
+
+        instance.add("a");
+        instance.add("a");
+        instance.add("b");
+        instance.add("c");
+        assertNotNull(instance.toString());
+    }
+
+
     /**
      * logEvaluate
      */
@@ -659,7 +676,6 @@ public class MapBasedDataHistogramTest
         }
 
     }
-
 
     /**
      * Test of learn method, of class MapBasedDataHistogram.
@@ -716,4 +732,5 @@ public class MapBasedDataHistogramTest
         assertTrue(instance.getDomain().contains("a"));
         assertTrue(instance.getDomain().contains("b"));
     }
+
 }

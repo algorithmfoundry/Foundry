@@ -16,7 +16,6 @@ package gov.sandia.cognition.learning.function.scalar;
 
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.evaluator.Evaluator;
-import gov.sandia.cognition.math.matrix.AbstractVector;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
@@ -127,10 +126,34 @@ public class LinearVectorScalarFunction
     public double evaluateAsDouble(
         final Vectorizable input)
     {
-        final Vector vector = input.convertToVector();
-        AbstractVector.assertEqualDimensionality(vector, this.weights);
-        
-        return vector.dotProduct(this.weights) + this.bias;
+        return this.evaluateAsDouble(input.convertToVector());
+    }
+
+    /**
+     * A convenience method for evaluating a Vector object as a double, thus
+     * avoiding the convertToVector call from Vectorizable. It calculates:
+     *
+     *     weights * input + bias
+     *
+     * @param   input
+     *      The input value to convert to a vector.
+     * @return
+     *      The double result of multiplying the weight vector times the given
+     *      vector and adding the bias. If the weight vector is null, bias is
+     *      returned.
+     */
+    public double evaluateAsDouble(
+        final Vector input)
+    {
+        if (this.weights == null)
+        {
+            // In the case the weights are uninitialized the result is the bias.
+            return this.bias;
+        }
+        else
+        {
+            return input.dotProduct(this.weights) + this.bias;
+        }
     }
 
     /**

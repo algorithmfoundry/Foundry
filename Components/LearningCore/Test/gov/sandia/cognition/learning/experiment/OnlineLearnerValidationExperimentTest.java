@@ -1,5 +1,5 @@
 /*
- * File:                OnlineLearnerValidationExperimentTest.java
+ * File:                IncrementalLearnerValidationExperimentTest.java
  * Authors:             Justin Basilico
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
@@ -15,7 +15,7 @@
 package gov.sandia.cognition.learning.experiment;
 
 import gov.sandia.cognition.evaluator.Evaluator;
-import gov.sandia.cognition.learning.algorithm.OnlineLearner;
+import gov.sandia.cognition.learning.algorithm.IncrementalLearner;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.ConstantEvaluator;
@@ -30,7 +30,7 @@ import java.util.Arrays;
 import junit.framework.TestCase;
 
 /**
- * Unit tests for class OnlineLearnerValidationExperiment.
+ * Unit tests for class IncrementalLearnerValidationExperiment.
  *
  * @author Justin Basilico
  * @since  3.0
@@ -50,7 +50,7 @@ public class OnlineLearnerValidationExperimentTest
     }
 
     /**
-     * Test of constructors of class OnlineLearnerValidationExperiment.
+     * Test of constructors of class IncrementalLearnerValidationExperiment.
      */
     public void testConstructors()
     {
@@ -71,7 +71,7 @@ public class OnlineLearnerValidationExperimentTest
     }
 
     /**
-     * Test of evaluatePerformance method, of class OnlineLearnerValidationExperiment.
+     * Test of evaluatePerformance method, of class IncrementalLearnerValidationExperiment.
      */
     public void testEvaluatePerformance()
     {
@@ -129,7 +129,7 @@ public class OnlineLearnerValidationExperimentTest
     }
 
     /**
-     * Test of getPerformanceEvaluator method, of class OnlineLearnerValidationExperiment.
+     * Test of getPerformanceEvaluator method, of class IncrementalLearnerValidationExperiment.
      */
     public void testGetPerformanceEvaluator()
     {
@@ -137,7 +137,7 @@ public class OnlineLearnerValidationExperimentTest
     }
 
     /**
-     * Test of setPerformanceEvaluator method, of class OnlineLearnerValidationExperiment.
+     * Test of setPerformanceEvaluator method, of class IncrementalLearnerValidationExperiment.
      */
     public void testSetPerformanceEvaluator()
     {
@@ -157,7 +157,7 @@ public class OnlineLearnerValidationExperimentTest
     }
 
     /**
-     * Test of getSummarizer method, of class OnlineLearnerValidationExperiment.
+     * Test of getSummarizer method, of class IncrementalLearnerValidationExperiment.
      */
     public void testGetSummarizer()
     {
@@ -165,7 +165,7 @@ public class OnlineLearnerValidationExperimentTest
     }
 
     /**
-     * Test of setSummarizer method, of class OnlineLearnerValidationExperiment.
+     * Test of setSummarizer method, of class IncrementalLearnerValidationExperiment.
      */
     public void testSetSummarizer()
     {
@@ -185,7 +185,7 @@ public class OnlineLearnerValidationExperimentTest
     }
 
     /**
-     * Test of getNumTrials method, of class OnlineLearnerValidationExperiment.
+     * Test of getNumTrials method, of class IncrementalLearnerValidationExperiment.
      */
     public void testGetNumTrials()
     {
@@ -197,7 +197,7 @@ public class OnlineLearnerValidationExperimentTest
     }
 
     /**
-     * Test of getStatistics method, of class OnlineLearnerValidationExperiment.
+     * Test of getStatistics method, of class IncrementalLearnerValidationExperiment.
      */
     public void testGetStatistics()
     {
@@ -205,7 +205,7 @@ public class OnlineLearnerValidationExperimentTest
     }
 
     /**
-     * Test of getSummary method, of class OnlineLearnerValidationExperiment.
+     * Test of getSummary method, of class IncrementalLearnerValidationExperiment.
      */
     public void testGetSummary()
     {
@@ -222,7 +222,7 @@ public class OnlineLearnerValidationExperimentTest
      */
     private static class DummyOnlineLearner<InputType, OutputType>
         extends AbstractCloneableSerializable
-        implements OnlineLearner<Object, Evaluator<? super InputType, OutputType>>
+        implements IncrementalLearner<Object, Evaluator<? super InputType, OutputType>>
     {
         /** The result that is returned by the online learner. */
         protected Evaluator<? super InputType, OutputType> evaluator;

@@ -33,7 +33,7 @@ public class AbstractBatchLearnerWrapperTest
     /**
      * Random number generator to use for a fixed random seed.
      */
-    public final Random RANDOM = new Random( 1 );
+    public final Random RANDOM = new Random(1);
 
     /**
      * Default tolerance of the regression tests, {@value}.
@@ -51,18 +51,18 @@ public class AbstractBatchLearnerWrapperTest
     }
 
     public static class DefaultWrapper
-        extends AbstractBatchLearnerWrapper<Collection<? extends InputOutputPair<?, Double>>,ConstantEvaluator<Double>,MeanLearner>
+        extends AbstractBatchLearnerContainer<MeanLearner>
     {
 
         public DefaultWrapper()
         {
             super();
-            this.setLearner( new MeanLearner() );
+            this.setLearner(new MeanLearner());
         }
-        
+
     }
 
-    public AbstractBatchLearnerWrapper createInstance()
+    public AbstractBatchLearnerContainer createInstance()
     {
         return new DefaultWrapper();
     }
@@ -72,11 +72,11 @@ public class AbstractBatchLearnerWrapperTest
      */
     public void testConstructors()
     {
-        System.out.println( "Constructors" );
+        System.out.println("Constructors");
 
-        AbstractBatchLearnerWrapper instance = this.createInstance();
-        assertNotNull( instance );
-        assertNotNull( instance.getLearner() );
+        AbstractBatchLearnerContainer instance = this.createInstance();
+        assertNotNull(instance);
+        assertNotNull(instance.getLearner());
 
     }
 
@@ -86,12 +86,12 @@ public class AbstractBatchLearnerWrapperTest
     public void testClone()
     {
         System.out.println("clone");
-        AbstractBatchLearnerWrapper instance = this.createInstance();
-        AbstractBatchLearnerWrapper clone = instance.clone();
-        assertNotNull( clone );
-        assertNotSame( instance, clone );
-        assertNotNull( clone.getLearner() );
-        assertNotSame( instance.getLearner(), clone.getLearner() );
+        AbstractBatchLearnerContainer instance = this.createInstance();
+        AbstractBatchLearnerContainer clone = instance.clone();
+        assertNotNull(clone);
+        assertNotSame(instance, clone);
+        assertNotNull(clone.getLearner());
+        assertNotSame(instance.getLearner(), clone.getLearner());
     }
 
     /**
@@ -100,8 +100,8 @@ public class AbstractBatchLearnerWrapperTest
     public void testGetLearner()
     {
         System.out.println("getLearner");
-        AbstractBatchLearnerWrapper instance = this.createInstance();
-        assertNotNull( instance.getLearner() );
+        AbstractBatchLearnerContainer instance = this.createInstance();
+        assertNotNull(instance.getLearner());
     }
 
 }

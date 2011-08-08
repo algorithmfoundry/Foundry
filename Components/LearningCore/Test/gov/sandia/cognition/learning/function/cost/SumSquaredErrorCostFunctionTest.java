@@ -15,9 +15,9 @@ package gov.sandia.cognition.learning.function.cost;
 
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.data.DatasetUtil;
+import gov.sandia.cognition.learning.data.DefaultWeightedTargetEstimatePair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.data.TargetEstimatePair;
-import gov.sandia.cognition.learning.data.WeightedTargetEstimatePair;
 import gov.sandia.cognition.learning.function.vector.MatrixMultiplyVectorFunction;
 import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Matrix;
@@ -99,7 +99,7 @@ public class SumSquaredErrorCostFunctionTest
             double weight = DatasetUtil.getWeight(sample);
             actual += weight * output.minus( estimate ).norm2Squared();
             weightSum += weight;
-            ted.add( new WeightedTargetEstimatePair<Vector, Vector>(
+            ted.add(DefaultWeightedTargetEstimatePair.create(
                 output, estimate, weight) );
         }
         

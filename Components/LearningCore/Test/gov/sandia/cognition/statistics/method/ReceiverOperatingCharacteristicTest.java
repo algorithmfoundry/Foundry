@@ -16,7 +16,7 @@ package gov.sandia.cognition.statistics.method;
 
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.learning.function.categorization.ThresholdBinaryCategorizer;
+import gov.sandia.cognition.learning.function.categorization.ScalarThresholdBinaryCategorizer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -40,8 +40,8 @@ public class ReceiverOperatingCharacteristicTest extends TestCase
     public static ReceiverOperatingCharacteristic createInstance()
     {
         
-        ThresholdBinaryCategorizer targetFunction =
-            new ThresholdBinaryCategorizer( RANDOM.nextGaussian() );
+        ScalarThresholdBinaryCategorizer targetFunction =
+            new ScalarThresholdBinaryCategorizer( RANDOM.nextGaussian() );
         int N = RANDOM.nextInt(10)+10;
         double r = RANDOM.nextDouble();
         LinkedList<InputOutputPair<Double,Boolean>> data =

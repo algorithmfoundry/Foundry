@@ -21,6 +21,7 @@ import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.mtj.DenseMatrix;
 import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.decomposition.SingularValueDecompositionMTJ;
+import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
 import java.util.Random;
 import junit.framework.TestCase;
@@ -65,6 +66,8 @@ public abstract class PrincipalComponentsAnalysisTestHarness extends TestCase
 
     /**
      * Test of learn method, of class gov.sandia.cognition.learning.pca.PrincipalComponentsAnalysis.
+     *
+     * The example data is based on: http://www.kernel-machines.org/code/kpca_toy.m
      */
     public void testPCALearn()
     {
@@ -87,6 +90,8 @@ public abstract class PrincipalComponentsAnalysisTestHarness extends TestCase
             X.setColumn( n, data.get( n ).minus( mean ) );
         }
 
+        final ArrayList<Vector> dataCopy = ObjectUtil.cloneSmartElementsAsArrayList(data);
+
         long startsvd = System.currentTimeMillis();
         SingularValueDecomposition svd = SingularValueDecompositionMTJ.create( X );
         long stopsvd = System.currentTimeMillis();
@@ -95,6 +100,8 @@ public abstract class PrincipalComponentsAnalysisTestHarness extends TestCase
         PrincipalComponentsAnalysis instance = this.createPCAInstance();
         PrincipalComponentsAnalysisFunction f = instance.learn( data );
         long stop = System.currentTimeMillis();
+
+        assertEquals(dataCopy, data);
 
         System.out.println( "Uhat:\n" + f.getDimensionReducer().getInternalMatrix().transpose() );
         System.out.println( "U:\n" + svd.getU() );

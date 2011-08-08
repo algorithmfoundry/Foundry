@@ -15,6 +15,7 @@ package gov.sandia.cognition.learning.function.cost;
 
 import gov.sandia.cognition.algorithm.ParallelUtil;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
+import gov.sandia.cognition.learning.data.DefaultTargetEstimatePair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.data.TargetEstimatePair;
 import gov.sandia.cognition.learning.function.vector.LinearVectorFunction;
@@ -177,7 +178,7 @@ public class ParallelizedCostFunctionContainerTest
             new ArrayList<TargetEstimatePair<Vector, Vector>>( num );
         for( int n = 0; n < num; n++ )
         {
-            data.add( new TargetEstimatePair<Vector, Vector>(
+            data.add(DefaultTargetEstimatePair.create(
                 VectorFactory.getDefault().createUniformRandom( dim, -r, r, RANDOM ),
                 VectorFactory.getDefault().createUniformRandom( dim, -r, r, RANDOM ) ) );
         }        

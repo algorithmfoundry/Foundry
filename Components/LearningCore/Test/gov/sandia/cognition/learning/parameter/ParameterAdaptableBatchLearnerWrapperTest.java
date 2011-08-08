@@ -235,6 +235,19 @@ public class ParameterAdaptableBatchLearnerWrapperTest
         assertSame(parameterAdapters, instance.getParameterAdapters());
     }
 
+
+    /**
+     * Test of create method, of class ParameterAdaptableBatchLearnerWrapper.
+     */
+    public void testCreate()
+    {
+        KMeansClusterer<String, CentroidCluster<String>> learner = new KMeansClusterer<String, CentroidCluster<String>>();;
+        ParameterAdaptableBatchLearnerWrapper<Collection<? extends String>, Collection<CentroidCluster<String>>, KMeansClusterer<String, CentroidCluster<String>>>
+            instance = ParameterAdaptableBatchLearnerWrapper.create(learner);
+        assertSame(learner, instance.getLearner());
+        assertNull(instance.getParameterAdapters());
+    }
+
     private static class DummyParameterAdapter
         extends AbstractCloneableSerializable
         implements ParameterAdapter<KMeansClusterer<?, ?>, Collection<?>>

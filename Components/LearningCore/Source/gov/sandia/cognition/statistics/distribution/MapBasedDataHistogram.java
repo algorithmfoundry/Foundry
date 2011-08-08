@@ -15,7 +15,7 @@
 package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.factory.Factory;
-import gov.sandia.cognition.learning.algorithm.OnlineLearner;
+import gov.sandia.cognition.learning.algorithm.IncrementalLearner;
 import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.statistics.AbstractDataHistogram;
 import gov.sandia.cognition.statistics.DataHistogram;
@@ -388,7 +388,7 @@ public class MapBasedDataHistogram<DataType>
             this.getTotalCount() + " total count:\n");
         for (DataType value : this.getDomain())
         {
-            result.append(value.toString());
+            result.append(value);
             result.append(": ");
             result.append(this.getCount(value));
             result.append(" (");
@@ -597,7 +597,7 @@ public class MapBasedDataHistogram<DataType>
     public static class Learner<DataType>
         extends AbstractCloneableSerializable
         implements DistributionEstimator<DataType, MapBasedDataHistogram.PMF<DataType>>,
-            OnlineLearner<DataType, MapBasedDataHistogram.PMF<DataType>>
+            IncrementalLearner<DataType, MapBasedDataHistogram.PMF<DataType>>
     {
 
         /**

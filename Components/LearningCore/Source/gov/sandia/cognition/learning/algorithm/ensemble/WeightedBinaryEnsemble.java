@@ -16,7 +16,7 @@ package gov.sandia.cognition.learning.algorithm.ensemble;
 
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.evaluator.Evaluator;
-import gov.sandia.cognition.learning.function.categorization.AbstractBinaryCategorizer;
+import gov.sandia.cognition.learning.function.categorization.AbstractDiscriminantBinaryCategorizer;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import java.util.List;
     changesNeeded = false,
     comments = "Looks fine.")
 public class WeightedBinaryEnsemble<InputType, MemberType extends Evaluator<? super InputType, ? extends Boolean>>
-    extends AbstractBinaryCategorizer<InputType>
+    extends AbstractDiscriminantBinaryCategorizer<InputType>
     implements Ensemble<WeightedValue<MemberType>>
 {
 

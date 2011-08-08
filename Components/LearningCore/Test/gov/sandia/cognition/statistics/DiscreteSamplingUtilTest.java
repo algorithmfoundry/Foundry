@@ -181,21 +181,24 @@ public class DiscreteSamplingUtilTest
      */
     public void testSampleIndicesFromCumulativeProportions()
     {
-        double[] cumulativeProportions = {0.5, 4.1, 5.2};
+        double[] cumulativeProportions = {0.5, 4.1, 4.1, 4.1, 5.2, 5.2};
 
-        int[] counts = new int[3];
+        int[] counts = new int[cumulativeProportions.length];
         int[] samples = DiscreteSamplingUtil.sampleIndicesFromCumulativeProportions(
             random, cumulativeProportions, 100);
         for (int i = 0; i < samples.length; i++)
         {
             int index = samples[i];
-            assertTrue(index >= 0 && index < 3);
+            assertTrue(index >= 0 && index < cumulativeProportions.length);
             counts[index]++;
         }
 
         assertTrue(counts[0] > 0);
         assertTrue(counts[1] > 0);
-        assertTrue(counts[2] > 0);
+        assertTrue(counts[2] == 0);
+        assertTrue(counts[3] == 0);
+        assertTrue(counts[4] > 0);
+        assertTrue(counts[5] == 0);
         assertTrue(counts[0] < counts[1]);
         assertTrue(counts[1] > counts[2]);
         assertTrue(counts[0] < counts[1]);

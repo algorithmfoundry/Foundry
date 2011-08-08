@@ -128,6 +128,12 @@ public class DenseMatrix
         this( reader.read() );
     }
 
+    @Override
+    public DenseMatrix clone()
+    {
+        return (DenseMatrix) super.clone();
+    }
+    
     public DenseMatrix times(
         final AbstractMTJMatrix matrix )
     {

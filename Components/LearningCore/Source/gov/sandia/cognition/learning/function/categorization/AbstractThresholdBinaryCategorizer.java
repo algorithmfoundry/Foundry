@@ -18,12 +18,13 @@ package gov.sandia.cognition.learning.function.categorization;
  * Categorizer that first maps the input space onto a real value, then
  * uses a threshold to map the result onto lowValue (for strictly less than the
  * threshold) or highValue (for greater than or equal to the threshold).
- * @author Kevin R. Dixon
- * @since 3.0
- * @param  <InputType> The type of the input the categorizer can use.
+ * @param   <InputType> The type of the input the categorizer can use.
+ * @author  Kevin R. Dixon
+ * @since   3.0
  */
 public abstract class AbstractThresholdBinaryCategorizer<InputType>
-    extends AbstractBinaryCategorizer<InputType>
+    extends AbstractDiscriminantBinaryCategorizer<InputType>
+    implements ThresholdBinaryCategorizer<InputType>
 {
 
     /**
@@ -52,21 +53,21 @@ public abstract class AbstractThresholdBinaryCategorizer<InputType>
     /**
      * Computes the discriminant.  This maps the input space onto the real
      * line, which will then be passed to the threshold.
-     * @param input
-     * Input to map onto the real number line.
+     * @param   input
+     *      Input to map onto the real number line.
      * @return
-     * Real-value equivalent of the input.
+     *      Real-value equivalent of the input.
      */
-    protected abstract double evaluateAsDouble(
-        InputType input );
+    protected abstract double evaluateWithoutThreshold(
+        final InputType input);
 
-    public Boolean evaluate(
-        InputType input)
+    @Override
+    public double evaluateAsDouble(
+        final InputType input)
     {
-        double discriminant = this.evaluateAsDouble(input);
-        return discriminant >= this.threshold;
+        return this.evaluateWithoutThreshold(input) - this.threshold;
     }
-
+    
     /**
      * Getter for threshold
      * @return

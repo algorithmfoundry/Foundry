@@ -33,7 +33,7 @@ import java.util.Collection;
  * @since   3.0
  */
 public class SequencePredictionLearner<DataType, LearnedType>
-    extends AbstractBatchLearnerWrapper<Collection<? extends InputOutputPair<? extends DataType, DataType>>, LearnedType, BatchLearner<? super Collection<? extends InputOutputPair<? extends DataType, DataType>>, ? extends LearnedType>>
+    extends AbstractBatchLearnerContainer<BatchLearner<? super Collection<? extends InputOutputPair<? extends DataType, DataType>>, ? extends LearnedType>>
     implements BatchLearner<Collection<? extends DataType>, LearnedType>
 {
     

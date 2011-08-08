@@ -185,6 +185,11 @@ public class LinearVectorScalarFunctionTest
         {
             assertTrue(exceptionThrown);
         }
+
+        instance = new LinearVectorScalarFunction();
+        assertEquals(0.0, instance.evaluateAsDouble(input), 0.0);
+        instance.setBias(3.4);
+        assertEquals(3.4, instance.evaluateAsDouble(input), 0.0);
     }
 
     /**

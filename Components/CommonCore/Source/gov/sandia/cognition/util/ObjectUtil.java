@@ -707,5 +707,26 @@ public class ObjectUtil
     {
         return FileUtil.getExtension(c.toString());
     }
-    
+
+    /**
+     * Attempts to convert the given Object into a byte array
+     * @param o
+     * Object to convert
+     * @return
+     * bytes of the object, null if none
+     */
+    public static byte[] getBytes(
+        Object o )
+    {
+        try
+        {
+            return ObjectSerializationHandler.convertToBytes( (Serializable) o );
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+        
+    }
+
 }

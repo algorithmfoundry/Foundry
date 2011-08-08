@@ -401,4 +401,24 @@ public class CollectionUtilTest
 
     }
 
+    public void testToStringDelimited()
+    {
+        List<String> list = null;
+        assertEquals("null", CollectionUtil.toStringDelimited(list, "-"));
+
+        list = new ArrayList<String>();
+        assertEquals("", CollectionUtil.toStringDelimited(list, "-"));
+
+        list.add("a");
+        assertEquals("a", CollectionUtil.toStringDelimited(list, "-"));
+
+        list.add("bb");
+        assertEquals("a-bb", CollectionUtil.toStringDelimited(list, "-"));
+
+        list.add("c");
+        assertEquals("a=bb=c", CollectionUtil.toStringDelimited(list, "="));
+        
+        list.add("dzd");
+        assertEquals("a-/-bb-/-c-/-dzd", CollectionUtil.toStringDelimited(list, "-/-"));
+    }
 }

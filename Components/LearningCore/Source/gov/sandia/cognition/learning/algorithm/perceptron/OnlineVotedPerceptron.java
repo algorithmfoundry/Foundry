@@ -14,12 +14,13 @@ package gov.sandia.cognition.learning.algorithm.perceptron;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.learning.algorithm.AbstractBatchAndOnlineLearner;
+import gov.sandia.cognition.learning.algorithm.AbstractBatchAndIncrementalLearner;
 import gov.sandia.cognition.learning.algorithm.ensemble.WeightedBinaryEnsemble;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.math.matrix.VectorFactoryContainer;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 
@@ -43,7 +44,8 @@ import gov.sandia.cognition.util.DefaultWeightedValue;
     pages={277, 296},
     url="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.48.8200")
 public class OnlineVotedPerceptron
-    extends AbstractBatchAndOnlineLearner<InputOutputPair<? extends Vectorizable, Boolean>, WeightedBinaryEnsemble<Vectorizable, LinearBinaryCategorizer>>
+    extends AbstractBatchAndIncrementalLearner<InputOutputPair<? extends Vectorizable, Boolean>, WeightedBinaryEnsemble<Vectorizable, LinearBinaryCategorizer>>
+    implements VectorFactoryContainer
 {
 
     /** The factory to create weight vectors. */

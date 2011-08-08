@@ -15,6 +15,7 @@
 
 package gov.sandia.cognition.learning.performance;
 
+import gov.sandia.cognition.learning.data.DefaultTargetEstimatePair;
 import gov.sandia.cognition.learning.data.TargetEstimatePair;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,34 +57,34 @@ public class MeanZeroOneErrorEvaluatorTest
         
         assertEquals(0.0, instance.summarize(data));
         
-        data.add(new TargetEstimatePair<String, String>("yes", "no"));
+        data.add(new DefaultTargetEstimatePair<String, String>("yes", "no"));
         assertEquals(1.0 / 1.0, instance.summarize(data));
         
-        data.add(new TargetEstimatePair<String, String>("yes", "yes"));
+        data.add(new DefaultTargetEstimatePair<String, String>("yes", "yes"));
         assertEquals(1.0 / 2.0, instance.summarize(data));
         
-        data.add(new TargetEstimatePair<String, String>("no", "no"));
+        data.add(new DefaultTargetEstimatePair<String, String>("no", "no"));
         assertEquals(1.0 / 3.0, instance.summarize(data));
         
-        data.add(new TargetEstimatePair<String, String>("something", "else"));
+        data.add(new DefaultTargetEstimatePair<String, String>("something", "else"));
         assertEquals(2.0 / 4.0, instance.summarize(data));
         
-        data.add(new TargetEstimatePair<String, String>("same", "same"));
+        data.add(new DefaultTargetEstimatePair<String, String>("same", "same"));
         assertEquals(2.0 / 5.0, instance.summarize(data));
         
-        data.add(new TargetEstimatePair<String, String>("oh", "no"));
+        data.add(new DefaultTargetEstimatePair<String, String>("oh", "no"));
         assertEquals(3.0 / 6.0, instance.summarize(data));
         
-        data.add(new TargetEstimatePair<String, String>("this", "bad"));
+        data.add(new DefaultTargetEstimatePair<String, String>("this", "bad"));
         assertEquals(4.0 / 7.0, instance.summarize(data));
         
-        data.add(new TargetEstimatePair<String, String>("not null", null));
+        data.add(new DefaultTargetEstimatePair<String, String>("not null", null));
         assertEquals(5.0 / 8.0, instance.summarize(data));
         
-        data.add(new TargetEstimatePair<String, String>(null, "not null"));
+        data.add(new DefaultTargetEstimatePair<String, String>(null, "not null"));
         assertEquals(6.0 / 9.0, instance.summarize(data));        
         
-        data.add(new TargetEstimatePair<String, String>(null, null));
+        data.add(new DefaultTargetEstimatePair<String, String>(null, null));
         assertEquals(6.0 / 10.0, instance.summarize(data));
     }
 

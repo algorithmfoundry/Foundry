@@ -49,9 +49,9 @@ public class AbstractBinaryCategorizerTest
     }
 
     @Override
-    public ThresholdBinaryCategorizer createInstance()
+    public ScalarThresholdBinaryCategorizer createInstance()
     {
-        return new ThresholdBinaryCategorizer( RANDOM.nextGaussian() );
+        return new ScalarThresholdBinaryCategorizer( RANDOM.nextGaussian() );
     }
 
     @Override
@@ -65,7 +65,7 @@ public class AbstractBinaryCategorizerTest
     {
         System.out.println( "Known values" );
 
-        ThresholdBinaryCategorizer f = this.createInstance();
+        ScalarThresholdBinaryCategorizer f = this.createInstance();
         for( int n = 0; n < NUM_TESTS; n++ )
         {
             double input = this.createRandomInput();

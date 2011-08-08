@@ -20,6 +20,7 @@ import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.algorithm.AbstractAnytimeSupervisedBatchLearner;
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
+import gov.sandia.cognition.learning.algorithm.BatchLearnerContainer;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.util.Randomized;
@@ -61,7 +62,8 @@ import java.util.Random;
     url="http://www.springerlink.com/index/L4780124W2874025.pdf")
 public class BaggingCategorizerLearner<InputType, CategoryType>
     extends AbstractAnytimeSupervisedBatchLearner<InputType, CategoryType, WeightedVotingCategorizerEnsemble<InputType, CategoryType, Evaluator<? super InputType, ? extends CategoryType>>>
-    implements Randomized
+    implements Randomized,
+        BatchLearnerContainer<BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, CategoryType>>, ? extends Evaluator<? super InputType, ? extends CategoryType>>>
 {
 
     /** The default maximum number of iterations is {@value}. */

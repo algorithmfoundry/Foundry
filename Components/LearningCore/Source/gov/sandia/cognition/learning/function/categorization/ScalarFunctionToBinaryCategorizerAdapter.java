@@ -81,10 +81,8 @@ public class ScalarFunctionToBinaryCategorizerAdapter<InputType>
         return clone;
     }
 
-
-
     @Override
-    protected double evaluateAsDouble(
+    protected double evaluateWithoutThreshold(
         InputType input)
     {
         return this.getEvaluator().evaluate(input);

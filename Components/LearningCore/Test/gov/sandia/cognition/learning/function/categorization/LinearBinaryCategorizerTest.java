@@ -182,6 +182,11 @@ public class LinearBinaryCategorizerTest
         {
             assertTrue(exceptionThrown);
         }
+
+        instance = new LinearBinaryCategorizer();
+        assertEquals(0.0, instance.evaluateAsDouble(input), 0.0);
+        instance.setBias(3.4);
+        assertEquals(3.4, instance.evaluateAsDouble(input), 0.0);
     }
 
     /**

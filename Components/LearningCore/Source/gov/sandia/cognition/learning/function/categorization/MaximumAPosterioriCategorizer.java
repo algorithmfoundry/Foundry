@@ -18,6 +18,7 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
 import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
+import gov.sandia.cognition.learning.data.DefaultWeightedValueDiscriminant;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.math.Ring;
 import gov.sandia.cognition.statistics.AbstractDistribution;
@@ -56,7 +57,7 @@ import java.util.Set;
 )
 public class MaximumAPosterioriCategorizer<ObservationType,CategoryType>
     extends AbstractDistribution<ObservationType>
-    implements Categorizer<ObservationType,CategoryType>
+    implements DiscriminantCategorizer<ObservationType,CategoryType,Double>
 {
 
     /**
@@ -134,6 +135,13 @@ public class MaximumAPosterioriCategorizer<ObservationType,CategoryType>
     public CategoryType evaluate(
         ObservationType input)
     {
+        return this.evaluateWithDiscriminant(input).getValue();
+    }
+    
+    @Override
+    public DefaultWeightedValueDiscriminant<CategoryType> evaluateWithDiscriminant(
+        ObservationType input)
+    {
         CategoryType maxCategory = null;
         double maxPosterior = Double.NEGATIVE_INFINITY;
         for( CategoryType category : this.getCategories() )
@@ -146,8 +154,7 @@ public class MaximumAPosterioriCategorizer<ObservationType,CategoryType>
             }
         }
 
-        return maxCategory;
-        
+        return DefaultWeightedValueDiscriminant.create(maxCategory, maxPosterior);
     }
 
     /**

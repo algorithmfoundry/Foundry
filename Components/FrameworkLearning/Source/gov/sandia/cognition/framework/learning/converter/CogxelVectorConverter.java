@@ -23,9 +23,11 @@ import gov.sandia.cognition.framework.DefaultCogxelFactory;
 import gov.sandia.cognition.framework.SemanticIdentifier;
 import gov.sandia.cognition.framework.SemanticIdentifierMap;
 import gov.sandia.cognition.framework.SemanticLabel;
+import gov.sandia.cognition.math.matrix.DefaultVectorFactoryContainer;
 import gov.sandia.cognition.math.matrix.DimensionalityMismatchException;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.math.matrix.VectorFactoryContainer;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +42,7 @@ import java.util.HashMap;
  * @since  1.0
  */
 public class CogxelVectorConverter
-    extends Object
+    extends DefaultVectorFactoryContainer
     implements CogxelConverter<Vector>
 {
     /** The labels for each of the elements in the vector. */
@@ -55,9 +57,6 @@ public class CogxelVectorConverter
     
     /** The mapping of SemanticIdentifiers to vector indices. */
     private HashMap<SemanticIdentifier, Integer> identifierToIndexMap;
-    
-    /** The VectorFactory to use. */
-    private VectorFactory vectorFactory;
     
     /** The CogxelFactory to use. */
     private CogxelFactory cogxelFactory;
@@ -141,7 +140,7 @@ public class CogxelVectorConverter
     public CogxelVectorConverter(
         SemanticLabel[] labels,
         SemanticIdentifierMap semanticIdentifierMap,
-        VectorFactory vectorFactory,
+        VectorFactory<?> vectorFactory,
         CogxelFactory cogxelFactory)
     {
         this(Arrays.asList(labels), semanticIdentifierMap, vectorFactory, 
@@ -159,7 +158,7 @@ public class CogxelVectorConverter
     public CogxelVectorConverter(
         Iterable<SemanticLabel> labels,
         SemanticIdentifierMap semanticIdentifierMap,
-        VectorFactory vectorFactory,
+        VectorFactory<?> vectorFactory,
         CogxelFactory cogxelFactory)
     {
         this(labels, semanticIdentifierMap);
@@ -601,27 +600,6 @@ public class CogxelVectorConverter
         HashMap<SemanticIdentifier, Integer> identifierToIndexMap)
     {
         this.identifierToIndexMap = identifierToIndexMap;
-    }
-
-    /**
-     * Gets the VectorFactory used to create Vector objects.
-     *
-     * @return The VectorFactory used to create Vector objects.
-     */
-    public VectorFactory getVectorFactory()
-    {
-        return this.vectorFactory;
-    }
-    
-    /**
-     * Sets the VectorFactory used to create Vector objects.
-     *
-     * @param  vectorFactory The VectorFactory used to create Vector objects.
-     */
-    public void setVectorFactory(
-        VectorFactory vectorFactory)
-    {
-        this.vectorFactory = vectorFactory;
     }
 
     /**

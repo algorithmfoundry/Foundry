@@ -14,8 +14,9 @@
 
 package gov.sandia.cognition.learning.function.categorization;
 
-import gov.sandia.cognition.math.matrix.AbstractVector;
 import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.math.matrix.VectorInputEvaluator;
+import gov.sandia.cognition.math.matrix.VectorUtil;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.util.ObjectUtil;
 
@@ -35,7 +36,9 @@ import gov.sandia.cognition.util.ObjectUtil;
  * @since  2.0
  */
 public class LinearBinaryCategorizer
-    extends AbstractThresholdBinaryCategorizer<Vectorizable>
+    extends AbstractDiscriminantBinaryCategorizer<Vectorizable>
+    implements VectorInputEvaluator<Vectorizable, Boolean>,
+        ThresholdBinaryCategorizer<Vectorizable>
 {
     /** The default bias is {@value}. */
     public static final double DEFAULT_BIAS = 0.0;
@@ -65,7 +68,7 @@ public class LinearBinaryCategorizer
         final Vector weights,
         final double bias)
     {
-        super(0.0);
+        super();
         
         this.setWeights(weights);
         this.setBias(bias);
@@ -86,7 +89,7 @@ public class LinearBinaryCategorizer
     public LinearBinaryCategorizer clone()
     {
         LinearBinaryCategorizer clone = (LinearBinaryCategorizer) super.clone();
-        clone.setWeights( ObjectUtil.cloneSafe(this.getWeights()) );
+        clone.weights = ObjectUtil.cloneSafe(this.weights);
         return clone;
     }
     
@@ -103,14 +106,65 @@ public class LinearBinaryCategorizer
     public double evaluateAsDouble(
         final Vectorizable input)
     {
+        return this.evaluateAsDouble(input.convertToVector());
+    }
+
+    /**
+     * A convenience method for evaluating a Vector object as a double, thus
+     * avoiding the convertToVector call from Vectorizable. It calculates:
+     *
+     *     weights * input + bias
+     *
+     * @param   input
+     *      The input value to convert to a vector.
+     * @return
+     *      The double result of multiplying the weight vector times the given
+     *      vector and adding the bias. If the weight vector is null, bias is
+     *      returned. The sign is treated as the categorization.
+     */
+    public double evaluateAsDouble(
+        final Vector input)
+    {
         if (this.weights == null)
         {
-            // In the case the weights are uninitialized return 0.0.
-            return 0.0;
+            // In the case the weights are uninitialized the result is the bias.
+            return this.bias;
         }
-        
-        final Vector vector = input.convertToVector();
-        return vector.dotProduct(this.weights) + this.bias;
+        else
+        {
+            return input.dotProduct(this.weights) + this.bias;
+        }
+    }
+
+    @Override
+    public int getInputDimensionality()
+    {
+        return VectorUtil.safeGetDimensionality(this.weights);
+    }
+
+    /**
+     * Gets the threshold, which is the negative of the bias.
+     *
+     * @return
+     *      The threshold, which is the negative of the bias.
+     */
+    @Override
+    public double getThreshold()
+    {
+        return -this.getBias();
+    }
+
+    /**
+     * Sets the threshold, which is the negative of the bias.
+     *
+     * @param   threshold
+     *      the threshold, which is the negative of the bias.
+     */
+    @Override
+    public void setThreshold(
+        final double threshold)
+    {
+        this.setBias(-threshold);
     }
 
     /**

@@ -2,6 +2,52 @@ This file contains the change log for the Cognitive Foundry.
 
 Changes since last release:
 
+Release 3.1.0 (2010-02-23):
+
+ * Text: New package in this release for doing statistical text analysis and
+   information retrieval. Especially useful for doing machine learning over
+   text data.
+ * Common Core:
+   * CollectionUtil: Added toStringDelimited method.
+   * VectorFactoryContainer is now an interface, existing implementation moved
+     to DefaultVectorFactoryContainer.
+   * ObjectUtil: Added getBytes method.
+ * Learning Core:
+   * OnlineLearner interface renamed to IncrementalLearner, which is a more
+     appropriate name. Other similar classes also renamed:
+     AbstractBatchAndIncrementalLearner
+   * Added BatchLearnerContainer interface and renamed
+     AbstractBatchLearnerWrapper to AbstractBatchLearnerContainer
+   * Added DiscriminantCategorizer and BinaryDiscriminantCategorizer interfaces.
+     Almost all Categorizers now implement one of these interfaces; some
+     existing methods were renamed to match these standard interfaces.
+   * Added DistanceSamplingClusterInitializer, which is an implementation of
+     the k-means++ initialization algorithm.
+   * HiddenMarkovModel and BaumWelchAlgorithm had some performance improvements.
+   * Added KernelPrincipalComponentsAnalysis, which is an implementation of
+     kernel PCA using eigen-decomposition.
+   * DatasetUtil: Added countOutputValues.
+   * TargetEstimatePair and WeightedTargetEstimatePair are now interfaces;
+     existing implementations moved to DefaultTargetEstimatePair and
+     DefaultWeightedTargetEstimatePair.
+   * ConstantEvaluator: Now extends AbstractCloneableSerializable.
+   * ThresholdBinaryCategorizer is now an interface. Existing implementation
+     moved to ScalarThresholdBinaryCategorizer.
+   * AbstractThresholdBinaryCategorizer now longer contains the threshold
+     directly, instead it assumes the threshold is applied in evaluateAsDouble
+     and categorizes based on zero. This is to remove the confusion of having
+     both a bias and a threshold in some classes and to clarify the meaning of
+     evaluateAsDouble so that it matches the new BinaryDiscriminantCategorizer
+     interface.
+   * DataHistogram: Added isEmpty method and implemented in
+     AbstractDataHistogram.
+   * Made new ConfusionMatrix and BinaryConfusionMatrix interfaces and put them
+     in the gov.sandia.cognition.learning.performance.categorization. Refactored
+     existing confusion matrix code to implement these interfaces; the existing
+     class ending up in DefaultBinaryConfusionMatrix. New confusion matrix
+     interface uses generics to be useful for more than just binary
+     categorization.
+   * Now uses JUnit 4.6 for tests.
 
 Release 3.0.3 (2010-12-22):
 * Common Core:

@@ -36,9 +36,9 @@ public abstract class ThresholdBinaryCategorizerTestHarness<InputType>
 
 
     /**
-     * Test of evaluateAsDouble method, of class AbstractThresholdBinaryCategorizer.
+     * Test of evaluateWithoutThreshold method, of class AbstractThresholdBinaryCategorizer.
      */
-    abstract public void testEvaluateAsDouble();
+    abstract public void testEvaluateWithoutThreshold();
 
 
     abstract public AbstractThresholdBinaryCategorizer<InputType> createInstance();
@@ -46,7 +46,7 @@ public abstract class ThresholdBinaryCategorizerTestHarness<InputType>
     @Override
     public void testKnownValues()
     {
-        this.testEvaluateAsDouble();
+        this.testEvaluateWithoutThreshold();
     }
 
     /**
@@ -59,7 +59,7 @@ public abstract class ThresholdBinaryCategorizerTestHarness<InputType>
         for( int n = 0; n < NUM_TESTS; n++ )
         {
             InputType input = this.createRandomInput();
-            double result = instance.evaluateAsDouble(input);
+            double result = instance.evaluateWithoutThreshold(input);
             assertEquals( (result>=instance.getThreshold()), instance.evaluate(input).booleanValue() );
         }
     }

@@ -24,6 +24,7 @@ import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.math.matrix.DimensionalityMismatchException;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.math.matrix.VectorFactoryContainer;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.util.CloneableSerializable;
 import gov.sandia.cognition.util.DefaultNamedValue;
@@ -57,7 +58,7 @@ import gov.sandia.cognition.util.NamedValue;
 )
 public class Perceptron
     extends AbstractAnytimeSupervisedBatchLearner<Vectorizable, Boolean, LinearBinaryCategorizer>
-    implements MeasurablePerformanceAlgorithm, CloneableSerializable
+    implements MeasurablePerformanceAlgorithm, CloneableSerializable, VectorFactoryContainer
 {
 
     /** The default maximum number of iterations, {@value}. */
@@ -76,7 +77,7 @@ public class Perceptron
     private double marginNegative;
 
     /** The VectorFactory to use to create vectors. */
-    private VectorFactory vectorFactory;
+    private VectorFactory<?> vectorFactory;
 
     /** The result categorizer. */
     private LinearBinaryCategorizer result;
@@ -316,7 +317,7 @@ public class Perceptron
      *
      * @return The VectorFactory used to create the weight vector.
      */
-    public VectorFactory getVectorFactory()
+    public VectorFactory<?> getVectorFactory()
     {
         return this.vectorFactory;
     }
@@ -327,7 +328,7 @@ public class Perceptron
      * @param  vectorFactory The VectorFactory used to create the weight vector.
      */
     public void setVectorFactory(
-        final VectorFactory vectorFactory)
+        final VectorFactory<?> vectorFactory)
     {
         this.vectorFactory = vectorFactory;
     }

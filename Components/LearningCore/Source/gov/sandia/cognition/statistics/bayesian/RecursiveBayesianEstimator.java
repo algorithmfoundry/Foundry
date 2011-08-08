@@ -16,7 +16,7 @@ package gov.sandia.cognition.statistics.bayesian;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.learning.algorithm.OnlineLearner;
+import gov.sandia.cognition.learning.algorithm.IncrementalLearner;
 import gov.sandia.cognition.statistics.Distribution;
 
 /**
@@ -41,6 +41,6 @@ import gov.sandia.cognition.statistics.Distribution;
 )
 public interface RecursiveBayesianEstimator<ObservationType,ParameterType,BeliefType extends Distribution<ParameterType>>
     extends BayesianEstimator<ObservationType,ParameterType,BeliefType>,
-    OnlineLearner<ObservationType,BeliefType>
+    IncrementalLearner<ObservationType,BeliefType>
 {
 }

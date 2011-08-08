@@ -158,13 +158,13 @@ public class FisherLinearDiscriminantBinaryCategorizerTest
     }
 
     @Override
-    public void testEvaluateAsDouble()
+    public void testEvaluateWithoutThreshold()
     {
-        System.out.println( "evaluateAsDouble" );
+        System.out.println( "evaluateWithoutThreshold" );
 
         Vector input = this.createRandomInput();
         FisherLinearDiscriminantBinaryCategorizer f = this.createInstance();
-        assertEquals( input.dotProduct(((LinearDiscriminant) f.getEvaluator()).getWeightVector() ), f.evaluateAsDouble(input), TOLERANCE );
+        assertEquals( input.dotProduct(((LinearDiscriminant) f.getEvaluator()).getWeightVector() ), f.evaluateWithoutThreshold(input), TOLERANCE );
     }
 
     @Override

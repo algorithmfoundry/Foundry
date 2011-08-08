@@ -14,7 +14,7 @@
 
 package gov.sandia.cognition.statistics.bayesian;
 
-import gov.sandia.cognition.learning.algorithm.AbstractBatchAndOnlineLearner;
+import gov.sandia.cognition.learning.algorithm.AbstractBatchAndIncrementalLearner;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
@@ -26,7 +26,7 @@ import gov.sandia.cognition.util.ObjectUtil;
  * @since 3.0
  */
 public abstract class AbstractKalmanFilter
-    extends AbstractBatchAndOnlineLearner<Vector,MultivariateGaussian>
+    extends AbstractBatchAndIncrementalLearner<Vector,MultivariateGaussian>
     implements RecursiveBayesianEstimator<Vector,Vector,MultivariateGaussian>
 {
 

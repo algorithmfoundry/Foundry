@@ -92,6 +92,15 @@ public interface DataHistogram<DataType>
      */
     public int getCount(
         DataType input);
+
+    /**
+     * Determines whether or not the histogram is empty. It is empty if the
+     * total count is zero.
+     *
+     * @return
+     *      True if the histogram is empty; otherwise, false.
+     */
+    public boolean isEmpty();
     
     /**
      * Gets the total count of all values in the histogram.

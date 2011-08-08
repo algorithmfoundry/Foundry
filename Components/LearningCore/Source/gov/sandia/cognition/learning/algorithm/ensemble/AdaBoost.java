@@ -20,9 +20,8 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.algorithm.AbstractAnytimeSupervisedBatchLearner;
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
-import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
+import gov.sandia.cognition.learning.algorithm.BatchLearnerContainer;
 import gov.sandia.cognition.learning.data.DefaultWeightedInputOutputPair;
-import gov.sandia.cognition.learning.function.categorization.BinaryCategorizer;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.data.WeightedInputOutputPair;
 import gov.sandia.cognition.util.WeightedValue;
@@ -66,6 +65,7 @@ import java.util.LinkedList;
 )
 public class AdaBoost<InputType>
     extends AbstractAnytimeSupervisedBatchLearner<InputType, Boolean, WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>>>
+    implements BatchLearnerContainer<BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>>>
 {
 
     /** The default maximum number of iterations is {@value}. */
@@ -86,7 +86,7 @@ public class AdaBoost<InputType>
     protected transient ArrayList<DefaultWeightedInputOutputPair<InputType, Boolean>> weightedData;
 
     /**
-     * Creates a new instance of AdaBoost.
+     * Creates a new instance of AdaBoost with no base learner.
      */
     public AdaBoost()
     {
@@ -126,6 +126,7 @@ public class AdaBoost<InputType>
         this.setWeightedData(null);
     }
 
+    @Override
     protected boolean initializeAlgorithm()
     {
         if (this.getData() == null || this.getData().size() <= 0)
@@ -145,12 +146,14 @@ public class AdaBoost<InputType>
             new ArrayList<DefaultWeightedInputOutputPair<InputType, Boolean>>(
             this.getData().size()));
 
-        for (InputOutputPair<? extends InputType, Boolean> example : this.getData())
+        for (InputOutputPair<? extends InputType, Boolean> example
+            : this.getData())
         {
             if (example != null)
             {
                 this.weightedData.add(
-                    new DefaultWeightedInputOutputPair<InputType, Boolean>(example, 1.0));
+                    new DefaultWeightedInputOutputPair<InputType, Boolean>(
+                        example, 1.0));
                 numExamples++;
             }
         }
@@ -158,7 +161,8 @@ public class AdaBoost<InputType>
         // The initial weight is the same for all examples. We use this
         // value to ensure that they all sum to one.
         double initialWeight = 1.0 / numExamples;
-        for (DefaultWeightedInputOutputPair<InputType, Boolean> example : this.weightedData)
+        for (DefaultWeightedInputOutputPair<InputType, Boolean> example
+            : this.weightedData)
         {
             example.setWeight(initialWeight);
         }
@@ -166,6 +170,7 @@ public class AdaBoost<InputType>
         return true;
     }
 
+    @Override
     protected boolean step()
     {
         // First perform the weak learning algorithm.
@@ -267,7 +272,8 @@ public class AdaBoost<InputType>
         }
 
         // Normalize the weights to be a distribution.
-        for (DefaultWeightedInputOutputPair<InputType, Boolean> example : this.weightedData)
+        for (DefaultWeightedInputOutputPair<InputType, Boolean> example
+            : this.weightedData)
         {
             example.setWeight(example.getWeight() / sum);
         }
@@ -275,15 +281,23 @@ public class AdaBoost<InputType>
         return true;
     }
 
+    @Override
     protected void cleanupAlgorithm()
     {
         // We no longer need the weighted data.
         this.setWeightedData(null);
     }
 
+    @Override
     public WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>> getResult()
     {
         return this.getEnsemble();
+    }
+
+    @Override
+    public BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>> getLearner()
+    {
+        return this.getWeakLearner();
     }
 
     /**

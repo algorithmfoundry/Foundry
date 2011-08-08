@@ -14,11 +14,12 @@ package gov.sandia.cognition.learning.algorithm.perceptron;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.learning.algorithm.AbstractBatchAndOnlineLearner;
+import gov.sandia.cognition.learning.algorithm.AbstractBatchAndIncrementalLearner;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.math.matrix.VectorFactoryContainer;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 
 /**
@@ -35,7 +36,8 @@ import gov.sandia.cognition.math.matrix.Vectorizable;
     url="http://en.wikipedia.org/wiki/Perceptron#Learning_algorithm"
 )
 public class OnlinePerceptron
-    extends AbstractBatchAndOnlineLearner<InputOutputPair<? extends Vectorizable, Boolean>, LinearBinaryCategorizer>
+    extends AbstractBatchAndIncrementalLearner<InputOutputPair<? extends Vectorizable, Boolean>, LinearBinaryCategorizer>
+    implements VectorFactoryContainer
 {
 
     /** The factory to create weight vectors. */

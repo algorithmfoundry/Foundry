@@ -64,14 +64,14 @@ public class VectorElementThresholdCategorizerTest
     /**
      * Test of evaluate method, of class VectorElementThresholdCategorizer.
      */
-    public void testEvaluateAsDouble()
+    public void testEvaluateWithoutThreshold()
     {
         System.out.println("evaluate");
         for( int n = 0; n < NUM_TESTS; n++ )
         {
             Vector input = this.createRandomInput();
             VectorElementThresholdCategorizer instance = this.createInstance();
-            assertEquals( input.getElement(instance.getIndex()), instance.evaluateAsDouble(input) );
+            assertEquals( input.getElement(instance.getIndex()), instance.evaluateWithoutThreshold(input) );
         }
     }
 

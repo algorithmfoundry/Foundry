@@ -15,6 +15,7 @@
 package gov.sandia.cognition.learning.function;
 
 import gov.sandia.cognition.evaluator.Evaluator;
+import gov.sandia.cognition.util.AbstractCloneableSerializable;
 
 /**
  * The {@code ConstantEvaluator} class implements an {@code Evaluator} that
@@ -25,7 +26,7 @@ import gov.sandia.cognition.evaluator.Evaluator;
  * @since   2.1
  */
 public class ConstantEvaluator<OutputType>
-    extends Object
+    extends AbstractCloneableSerializable
     implements Evaluator<Object, OutputType>
 {
     // TODO: This class should be moved to the evaluator package in Common Core.

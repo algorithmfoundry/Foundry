@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * The <code>KernelBinaryCategorizer</code> class implements a binary 
+ * The {@code KernelBinaryCategorizer} class implements a binary
  * categorizer that uses a kernel to do its categorization. It is parameterized 
  * by a kernel function, a list of examples and their weights, and a bias term. 
  * This type of classifier represents what is learned by a standard Support 
@@ -33,8 +33,9 @@ import java.util.Collection;
  * @since  2.0
  */
 public class KernelBinaryCategorizer<InputType>
-    extends AbstractThresholdBinaryCategorizer<InputType>
-    implements KernelContainer<InputType>
+    extends AbstractDiscriminantBinaryCategorizer<InputType>
+    implements KernelContainer<InputType>,
+        ThresholdBinaryCategorizer<InputType>
 {
     /** The default value for the bias is {@value}. */
     public static final double DEFAULT_BIAS = 0.0;
@@ -80,7 +81,7 @@ public class KernelBinaryCategorizer<InputType>
         final Collection<? extends WeightedValue<? extends InputType>> examples,
         final double bias)
     {
-        super(0.0);
+        super();
         
         this.setExamples(examples);
         this.setBias(bias);
@@ -111,6 +112,7 @@ public class KernelBinaryCategorizer<InputType>
      * @return The output categorization as a double where the sign is the
      *         categorization.
      */
+    @Override
     public double evaluateAsDouble(
         final InputType input)
     {
@@ -118,11 +120,12 @@ public class KernelBinaryCategorizer<InputType>
         double sum = this.bias;
 
         // Loop over all the examples.
-        for ( WeightedValue<? extends InputType> example : this.examples )
+        for (WeightedValue<? extends InputType> example
+            : this.examples)
         {
             final double weight = example.getWeight();
 
-            if ( weight == 0.0 )
+            if (weight == 0.0)
             {
                 continue;
             }
@@ -136,6 +139,31 @@ public class KernelBinaryCategorizer<InputType>
         }
         
         return sum;
+    }
+
+    /**
+     * Gets the threshold, which is the negative of the bias.
+     *
+     * @return
+     *      The threshold, which is the negative of the bias.
+     */
+    @Override
+    public double getThreshold()
+    {
+        return -this.getBias();
+    }
+
+    /**
+     * Sets the threshold, which is the negative of the bias.
+     *
+     * @param   threshold
+     *      the threshold, which is the negative of the bias.
+     */
+    @Override
+    public void setThreshold(
+        final double threshold)
+    {
+        this.setBias(-threshold);
     }
 
     /**

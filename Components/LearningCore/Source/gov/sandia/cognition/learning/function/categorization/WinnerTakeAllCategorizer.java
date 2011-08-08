@@ -15,16 +15,16 @@
 package gov.sandia.cognition.learning.function.categorization;
 
 import gov.sandia.cognition.evaluator.Evaluator;
-import gov.sandia.cognition.learning.algorithm.AbstractBatchLearnerWrapper;
+import gov.sandia.cognition.learning.algorithm.AbstractBatchLearnerContainer;
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
 import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
+import gov.sandia.cognition.learning.data.DefaultWeightedValueDiscriminant;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.math.matrix.VectorFactoryContainer;
 import gov.sandia.cognition.math.matrix.Vectorizable;
-import gov.sandia.cognition.util.DefaultWeightedValue;
-import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -39,8 +39,9 @@ import java.util.Set;
  * @since   3.0
  */
 public class WinnerTakeAllCategorizer<InputType, CategoryType>
-    extends AbstractCategorizer<InputType, CategoryType>
+    extends AbstractDiscriminantCategorizer<InputType, CategoryType, Double>
 {
+    
     /** The evaluator that outputs a vector to return. */
     protected Evaluator<? super InputType, ? extends Vectorizable> evaluator;
 
@@ -69,29 +70,22 @@ public class WinnerTakeAllCategorizer<InputType, CategoryType>
         this.setEvaluator(evaluator);
     }
 
-    public CategoryType evaluate(
-        final InputType input)
-    {
-        final WeightedValue<CategoryType> bestWeighted =
-            this.evaluateWithWeight(input);
-        return bestWeighted.getValue();
-    }
-
     /**
      * Evaluates the categorizer and returns the category along with a weight.
-     * 
+     *
      * @param   input
      *      The input to evaluate.
      * @return
      *      The output plus its weight.
      */
-    public WeightedValue<CategoryType> evaluateWithWeight(
+    @Override
+    public DefaultWeightedValueDiscriminant<CategoryType> evaluateWithDiscriminant(
         final InputType input)
     {
         final Vector output = this.evaluator.evaluate(input).convertToVector();
         return this.findBestCategory(output);
     }
-
+    
     /**
      * Finds the best category (and its output value) from the given vector
      * of outputs from a vector evaluator. Ties are broken by taking the first
@@ -103,14 +97,14 @@ public class WinnerTakeAllCategorizer<InputType, CategoryType>
      *      The category with the highest output value. Ties are broken by
      *      taking the first category with the highest value.
      */
-    public WeightedValue<CategoryType> findBestCategory(
+    public DefaultWeightedValueDiscriminant<CategoryType> findBestCategory(
         final Vector output)
     {
         output.assertDimensionalityEquals(this.categories.size());
 
         // Loop througn and find the best category.
         CategoryType best = null;
-        double bestValue = 0.0;
+        double bestValue = Double.NEGATIVE_INFINITY;
         int index = 0;
         for (CategoryType category : this.categories)
         {
@@ -125,7 +119,7 @@ public class WinnerTakeAllCategorizer<InputType, CategoryType>
         }
 
         // Return the best category.
-        return new DefaultWeightedValue<CategoryType>(best, bestValue);
+        return new DefaultWeightedValueDiscriminant<CategoryType>(best, bestValue);
     }
 
     /**
@@ -170,12 +164,13 @@ public class WinnerTakeAllCategorizer<InputType, CategoryType>
      *      The type of the output categories.
      */
     public static class Learner<InputType, CategoryType>
-        extends AbstractBatchLearnerWrapper<Collection<? extends InputOutputPair<? extends InputType, Vector>>, Evaluator<? super InputType, ? extends Vectorizable>, BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Vector>>, ? extends Evaluator<? super InputType, ? extends Vectorizable>>>
-        implements SupervisedBatchLearner<InputType, CategoryType, WinnerTakeAllCategorizer<InputType, CategoryType>>
+        extends AbstractBatchLearnerContainer<BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Vector>>, ? extends Evaluator<? super InputType, ? extends Vectorizable>>>
+        implements SupervisedBatchLearner<InputType, CategoryType, WinnerTakeAllCategorizer<InputType, CategoryType>>,
+            VectorFactoryContainer
     {
 
         /** The vector factory used. */
-        protected VectorFactory vectorFactory;
+        protected VectorFactory<?> vectorFactory;
 
         /**
          * Creates a new learner adapter.
@@ -251,7 +246,7 @@ public class WinnerTakeAllCategorizer<InputType, CategoryType>
          * @return
          *      The vector factory.
          */
-        public VectorFactory getVectorFactory()
+        public VectorFactory<?> getVectorFactory()
         {
             return this.vectorFactory;
         }
@@ -263,7 +258,7 @@ public class WinnerTakeAllCategorizer<InputType, CategoryType>
          *      The vector factory.
          */
         public void setVectorFactory(
-            final VectorFactory vectorFactory)
+            final VectorFactory<?> vectorFactory)
         {
             this.vectorFactory = vectorFactory;
         }

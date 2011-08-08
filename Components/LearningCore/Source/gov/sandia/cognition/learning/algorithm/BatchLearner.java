@@ -50,7 +50,7 @@ import gov.sandia.cognition.util.CloneableSerializable;
  * @author  Justin Basilico
  * @author  Kevin R. Dixon
  * @since   2.0
- * @see     OnlineLearner
+ * @see     IncrementalLearner
  */
 @CodeReview(
     reviewer="Kevin R. Dixon",

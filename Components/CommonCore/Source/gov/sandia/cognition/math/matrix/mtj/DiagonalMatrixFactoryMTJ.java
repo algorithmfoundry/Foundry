@@ -19,7 +19,8 @@ import gov.sandia.cognition.math.matrix.MatrixFactory;
 import java.util.Random;
 
 /**
- *
+ * An {@code MatrixFactory} that produces {@code DiagonalMatrixMTJ} matrices.
+ * 
  * @author Kevin R. Dixon
  * @since 2.1
  */

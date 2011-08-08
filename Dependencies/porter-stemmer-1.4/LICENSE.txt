@@ -1,0 +1,14 @@
+From: http://tartarus.org/~martin/PorterStemmer/
+
+#1. What is the licensing arrangement for this software?
+
+This question has become very popular recently (the period 2008−2009), despite the clear statment above that ‘‘all these encodings of the algorithm can be used free of charge for any purpose.’’ The problem I think is that intellectual property has become such a major issue that some more formal statement is expected. So to restate it:
+
+The software is completely free for any purpose, unless notes at the head of the program text indicates otherwise (which is rare). In any case, the notes about licensing are never more restrictive than the BSD License.
+
+In every case where the software is not written by me (Martin Porter), this licensing arrangement has been endorsed by the contributor, and it is therefore unnecessary to ask the contributor again to confirm it.
+
+I have not asked any contributors (or their employers, if they have them) for proofs that they have the right to distribute their software in this way.
+
+(For anyone taking software from the Snowball website, the position is similar but simpler. There, all the software is issued under the BSD License, and for contributions not written by Martin Porter and Richard Boulton, we have again not asked the authors, or the authors’ employers, for proofs that they have such distribution rights.) 
+

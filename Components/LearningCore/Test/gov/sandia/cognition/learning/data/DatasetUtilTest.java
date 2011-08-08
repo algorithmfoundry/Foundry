@@ -27,6 +27,7 @@ import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.mtj.Vector2;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
+import gov.sandia.cognition.statistics.DataHistogram;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -358,6 +359,61 @@ public class DatasetUtilTest
         assertEquals("one", result.toArray()[0]);
         assertEquals("two", result.toArray()[1]);
         assertEquals("another", result.toArray()[2]);
+    }
+
+
+    /**
+     * Test of countOutputValues method, of class DatasetUtil.
+     */
+    public void testCountOutputValues()
+    {
+        Collection<InputOutputPair<Object, String>> data = null;
+        DataHistogram<String> result = DatasetUtil.countOutputValues(data);
+        assertTrue(result.isEmpty());
+
+        data = new LinkedList<InputOutputPair<Object, String>>();
+        result = DatasetUtil.countOutputValues(data);
+        assertTrue(result.isEmpty());
+
+        data.add(new DefaultInputOutputPair<Object, String>(null, "one"));
+        result = DatasetUtil.countOutputValues(data);
+        assertEquals(1, result.getDomainSize());
+        assertEquals(1, result.getTotalCount());
+        assertEquals(1, result.getCount("one"));
+
+        data.add(new DefaultInputOutputPair<Object, String>(null, "one"));
+        result = DatasetUtil.countOutputValues(data);
+        assertEquals(1, result.getDomainSize());
+        assertEquals(2, result.getTotalCount());
+        assertEquals(2, result.getCount("one"));
+
+        data.add(new DefaultInputOutputPair<Object, String>(null, "two"));
+        result = DatasetUtil.countOutputValues(data);
+        assertEquals(2, result.getDomainSize());
+        assertEquals(3, result.getTotalCount());
+        assertEquals(2, result.getCount("one"));
+        assertEquals(1, result.getCount("two"));
+
+
+        data.add(new DefaultInputOutputPair<Object, String>(null, "another"));
+        data.add(new DefaultInputOutputPair<Object, String>(null, "another"));
+        data.add(new DefaultInputOutputPair<Object, String>(null, "another"));
+        result = DatasetUtil.countOutputValues(data);
+        assertEquals(3, result.getDomainSize());
+        assertEquals(6, result.getTotalCount());
+        assertEquals(2, result.getCount("one"));
+        assertEquals(1, result.getCount("two"));
+        assertEquals(3, result.getCount("another"));
+
+        data.add(new DefaultInputOutputPair<Object, String>(null, "two"));
+        data.add(new DefaultInputOutputPair<Object, String>(null, "another"));
+        data.add(new DefaultInputOutputPair<Object, String>(null, "one"));
+        result = DatasetUtil.countOutputValues(data);
+        assertEquals(3, result.getDomainSize());
+        assertEquals(9, result.getTotalCount());
+        assertEquals(3, result.getCount("one"));
+        assertEquals(2, result.getCount("two"));
+        assertEquals(4, result.getCount("another"));
     }
 
     /**

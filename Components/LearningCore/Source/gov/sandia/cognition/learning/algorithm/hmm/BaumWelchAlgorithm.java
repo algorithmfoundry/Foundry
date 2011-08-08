@@ -21,15 +21,19 @@ import gov.sandia.cognition.learning.algorithm.BatchLearner;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Matrix;
+import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.ComputableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityFunction;
+import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import gov.sandia.cognition.util.DefaultPair;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.Pair;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
 
 /**
  * Implements the Baum-Welch algorithm, also known as the "forward-backward
@@ -166,17 +170,22 @@ public class BaumWelchAlgorithm<ObservationType>
     protected boolean step()
     {
         final int numSequences = this.multicollection.getSubCollectionsCount();
+        final boolean updatePi = this.getReestimateInitialProbabilities();
         Pair<ArrayList<ArrayList<Vector>>, ArrayList<Matrix>> pair =
             this.computeSequenceParameters();
         ArrayList<ArrayList<Vector>> allGammas = pair.getFirst();
         ArrayList<Matrix> sequenceTransitionMatrices = pair.getSecond();
-        ArrayList<Vector> firstGammas = new ArrayList<Vector>( numSequences );
+        ArrayList<Vector> firstGammas  = (updatePi)
+            ? new ArrayList<Vector>( numSequences ) : null;
 
         int index = 0;
         for( int i = 0; i < numSequences; i++ )
         {
             ArrayList<Vector> gammas = allGammas.get(i);
-            firstGammas.add( gammas.get(0) );
+            if( updatePi )
+            {
+                firstGammas.add( gammas.get(0) );
+            }
             final int Ni = gammas.size();
             for( int n = 0; n < Ni; n++ )
             {
@@ -196,19 +205,36 @@ public class BaumWelchAlgorithm<ObservationType>
             this.updateProbabilityFunctions(this.sequenceGammas);
 
         // See how well we're doing...
-        HiddenMarkovModel<ObservationType> candidate = this.result.clone();
-        candidate.emissionFunctions = fs;
-        candidate.initialProbability = pi;
-        candidate.transitionProbability = A;
-        double logLikelihood = this.updateSequenceLogLikelihoods( candidate );
-
-        boolean gettingBetter = (logLikelihood > this.lastLogLikelihood) ||
-            (this.getIteration() <= 1);
-
-        if( gettingBetter )
+        boolean gettingBetter;
+        
+        // If somebody asks for a single iteration, then just assume they want
+        // the re-estimated parameter
+        if( this.getMaxIterations() <= 1 )
         {
-            this.result = candidate;
-            this.lastLogLikelihood = logLikelihood;
+            this.result.emissionFunctions = fs;
+            this.result.initialProbability = pi;
+            this.result.transitionProbability = A;
+            gettingBetter = true;
+        }
+
+        // If somebody wants multiple steps, then check and see if our
+        // current candidate is actually better.  This can happen due to
+        // numerical round-off or asymptotic behavior.
+        else
+        {
+            HiddenMarkovModel<ObservationType> candidate = this.result.clone();
+            candidate.emissionFunctions = fs;
+            candidate.initialProbability = pi;
+            candidate.transitionProbability = A;
+            double logLikelihood = this.updateSequenceLogLikelihoods( candidate );
+
+            gettingBetter = (logLikelihood > this.lastLogLikelihood) ||
+                (this.getIteration() <= 1);
+            if( gettingBetter )
+            {
+                this.result = candidate;
+                this.lastLogLikelihood = logLikelihood;
+            }
         }
 
 //        System.out.println( this.getIteration() + ": " + logLikelihood  );
@@ -369,5 +395,102 @@ public class BaumWelchAlgorithm<ObservationType>
         }
         return totalLogLikelihood;
     }
+
+//
+//    public static final int DEFAULT_NUM_STATES = 3;
+//    public static final int DEFAULT_OBSERVATION_DIM = 1;
+//    public static final Random RANDOM = new Random(1);
+//    /**
+//     * Creates static CDHMM
+//     * @return
+//     * CDHMM
+//     */
+//    public static HiddenMarkovModel<Vector> createHMMInstance()
+//    {
+//        int k = DEFAULT_NUM_STATES;
+//        int dim = DEFAULT_OBSERVATION_DIM;
+//
+//        ArrayList<MultivariateGaussian.PDF> pdfs =
+//            new ArrayList<MultivariateGaussian.PDF>( k );
+//
+//        Matrix C = MatrixFactory.getDefault().createIdentity(dim, dim).scale(
+//            0.1);
+//        for( int i = 0; i < k; i++ )
+//        {
+//            pdfs.add( new MultivariateGaussian.PDF(
+//                VectorFactory.getDefault().createVector( dim, i ), C.clone() ) );
+//        }
+//
+//        Matrix A = MatrixFactory.getDefault().createMatrix(k, k);
+//        A.setElement(0, 0, 0.5);
+//        A.setElement(1, 0, 0.2 );
+//        A.setElement(2, 0, 0.3 );
+//
+//        A.setElement(0, 1, 0.3 );
+//        A.setElement(1, 1, 0.5 );
+//        A.setElement(2, 1, 0.2 );
+//
+//        A.setElement(0, 2, 0.3 );
+//        A.setElement(1, 2, 0.2 );
+//        A.setElement(2, 2, 0.5 );
+//
+//        Vector pi = VectorFactory.getDefault().copyValues( 0.5, 0.25, 0.25 );
+//
+//        return new HiddenMarkovModel<Vector>( pi, A, pdfs );
+//
+//    }
+//
+//    /**
+//     * Creates an instance
+//     * @return
+//     * instance
+//     */
+//    public static BaumWelchAlgorithm<Vector> createInstance()
+//    {
+//        HiddenMarkovModel<Vector> hmm = new HiddenMarkovModel<Vector>(
+//                DEFAULT_NUM_STATES );
+//        final int dim = DEFAULT_OBSERVATION_DIM;
+//        ArrayList<MultivariateGaussian.PDF> pdfs =
+//            new ArrayList<MultivariateGaussian.PDF>( hmm.getNumStates() );
+//        for( int i = 0; i < hmm.getNumStates(); i++ )
+//        {
+//            Vector mean = VectorFactory.getDefault().createVector( dim, i );
+//            Matrix cov = MatrixFactory.getDefault().createIdentity( dim, dim );
+//            pdfs.add( new MultivariateGaussian.PDF( mean, cov ) );
+//        }
+//        hmm.setEmissionFunctions(pdfs);
+//
+//        return new BaumWelchAlgorithm<Vector>( hmm,
+//            new MultivariateGaussian.WeightedMaximumLikelihoodEstimator(),
+//            true );
+//    }
+//
+//    public static void main(
+//        String[] args )
+//    {
+//
+//
+//        HiddenMarkovModel<Vector> target = createHMMInstance();
+//        ArrayList<Vector> observations = target.sample(RANDOM, 100);
+//
+//        System.out.println( "TARGET: " + target );
+//
+//        double l1 = target.computeObservationLogLikelihood(observations);
+//        System.out.println( "TARGET Log Likelihood: " + l1 );
+//
+//        for( int n = 0; n < 100; n++ )
+//        {
+//            BaumWelchAlgorithm<Vector> learner = createInstance();
+//            double l0 = learner.getInitialGuess().computeObservationLogLikelihood(
+//                observations);
+//            System.out.println( "INITIAL Log Likelihood: " + l0 );
+//            learner.setMaxIterations(1);
+//            HiddenMarkovModel<Vector> result = learner.learn(observations);
+//            System.out.println( "Result: " + learner.getIteration() + ": " + result );
+//            double l2 = result.computeObservationLogLikelihood(observations);
+//            System.out.println( "Result Log Likelihood: " +  l2 );
+//        }
+//
+//    }
 
 }

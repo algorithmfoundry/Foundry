@@ -116,13 +116,13 @@ public class ScalarFunctionToBinaryCategorizerAdapterTest
 
 
     /**
-     * Test of evaluateAsDouble method, of class ScalarFunctionToBinaryCategorizerAdapter.
+     * Test of evaluateWithoutThreshold method, of class ScalarFunctionToBinaryCategorizerAdapter.
      */
-    public void testEvaluateAsDouble()
+    public void testEvaluateWithoutThreshold()
     {
-        System.out.println("evaluateAsDouble");
+        System.out.println("evaluateWithoutThreshold");
         ScalarFunctionToBinaryCategorizerAdapter<String> instance = this.createInstance();
-        assertEquals( 5.0, instance.evaluateAsDouble("Kevin") );
+        assertEquals( 5.0, instance.evaluateWithoutThreshold("Kevin") );
     }
 
     /**

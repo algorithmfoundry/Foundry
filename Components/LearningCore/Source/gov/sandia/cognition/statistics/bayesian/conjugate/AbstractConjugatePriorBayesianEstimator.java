@@ -14,7 +14,7 @@
 
 package gov.sandia.cognition.statistics.bayesian.conjugate;
 
-import gov.sandia.cognition.learning.algorithm.AbstractBatchAndOnlineLearner;
+import gov.sandia.cognition.learning.algorithm.AbstractBatchAndIncrementalLearner;
 import gov.sandia.cognition.statistics.ClosedFormDistribution;
 import gov.sandia.cognition.statistics.bayesian.BayesianParameter;
 import gov.sandia.cognition.util.ObjectUtil;
@@ -37,7 +37,7 @@ import gov.sandia.cognition.util.ObjectUtil;
  * @since 3.0
  */
 public abstract class AbstractConjugatePriorBayesianEstimator<ObservationType,ParameterType,ConditionalType extends ClosedFormDistribution<ObservationType>,BeliefType extends ClosedFormDistribution<ParameterType>>
-    extends AbstractBatchAndOnlineLearner<ObservationType,BeliefType>
+    extends AbstractBatchAndIncrementalLearner<ObservationType,BeliefType>
     implements ConjugatePriorBayesianEstimator<ObservationType,ParameterType,ConditionalType,BeliefType>
 {
 

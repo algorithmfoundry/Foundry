@@ -236,15 +236,24 @@ public class HiddenMarkovModel<ObservationType>
         Collection<? extends ObservationType> observations )
     {
 
-        ArrayList<Vector> b = this.computeObservationLikelihoods(observations);
-        final boolean normalize = true;
-        ArrayList<WeightedValue<Vector>> alphas =
-            this.computeForwardProbabilities(b, normalize);
-
+        final int k = this.getNumStates();
+        Vector b = VectorFactory.getDefault().createVector(k);
+        Vector alpha = this.getInitialProbability().clone();
+        Matrix A = this.getTransitionProbability();
+        int index = 0;
         double logLikelihood = 0.0;
-        for( WeightedValue<Vector> alpha : alphas )
+        for( ObservationType observation : observations )
         {
-            logLikelihood -= Math.log( alpha.getWeight() );
+            if( index > 0 )
+            {
+                alpha = A.times( alpha );
+            }
+            this.computeObservationLikelihoods(observation, b);
+            alpha.dotTimesEquals(b);
+            final double weight = alpha.norm1();
+            alpha.scaleEquals(1.0/weight);
+            logLikelihood += Math.log(weight);
+            index++;
         }
 
         return logLikelihood;
@@ -435,8 +444,8 @@ public class HiddenMarkovModel<ObservationType>
         Vector b,
         boolean normalize )
     {
-        Vector alphaNext =
-            b.dotTimes( this.getTransitionProbability().times( alpha ) );
+        Vector alphaNext = this.getTransitionProbability().times( alpha );
+        alphaNext.dotTimesEquals(b);
 
         double weight;
         if( normalize )
@@ -506,18 +515,30 @@ public class HiddenMarkovModel<ObservationType>
     public Vector computeObservationLikelihoods(
         ObservationType observation )
     {
-
         final int k = this.getEmissionFunctions().size();
-        double[] b = new double[k];
+        Vector b = VectorFactory.getDefault().createVector(k);
+        this.computeObservationLikelihoods(observation, b);
+        return b;
+    }
+
+    /**
+     * Computes the conditionally independent likelihoods
+     * for each state given the observation.
+     * @param observation
+     * Observation to consider
+     * @param b
+     * Likelihood of each state generating the given observation.
+     */
+    public void computeObservationLikelihoods(
+        ObservationType observation,
+        Vector b )
+    {
         int i = 0;
         for( ProbabilityFunction<ObservationType> f : this.getEmissionFunctions() )
         {
-            b[i] = f.evaluate(observation);
+            b.setElement(i, f.evaluate(observation) );
             i++;
         }
-
-        return VectorFactory.getDefault().copyArray(b);
-
     }
 
     /**

@@ -17,6 +17,7 @@ package gov.sandia.cognition.learning.performance;
 
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.evaluator.Evaluator;
+import gov.sandia.cognition.learning.data.DefaultTargetEstimatePair;
 import gov.sandia.cognition.learning.data.TargetEstimatePair;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.Summarizer;
@@ -73,8 +74,7 @@ public abstract class AbstractSupervisedPerformanceEvaluator<InputType, TargetTy
             final InputType input = example.getInput();
             final TargetType target = example.getOutput();
             final EstimateType estimate = evaluator.evaluate( input );
-            pairs.add( new TargetEstimatePair<TargetType, EstimateType>(
-                target, estimate ) );
+            pairs.add(DefaultTargetEstimatePair.create(target, estimate));
         }
 
         // Evaluate the performance of the pairs.

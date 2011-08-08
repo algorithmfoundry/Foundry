@@ -22,6 +22,7 @@ import gov.sandia.cognition.learning.function.categorization.VectorElementThresh
 import gov.sandia.cognition.math.Permutation;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.math.matrix.VectorFactoryContainer;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.util.AbstractRandomized;
 import java.util.ArrayList;
@@ -44,7 +45,8 @@ import java.util.Random;
 // -- jdbasil (2009-12-23)
 public class RandomSubVectorThresholdLearner<OutputType>
     extends AbstractRandomized
-    implements DeciderLearner<Vectorizable, OutputType, Boolean, Categorizer<? super Vectorizable, ? extends Boolean>>
+    implements DeciderLearner<Vectorizable, OutputType, Boolean, Categorizer<? super Vectorizable, ? extends Boolean>>,
+        VectorFactoryContainer
 {
 
     /** The default percent to sample is {@value}. */
@@ -136,6 +138,17 @@ public class RandomSubVectorThresholdLearner<OutputType>
         // Create a permutation of the indices of the dimensionality.
         final int[] permutation = Permutation.createPermutation(
             dimensionality, this.random);
+
+        if (this.subLearner instanceof VectorThresholdMaximumGainLearner)
+        {
+            // In this case we can avoid copying the data by giving the learner
+            // the indices to learn using.
+            final int[] subDimensions = new int[subDimensionality];
+            System.arraycopy(permutation, 0, subDimensions, 0, subDimensionality);
+            ((VectorThresholdMaximumGainLearner<OutputType>) this.subLearner).setDimensionsToConsider(
+                subDimensions);
+            return this.subLearner.learn(data);
+        }
 
         // Build up the dataset for the subspace.
         final ArrayList<InputOutputPair<Vector, OutputType>> subData =

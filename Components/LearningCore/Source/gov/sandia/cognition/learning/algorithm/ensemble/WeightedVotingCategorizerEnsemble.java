@@ -15,7 +15,10 @@
 package gov.sandia.cognition.learning.algorithm.ensemble;
 
 import gov.sandia.cognition.evaluator.Evaluator;
+import gov.sandia.cognition.learning.data.ValueDiscriminantPair;
+import gov.sandia.cognition.learning.data.DefaultWeightedValueDiscriminant;
 import gov.sandia.cognition.learning.function.categorization.AbstractCategorizer;
+import gov.sandia.cognition.learning.function.categorization.DiscriminantCategorizer;
 import gov.sandia.cognition.statistics.distribution.MapBasedPointMassDistribution;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.WeightedValue;
@@ -44,7 +47,8 @@ import java.util.Set;
  */
 public class WeightedVotingCategorizerEnsemble<InputType, CategoryType, MemberType extends Evaluator<? super InputType, ? extends CategoryType>>
     extends AbstractCategorizer<InputType, CategoryType>
-    implements Ensemble<WeightedValue<MemberType>>
+    implements Ensemble<WeightedValue<MemberType>>,
+        DiscriminantCategorizer<InputType, CategoryType, Double>
 {
 
     /** The default weight when adding a member is {@value}. */
@@ -158,7 +162,8 @@ public class WeightedVotingCategorizerEnsemble<InputType, CategoryType, MemberTy
      * @param  input The input to evaluate.
      * @return The ensemble evaluated on the given input.
      */
-    public WeightedValue<CategoryType> evaluateAsWeightedValue(
+    @Override
+    public DefaultWeightedValueDiscriminant<CategoryType> evaluateWithDiscriminant(
         final InputType input)
     {
         // Get the votes for the input.
@@ -178,7 +183,7 @@ public class WeightedVotingCategorizerEnsemble<InputType, CategoryType, MemberTy
             final double bestVotePercentage = votes.getFraction(bestCategory);
 
             // Return the result.
-            return new DefaultWeightedValue<CategoryType>(
+            return DefaultWeightedValueDiscriminant.create(
                 bestCategory, bestVotePercentage);
         }
     }

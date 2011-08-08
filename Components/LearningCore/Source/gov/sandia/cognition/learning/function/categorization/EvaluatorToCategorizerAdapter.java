@@ -15,6 +15,7 @@
 package gov.sandia.cognition.learning.function.categorization;
 
 import gov.sandia.cognition.evaluator.Evaluator;
+import gov.sandia.cognition.learning.algorithm.AbstractBatchLearnerContainer;
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
 import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.InputOutputPair;
@@ -107,12 +108,9 @@ public class EvaluatorToCategorizerAdapter<InputType, CategoryType>
      * @param <CategoryType> The type of the output categories.
      */
     public static class Learner<InputType, CategoryType>
-        extends AbstractCloneableSerializable
+        extends AbstractBatchLearnerContainer<BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, CategoryType>>, ? extends Evaluator<? super InputType, ? extends CategoryType>>>
         implements SupervisedBatchLearner<InputType,CategoryType,EvaluatorToCategorizerAdapter<InputType, CategoryType>>
     {
-        /** The learner to adapt the output of to be a categorizer. */
-        protected BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, CategoryType>>, ? extends Evaluator<? super InputType, ? extends CategoryType>> learner;
-
         /**
          * Creates a new {@code EvaluatorToCategorizerAdapter}.
          */
@@ -136,12 +134,9 @@ public class EvaluatorToCategorizerAdapter<InputType, CategoryType>
 
         @Override
         @SuppressWarnings("unchecked")
-        public Learner clone()
+        public Learner<InputType,CategoryType> clone()
         {
-            final Learner<InputType,CategoryType> result =
-                (Learner<InputType,CategoryType>) super.clone();
-            result.learner = ObjectUtil.cloneSafe(this.learner);
-            return result;
+            return (Learner<InputType,CategoryType>) super.clone();
         }
         
         @SuppressWarnings("unchecked")

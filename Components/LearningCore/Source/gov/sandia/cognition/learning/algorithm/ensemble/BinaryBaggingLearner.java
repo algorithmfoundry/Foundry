@@ -18,6 +18,7 @@ import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.algorithm.AbstractAnytimeBatchLearner;
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
+import gov.sandia.cognition.learning.algorithm.BatchLearnerContainer;
 import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.util.Randomized;
@@ -51,7 +52,8 @@ public class BinaryBaggingLearner<InputType>
     extends AbstractAnytimeBatchLearner
         <Collection<? extends InputOutputPair<? extends InputType,Boolean>>, 
             WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>>>
-    implements Randomized
+    implements Randomized,
+        BatchLearnerContainer<BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>>>
 {
 
     /** The default maximum number of iterations is {@value}. */

@@ -72,7 +72,7 @@ public class MannWhitneyUConfidence
 
     /**
      * Performs a U-test on the score-class pairs.  The first element in the
-     * DefaultPair is a score, the second is a flag to determine which group the score
+     * pair is a score, the second is a flag to determine which group the score
      * belongs to.  For example {<true,1.0>, <false,0.9> means that data1=1.0
      * and data2=0.9 and so forth.  This is useful for computing that 
      * classified data partitions data better than chance.

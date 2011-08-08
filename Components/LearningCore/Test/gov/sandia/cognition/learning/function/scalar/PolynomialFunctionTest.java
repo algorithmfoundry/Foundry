@@ -34,7 +34,7 @@ public class PolynomialFunctionTest extends TestCase
 {
 
     /** The random number generator for the tests. */
-    protected Random random = new Random();
+    protected Random random = new Random(1234567);
     
     /**
      * 

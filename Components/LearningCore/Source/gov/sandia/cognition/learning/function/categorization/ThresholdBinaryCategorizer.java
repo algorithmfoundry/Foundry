@@ -1,94 +1,47 @@
 /*
- * File:                BinaryClassificationFunction.java
- * Authors:             Kevin R. Dixon
+ * File:                ThresholdBinaryCategorizer.java
+ * Authors:             Justin Basilico
  * Company:             Sandia National Laboratories
- * Project:             Cognitive Foundry
- *
- * Copyright July 17, 2007, Sandia Corporation.  Under the terms of Contract
- * DE-AC04-94AL85000, there is a non-exclusive license for use of this work by
- * or on behalf of the U.S. Government. Export of this program may require a
- * license from the United States Government. See CopyrightHistory.txt for
- * complete details.
- *
+ * Project:             Cognitive Foundry Learning Core
+ * 
+ * Copyright February 03, 2011, Sandia Corporation.
+ * Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive 
+ * license for use of this work by or on behalf of the U.S. Government. Export 
+ * of this program may require a license from the United States Government. 
  */
 
 package gov.sandia.cognition.learning.function.categorization;
 
-import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.math.matrix.Vectorizable;
-
 /**
- * The {@code ThresholdBinaryCategorizer} class implements a binary categorizer
- * that uses a threshold to categorize a given double.
- *
- * @author Kevin R. Dixon
- * @since  2.0
+ * Interface for a binary categorizer that uses a threshold to determine the
+ * categorization.
+ * 
+ * @param <InputType>
+ *      The type of the input to categorize.
+ * @author  Justin Basilico
+ * @since   3.1
  */
-public class ThresholdBinaryCategorizer
-    extends AbstractThresholdBinaryCategorizer<Double>
-    implements Vectorizable
+public interface ThresholdBinaryCategorizer<InputType>
+    extends DiscriminantBinaryCategorizer<InputType>
 {
     
     /**
-     * Creates a new instance of ThresholdBinaryCategorizer.
-     */
-    public ThresholdBinaryCategorizer()
-    {
-        this(DEFAULT_THRESHOLD);
-    }
-    
-    /**
-     * Creates a new instance of ThresholdBinaryCategorizer.
+     * Gets the threshold between the two categories used in binary
+     * categorization.
      *
-     * @param threshold 
-     * Threshold below which to consider "false" and greater than or equal to
-     * consider "true".
+     * @return
+     *      The threshold.
      */
-    public ThresholdBinaryCategorizer(
-        final double threshold)
-    {
-        super(threshold);
-    }
+    public double getThreshold();
 
     /**
-     * Copy constructor.
+     * Sets the threshold between the two categories used in binary
+     * categorization.
      *
-     * @param other BinaryClassicationFunction to clone
+     * @param   threshold
+     *      The threshold.
      */
-    public ThresholdBinaryCategorizer(
-        final ThresholdBinaryCategorizer other)
-    {
-        this(other.getThreshold());
-    }
+    public void setThreshold(
+        final double threshold);
     
-    @Override
-    public ThresholdBinaryCategorizer clone()
-    {
-        return (ThresholdBinaryCategorizer) super.clone();
-    }
-    
-    public Vector convertToVector()
-    {
-        return VectorFactory.getDefault().copyValues(this.getThreshold());
-    }
-
-    public void convertFromVector(
-        final Vector parameters)
-    {
-        if( parameters.getDimensionality() != 1 )
-        {
-            throw new IllegalArgumentException(
-                "Parameter size must be 1!" );
-        }
-        this.setThreshold(parameters.getElement(0));
-    }
-
-    @Override
-    protected double evaluateAsDouble(
-        Double input)
-    {
-        return input;
-    }
-
 }

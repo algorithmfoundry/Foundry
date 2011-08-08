@@ -14,11 +14,13 @@
 
 package gov.sandia.cognition.util;
 
+import gov.sandia.cognition.io.ObjectSerializationHandler;
 import gov.sandia.cognition.math.Ring;
 import gov.sandia.cognition.math.matrix.AbstractVector;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.mtj.DenseVector;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
@@ -356,7 +358,24 @@ public class ObjectUtilTest
         System.out.println( "Iterable: " + ObjectUtil.toString(list) );
     }
 
+    /**
+     * getBytes
+     */
+    public void testGetBytes()
+        throws Exception
+    {
+        System.out.println( "getBytes" );
 
+        String s1 = "The quick brown fox jumps over the lazy dog.";
+        byte[] b = ObjectUtil.getBytes(s1);
+        String s2 = (String) ObjectSerializationHandler.convertFromBytes(b);
+        assertEquals( s1, s2 );
+
+        Object o = new Object();
+        byte[] b2 = ObjectUtil.getBytes(o);
+        assertNull( b2 );
+
+    }
 
     /**
      * Internal class for testing the getShortClassName() method

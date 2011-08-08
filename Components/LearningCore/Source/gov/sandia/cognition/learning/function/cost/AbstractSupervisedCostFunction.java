@@ -16,6 +16,7 @@ package gov.sandia.cognition.learning.function.cost;
 
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.data.DatasetUtil;
+import gov.sandia.cognition.learning.data.DefaultWeightedTargetEstimatePair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.data.TargetEstimatePair;
 import gov.sandia.cognition.learning.data.WeightedTargetEstimatePair;
@@ -83,9 +84,9 @@ public abstract class AbstractSupervisedCostFunction<InputType, TargetType>
 
         for (InputOutputPair<? extends InputType, ? extends TargetType> io : this.getCostParameters())
         {
-            TargetType estimate = evaluator.evaluate( io.getInput() );
-            targetEstimatePairs.add( new WeightedTargetEstimatePair<TargetType, TargetType>(
-                io.getOutput(), estimate, DatasetUtil.getWeight(io) ) );
+            TargetType estimate = evaluator.evaluate(io.getInput());
+            targetEstimatePairs.add(DefaultWeightedTargetEstimatePair.create(
+                io.getOutput(), estimate, DatasetUtil.getWeight(io)));
         }
 
         return this.evaluatePerformance( targetEstimatePairs );

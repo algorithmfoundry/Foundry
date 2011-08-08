@@ -14,7 +14,7 @@
 
 package gov.sandia.cognition.statistics.bayesian;
 
-import gov.sandia.cognition.learning.algorithm.AbstractBatchAndOnlineLearner;
+import gov.sandia.cognition.learning.algorithm.AbstractBatchAndIncrementalLearner;
 import gov.sandia.cognition.statistics.PointMassDistribution;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.Random;
@@ -29,7 +29,7 @@ import java.util.Random;
  * Type of parameters to infer.
  */
 public abstract class AbstractParticleFilter<ObservationType,ParameterType>
-    extends AbstractBatchAndOnlineLearner<ObservationType,PointMassDistribution<ParameterType>>
+    extends AbstractBatchAndIncrementalLearner<ObservationType,PointMassDistribution<ParameterType>>
     implements ParticleFilter<ObservationType,ParameterType>
 {
 

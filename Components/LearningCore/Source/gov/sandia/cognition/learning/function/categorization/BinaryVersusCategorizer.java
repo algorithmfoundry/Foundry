@@ -16,11 +16,12 @@ package gov.sandia.cognition.learning.function.categorization;
 
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.evaluator.Evaluator;
-import gov.sandia.cognition.learning.algorithm.AbstractBatchLearnerWrapper;
+import gov.sandia.cognition.learning.algorithm.AbstractBatchLearnerContainer;
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
 import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
+import gov.sandia.cognition.learning.data.DefaultWeightedValueDiscriminant;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
 import gov.sandia.cognition.util.DefaultPair;
@@ -45,7 +46,7 @@ import java.util.Set;
  * @since   3.0
  */
 public class BinaryVersusCategorizer<InputType, CategoryType>
-    extends AbstractCategorizer<InputType, CategoryType>
+    extends AbstractDiscriminantCategorizer<InputType, CategoryType, Double>
 {
 
     /** Maps false-true category pairs . */
@@ -113,9 +114,7 @@ public class BinaryVersusCategorizer<InputType, CategoryType>
         return result;
     }
 
-
-
-    public CategoryType evaluate(
+    public DefaultWeightedValueDiscriminant<CategoryType> evaluateWithDiscriminant(
         final InputType input)
     {
         final int categoryCount = this.categories.size();
@@ -128,7 +127,8 @@ public class BinaryVersusCategorizer<InputType, CategoryType>
         else if (categoryCount == 1)
         {
             // There is only one category.
-            return CollectionUtil.getFirst(this.categories);
+            return DefaultWeightedValueDiscriminant.create(
+                CollectionUtil.getFirst(this.categories), 1.0);
         }
 
         // We are going to count the number of votes for each category.
@@ -160,7 +160,10 @@ public class BinaryVersusCategorizer<InputType, CategoryType>
         }
 
         // The one with the most votes is the category we use.
-        return results.getMaximumValue();
+        final CategoryType bestCategory = results.getMaximumValue();
+        final double bestFraction = results.getFraction(bestCategory);
+        return DefaultWeightedValueDiscriminant.create(
+            bestCategory, bestFraction);
     }
 
     /**
@@ -198,7 +201,7 @@ public class BinaryVersusCategorizer<InputType, CategoryType>
      *      The type of categories to learn from.
      */
     public static class Learner<InputType, CategoryType>
-        extends AbstractBatchLearnerWrapper<Collection<? extends InputOutputPair<? extends InputType, Boolean>>, Evaluator<? super InputType, Boolean>, BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, Boolean>>>
+        extends AbstractBatchLearnerContainer<BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, Boolean>>>
         implements SupervisedBatchLearner<InputType, CategoryType, BinaryVersusCategorizer<InputType, CategoryType>>
     {
 

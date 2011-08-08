@@ -43,7 +43,8 @@ public abstract class AbstractInputOutputPair<InputType, OutputType>
     @Override
     public String toString()
     {
-        return "Input: " + this.getInput() + ", Output: " + this.getOutput();
+        return "(input=" + this.getInput()
+            + ", output=" + this.getOutput() + ")";
     }
 
     /**

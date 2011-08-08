@@ -17,10 +17,10 @@ package gov.sandia.cognition.learning.function.cost;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.DefaultWeightedInputOutputPair;
+import gov.sandia.cognition.learning.data.DefaultWeightedTargetEstimatePair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.data.TargetEstimatePair;
 import gov.sandia.cognition.learning.data.WeightedInputOutputPair;
-import gov.sandia.cognition.learning.data.WeightedTargetEstimatePair;
 import gov.sandia.cognition.learning.function.vector.MatrixMultiplyVectorFunction;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
@@ -144,7 +144,7 @@ public abstract class SupervisedCostFunctionTestHarness<InputType,TargetType>
         for( InputOutputPair<? extends InputType,TargetType> pair : data )
         {
             TargetType estimate = f.evaluate( pair.getInput() );
-            tedata.add( new WeightedTargetEstimatePair<TargetType,TargetType>(
+            tedata.add(DefaultWeightedTargetEstimatePair.create(
                 pair.getOutput(), estimate, DatasetUtil.getWeight(pair) ) );
         }
 

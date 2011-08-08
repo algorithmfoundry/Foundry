@@ -18,8 +18,10 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationReferences;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
+import gov.sandia.cognition.learning.data.DefaultWeightedValueDiscriminant;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.learning.function.categorization.Categorizer;
+import gov.sandia.cognition.learning.data.ValueDiscriminantPair;
+import gov.sandia.cognition.learning.function.categorization.DiscriminantCategorizer;
 import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
@@ -83,7 +85,7 @@ import java.util.Set;
 )
 public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
     extends AbstractCloneableSerializable
-    implements Categorizer<Collection<InputType>,CategoryType>
+    implements DiscriminantCategorizer<Collection<InputType>,CategoryType,Double>
 {
 
 
@@ -370,27 +372,31 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
     public CategoryType evaluate(
         Collection<InputType> inputs )
     {
+        return this.evaluateWithDiscriminant(inputs).getValue();
+    }
 
+    @Override
+    public DefaultWeightedValueDiscriminant<CategoryType> evaluateWithDiscriminant(
+        final Collection<InputType> input)
+    {
         // compute the product of the class conditionals
         double maxPosterior = -1.0;
         CategoryType maxCategory = null;
-        for( CategoryType category : this.getCategories() )
+        for (CategoryType category : this.getCategories())
         {
             // Actually, this is only proportionate to the posterior
             // We would need to divide by the unconditional probability
             // of the inputs to compute the accordinng-to-Hoyle posterior.
             double posterior =
-                this.computeConjuctiveProbability(inputs, category);
-            if( maxPosterior < posterior )
+                this.computeConjuctiveProbability(input, category);
+            if (maxPosterior < posterior)
             {
                 maxPosterior = posterior;
                 maxCategory = category;
             }
-
         }
 
-        return maxCategory;
-        
+        return DefaultWeightedValueDiscriminant.create(maxCategory, maxPosterior);
     }
 
     /**

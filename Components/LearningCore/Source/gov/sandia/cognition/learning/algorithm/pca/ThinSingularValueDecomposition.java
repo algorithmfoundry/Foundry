@@ -59,9 +59,9 @@ public class ThinSingularValueDecomposition
      * Number of components to extract from the data, must be greater than zero
      */
     public ThinSingularValueDecomposition(
-        int numComponents )
+        final int numComponents)
     {
-        this( numComponents, null );
+        this(numComponents, null);
     }
 
     /**
@@ -75,10 +75,10 @@ public class ThinSingularValueDecomposition
      * "U" matrix of the Singular Value Decomposition.
      */
     public ThinSingularValueDecomposition(
-        int numComponents,
-        PrincipalComponentsAnalysisFunction learned )
+        final int numComponents,
+        final PrincipalComponentsAnalysisFunction learned)
     {
-        super( numComponents, learned );
+        super(numComponents, learned);
     }
 
     /**
@@ -94,11 +94,11 @@ public class ThinSingularValueDecomposition
      * "U" matrix of the Singular Value Decomposition.
      */
     public PrincipalComponentsAnalysisFunction learn(
-        Collection<Vector> data )
+        final Collection<Vector> data)
     {
         PrincipalComponentsAnalysisFunction pca =
-            ThinSingularValueDecomposition.learn( data, this.getNumComponents() );
-        this.setResult( pca );
+            ThinSingularValueDecomposition.learn(data, this.getNumComponents());
+        this.setResult(pca);
         return pca;
     }
 
@@ -117,32 +117,31 @@ public class ThinSingularValueDecomposition
      * "U" matrix of the Singular Value Decomposition.
      */
     public static PrincipalComponentsAnalysisFunction learn(
-        Collection<Vector> data,
-        int numComponents )
+        final Collection<Vector> data,
+        final int numComponents)
     {
 
-        Vector mean = MultivariateStatisticsUtil.computeMean( data );
-        ArrayList<Vector> dataArray = new ArrayList<Vector>( data.size() );
+        final Vector mean = MultivariateStatisticsUtil.computeMean(data);
+        final ArrayList<Vector> dataArray = new ArrayList<Vector>(data.size());
         for (Vector x : data)
         {
-            x.minusEquals( mean );
-            dataArray.add( x );
+            dataArray.add(x.minus(mean));
         }
 
-        Matrix XXt = DatasetUtil.computeOuterProductDataMatrix( dataArray );
+        Matrix XXt = DatasetUtil.computeOuterProductDataMatrix(dataArray);
 
         ArrayList<Vector> components =
-            EigenvectorPowerIteration.estimateEigenvectors( XXt, numComponents );
+            EigenvectorPowerIteration.estimateEigenvectors(XXt, numComponents);
 
         Matrix V = MatrixFactory.getDefault().createMatrix(
-            components.size(), mean.getDimensionality() );
+            components.size(), mean.getDimensionality());
         for (int i = 0; i < components.size(); i++)
         {
-            V.setRow( i, components.get( i ) );
+            V.setRow(i, components.get(i));
         }
 
         return new PrincipalComponentsAnalysisFunction(
-            mean, new MatrixMultiplyVectorFunction( V ) );
+            mean, new MatrixMultiplyVectorFunction(V));
 
     }
 

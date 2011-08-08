@@ -479,7 +479,7 @@ public class CogxelVectorConverterTest
         CogxelVectorConverter instance = new CogxelVectorConverter();
         assertSame(instance.getVectorFactory(), VectorFactory.getDefault());
         
-        VectorFactory factory = new DenseVectorFactoryMTJ();
+        VectorFactory<?> factory = new DenseVectorFactoryMTJ();
         
         instance.setVectorFactory(factory);
         
@@ -494,7 +494,7 @@ public class CogxelVectorConverterTest
         CogxelVectorConverter instance = new CogxelVectorConverter();
         assertSame(instance.getVectorFactory(), VectorFactory.getDefault());
         
-        VectorFactory factory = new DenseVectorFactoryMTJ();
+        VectorFactory<?> factory = new DenseVectorFactoryMTJ();
         instance.setVectorFactory(factory);
         assertSame(instance.getVectorFactory(), factory);
         

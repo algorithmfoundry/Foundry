@@ -16,7 +16,7 @@ package gov.sandia.cognition.learning.function.vector;
 
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.math.matrix.VectorFactoryContainer;
+import gov.sandia.cognition.math.matrix.DefaultVectorFactoryContainer;
 import gov.sandia.cognition.math.matrix.VectorInputEvaluator;
 import gov.sandia.cognition.math.matrix.VectorOutputEvaluator;
 import gov.sandia.cognition.math.matrix.Vectorizable;
@@ -29,7 +29,7 @@ import gov.sandia.cognition.math.matrix.Vectorizable;
  * @since   3.0
  */
 public class SubVectorEvaluator
-    extends VectorFactoryContainer
+    extends DefaultVectorFactoryContainer
     implements VectorInputEvaluator<Vectorizable, Vector>,
         VectorOutputEvaluator<Vectorizable, Vector>
 {

@@ -479,4 +479,44 @@ public class CollectionUtil
         
     }
 
+    /**
+     * Performs a toString on each element given iterable with a given delimiter
+     * between elements.
+     *
+     * @param   list
+     *      The list to call toString on each element for.
+     * @param   delimiter
+     *      The delimiter.
+     * @return
+     *      A string with the toString on each element in the list called with
+     *      a given delimiter between elements. If null is given, then
+     *      "null" is returned. If an empty list is given, "" is returned.
+     */
+    public static String toStringDelimited(
+        final Iterable<?> list,
+        final String delimiter)
+    {
+        if (list == null)
+        {
+            return "null";
+        }
+
+        final StringBuffer result = new StringBuffer();
+        final Iterator<?> iterator = list.iterator();
+
+        if (iterator.hasNext())
+        {
+            result.append(iterator.next());
+        }
+
+        while (iterator.hasNext())
+        {
+            result.append(delimiter);
+            result.append(iterator.next());
+        }
+        
+        return result.toString();
+    }
+
+
 }

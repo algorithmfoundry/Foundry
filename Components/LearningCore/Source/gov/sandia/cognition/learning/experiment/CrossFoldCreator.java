@@ -49,7 +49,7 @@ public class CrossFoldCreator<DataType>
     protected int numFolds;
     
     /**
-     * Creates a new instance of KFoldCreator with a default number of folds
+     * Creates a new instance of CrossFoldCreator with a default number of folds
      * (10) and a default Random number generator.
      */
     public CrossFoldCreator()
@@ -58,7 +58,7 @@ public class CrossFoldCreator<DataType>
     }
     
     /**
-     * Creates a new KRandomFoldCreator.
+     * Creates a new CrossFoldCreator.
      *
      * @param  numFolds The number of folds to create.
      * @param  random The random number generator to use.
@@ -106,7 +106,7 @@ public class CrossFoldCreator<DataType>
         final Random random)
     {
         final int total = data.size();
-        if ( total  < 2 )
+        if (total  < 2)
         {
             throw new IllegalArgumentException(
                 "data must have at least 2 items");
@@ -183,7 +183,7 @@ public class CrossFoldCreator<DataType>
     protected static void checkNumFolds(
         final int numFolds)
     {
-        if ( numFolds <= 1 )
+        if (numFolds <= 1)
         {
             throw new IllegalArgumentException(
                 "numFolds must be greater than 1.");

@@ -79,6 +79,12 @@ public abstract class AbstractDataHistogram<DataType>
             this.add(value, other.getCount(value));
         }
     }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return this.getTotalCount() == 0;
+    }
     
     /**
      * Partial implementation of a PMF for AbstractDataHistogram
