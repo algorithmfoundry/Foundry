@@ -33,6 +33,7 @@ public class RegressionTreeNode<InputType, InteriorType>
 {
     /** The default value for the node is 0.0. */
     public static final double DEFAULT_VALUE = 0.0;
+
     
     /** The function to apply for leaf nodes. */
     protected Evaluator<? super InputType, Double> scalarFunction;
@@ -40,92 +41,98 @@ public class RegressionTreeNode<InputType, InteriorType>
     /** The value stored at the tree node. It is used as a backup value if
      *  no scalar function exists for the node but the output is requested. */
     protected double value;
+
     
     /**
      * Creates a new instance of RegressionTreeNode.
      */
     public RegressionTreeNode()
     {
-        this(DEFAULT_VALUE);
+        this(null, DEFAULT_VALUE);
     }
     
     /**
      * Creates a new instance of RegressionTreeNode.
      *
+     * @param   parent The parent node of this node. Null if this is a root.
      * @param   value The value stored at the node.
      */
     public RegressionTreeNode(
+        final DecisionTreeNode<InputType, Double> parent,
         final double value)
     {
-        this(null, null, value, null);
+        this(parent, null, null, value, null);
     }
 
     /**
      * Creates a new instance of RegressionTreeNode.
      *
+     * @param   parent The parent node of this node. Null if this is a root.
      * @param   decider The decision function for interior nodes.
      * @param   value The value stored at the node.
      */
     public RegressionTreeNode(
+        final DecisionTreeNode<InputType, Double> parent,
         final Categorizer<? super InputType, ? extends InteriorType> decider,
         final double value)
     {
-        this(decider, null, value, null);
+        this(parent, decider, null, value, null);
     }
     
     /**
      * Creates a new instance of RegressionTreeNode.
      *
+     * @param   parent The parent node of this node. Null if this is a root.
      * @param   scalarFunction The scalar function to apply at leaf nodes.
      * @param   value The value stored at the node.
      */
     public RegressionTreeNode(
+        final DecisionTreeNode<InputType, Double> parent,
         final Evaluator<? super InputType, Double> scalarFunction,
         final double value)
     {
-        this(scalarFunction, value, null);
+        this(parent, scalarFunction, value, null);
     }
     
     /**
      * Creates a new instance of RegressionTreeNode.
      *
+     * @param   parent The parent node of this node. Null if this is a root.
      * @param   scalarFunction The scalar function to apply at leaf nodes.
      * @param   value The value stored at the node.
      * @param   incomingValue The incoming value.
      */
     public RegressionTreeNode(
+        final DecisionTreeNode<InputType, Double> parent,
         final Evaluator<? super InputType, Double> scalarFunction,
         final double value,
         final Object incomingValue)
     {
-        this(null, scalarFunction, value, incomingValue);
+        this(parent, null, scalarFunction, value, incomingValue);
     }
     
     /**
      * Creates a new instance of RegressionTreeNode.
      *
+     * @param   parent The parent node of this node. Null if this is a root.
      * @param   decider The decision function for interior nodes.
      * @param   scalarFunction The scalar function to apply at leaf nodes.
      * @param   value The value stored at the node.
      * @param   incomingValue The incoming value.
      */
     public RegressionTreeNode(
+        final DecisionTreeNode<InputType, Double> parent,
         final Categorizer<? super InputType, ? extends InteriorType> decider,
         final Evaluator<? super InputType, Double> scalarFunction,
         final double value,
         final Object incomingValue)
     {
-        super(decider, incomingValue);
+        super(parent, decider, incomingValue);
         
         this.setScalarFunction(scalarFunction);
         this.setValue(value);
     }
     
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public RegressionTreeNode<InputType, InteriorType> 
@@ -135,12 +142,6 @@ public class RegressionTreeNode<InputType, InteriorType>
             super.clone();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param  input {@inheritDoc}
-     * @return {@inheritDoc}
-     */
     public Double getOutput(
         final InputType input)
     {

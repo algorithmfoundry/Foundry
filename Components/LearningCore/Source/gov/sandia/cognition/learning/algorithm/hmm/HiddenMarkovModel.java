@@ -503,7 +503,7 @@ public class HiddenMarkovModel<ObservationType>
      * @return
      * Likelihood of each state generating the given observation.
      */
-    protected Vector computeObservationLikelihoods(
+    public Vector computeObservationLikelihoods(
         ObservationType observation )
     {
 

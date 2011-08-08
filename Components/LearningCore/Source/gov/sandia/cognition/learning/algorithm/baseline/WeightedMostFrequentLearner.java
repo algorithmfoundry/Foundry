@@ -19,6 +19,7 @@ import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.ConstantEvaluator;
+import gov.sandia.cognition.statistics.distribution.MapBasedPointMassDistribution;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -67,8 +68,8 @@ public class WeightedMostFrequentLearner<OutputType>
         Collection<? extends InputOutputPair<? extends Object, OutputType>> data )
     {
         // We are going to sum up the weight associated with each output value.
-        final HashMap<OutputType, Double> weightSums = 
-            new HashMap<OutputType, Double>();
+        final MapBasedPointMassDistribution<OutputType> weightDistribution =
+            new MapBasedPointMassDistribution<OutputType>();
         
         // Go through all the examples and increment the weight sum for each
         // output value.
@@ -76,33 +77,19 @@ public class WeightedMostFrequentLearner<OutputType>
         {
             final double weight = DatasetUtil.getWeight(example);
             final OutputType output = example.getOutput();
-            
-            Double weightSum = weightSums.get(output);
-            if (weightSum == null)
-            {
-                weightSum = 0.0;
-            }
-            weightSum += weight;
-            weightSums.put(output, weightSum);
+            weightDistribution.add(output, weight);
         }
         
-        
         // Figure out the output with the highest weight.
-        OutputType bestOutput = null;
-        double bestWeightSum = Double.MIN_VALUE;
-        for (Map.Entry<OutputType, Double> entry : weightSums.entrySet())
+        final ConstantEvaluator<OutputType> result =
+            new ConstantEvaluator<OutputType>();
+        if (weightDistribution.getTotalMass() > 0.0)
         {
-            final double weightSum = entry.getValue();
-            
-            if (weightSum > bestWeightSum || bestOutput == null)
-            {
-                bestOutput = entry.getKey();
-                bestWeightSum = weightSum;
-            }
+            result.setValue(weightDistribution.getMaximumValue());
         }
         
         // Create the resulting evaluator.
-        return new ConstantEvaluator<OutputType>(bestOutput);
+        return result;
     }
     
 }

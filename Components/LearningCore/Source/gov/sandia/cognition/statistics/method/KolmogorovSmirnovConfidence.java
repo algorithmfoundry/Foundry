@@ -151,12 +151,12 @@ public class KolmogorovSmirnovConfidence
             double d1 = dataArray1[j1];
             double d2 = dataArray2[j2];
 
-            if (d1 <= d2)
+            if (d1 <= d2 || Double.isNaN(d1))
             {
                 j1++;
                 fn1 = j1 / N1;
             }
-            if (d2 <= d1)
+            if (d2 <= d1 || Double.isNaN(d2))
             {
                 j2++;
                 fn2 = j2 / N2;

@@ -321,9 +321,68 @@ instance.setDeciderLearner(new VectorThresholdHellingerDistanceLearner<String>()
 
     public void testSetLeafCountThreshold()
     {
+        int leafCountThreshold = CategorizationTreeLearner.DEFAULT_LEAF_COUNT_THRESHOLD;
         CategorizationTreeLearner<Vector3, String> instance =
             new CategorizationTreeLearner<Vector3, String>();
+        assertEquals(leafCountThreshold, instance.getLeafCountThreshold());
 
-        instance.getLeafCountThreshold();
+        leafCountThreshold = 1;
+        instance.setLeafCountThreshold(leafCountThreshold);
+        assertEquals(leafCountThreshold, instance.getLeafCountThreshold());
+
+        leafCountThreshold = 2;
+        instance.setLeafCountThreshold(leafCountThreshold);
+        assertEquals(leafCountThreshold, instance.getLeafCountThreshold());
+
+        leafCountThreshold = 0;
+        instance.setLeafCountThreshold(leafCountThreshold);
+        assertEquals(leafCountThreshold, instance.getLeafCountThreshold());
+
+        leafCountThreshold = 10;
+        instance.setLeafCountThreshold(leafCountThreshold);
+        assertEquals(leafCountThreshold, instance.getLeafCountThreshold());
+
+        boolean exceptionThrown = false;
+        try
+        {
+            instance.setLeafCountThreshold(-1);
+        }
+        catch (IllegalArgumentException e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+        assertEquals(leafCountThreshold, instance.getLeafCountThreshold());
+    }
+
+    public void testSetMaxDepth()
+    {
+        int maxDepth = CategorizationTreeLearner.DEFAULT_MAX_DEPTH;
+        CategorizationTreeLearner<Vector3, String> instance =
+            new CategorizationTreeLearner<Vector3, String>();
+        assertEquals(maxDepth, instance.getMaxDepth());
+
+        maxDepth = 1;
+        instance.setMaxDepth(maxDepth);
+        assertEquals(maxDepth, instance.getMaxDepth());
+
+        maxDepth = 2;
+        instance.setMaxDepth(maxDepth);
+        assertEquals(maxDepth, instance.getMaxDepth());
+
+        maxDepth = 10;
+        instance.setMaxDepth(maxDepth);
+        assertEquals(maxDepth, instance.getMaxDepth());
+
+        maxDepth = 0;
+        instance.setMaxDepth(maxDepth);
+        assertEquals(maxDepth, instance.getMaxDepth());
+
+        maxDepth = -1;
+        instance.setMaxDepth(maxDepth);
+        assertEquals(maxDepth, instance.getMaxDepth());
     }
 }

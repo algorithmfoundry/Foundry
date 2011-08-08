@@ -493,11 +493,11 @@ public class HiddenMarkovModelTest
 
         HiddenMarkovModel<String> hmm3 = new HiddenMarkovModel<String>();
         k = hmm3.getNumStates();
-        ArrayList<MapBasedDataHistogram<String>> sf =
-            new ArrayList<MapBasedDataHistogram<String>>( k );
+        ArrayList<MapBasedDataHistogram.PMF<String>> sf =
+            new ArrayList<MapBasedDataHistogram.PMF<String>>( k );
         for( int i = 0; i < k; i++ )
         {
-            MapBasedDataHistogram<String> f = new MapBasedDataHistogram<String>();
+            MapBasedDataHistogram.PMF<String> f = new MapBasedDataHistogram.PMF<String>();
             f.add( "a" );
             sf.add( f );
         }

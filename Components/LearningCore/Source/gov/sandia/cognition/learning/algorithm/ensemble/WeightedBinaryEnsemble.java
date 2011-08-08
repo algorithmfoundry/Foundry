@@ -29,6 +29,7 @@ import java.util.List;
  * sum of weights.
  *
  * @param  <InputType> The input type for the categorizer.
+ * @param  <MemberType> The type of the members of the ensemble.
  * @author Justin Basilico
  * @since  2.0
  */
@@ -36,23 +37,23 @@ import java.util.List;
     date = "2008-07-23",
     changesNeeded = false,
     comments = "Looks fine.")
-public class WeightedBinaryEnsemble<InputType>
+public class WeightedBinaryEnsemble<InputType, MemberType extends Evaluator<? super InputType, ? extends Boolean>>
     extends AbstractBinaryCategorizer<InputType>
-    implements Ensemble<WeightedValue<? extends Evaluator<? super InputType, ? extends Boolean>>>
+    implements Ensemble<WeightedValue<MemberType>>
 {
 
     /** The default weight when adding a member is {@value}. */
     public static final double DEFAULT_WEIGHT = 1.0;
 
     /** The members of the ensemble. */
-    protected List<WeightedValue<? extends Evaluator<? super InputType, ? extends Boolean>>> members;
+    protected List<WeightedValue<MemberType>> members;
 
     /**
      * Creates a new instance of WeightedBinaryEnsemble.
      */
     public WeightedBinaryEnsemble()
     {
-        this(new ArrayList<WeightedValue<? extends Evaluator<? super InputType, ? extends Boolean>>>());
+        this(new ArrayList<WeightedValue<MemberType>>());
     }
 
     /**
@@ -61,7 +62,7 @@ public class WeightedBinaryEnsemble<InputType>
      * @param  members The members of the ensemble.
      */
     public WeightedBinaryEnsemble(
-        final List<WeightedValue<? extends Evaluator<? super InputType, ? extends Boolean>>> members)
+        final List<WeightedValue<MemberType>> members)
     {
         super();
 
@@ -74,7 +75,7 @@ public class WeightedBinaryEnsemble<InputType>
      * @param  categorizer The categorizer to add.
      */
     public void add(
-        final Evaluator<? super InputType, Boolean> categorizer)
+        final MemberType categorizer)
     {
         this.add(categorizer, DEFAULT_WEIGHT);
     }
@@ -86,7 +87,7 @@ public class WeightedBinaryEnsemble<InputType>
      * @param weight The weight for the new member.
      */
     public void add(
-        final Evaluator<? super InputType, ? extends Boolean> categorizer,
+        final MemberType categorizer,
         final double weight)
     {
         if (categorizer == null)
@@ -94,9 +95,8 @@ public class WeightedBinaryEnsemble<InputType>
             throw new NullPointerException("categorizer cannot be null");
         }
 
-        final WeightedValue<? extends Evaluator<? super InputType, ? extends Boolean>> weighted =
-            new DefaultWeightedValue<Evaluator<? super InputType, ? extends Boolean>>(
-                categorizer, weight);
+        final WeightedValue<MemberType> weighted =
+            DefaultWeightedValue.create(categorizer, weight);
 
         this.getMembers().add(weighted);
     }
@@ -129,8 +129,7 @@ public class WeightedBinaryEnsemble<InputType>
         // Compute the sum and the weight sum.
         double sum = 0.0;
         double weightSum = 0.0;
-        for (WeightedValue<? extends Evaluator<? super InputType, ? extends Boolean>> member 
-            : this.getMembers())
+        for (WeightedValue<MemberType> member : this.getMembers())
         {
             // Compute the estimate of the member.
             final Boolean estimate = member.getValue().evaluate(input);
@@ -155,7 +154,7 @@ public class WeightedBinaryEnsemble<InputType>
      *
      * @return The members of the ensemble.
      */
-    public List<WeightedValue<? extends Evaluator<? super InputType, ? extends Boolean>>> getMembers()
+    public List<WeightedValue<MemberType>> getMembers()
     {
         return this.members;
     }
@@ -166,7 +165,7 @@ public class WeightedBinaryEnsemble<InputType>
      * @param members The members of the ensemble.
      */
     public void setMembers(
-        final List<WeightedValue<? extends Evaluator<? super InputType, ? extends Boolean>>> members)
+        final List<WeightedValue<MemberType>> members)
     {
         this.members = members;
     }

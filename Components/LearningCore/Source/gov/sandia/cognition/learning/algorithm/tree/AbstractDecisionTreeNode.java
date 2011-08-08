@@ -38,16 +38,20 @@ public abstract class AbstractDecisionTreeNode<InputType, OutputType, InteriorTy
     implements DecisionTreeNode<InputType, OutputType>,
         Serializable
 {
-    /** The decider used to make a decision as to which child use. For a 
-     *  leaf node, the decider should be null. */
-    protected Categorizer<? super InputType, ? extends InteriorType> decider;
+
+    /** The parent node of this node. */
+    protected DecisionTreeNode<InputType, OutputType> parent;
     
     /** The mapping of decider decision values to child nodes. For a leaf node,
      *  this can be null or empty. */
     protected Map
         <InteriorType, DecisionTreeNode<InputType, OutputType>> 
         childMap;
-    
+
+    /** The decider used to make a decision as to which child use. For a
+     *  leaf node, the decider should be null. */
+    protected Categorizer<? super InputType, ? extends InteriorType> decider;
+
     /** The incoming value for the node. Usually if this is null it means that
      *  the node is a root node. */
     protected Object incomingValue;
@@ -57,31 +61,29 @@ public abstract class AbstractDecisionTreeNode<InputType, OutputType, InteriorTy
      */
     public AbstractDecisionTreeNode()
     {
-        this(null, null);
+        this(null, null, null);
     }
     
     /**
      * Creates a new instance of CategorizationTreeNode.
      *
-     * @param  decider The decision function.
-     * @param  incomingValue The incoming value.
+     * @param   parent The parent node of this node.
+     * @param   decider The decision function.
+     * @param   incomingValue The incoming value.
      */
     public AbstractDecisionTreeNode(
+        final DecisionTreeNode<InputType, OutputType> parent,
         final Categorizer<? super InputType, ? extends InteriorType> decider,
         final Object incomingValue)
     {
         super();
-        
+
+        this.setParent(parent);
         this.setDecider(decider);
         this.setChildMap(null);
         this.setIncomingValue(incomingValue);
     }
     
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public AbstractDecisionTreeNode<InputType, OutputType, InteriorType> 
@@ -118,12 +120,6 @@ public abstract class AbstractDecisionTreeNode<InputType, OutputType, InteriorTy
         this.childMap.put(value, child);
     }
     
-    
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@inheritDoc}
-     */
     public Collection<? extends DecisionTreeNode<InputType, OutputType>> getChildren()
     {
         if ( this.isLeaf() )
@@ -136,22 +132,11 @@ public abstract class AbstractDecisionTreeNode<InputType, OutputType, InteriorTy
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@inheritDoc}
-     */
     public boolean isLeaf()
     {
         return this.childMap == null || this.childMap.size() <= 0;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param  input {@inheritDoc}
-     * @return {@inheritDoc}
-     */
     public DecisionTreeNode<InputType, OutputType> chooseChild(
         final InputType input)
     {
@@ -174,7 +159,45 @@ public abstract class AbstractDecisionTreeNode<InputType, OutputType, InteriorTy
             return this.childMap.get(decision);
         }
     }
-    
+
+    public int getDepth()
+    {
+        return this.parent == null ? 1 : 1 + parent.getDepth();
+    }
+
+    public int getTreeSize()
+    {
+        int size = 1;
+        for (DecisionTreeNode<?, ?> child : this.getChildren())
+        {
+            size += child.getTreeSize();
+        }
+        return size;
+    }
+
+    /**
+     * Gets the parent node for this node. Null if it is the root node.
+     *
+     * @return
+     *      The parent node for this node.
+     */
+    public DecisionTreeNode<InputType, OutputType> getParent()
+    {
+        return this.parent;
+    }
+
+    /**
+     * Sets the parent node for this node. Null if it is the root node.
+     *
+     * @param   parent
+     *      The parent node for this node.
+     */
+    public void setParent(
+        final DecisionTreeNode<InputType, OutputType> parent)
+    {
+        this.parent = parent;
+    }
+
     /**
      * Gets the decider used at this node.
      *

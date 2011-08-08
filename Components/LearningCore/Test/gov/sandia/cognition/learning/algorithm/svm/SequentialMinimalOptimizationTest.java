@@ -20,8 +20,6 @@ import gov.sandia.cognition.learning.function.categorization.KernelBinaryCategor
 import gov.sandia.cognition.learning.function.kernel.LinearKernel;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.math.matrix.mtj.Vector2;
-import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
 import java.util.Random;
 import junit.framework.TestCase;
@@ -94,25 +92,6 @@ instance.setKernelCacheSize(0);
 
         final KernelBinaryCategorizer<Vector> result = instance.learn(data);
         assertSame(result, instance.getResult());
-
-//        System.out.println("Result " + result);
-//        for (WeightedValue<?> support : result.getExamples())
-//        {
-//            System.out.println("    " + support.getWeight() + " " + support.getValue());
-//        }
-//        System.out.println("Bias: " + result.getBias());
-
-
-//        for (Vector2 example : positives)
-//        {
-//            assertTrue( result.evaluate( example ) );
-//        }
-//
-//        for (Vector2 example : negatives)
-//        {
-//            assertFalse( result.evaluate( example ) );
-//        }
-
 
         for (InputOutputPair<Vector, Boolean> example : data)
         {

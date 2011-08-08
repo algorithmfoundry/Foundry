@@ -786,7 +786,7 @@ public class UnivariateGaussian
      */
     public static class MaximumLikelihoodEstimator
         extends AbstractCloneableSerializable
-        implements DistributionEstimator<Double,UnivariateGaussian>
+        implements DistributionEstimator<Double,UnivariateGaussian.PDF>
     {
 
         /**
@@ -861,7 +861,7 @@ public class UnivariateGaussian
      */
     public static class WeightedMaximumLikelihoodEstimator
         extends AbstractCloneableSerializable
-        implements DistributionWeightedEstimator<Double,UnivariateGaussian>
+        implements DistributionWeightedEstimator<Double,UnivariateGaussian.PDF>
     {
 
         /**

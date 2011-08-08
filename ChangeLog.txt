@@ -2,6 +2,52 @@ This file contains the change log for the Cognitive Foundry.
 
 Changes since last release:
 
+Release 3.0.2 (2010-12-15):
+* Common Core:
+  * ValueMapper: Added create() method.
+  * UnivariateStatisticsUtil: Addressed numerical instability in one-pass
+    variance calculations.
+  * DefaultNamedValue: Added create() methods.
+  * Added ArgumentChecker utility class.
+  * Added KeyValuePair interface and DefaultKeyValuePair implementation.
+* Learning Core:
+  * AdaBoost: Generalized generics.
+  * BaggingCategorizerLearner: Will create a new Random if null.
+  * WeightedBinaryEnsemble: Added generic for the member type.
+  * IVotingCategorizerLearner: Performance improvements, added vote histogram
+    factory.
+  * HiddenMarkovModel: Made computeObservationsLikelihoods public.
+  * ParallelHiddenMarkovModel: Added copy constructor.
+  * Added online perceptron and voted perceptron implementations.
+  * Added primal estimated sub-gradient SVM learner.
+  * AbstractDecisionTreeLearner: Performance tweaks.
+  * AbstractDecisionTreeNode: Added parent field.
+  * AbstractVectorThresholdMaximumGainLearner: Fixed corner-case bug.
+  * CategorizationTreeLearner: Added maximum depth parameter and cleaned up
+    implementation.
+  * CategorizationTreeNode: Support of parent field.
+  * DecisionTreeNode: Added getParent(), getDepth(), and getTreeSize() methods.
+  * RegressionTreeLearner: Added maximum depth parameter.
+  * RegressionTreeNode: Support of parent field.
+  * DatasetUtil: Added splitOnOutput method.
+  * ConstantEvaluator: Added create method.
+  * LinearBinaryCategorizer: Now allows null weight vector (evaluates to 0.0).
+  * VectorElementThresholdCategorizer: Added toString().
+  * AbstractDataHistogram: Now contains default implementations of getFraction()
+    and addAll().
+  * DataHistogram: Minor refactoring to be more consistent with other
+    statistics distributions. In particular, getDomain() is to be used instead
+    of getValues(), which was removed. Moved many of the methods that were in
+    the implementation class into the interface.
+  * DiscreteSamplingUtil: New utility class for sampling discrete objects.
+  * ScalarSummaryStatistics: Bug fix.
+  * MapBasedDataHistogram: Reworked with changes to DataHistogram. New PMF,
+    learner, and factory implementations.
+  * UnivariateGaussian: Learner classes generic updated to be a
+    UnivariateGaussian.PDF, which it was already returning.
+  * Added YuleSimonDistribution distribution class.
+  * KolmogorovSmirnovConfidence: Fixed infinite loop with given NaNs.
+
 Release 3.0.1 (2010-10-15):
 * Common Core:
   * Added ArrayUtil class.

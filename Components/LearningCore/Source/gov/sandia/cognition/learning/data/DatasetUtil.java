@@ -27,9 +27,11 @@ import gov.sandia.cognition.util.DefaultPair;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -216,6 +218,44 @@ public class DatasetUtil
         }
         
         return DefaultPair.create( dtrue, dfalse );
+    }
+
+
+    /**
+     * Splits a dataset according to its output value (usually a category) so
+     * that all the inputs for that category are given in a list. It maps the
+     * category value to its list.
+     *
+     * @param   <InputType>
+     *      The the of the input values.
+     * @param   <CategoryType>
+     *      The type of the output values.
+     * @param   data
+     *      The input-output pairs to split.
+     * @return
+     *      A mapping of category to a list of all of the inputs for that
+     *      category.
+     */
+    public static <InputType, CategoryType> Map<CategoryType, List<InputType>> splitOnOutput(
+        final Iterable<? extends InputOutputPair<? extends InputType, ? extends CategoryType>> data)
+    {
+        final LinkedHashMap<CategoryType, List<InputType>> result =
+            new LinkedHashMap<CategoryType, List<InputType>>();
+
+        for (InputOutputPair<? extends InputType, ? extends CategoryType> example
+            : data)
+        {
+            final CategoryType category = example.getOutput();
+            List<InputType> examplesForCategory = result.get(category);
+            if (examplesForCategory == null)
+            {
+                examplesForCategory = new ArrayList<InputType>();
+                result.put(category, examplesForCategory);
+            }
+            examplesForCategory.add(example.getInput());
+        }
+
+        return result;
     }
 
     /**

@@ -99,12 +99,17 @@ public class LinearBinaryCategorizer
      * @return The categorization of the input vector where the sign is the
      *         categorization.
      */
+    @Override
     public double evaluateAsDouble(
         final Vectorizable input)
     {
-        final Vector vector = input.convertToVector();
-        AbstractVector.assertEqualDimensionality(vector, this.weights);
+        if (this.weights == null)
+        {
+            // In the case the weights are uninitialized return 0.0.
+            return 0.0;
+        }
         
+        final Vector vector = input.convertToVector();
         return vector.dotProduct(this.weights) + this.bias;
     }
 

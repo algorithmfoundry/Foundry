@@ -46,5 +46,92 @@ public abstract class AbstractDataHistogram<DataType>
     {
         this.remove(value, 1);
     }
+
+    public double getFraction(
+        final DataType value)
+    {
+        final int tc = this.getTotalCount();
+        if (tc <= 0)
+        {
+            // This prevents a divide-by-zero.
+            return 0.0;
+        }
+        else
+        {
+            return (double) this.getCount(value) / tc;
+        }
+    }
+
+    public void addAll(
+        final Iterable<? extends DataType> values)
+    {
+        for (DataType value : values)
+        {
+            this.add(value);
+        }
+    }
     
+    public <OtherDataType extends DataType> void addAll(
+        final DataHistogram<OtherDataType> other)
+    {
+        for (OtherDataType value : other.getDomain())
+        {
+            this.add(value, other.getCount(value));
+        }
+    }
+    
+    /**
+     * Partial implementation of a PMF for AbstractDataHistogram
+     * @param <DataType>
+     * Type of data in the domain
+     */
+//    public static abstract class PMF<DataType>
+//        extends AbstractDataHistogram<DataType>
+//        implements DataHistogram.PMF<DataType>
+//    {
+//
+//        /**
+//         * Default constructor
+//         */
+//        public PMF()
+//        {
+//            super();
+//        }
+//
+//        @Override
+//        public AbstractDataHistogram.PMF<DataType> getProbabilityFunction()
+//        {
+//            return this;
+//        }
+//
+//        @Override
+//        public Double evaluate(
+//            DataType input)
+//        {
+//            return this.getFraction(input);
+//        }
+//
+//        @Override
+//        public double logEvaluate(
+//            DataType input)
+//        {
+//            return Math.log( this.evaluate(input) );
+//        }
+//
+//        @Override
+//        public double getEntropy()
+//        {
+//            return ProbabilityMassFunctionUtil.getEntropy(this);
+//        }
+//
+//        @Override
+//        public ArrayList<? extends DataType> sample(
+//            Random random,
+//            int numSamples)
+//        {
+//            return ProbabilityMassFunctionUtil.sample(this, random, numSamples);
+//        }
+//
+//    }
+
 }

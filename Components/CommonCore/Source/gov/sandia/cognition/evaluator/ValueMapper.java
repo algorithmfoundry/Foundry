@@ -111,4 +111,22 @@ public class ValueMapper<InputType, OutputType>
         this.valueMap = valueMap;
     }
 
+    /**
+     * Creates an evaluator who is backed by the given map.
+     *
+     * @param   <InputType>
+     *      The input value for the evaluator and its map.
+     * @param   <OutputType>
+     *      The output type for the evaluator and its map.
+     * @param   valueMap
+     *      The value map.
+     * @return
+     *      A new {@code ValueMapper} that uses the given map.
+     */
+    public static <InputType, OutputType> ValueMapper<InputType, OutputType> create(
+        final Map<InputType, OutputType> valueMap)
+    {
+        return new ValueMapper<InputType, OutputType>(valueMap);
+    }
+
 }

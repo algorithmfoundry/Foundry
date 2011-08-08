@@ -14,7 +14,8 @@
 
 package gov.sandia.cognition.statistics.distribution;
 
-import gov.sandia.cognition.statistics.ProbabilityMassFunction;
+import gov.sandia.cognition.statistics.DataHistogram;
+import java.util.ArrayList;
 import java.util.Arrays;
 import junit.framework.TestCase;
 
@@ -30,16 +31,23 @@ public class MapBasedDataHistogramTest
     extends TestCase
 {
 
+    public static double TOLERANCE = 1e-5;
+
     public MapBasedDataHistogramTest(
         String testName)
     {
         super(testName);
     }
 
-    public ProbabilityMassFunction<String> createPMFinstance()
+
+    public MapBasedDataHistogram<String> createInstanceEmpty()
     {
-        MapBasedDataHistogram<String> instance =
-            new MapBasedDataHistogram<String>();
+        return new MapBasedDataHistogram.PMF<String>();
+    }
+
+    public MapBasedDataHistogram<String> createInstancePopulated()
+    {
+        MapBasedDataHistogram<String> instance = this.createInstanceEmpty();
         instance.add("a");
         instance.add("a");
         instance.add("b");
@@ -54,11 +62,11 @@ public class MapBasedDataHistogramTest
         MapBasedDataHistogram<String> instance =
             new MapBasedDataHistogram<String>();
         assertEquals(0, instance.getTotalCount());
-        assertTrue(instance.getValues().isEmpty());
+        assertTrue(instance.getDomain().isEmpty());
 
         instance = new MapBasedDataHistogram<String>(2);
         assertEquals(0, instance.getTotalCount());
-        assertTrue(instance.getValues().isEmpty());
+        assertTrue(instance.getDomain().isEmpty());
 
         instance = new MapBasedDataHistogram<String>(
             Arrays.asList(new String[] { "a", "b"}));
@@ -74,16 +82,15 @@ public class MapBasedDataHistogramTest
 
     public void testClone()
     {
-        MapBasedDataHistogram<String> instance =
-            new MapBasedDataHistogram<String>();
+        MapBasedDataHistogram<String> instance = this.createInstanceEmpty();
         MapBasedDataHistogram<String> clone = instance.clone();
         assertNotSame(instance, clone);
         assertNotSame(clone, instance.clone());
         assertNotSame(instance.countMap, clone.countMap);
         assertEquals(0, clone.getTotalCount());
-        assertTrue(clone.getValues().isEmpty());
+        assertTrue(clone.getDomain().isEmpty());
         assertEquals(0, instance.getTotalCount());
-        assertTrue(instance.getValues().isEmpty());
+        assertTrue(instance.getDomain().isEmpty());
 
         instance.add("a", 4);
         instance.add("b", 7);
@@ -104,58 +111,57 @@ public class MapBasedDataHistogramTest
      */
     public void testAdd()
     {
-        MapBasedDataHistogram<String> instance =
-            new MapBasedDataHistogram<String>();
+        MapBasedDataHistogram<String> instance = this.createInstanceEmpty();
         assertEquals(0, instance.getTotalCount());
         assertEquals(0, instance.getCount("a"));
         assertEquals(0, instance.getCount("b"));
         assertEquals(0, instance.getCount("c"));
-        assertEquals(0, instance.getValues().size());
-        assertFalse(instance.getValues().contains("a"));
+        assertEquals(0, instance.getDomain().size());
+        assertFalse(instance.getDomain().contains("a"));
 
         instance.add("a");
         assertEquals(1, instance.getTotalCount());
         assertEquals(1, instance.getCount("a"));
         assertEquals(0, instance.getCount("b"));
         assertEquals(0, instance.getCount("c"));
-        assertEquals(1, instance.getValues().size());
-        assertTrue(instance.getValues().contains("a"));
+        assertEquals(1, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
 
         instance.add("a");
         assertEquals(2, instance.getTotalCount());
         assertEquals(2, instance.getCount("a"));
         assertEquals(0, instance.getCount("b"));
         assertEquals(0, instance.getCount("c"));
-        assertEquals(1, instance.getValues().size());
-        assertTrue(instance.getValues().contains("a"));
+        assertEquals(1, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
 
         instance.add("b");
         assertEquals(3, instance.getTotalCount());
         assertEquals(2, instance.getCount("a"));
         assertEquals(1, instance.getCount("b"));
         assertEquals(0, instance.getCount("c"));
-        assertEquals(2, instance.getValues().size());
-        assertTrue(instance.getValues().contains("a"));
-        assertTrue(instance.getValues().contains("b"));
+        assertEquals(2, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
+        assertTrue(instance.getDomain().contains("b"));
 
         instance.add("a");
         assertEquals(4, instance.getTotalCount());
         assertEquals(3, instance.getCount("a"));
         assertEquals(1, instance.getCount("b"));
         assertEquals(0, instance.getCount("c"));
-        assertEquals(2, instance.getValues().size());
-        assertTrue(instance.getValues().contains("a"));
-        assertTrue(instance.getValues().contains("b"));
+        assertEquals(2, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
+        assertTrue(instance.getDomain().contains("b"));
 
         instance.add("c", 7);
         assertEquals(11, instance.getTotalCount());
         assertEquals(3, instance.getCount("a"));
         assertEquals(1, instance.getCount("b"));
         assertEquals(7, instance.getCount("c"));
-        assertEquals(3, instance.getValues().size());
-        assertTrue(instance.getValues().contains("a"));
-        assertTrue(instance.getValues().contains("b"));
-        assertTrue(instance.getValues().contains("c"));
+        assertEquals(3, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
+        assertTrue(instance.getDomain().contains("b"));
+        assertTrue(instance.getDomain().contains("c"));
 
         boolean exceptionThrown = false;
         try
@@ -177,13 +183,12 @@ public class MapBasedDataHistogramTest
      */
     public void testRemove()
     {
-        MapBasedDataHistogram<String> instance =
-            new MapBasedDataHistogram<String>();
+        MapBasedDataHistogram<String> instance = this.createInstanceEmpty();
         assertEquals(0, instance.getTotalCount());
         assertEquals(0, instance.getCount("a"));
         assertEquals(0, instance.getCount("b"));
         assertEquals(0, instance.getCount("c"));
-        assertEquals(0, instance.getValues().size());
+        assertEquals(0, instance.getDomain().size());
 
         instance.remove("a");
         instance.remove("d", 7);
@@ -192,7 +197,7 @@ public class MapBasedDataHistogramTest
         assertEquals(0, instance.getCount("a"));
         assertEquals(0, instance.getCount("b"));
         assertEquals(0, instance.getCount("c"));
-        assertEquals(0, instance.getValues().size());
+        assertEquals(0, instance.getDomain().size());
 
         instance.add("a");
         instance.add("a");
@@ -204,40 +209,40 @@ public class MapBasedDataHistogramTest
         assertEquals(3, instance.getCount("a"));
         assertEquals(2, instance.getCount("b"));
         assertEquals(7, instance.getCount("c"));
-        assertEquals(3, instance.getValues().size());
-        assertTrue(instance.getValues().contains("a"));
-        assertTrue(instance.getValues().contains("b"));
-        assertTrue(instance.getValues().contains("c"));
+        assertEquals(3, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
+        assertTrue(instance.getDomain().contains("b"));
+        assertTrue(instance.getDomain().contains("c"));
 
         instance.remove("b");
         assertEquals(11, instance.getTotalCount());
         assertEquals(3, instance.getCount("a"));
         assertEquals(1, instance.getCount("b"));
         assertEquals(7, instance.getCount("c"));
-        assertEquals(3, instance.getValues().size());
-        assertTrue(instance.getValues().contains("a"));
-        assertTrue(instance.getValues().contains("b"));
-        assertTrue(instance.getValues().contains("c"));
+        assertEquals(3, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
+        assertTrue(instance.getDomain().contains("b"));
+        assertTrue(instance.getDomain().contains("c"));
 
         instance.remove("b");
         assertEquals(10, instance.getTotalCount());
         assertEquals(3, instance.getCount("a"));
         assertEquals(0, instance.getCount("b"));
         assertEquals(7, instance.getCount("c"));
-        assertEquals(2, instance.getValues().size());
-        assertTrue(instance.getValues().contains("a"));
-        assertFalse(instance.getValues().contains("b"));
-        assertTrue(instance.getValues().contains("c"));
+        assertEquals(2, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
+        assertFalse(instance.getDomain().contains("b"));
+        assertTrue(instance.getDomain().contains("c"));
 
         instance.remove("b");
         assertEquals(10, instance.getTotalCount());
         assertEquals(3, instance.getCount("a"));
         assertEquals(0, instance.getCount("b"));
         assertEquals(7, instance.getCount("c"));
-        assertEquals(2, instance.getValues().size());
-        assertTrue(instance.getValues().contains("a"));
-        assertFalse(instance.getValues().contains("b"));
-        assertTrue(instance.getValues().contains("c"));
+        assertEquals(2, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
+        assertFalse(instance.getDomain().contains("b"));
+        assertTrue(instance.getDomain().contains("c"));
 
 
         instance.remove("c", 4);
@@ -245,10 +250,10 @@ public class MapBasedDataHistogramTest
         assertEquals(3, instance.getCount("a"));
         assertEquals(0, instance.getCount("b"));
         assertEquals(3, instance.getCount("c"));
-        assertEquals(2, instance.getValues().size());
-        assertTrue(instance.getValues().contains("a"));
-        assertFalse(instance.getValues().contains("b"));
-        assertTrue(instance.getValues().contains("c"));
+        assertEquals(2, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
+        assertFalse(instance.getDomain().contains("b"));
+        assertTrue(instance.getDomain().contains("c"));
 
 
         instance.remove("a", 100);
@@ -256,10 +261,10 @@ public class MapBasedDataHistogramTest
         assertEquals(0, instance.getCount("a"));
         assertEquals(0, instance.getCount("b"));
         assertEquals(3, instance.getCount("c"));
-        assertEquals(1, instance.getValues().size());
-        assertFalse(instance.getValues().contains("a"));
-        assertFalse(instance.getValues().contains("b"));
-        assertTrue(instance.getValues().contains("c"));
+        assertEquals(1, instance.getDomain().size());
+        assertFalse(instance.getDomain().contains("a"));
+        assertFalse(instance.getDomain().contains("b"));
+        assertTrue(instance.getDomain().contains("c"));
 
 
 
@@ -279,58 +284,57 @@ public class MapBasedDataHistogramTest
     }
 
     /**
-     * Test of getValues method, of class gov.sandia.cognition.statistics.distribution.MapBasedDataHistogramTest.
+     * Test of getDomain method, of class gov.sandia.cognition.statistics.distribution.MapBasedDataHistogramTest.
      */
-    public void testGetValues()
+    public void testGetDomain()
     {
-        MapBasedDataHistogram<String> instance =
-            new MapBasedDataHistogram<String>();
-        assertTrue(instance.getValues().isEmpty());
-        assertFalse(instance.getValues().contains("a"));
-        assertFalse(instance.getValues().contains("b"));
-        assertFalse(instance.getValues().contains("c"));
+        MapBasedDataHistogram<String> instance = this.createInstanceEmpty();
+        assertTrue(instance.getDomain().isEmpty());
+        assertFalse(instance.getDomain().contains("a"));
+        assertFalse(instance.getDomain().contains("b"));
+        assertFalse(instance.getDomain().contains("c"));
 
         instance.add("a");
-        assertEquals(1, instance.getValues().size());
-        assertTrue(instance.getValues().contains("a"));
-        assertFalse(instance.getValues().contains("b"));
-        assertFalse(instance.getValues().contains("c"));
+        assertEquals(1, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
+        assertFalse(instance.getDomain().contains("b"));
+        assertFalse(instance.getDomain().contains("c"));
 
         instance.add("a");
-        assertEquals(1, instance.getValues().size());
-        assertTrue(instance.getValues().contains("a"));
-        assertFalse(instance.getValues().contains("b"));
-        assertFalse(instance.getValues().contains("c"));
+        assertEquals(1, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
+        assertFalse(instance.getDomain().contains("b"));
+        assertFalse(instance.getDomain().contains("c"));
 
         instance.add("b");
-        assertEquals(2, instance.getValues().size());
-        assertTrue(instance.getValues().contains("a"));
-        assertTrue(instance.getValues().contains("b"));
-        assertFalse(instance.getValues().contains("c"));
+        assertEquals(2, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
+        assertTrue(instance.getDomain().contains("b"));
+        assertFalse(instance.getDomain().contains("c"));
 
         instance.add("c", 4);
-        assertEquals(3, instance.getValues().size());
-        assertTrue(instance.getValues().contains("a"));
-        assertTrue(instance.getValues().contains("b"));
-        assertTrue(instance.getValues().contains("c"));
+        assertEquals(3, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
+        assertTrue(instance.getDomain().contains("b"));
+        assertTrue(instance.getDomain().contains("c"));
 
         instance.remove("a", 2);
-        assertEquals(2, instance.getValues().size());
-        assertFalse(instance.getValues().contains("a"));
-        assertTrue(instance.getValues().contains("b"));
-        assertTrue(instance.getValues().contains("c"));
+        assertEquals(2, instance.getDomain().size());
+        assertFalse(instance.getDomain().contains("a"));
+        assertTrue(instance.getDomain().contains("b"));
+        assertTrue(instance.getDomain().contains("c"));
 
         instance.remove("c", 4);
-        assertEquals(1, instance.getValues().size());
-        assertFalse(instance.getValues().contains("a"));
-        assertTrue(instance.getValues().contains("b"));
-        assertFalse(instance.getValues().contains("c"));
+        assertEquals(1, instance.getDomain().size());
+        assertFalse(instance.getDomain().contains("a"));
+        assertTrue(instance.getDomain().contains("b"));
+        assertFalse(instance.getDomain().contains("c"));
 
         instance.remove("b", 1);
-        assertEquals(0, instance.getValues().size());
-        assertFalse(instance.getValues().contains("a"));
-        assertFalse(instance.getValues().contains("b"));
-        assertFalse(instance.getValues().contains("c"));
+        assertEquals(0, instance.getDomain().size());
+        assertFalse(instance.getDomain().contains("a"));
+        assertFalse(instance.getDomain().contains("b"));
+        assertFalse(instance.getDomain().contains("c"));
     }
 
     /**
@@ -338,8 +342,7 @@ public class MapBasedDataHistogramTest
      */
     public void testGetCount()
     {
-        MapBasedDataHistogram<String> instance =
-            new MapBasedDataHistogram<String>();
+        MapBasedDataHistogram<String> instance = this.createInstanceEmpty();
         assertEquals(0, instance.getCount("a"));
         assertEquals(0, instance.getCount("b"));
         assertEquals(0, instance.getCount("c"));
@@ -392,8 +395,7 @@ public class MapBasedDataHistogramTest
      */
     public void testGetFraction()
     {
-        MapBasedDataHistogram<String> instance =
-            new MapBasedDataHistogram<String>();
+        MapBasedDataHistogram<String> instance = this.createInstanceEmpty();
         assertEquals(0.0, instance.getFraction("a"));
         assertEquals(0.0, instance.getFraction("b"));
         assertEquals(0.0, instance.getFraction("c"));
@@ -446,8 +448,8 @@ public class MapBasedDataHistogramTest
      */
     public void testGetEntropy()
     {
-        MapBasedDataHistogram<String> instance =
-            new MapBasedDataHistogram<String>();
+        DataHistogram.PMF<String> instance =
+            (DataHistogram.PMF<String>) this.createInstanceEmpty();
         assertEquals(0.0, instance.getEntropy());
 
         instance.add("a");
@@ -474,8 +476,8 @@ public class MapBasedDataHistogramTest
      */
     public void testEvaluate()
     {
-        MapBasedDataHistogram<String> instance =
-            new MapBasedDataHistogram<String>();
+        DataHistogram.PMF<String> instance =
+            (DataHistogram.PMF<String>) this.createInstanceEmpty();
         assertEquals(0.0, instance.evaluate("a"));
         assertEquals(0.0, instance.evaluate("b"));
         assertEquals(0.0, instance.evaluate("c"));
@@ -528,8 +530,7 @@ public class MapBasedDataHistogramTest
      */
     public void testGetMaximumCount()
     {
-        MapBasedDataHistogram<String> instance =
-            new MapBasedDataHistogram<String>();
+        MapBasedDataHistogram<String> instance = this.createInstanceEmpty();
         assertEquals(0, instance.getMaximumCount());
 
         instance.add("a");
@@ -547,8 +548,7 @@ public class MapBasedDataHistogramTest
      */
     public void testGetMaximumValue()
     {
-        MapBasedDataHistogram<String> instance =
-            new MapBasedDataHistogram<String>();
+        MapBasedDataHistogram<String> instance = this.createInstanceEmpty();
         assertNull(instance.getMaximumValue());
 
         instance.add("a");
@@ -566,8 +566,7 @@ public class MapBasedDataHistogramTest
      */
     public void testGetMaximumValues()
     {
-        MapBasedDataHistogram<String> instance =
-            new MapBasedDataHistogram<String>();
+        MapBasedDataHistogram<String> instance = this.createInstanceEmpty();
         assertTrue(instance.getMaximumValues().isEmpty());
 
         instance.add("a");
@@ -590,8 +589,7 @@ public class MapBasedDataHistogramTest
      */
     public void testGetTotalCount()
     {
-        MapBasedDataHistogram<String> instance =
-            new MapBasedDataHistogram<String>();
+        MapBasedDataHistogram<String> instance = this.createInstanceEmpty();
 
         assertEquals(0, instance.getTotalCount());
         instance.add("a");
@@ -620,30 +618,27 @@ public class MapBasedDataHistogramTest
      */
     public void testGetMeanCount()
     {
-        MapBasedDataHistogram<String> instance =
-            new MapBasedDataHistogram<String>();
+        MapBasedDataHistogram<String> instance = this.createInstanceEmpty();
 
-        final double epsilon = 0.0001;
-
-        assertEquals(0.0, instance.getMeanCount(), epsilon);
+        assertEquals(0.0, instance.getMeanCount(), TOLERANCE);
         instance.add("a");
-        assertEquals(1.0, instance.getMeanCount(), epsilon);
+        assertEquals(1.0, instance.getMeanCount(), TOLERANCE);
         instance.add("a");
-        assertEquals(2.0, instance.getMeanCount(), epsilon);
+        assertEquals(2.0, instance.getMeanCount(), TOLERANCE);
         instance.add("b");
-        assertEquals(3.0 / 2.0, instance.getMeanCount(), epsilon);
+        assertEquals(3.0 / 2.0, instance.getMeanCount(), TOLERANCE);
         instance.add("c", 4);
-        assertEquals(7.0 / 3.0, instance.getMeanCount(), epsilon);
+        assertEquals(7.0 / 3.0, instance.getMeanCount(), TOLERANCE);
         instance.add("a", 2);
-        assertEquals(9.0 / 3.0, instance.getMeanCount(), epsilon);
+        assertEquals(9.0 / 3.0, instance.getMeanCount(), TOLERANCE);
         instance.remove("a");
-        assertEquals(8.0 / 3.0, instance.getMeanCount(), epsilon);
+        assertEquals(8.0 / 3.0, instance.getMeanCount(), TOLERANCE);
         instance.remove("c", 3);
-        assertEquals(5.0 / 3.0, instance.getMeanCount(), epsilon);
+        assertEquals(5.0 / 3.0, instance.getMeanCount(), TOLERANCE);
         instance.remove("b", 1);
-        assertEquals(4.0 / 2.0, instance.getMeanCount(), epsilon);
+        assertEquals(4.0 / 2.0, instance.getMeanCount(), TOLERANCE);
         instance.add("d");
-        assertEquals(5.0 / 3.0, instance.getMeanCount(), epsilon);
+        assertEquals(5.0 / 3.0, instance.getMeanCount(), TOLERANCE);
     }
 
     /**
@@ -653,7 +648,8 @@ public class MapBasedDataHistogramTest
     {
         System.out.println( "logEvaluate" );
 
-        ProbabilityMassFunction<String> pmf = this.createPMFinstance();
+        DataHistogram.PMF<String> pmf =
+            (DataHistogram.PMF<String>) this.createInstancePopulated();
         for( String s : pmf.getDomain() )
         {
             double plog = pmf.logEvaluate(s);
@@ -662,5 +658,62 @@ public class MapBasedDataHistogramTest
             assertEquals( p, phat, 1e-5 );
         }
 
+    }
+
+
+    /**
+     * Test of learn method, of class MapBasedDataHistogram.
+     */
+    public void testLearn()
+    {
+        MapBasedDataHistogram.Learner<String> learner =
+            new MapBasedDataHistogram.Learner<String>();
+        ArrayList<String> data = new ArrayList<String>();
+
+        MapBasedDataHistogram<String> instance = learner.learn(data);
+        assertEquals(0, instance.getTotalCount());
+        assertEquals(0, instance.getCount("a"));
+        assertEquals(0, instance.getCount("b"));
+        assertEquals(0, instance.getCount("c"));
+        assertEquals(0, instance.getDomain().size());
+        assertFalse(instance.getDomain().contains("a"));
+
+        data.add("a");
+        instance = learner.learn(data);
+        assertEquals(1, instance.getTotalCount());
+        assertEquals(1, instance.getCount("a"));
+        assertEquals(0, instance.getCount("b"));
+        assertEquals(0, instance.getCount("c"));
+        assertEquals(1, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
+
+        data.add("a");
+        instance = learner.learn(data);
+        assertEquals(2, instance.getTotalCount());
+        assertEquals(2, instance.getCount("a"));
+        assertEquals(0, instance.getCount("b"));
+        assertEquals(0, instance.getCount("c"));
+        assertEquals(1, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
+
+        data.add("b");
+        instance = learner.learn(data);
+        assertEquals(3, instance.getTotalCount());
+        assertEquals(2, instance.getCount("a"));
+        assertEquals(1, instance.getCount("b"));
+        assertEquals(0, instance.getCount("c"));
+        assertEquals(2, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
+        assertTrue(instance.getDomain().contains("b"));
+
+        data.add("a");
+        instance = learner.learn(data);
+        assertEquals(4, instance.getTotalCount());
+        assertEquals(3, instance.getCount("a"));
+        assertEquals(1, instance.getCount("b"));
+        assertEquals(0, instance.getCount("c"));
+        assertEquals(2, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("a"));
+        assertTrue(instance.getDomain().contains("b"));
     }
 }

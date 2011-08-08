@@ -18,6 +18,7 @@ import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.function.categorization.Categorizer;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.util.ArgumentChecker;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -38,9 +39,15 @@ public class CategorizationTreeLearner<InputType, OutputType>
     /** The default threshold for making a leaf node based on count. */
     public static final int DEFAULT_LEAF_COUNT_THRESHOLD = 1;
 
+    /** The default maximum depth to grow the tree to. */
+    public static final int DEFAULT_MAX_DEPTH = -1;
+
     /** The threshold for making a node a leaf, determined by how many
      *  instances fall in the threshold. */
     protected int leafCountThreshold;
+
+    /** The maximum depth for the tree. Ignored if less than 1. */
+    protected int maxDepth;
 
     /**
      * Creates a new instance of CategorizationTreeLearner.
@@ -58,7 +65,7 @@ public class CategorizationTreeLearner<InputType, OutputType>
     public CategorizationTreeLearner(
         final DeciderLearner<? super InputType, OutputType, ?, ?> deciderLearner)
     {
-        this(deciderLearner, DEFAULT_LEAF_COUNT_THRESHOLD);
+        this(deciderLearner, DEFAULT_LEAF_COUNT_THRESHOLD, DEFAULT_MAX_DEPTH);
     }
 
     /**
@@ -67,19 +74,21 @@ public class CategorizationTreeLearner<InputType, OutputType>
      * @param   deciderLearner
      *      The learner for the decision function.
      * @param   leafCountThreshold
-     *          The leaf count threshold. Must be non-negative.
+     *      The leaf count threshold. Must be non-negative.
+     * @param   maxDepth
+     *      The maximum depth for the tree.
      */
     public CategorizationTreeLearner(
         final DeciderLearner<? super InputType, OutputType, ?, ?> deciderLearner,
-        final int leafCountThreshold)
+        final int leafCountThreshold,
+        final int maxDepth)
     {
         super(deciderLearner);
 
         this.setLeafCountThreshold(leafCountThreshold);
+        this.setMaxDepth(maxDepth);
     }
 
-
-    
     public CategorizationTree<InputType, OutputType> learn(
         Collection<? extends InputOutputPair<? extends InputType, OutputType>>
             data)
@@ -92,15 +101,15 @@ public class CategorizationTreeLearner<InputType, OutputType>
         else
         {
             // Recursively learn the node.
-            
             final MapBasedDataHistogram<OutputType> rootCounts = 
                 getOutputCounts(data);
+	    
             return new CategorizationTree<InputType, OutputType>(
                 this.learnNode(data, null),
-                new HashSet<OutputType>(rootCounts.getValues()));
+                new HashSet<OutputType>(rootCounts.getDomain()));
         }
     }
-    
+
     /**
      * Recursively learns the categorization tree using the given collection
      * of data, returning the created node.
@@ -115,66 +124,70 @@ public class CategorizationTreeLearner<InputType, OutputType>
             data,
         final AbstractDecisionTreeNode<InputType, OutputType, ?> parent)
     {
-        if ( data == null || data.size() <= 0 )
+        if (data == null || data.size() <= 0)
         {
-            // Invalid data, nothing to learn.
+            // Invalid data, nothing to learn. This case should never happen.
             return null;
         }
-        
-        // Determine if this is a leaf node by determining if all the outputs
-        // are equal.
-        if ( this.areAllOutputsEqual(data) )
-        {
-            // This is a leaf node.
-            // Get the output label of the first value, since we know they
-            // are all equal.
-            final OutputType allOutput = data.iterator().next().getOutput();
-            
-            // Create the leaf node.
-            return new CategorizationTreeNode
-                <InputType, OutputType, Object>(allOutput);
-        }
-        
-        // We put the most common output category on every node in the tree,
-        // in case we get a bad decision function or leaf node. This ensures
-        // That we can always make a categorization. 
-        final MapBasedDataHistogram<OutputType> counts = 
-            getOutputCounts(data);
-        final OutputType mostCommonOutput = counts.getMaximumValue();
-        // We know that mostCommonOutput is not null because we already checked
-        // that the data's sizes is greater than zero.
+
+
+// TODO: Revisit the tree data structures later to determine if
+// really necessary to include category on internal nodes.  An
+// implementation should be possible that does not spend the
+// storage on internal nodes and only searches for the most
+// common output when it is known that the node is a leaf.
+//
+// Also, would it be cleaner to push areAllOutputsEqual() into
+// the search for a decision function?  Both of these likely
+// need to scan through all the data.
+// -- mamunso (2010/11/18)
+
+        // We put the most common output category on every node in the
+        // tree, in case we get a bad decision function or leaf
+        // node. This ensures That we can always make a
+        // categorization.
+
+        // Prediction at the leaf is the most common output category.
+        // (We know that mostCommonOutput is not null because we
+        // already checked that the data's sizes is greater than
+        // zero.)
+        final OutputType mostCommonOutput =
+            getOutputCounts(data).getMaximumValue();
 
         // We give the node we are creating the most common output value.
-        final CategorizationTreeNode<InputType, OutputType, Object>
-            node =
+        final CategorizationTreeNode<InputType, OutputType, Object> node =
             new CategorizationTreeNode<InputType, OutputType, Object>(
-                mostCommonOutput);
+                parent, mostCommonOutput);
 
-        if (data.size() <= this.leafCountThreshold)
+        // Check for termination conditions that produce a leaf node.
+        boolean isLeaf = this.areAllOutputsEqual(data)
+            || data.size() <= this.leafCountThreshold
+            || (this.maxDepth > 0 && node.getDepth() >= this.maxDepth);
+
+        if (!isLeaf)
         {
-            // This is a leaf node.
-            return node;
+            // Search for a decision function to split the data.
+            final Categorizer<? super InputType, ? extends Object> decider =
+                this.getDeciderLearner().learn(data);
+
+            if (decider != null)
+            {
+                // We learned a good decider.
+                node.setDecider(decider);
+
+                // Learn the child nodes.
+                super.learnChildNodes(node, data, decider);
+            }
+            else
+            {
+                // Failed to find a decision function ==> there is no
+                // attribute that separates the values of different
+                // output categories.  This node necessarily becomes a
+                // leaf.
+                isLeaf = true;
+            }
         }
-        
-        // Learn the decision function for this node.
-        final Categorizer<? super InputType, ? extends Object> decider = 
-            this.getDeciderLearner().learn(data);
-        
-        
-        if ( decider == null )
-        {
-            // This is the case where no decision could be made at the node,
-            // in which case we are forced to make a leaf node. This can happen
-            // if there is no attribute that separates the values of the
-            // different output categories.
-            return node;
-        }
-        
-        node.setDecider(decider);
-        
-        // Learn the child nodes.
-        super.learnChildNodes(node, data, decider);
-        
+
         // Return the new node we've created.
         return node;
     }
@@ -235,12 +248,32 @@ public class CategorizationTreeLearner<InputType, OutputType>
     public void setLeafCountThreshold(
         final int leafCountThreshold)
     {
-        if (leafCountThreshold < 0)
-        {
-            throw new IllegalArgumentException(
-                "leafCountThreshold cannot be negative");
-        }
-
+        ArgumentChecker.assertIsNonNegative("leafCountThreshold", leafCountThreshold);
         this.leafCountThreshold = leafCountThreshold;
+    }
+
+    /**
+     * Gets the maximum depth to grow the tree.
+     *
+     * @return
+     *      The maximum depth to grow the tree. Zero or less means no
+     *      maximum depth.
+     */
+    public int getMaxDepth()
+    {
+        return this.maxDepth;
+    }
+
+    /**
+     * Sets the maximum depth to grow the tree.
+     *
+     * @param   maxDepth
+     *      The maximum depth to grow the tree. Zero or less means no
+     *      maximum depth.
+     */
+    public void setMaxDepth(
+        final int maxDepth)
+    {
+        this.maxDepth = maxDepth;
     }
 }

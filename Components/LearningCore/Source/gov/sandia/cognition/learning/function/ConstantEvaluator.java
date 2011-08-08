@@ -28,6 +28,9 @@ public class ConstantEvaluator<OutputType>
     extends Object
     implements Evaluator<Object, OutputType>
 {
+    // TODO: This class should be moved to the evaluator package in Common Core.
+    // -- jdbasil (2010-10-21)
+    
     /** The output value. */
     protected OutputType value;
     
@@ -83,5 +86,21 @@ public class ConstantEvaluator<OutputType>
         final OutputType value)
     {
         this.value = value;
+    }
+
+    /**
+     * Creates a new {@code ConstantEvaluator} for the given value.
+     *
+     * @param   <OutputType>
+     *      The output type for the evaluator
+     * @param   value
+     *      The constant to output.
+     * @return
+     *      A new {@code ConstantEvaluator} that always returns the given value.
+     */
+    public static <OutputType> ConstantEvaluator<OutputType> create(
+        final OutputType value)
+    {
+        return new ConstantEvaluator<OutputType>(value);
     }
 }

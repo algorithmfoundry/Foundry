@@ -25,6 +25,7 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.ProbabilityFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.DefaultPair;
+import gov.sandia.cognition.util.ObjectUtil;
 import gov.sandia.cognition.util.Pair;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
@@ -95,6 +96,22 @@ public class ParallelHiddenMarkovModel<ObservationType>
         Collection<? extends ProbabilityFunction<ObservationType>> emissionFunctions )
     {
         super( initialProbability, transitionProbability, emissionFunctions );
+    }
+
+    /**\
+     * Creates a new {@code ParallelHiddenMarkovModel} from another
+     * {@code HiddenMarkovModel}.
+     *
+     * @param   other
+     *      The other hidden Markov model to copy.
+     */
+    public ParallelHiddenMarkovModel(
+        final HiddenMarkovModel<ObservationType> other)
+    {
+        this(ObjectUtil.cloneSafe(other.getInitialProbability()),
+            ObjectUtil.cloneSafe(other.getTransitionProbability()),
+            ObjectUtil.cloneSmartElementsAsArrayList(
+                other.getEmissionFunctions()));
     }
 
     public ThreadPoolExecutor getThreadPool()

@@ -97,4 +97,19 @@ public class ConstantEvaluatorTest
         
     }
 
+    /**
+     * Test of create method, of class ConstantEvaluator.
+     */
+    public void testCreate()
+    {
+        String value = "test";
+        ConstantEvaluator<String> instance = ConstantEvaluator.create(value);
+        assertSame(value, instance.getValue());
+        assertNotSame(instance, ConstantEvaluator.create(value));
+
+        value = null;
+        instance = ConstantEvaluator.create(value);
+        assertSame(value, instance.getValue());
+        assertNotSame(instance, ConstantEvaluator.create(value));
+    }
 }

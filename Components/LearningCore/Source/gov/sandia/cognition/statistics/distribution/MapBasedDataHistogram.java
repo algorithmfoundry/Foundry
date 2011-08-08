@@ -1,5 +1,5 @@
 /*
- * File:                MapBasedDataHistogramTest.java
+ * File:                MapBasedDataHistogram.java
  * Authors:             Kevin R. Dixon
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
@@ -14,12 +14,14 @@
 
 package gov.sandia.cognition.statistics.distribution;
 
-import gov.sandia.cognition.collection.CollectionUtil;
+import gov.sandia.cognition.factory.Factory;
+import gov.sandia.cognition.learning.algorithm.OnlineLearner;
+import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.statistics.AbstractDataHistogram;
 import gov.sandia.cognition.statistics.DataHistogram;
-import gov.sandia.cognition.statistics.ProbabilityMassFunction;
-import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
+import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
+import gov.sandia.cognition.util.ArgumentChecker;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -40,10 +42,16 @@ import java.util.Set;
  */
 public class MapBasedDataHistogram<DataType>
     extends AbstractDataHistogram<DataType>
-    implements ProbabilityMassFunction<DataType>
 {
-    // Note: This class does not use of setters/getters internally for 
+
+    // Note: This class does not use of setters/getters internally for
     // performance reasons.
+    
+    /**
+     * Default initial capacity of the Map, {@value}.
+     */
+    public static final int DEFAULT_INITIAL_CAPACITY = 16;
+    
     /** The total number of values. */
     protected int totalCount;
 
@@ -55,7 +63,7 @@ public class MapBasedDataHistogram<DataType>
      */
     public MapBasedDataHistogram()
     {
-        this( (Collection<DataType>) null );
+        this(DEFAULT_INITIAL_CAPACITY);
     }
 
     /**
@@ -67,45 +75,58 @@ public class MapBasedDataHistogram<DataType>
     public MapBasedDataHistogram(
         final int initialDomainCapacity)
     {
-        super();
-        
-        this.setCountMap(new LinkedHashMap<DataType, Entry>(initialDomainCapacity));
+        this(new LinkedHashMap<DataType, Entry>(initialDomainCapacity));
     }
 
     /**
-     * Creates a new instance of DataCountMapHistogram.
-     * @param data Data to add
+     * Creates a new instance of DataCountMapHistogram from the given data.
+     * 
+     * @param data
+     *      Data to add
      */
     public MapBasedDataHistogram(
-        Collection<DataType> data )
+        Collection<DataType> data)
     {
-        this.setCountMap(
-            new LinkedHashMap<DataType, Entry>( CollectionUtil.size(data) ) );
-        if( data != null )
+        this((data != null) ? data.size() : DEFAULT_INITIAL_CAPACITY);
+        if (data != null)
         {
-            for( DataType x : data )
+            for (DataType x : data)
             {
-                this.add( x );
+                this.add(x);
             }
         }
     }
 
     /**
-     * Copy constructor
-     * @param other
-     * MapBasedDataHistogram to copy
+     * Copy constructor.
+     *
+     * @param   other
+     *      MapBasedDataHistogram to copy
      */
     public MapBasedDataHistogram(
-        MapBasedDataHistogram<DataType> other )
+        DataHistogram<DataType> other)
     {
-        this( (Collection<DataType>) null );
-        for( DataType input : other.getValues() )
+        this(other.getDomain().size());
+        for (DataType input : other.getDomain())
         {
-            this.add( input, other.getCount( input ) );
+            this.add(input, other.getCount(input));
         }
-        
+
     }
-    
+
+    /**
+     * Creates a new instance of MapBasedDataHistogram.
+     *
+     * @param countMap
+     *      The map to backing the counts.
+     */
+    protected MapBasedDataHistogram(
+        Map<DataType, Entry> countMap)
+    {
+        super();
+        this.setCountMap(countMap);
+    }
+
     @Override
     public MapBasedDataHistogram<DataType> clone()
     {
@@ -120,7 +141,7 @@ public class MapBasedDataHistogram<DataType>
         // The totalCount is copied directly.
         
         // Copy all the values into the map.
-        for (DataType value : this.getValues())
+        for (DataType value : this.getDomain())
         {
             final int count = this.getCount(value);
             clone.countMap.put(value, new Entry(count));
@@ -161,15 +182,6 @@ public class MapBasedDataHistogram<DataType>
         this.totalCount += number;
     }
 
-    public <OtherDataType extends DataType> void addAll(
-        final DataHistogram<OtherDataType> other)
-    {
-        for (OtherDataType value : other.getValues())
-        {
-            this.add(value, other.getCount(value));
-        }
-    }
-
     public void remove(
         final DataType value,
         final int number)
@@ -208,13 +220,18 @@ public class MapBasedDataHistogram<DataType>
         // else - the count doesn't exist in the Map
     }
 
-    public Set<DataType> getValues()
+    public Set<DataType> getDomain()
     {
         return this.countMap.keySet();
     }
 
+    public int getDomainSize()
+    {
+        return this.countMap.size();
+    }
+
     public int getCount(
-        final DataType input )
+        final DataType input)
     {
         // See if there is a count in the count map.
         final Entry entry = this.countMap.get(input);
@@ -230,12 +247,7 @@ public class MapBasedDataHistogram<DataType>
             return entry.count;
         }
     }
-    
-    /**
-     * Finds the maximum count in the histogram.
-     * @return
-     * Maximum count in the histogram.
-     */
+
     public int getMaximumCount()
     {
         // Go through all the counts to find the maximum.
@@ -251,11 +263,6 @@ public class MapBasedDataHistogram<DataType>
         return max;
     }
 
-    /**
-     * Gets the first input count with the maximum count.
-     * @return
-     * First input with the maximum count.
-     */
     public DataType getMaximumValue()
     {
         // Go through all the entries to find the (first) count with the
@@ -274,11 +281,6 @@ public class MapBasedDataHistogram<DataType>
         return value;
     }
 
-    /**
-     * Gets all values that contain the maximum count
-     * @return
-     * Values that contain the maximum count
-     */
     public LinkedList<DataType> getMaximumValues()
     {
         // Get the maximum count.
@@ -376,55 +378,7 @@ public class MapBasedDataHistogram<DataType>
             return (double) this.getTotalCount() / valueCount;
         }
     }
-
-    public double getFraction(
-        final DataType value)
-    {
-        if (this.totalCount == 0)
-        {
-            // This prevents a divide-by-zero.
-            return 0.0;
-        }
-        else
-        {
-            return (double) this.getCount(value) / this.totalCount;
-        }
-    }
     
-    public ArrayList<DataType> sample(
-        Random random,
-        int numSamples )
-    {
-        return ProbabilityMassFunctionUtil.sample( this, random, numSamples );
-    }
-
-    public Set<DataType> getDomain()
-    {
-        return this.getCountMap().keySet();
-    }
-
-    public double getEntropy()
-    {
-        return ProbabilityMassFunctionUtil.getEntropy( this );
-    }
-
-    public Double evaluate(
-        DataType input )
-    {
-        return this.getFraction( input );
-    }
-
-    public double logEvaluate(
-        DataType input)
-    {
-        return Math.log( this.evaluate(input) );
-    }
-
-    public MapBasedDataHistogram<DataType> getProbabilityFunction()
-    {
-        return this;
-    }
-
     @Override
     public String toString()
     {
@@ -444,6 +398,130 @@ public class MapBasedDataHistogram<DataType>
         }
 
         return result.toString();
+
+    }
+
+    @Override
+    public ArrayList<? extends DataType> sample(
+        Random random,
+        int numSamples)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public DataHistogram.PMF<DataType> getProbabilityFunction()
+    {
+        return new MapBasedDataHistogram.PMF<DataType>(this);
+    }
+
+    @Override
+    public double getEntropy()
+    {
+
+        // Compute the entropy by looping over the values in the map.
+        double entropy = 0.0;
+        
+        if (this.totalCount > 0)
+        {
+            for (Entry entry : this.countMap.values())
+            {
+                if (entry.count > 0)
+                {
+                    final double p = (double) entry.count / this.totalCount;
+                    entropy -= p * MathUtil.log2(p);
+                }
+            }
+        }
+
+        // Return the computed entropy.
+        return entropy;
+    }
+
+    /**
+     * PMF of the DataHistogram
+     * @param <DataType>
+     * Type of data in the domain
+     */
+    public static class PMF<DataType>
+        extends MapBasedDataHistogram<DataType>
+        implements DataHistogram.PMF<DataType>
+    {
+
+        /**
+         * Creates a new instance of DataCountMapHistogram.
+         */
+        public PMF()
+        {
+            super();
+        }
+
+        /**
+         * Creates a map-based data histogram with the given expected domain size.
+         *
+         * @param   initialDomainCapacity
+         *      The expected domain size. Must be positive.
+         */
+        public PMF(
+            final int initialDomainCapacity)
+        {
+            super(initialDomainCapacity);
+        }
+
+        /**
+         * Creates a new instance of DataCountMapHistogram.
+         *
+         * @param   data
+         *      Data to add.
+         */
+        public PMF(
+            final Collection<DataType> data)
+        {
+            super(data);
+        }
+
+        /**
+         * Copy constructor
+         * @param other
+         * MapBasedDataHistogram to copy
+         */
+        public PMF(
+            final DataHistogram<DataType> other)
+        {
+            super(other);
+        }
+
+        /**
+         * Creates a new instance of MapBasedDataHistogram.
+         *
+         * @param   countMap
+         *      The map backing the histogram.
+         */
+        protected PMF(
+            final Map<DataType, Entry> countMap)
+        {
+            super(countMap);
+        }
+
+        @Override
+        public double logEvaluate(
+            DataType input)
+        {
+            return Math.log(this.getFraction(input));
+        }
+
+        @Override
+        public Double evaluate(
+            DataType input)
+        {
+            return this.getFraction(input);
+        }
+
+        @Override
+        public MapBasedDataHistogram.PMF<DataType> getProbabilityFunction()
+        {
+            return this;
+        }
 
     }
 
@@ -507,6 +585,134 @@ public class MapBasedDataHistogram<DataType>
             this.count = count;
         }
         
+    }
+
+    
+    /**
+     * Creates a batch learner for a map-based data histogram.
+     *
+     * @param   <DataType>
+     *      The data type to learn over.
+     */
+    public static class Learner<DataType>
+        extends AbstractCloneableSerializable
+        implements DistributionEstimator<DataType, MapBasedDataHistogram.PMF<DataType>>,
+            OnlineLearner<DataType, MapBasedDataHistogram.PMF<DataType>>
+    {
+
+        /**
+         * Creates a new {@code Learner}.
+         */
+        public Learner()
+        {
+            super();
+        }
+
+        @Override
+        public PMF<DataType> learn(
+            final Collection<? extends DataType> data)
+        {
+            final PMF<DataType> result = new PMF<DataType>();
+            result.addAll(data);
+            return result;
+        }
+
+        @Override
+        public PMF<DataType> createInitialLearnedObject()
+        {
+            return new PMF<DataType>();
+        }
+
+        @Override
+        public void update(
+            final PMF<DataType> target,
+            final DataType data)
+        {
+            target.add(data);
+        }
+
+        @Override
+        public void update(
+            final PMF<DataType> target,
+            final Iterable<? extends DataType> data)
+        {
+            target.addAll(data);
+        }
+
+    }
+
+    /**
+     * A factory for {@code MapBasedDataHistogram} objects using some given
+     * initial capacity for them.
+     *
+     * @param   <DataType>
+     *      The type of data for the factory.
+     */
+    public static class DefaultFactory<DataType>
+        extends AbstractCloneableSerializable
+        implements Factory<MapBasedDataHistogram<DataType>>
+    {
+
+        /** The initial domain capacity. */
+        protected int initialDomainCapacity;
+
+        /**
+         * Creates a new {@code DefaultFactory} with a default
+         * initial domain capacity.
+         */
+        public DefaultFactory()
+        {
+            this(DEFAULT_INITIAL_CAPACITY);
+        }
+
+        /**
+         * Creates a new {@code DefaultFactory} with a given
+         * initial domain capacity.
+         *
+         * @param   initialDomainCapacity
+         *      The initial capacity for the domain. Must be positive.
+         */
+        public DefaultFactory(
+            final int initialDomainCapacity)
+        {
+            super();
+
+            this.setInitialDomainCapacity(initialDomainCapacity);
+        }
+        
+        @Override
+        public MapBasedDataHistogram<DataType> create()
+        {
+            // Create the histogram.
+            return new MapBasedDataHistogram<DataType>(
+                this.getInitialDomainCapacity());
+        }
+
+        /**
+         * Gets the initial domain capacity.
+         *
+         * @return
+         *      The initial domain capacity. Must be positive.
+         */
+        public int getInitialDomainCapacity()
+        {
+            return this.initialDomainCapacity;
+        }
+
+        /**
+         * Sets the initial domain capacity.
+         *
+         * @param   initialDomainCapacity
+         *      The initial domain capacity. Must be positive.
+         */
+        public void setInitialDomainCapacity(
+            final int initialDomainCapacity)
+        {
+            ArgumentChecker.assertIsPositive("initialDomainCapacity",
+                initialDomainCapacity);
+            this.initialDomainCapacity = initialDomainCapacity;
+        }
+
     }
 
 }

@@ -112,7 +112,7 @@ public class BinaryBaggingLearnerTest
             examples.add( new DefaultInputOutputPair<Vector2, Boolean>( example, false ) );
         }
 
-        WeightedBinaryEnsemble<Vectorizable> learned = instance.learn( examples );
+        WeightedBinaryEnsemble<Vectorizable, ?> learned = instance.learn( examples );
         assertNotNull( learned );
         assertSame( learned, instance.getResult() );
         assertSame( learned, instance.getEnsemble() );

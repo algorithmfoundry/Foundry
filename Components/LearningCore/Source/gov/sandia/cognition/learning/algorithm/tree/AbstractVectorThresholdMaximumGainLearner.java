@@ -22,10 +22,10 @@ import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.DefaultPair;
+import gov.sandia.cognition.util.DefaultWeightedValue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 
 /**
  * An abstract class for decider learners that produce a threshold function
@@ -41,8 +41,9 @@ import java.util.Comparator;
  */
 public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
     extends AbstractCloneableSerializable
-    implements DeciderLearner<Vectorizable, OutputType, Boolean, VectorElementThresholdCategorizer>
+    implements VectorThresholdMaximumGainLearner<OutputType>
 {
+    protected int[] dimensionsToConsider;
 
     /**
      * Creates a new {@code AbstractVectorThresholdMaximumGainLearner}.
@@ -55,7 +56,8 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
     public VectorElementThresholdCategorizer learn(
         final Collection<? extends InputOutputPair<? extends Vectorizable, OutputType>> data)
     {
-        if (CollectionUtil.isEmpty(data))
+        final int totalCount = CollectionUtil.size(data);
+        if (totalCount <= 1)
         {
             // Nothing to learn.
             return null;
@@ -65,6 +67,14 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
         final MapBasedDataHistogram<OutputType> baseCounts =
             CategorizationTreeLearner.getOutputCounts(data);
 
+        // Pre-allocate a workspace of data for computing the gain.
+        final ArrayList<DefaultWeightedValue<OutputType>> workspace =
+            new ArrayList<DefaultWeightedValue<OutputType>>(totalCount);
+        for (int i = 0; i < totalCount; i++)
+        {
+            workspace.add(new DefaultWeightedValue<OutputType>());
+        }
+
         // Figure out the dimensionality of the data.
         final int dimensionality = getDimensionality(data);
 
@@ -73,12 +83,18 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
         double bestGain = -1.0;
         int bestIndex = -1;
         double bestThreshold = 0.0;
-        for (int i = 0; i < dimensionality; i++)
+
+        final int dimensionsCount = this.dimensionsToConsider == null ?
+            dimensionality : this.dimensionsToConsider.length;
+        for (int i = 0; i < dimensionsCount; i++)
         {
+            final int index = this.dimensionsToConsider == null ?
+                i : this.dimensionsToConsider[i];
+
             // Compute the best gain-threshold pair for the given dimension of
             // the data.
             final DefaultPair<Double, Double> gainThresholdPair =
-                this.computeBestGainAndThreshold(data, i, baseCounts);
+                this.computeBestGainAndThreshold(data, index, baseCounts);
 
             if (gainThresholdPair == null)
             {
@@ -97,7 +113,7 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
                 // and index.
                 final double threshold = gainThresholdPair.getSecond();
                 bestGain = gain;
-                bestIndex = i;
+                bestIndex = index;
                 bestThreshold = threshold;
             }
         }
@@ -137,16 +153,59 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
             data,
         final int dimension,
         final MapBasedDataHistogram<OutputType> baseCounts)
-{
+    {
+        final int totalCount = data.size();
+     
+        final ArrayList<DefaultWeightedValue<OutputType>> workspace =
+            new ArrayList<DefaultWeightedValue<OutputType>>(totalCount);
+        for (int i = 0; i < totalCount; i++)
+        {
+            workspace.add(new DefaultWeightedValue<OutputType>());
+        }
+        return this.computeBestGainAndThreshold(data, dimension, baseCounts,
+            workspace);
+    }
+
+    /**
+     * Computes the best gain and threshold for a given dimension using the
+     * computeSplitGain method for each potential split point of values for the
+     * given dimension.
+     *
+     * @param   data
+     *      The data to use to compute the threshold.
+     * @param   dimension
+     *      The dimension to compute the threshold for.
+     * @param   baseCounts
+     *      Information about the base category counts.
+     * @param   values
+     *      A workspace to store the values of the data in. Recycled to avoid
+     *      recreating a large array each time.
+     * @return
+     *      A pair containing the best gain computed and its associated
+     *      threshold. If there is no good split point, null is returned. This
+     *      can happen if there is no data or every value is the same.
+     */
+    protected DefaultPair<Double, Double> computeBestGainAndThreshold(
+        final Collection<? extends InputOutputPair<? extends Vectorizable, OutputType>>
+            data,
+        final int dimension,
+        final MapBasedDataHistogram<OutputType> baseCounts,
+        final ArrayList<DefaultWeightedValue<OutputType>> values)
+    {
+        // We can only compute thresholds for at least 1 value.
+        final int totalCount = data.size();
+        if (totalCount <= 1)
+        {
+            return null;
+        }
+
         // To compute the gain we will sort all of the values along the given
         // dimension and then walk along the values to determine the best
         // threshold.
 
         // The first step is to create a list of (value, output) pairs for the
-        // given dimension.
-        final int totalCount = data.size();
-        final ArrayList<DefaultPair<Double, OutputType>> values =
-            new ArrayList<DefaultPair<Double, OutputType>>(totalCount);
+        // given dimension. We do this by using the given workspace.
+        int index = 0;
         for (InputOutputPair<? extends Vectorizable, OutputType> example
             : data)
         {
@@ -154,25 +213,23 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
             final Vector input = example.getInput().convertToVector();
             final OutputType output = example.getOutput();
             final double value = input.getElement(dimension);
-
-            values.add( DefaultPair.create( value, output ) );
+            DefaultWeightedValue<OutputType> entry = values.get(index);
+            entry.setWeight(value);
+            entry.setValue(output);
+            index++;
         }
 
         // Sort the list in ascending order by value.
-        Collections.sort(values, new Comparator<DefaultPair<Double, OutputType>>()
-        {
-            public int compare(
-                DefaultPair<Double, OutputType> o1,
-                DefaultPair<Double, OutputType> o2)
-            {
-                return o1.getFirst().compareTo(o2.getFirst());
-            }
-        });
+        Collections.sort(values, 
+            DefaultWeightedValue.WeightComparator.getInstance());
+
+        // Get the smallest and largest values.
+        final double smallestValue = values.get(0).getWeight();
+        final double largestValue = values.get(totalCount - 1).getWeight();
 
         // If all the values on this dimension are the same then there is
         // nothing to split on.
-        if (    totalCount <= 1
-             || values.get(0).getFirst().equals(values.get(totalCount - 1).getFirst()))
+        if (smallestValue >= largestValue)
         {
             // All of the values are the same.
             return null;
@@ -187,37 +244,36 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
         final MapBasedDataHistogram<OutputType> positiveCounts =
             baseCounts.clone();
         final MapBasedDataHistogram<OutputType> negativeCounts =
-            new MapBasedDataHistogram<OutputType>();
+            new MapBasedDataHistogram<OutputType>(baseCounts.getDomain().size());
 
         // We are going to loop over all the values to compute the best
         // gain and the best threshold.
-        double bestGain = 0.0;
-        double bestTieBreaker = 0.0;
-        double bestThreshold = 0.0;
+        double bestGain = Double.NEGATIVE_INFINITY;
+        double bestTieBreaker = Double.NEGATIVE_INFINITY;
+        double bestThreshold = Double.NEGATIVE_INFINITY;
 
         // We need to keep track of the previous value for two reasons:
         //    1) To determine if we've already tested the value, since we loop
         //       over a >= threshold.
         //    2) So that the threshold can be computed to be half way between
         //       two values.
-        double previousValue = 0.0;
-        for (int i = 0; i < totalCount; i++)
+	       //
+        // We advance i through values and stop whenever value[i] != value[i-1].
+        // These are all the points where it is meaningful to evaluate a split.
+        // All values to the left of i go into the negative count bucket.
+        double previousValue = smallestValue;
+        for (int i = 1; i < totalCount; i++)
         {
-            final DefaultPair<Double, OutputType> valueLabel = values.get(i);
-            final double value = valueLabel.getFirst();
-            final OutputType label = valueLabel.getSecond();
+            // Move previous value to negative count bucket.
+            final OutputType label = values.get(i - 1).getValue();
+            positiveCounts.remove(label);
+            negativeCounts.add(label);
 
-            if (i == 0)
-            {
-                // We are going to loop over a threshold value that is >=.
-                // Since there is no point on splitting on the first value,
-                // since nothing will be less than it, we skip it. However, we
-                // do need to add it to the counts.
-                bestGain = 0.0;
-                bestTieBreaker = 0.0;
-                bestThreshold = value;
-            }
-            else if (value != previousValue)
+            final double value = values.get(i).getWeight();
+
+            // Check if it is worth evaluating a threshold between
+            // previous and next value.
+            if (value != previousValue)
             {
                 // Compute the gain.
                 final double gain = computeSplitGain(
@@ -251,18 +307,19 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
                         bestThreshold = threshold;
                     }
                 }
+
+                // Store this value as the previous value.
+                previousValue = value;
             }
-            // else - This threshold was equal to the previous one. Since we
-            //        use a >= cutting criteria,
+        }
 
-
-            // For the next loop we remove the label from the positive side
-            // and add it to the negative side of the threshold.
-            positiveCounts.remove(label);
-            negativeCounts.add(label);
-
-            // Store this value as the previous value.s
-            previousValue = value;
+        // Sanity check to make sure we found a threshold that
+        // partitions the values.
+        if (   bestThreshold <= smallestValue
+            || bestThreshold >= largestValue)
+        {
+            throw new RuntimeException(
+                "bestThreshold (" + bestThreshold + ") lies outside range of values (" + smallestValue + ", " + largestValue + ")");
         }
 
         // Return the pair containing the best gain and best threshold
@@ -290,6 +347,17 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
         final MapBasedDataHistogram<OutputType> positiveCounts,
         final MapBasedDataHistogram<OutputType> negativeCounts);
 
+    public int[] getDimensionsToConsider()
+    {
+        return this.dimensionsToConsider;
+    }
+
+    public void setDimensionsToConsider(
+        final int[] dimensionsToConsider)
+    {
+        this.dimensionsToConsider = dimensionsToConsider;
+    }
+
     /**
      * Figures out the dimensionality of the Vector data.
      *
@@ -313,4 +381,5 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
                 .getDimensionality();
         }
     }
+
 }

@@ -658,38 +658,42 @@ public class UnivariateStatisticsUtil
      * @return
      * Mean and unbiased Variance Pair.
      */
+    @PublicationReference(
+        title="Algorithms for calculating variance",
+        type=PublicationType.WebPage,
+        year=2010,
+        author="Wikipedia",
+        url="http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance")
     public static Pair<Double,Double> computeMeanAndVariance(
-        Iterable<? extends Number> data )
+        Iterable<? extends Number> data)
     {
-        
-        double sum = 0.0;
-        double sum2 = 0.0;
+        // Note: This is more compilcated than a straight-forward algorithm
+        // that just computes the sum and sum-of-squares to get around
+        // numerical precision issues.
         int n = 0;
-        for( Number x : data )
+        double mean = 0.0;
+        double m2 = 0.0;
+        for (Number v : data)
         {
-            double v = x.doubleValue();
-            sum += v;
-            sum2 += v*v;
-            n++;
+            final double x = v.doubleValue();
+
+            final double delta = x - mean;
+            n += 1;
+            mean += delta / n;
+            m2 += delta * (x - mean);
         }
 
-        double mean, variance;
-        if( n >= 2 )
+        double variance;
+        if (n >= 2)
         {
-            mean = sum / n;
-            variance = (n*sum2 - sum*sum) / (n*(n-1));
-        }
-        else if( n == 1 )
-        {
-            mean = sum;
-            variance = 0.0;
+            variance = m2 / (n - 1);
         }
         else
         {
-            mean = 0.0;
             variance = 0.0;
         }
-        return DefaultPair.create( mean, variance );
+ 
+        return DefaultPair.create(mean, variance);
     }
 
     /**
@@ -700,49 +704,50 @@ public class UnivariateStatisticsUtil
      * @return
      * Mean and unbiased Variance Pair.
      */
+    @PublicationReference(
+        title="Algorithms for calculating variance",
+        type=PublicationType.WebPage,
+        year=2010,
+        author="Wikipedia",
+        url="http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance")
     public static Pair<Double,Double> computeWeightedMeanAndVariance(
         Iterable<? extends WeightedValue<? extends Number>> data )
     {
-
-        double sum = 0.0;
-        double sum2 = 0.0;
+        // Note: This is more compilcated than a straight-forward algorithm
+        // that just computes the sum and sum-of-squares to get around
+        // numerical precision issues.
+        double mean = 0.0;
         double weightSum = 0.0;
-        int n = 0;
-        for( WeightedValue<? extends Number> x : data )
+        double m2 = 0.0;
+
+        for ( WeightedValue<? extends Number> v : data)
         {
-            n++;
-            final double weight = x.getWeight();
-            if( weight != 0.0 )
+            final double x = v.getValue().doubleValue();
+            final double weight = v.getWeight();
+
+            if (weight != 0.0)
             {
-                final double value = x.getValue().doubleValue();
-                final double wv = weight * value;
-                sum += wv;
-                sum2 += wv * value;
-                weightSum += weight;
+                final double newWeightSum = weightSum + weight;
+                final double delta = x - mean;
+
+                final double update = delta * weight / newWeightSum;
+                m2 += weightSum * delta * update;
+                mean += update;
+                weightSum = newWeightSum;
             }
         }
 
-        double mean;
         double variance;
-
-        if( n >= 2 )
+        if (weightSum > 0.0)
         {
-            mean = sum / weightSum;
-            variance = (sum2/weightSum) - mean*mean;
-        }
-        else if( n == 1 )
-        {
-            mean = sum / weightSum;
-            variance = 0.0;
+            variance = m2 / weightSum;
         }
         else
         {
-            mean = 0.0;
             variance = 0.0;
         }
-
-        return DefaultPair.create( mean, variance );
-
+        
+        return DefaultPair.create(mean, variance);
     }
 
 

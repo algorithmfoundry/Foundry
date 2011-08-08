@@ -14,12 +14,14 @@
 
 package gov.sandia.cognition.learning.algorithm.ensemble;
 
+import gov.sandia.cognition.factory.Factory;
 import gov.sandia.cognition.learning.algorithm.perceptron.Perceptron;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
 import java.util.Random;
@@ -82,14 +84,17 @@ public class IVotingCategorizerLearnerTest
 
         proportionIncorrectInSample = random.nextDouble();
         voteOutOfBagOnly = !voteOutOfBagOnly;
+        Factory<MapBasedDataHistogram<Boolean>> counterFactory =
+            new MapBasedDataHistogram.DefaultFactory<Boolean>();
         instance = new IVotingCategorizerLearner<Vector, Boolean>(learner,
             maxIterations, percentToSample, proportionIncorrectInSample,
-            voteOutOfBagOnly, random);
+            voteOutOfBagOnly, counterFactory, random);
         assertSame(learner, instance.getLearner());
         assertEquals(maxIterations, instance.getMaxIterations());
         assertEquals(percentToSample, instance.getPercentToSample(), 0.0);
         assertEquals(proportionIncorrectInSample, instance.getProportionIncorrectInSample(), 0.0);
         assertEquals(voteOutOfBagOnly, instance.isVoteOutOfBagOnly());
+        assertSame(counterFactory, instance.getCounterFactory());
         assertSame(random, instance.getRandom());
     }
 

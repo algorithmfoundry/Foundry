@@ -104,4 +104,20 @@ public class ValueMapperTest
         assertSame(valueMap, instance.getValueMap());
     }
 
+    /**
+     * Test of create method, of class ValueMapper.
+     */
+    public void testCreate()
+    {
+        Map<Integer, String> valueMap = new TreeMap<Integer, String>();
+        ValueMapper<Integer, String> instance = ValueMapper.create(valueMap);
+        assertSame(valueMap, instance.getValueMap());
+        assertNotSame(instance, ValueMapper.create(valueMap));
+
+        valueMap = null;
+        instance = ValueMapper.create(valueMap);
+        assertSame(valueMap, instance.getValueMap());
+        assertNotSame(instance, ValueMapper.create(valueMap));
+    }
+
 }

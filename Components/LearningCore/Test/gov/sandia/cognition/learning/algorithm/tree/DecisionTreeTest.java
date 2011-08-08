@@ -61,7 +61,7 @@ public class DecisionTreeTest
         assertNull(instance.evaluate(input));
         
         CategorizationTreeNode<Vectorizable, String, Boolean> rootNode =
-            new CategorizationTreeNode<Vectorizable, String, Boolean>("root");
+            new CategorizationTreeNode<Vectorizable, String, Boolean>(null, "root");
         instance.setRootNode(rootNode);
         assertEquals("root", instance.evaluate(input));
         
@@ -69,14 +69,16 @@ public class DecisionTreeTest
         assertEquals("root", instance.evaluate(input));
         
         CategorizationTreeNode<Vectorizable, String, Boolean> child1 =
-            new CategorizationTreeNode<Vectorizable, String, Boolean>("child1");
+            new CategorizationTreeNode<Vectorizable, String, Boolean>(rootNode,
+                "child1");
         
         rootNode.addChild(false, child1);
         assertEquals("child1", instance.evaluate(new Vector3(0.0, 9.0, 0.0)));
         assertEquals("root", instance.evaluate(new Vector3(0.0, 11.0, 0.0)));
         
         CategorizationTreeNode<Vectorizable, String, Boolean> child2 =
-            new CategorizationTreeNode<Vectorizable, String, Boolean>("child2");
+            new CategorizationTreeNode<Vectorizable, String, Boolean>(rootNode,
+            "child2");
         rootNode.addChild(true, child2);
         assertEquals("child1", instance.evaluate(new Vector3(0.0, 9.0, 0.0)));
         assertEquals("child2", instance.evaluate(new Vector3(0.0, 11.0, 0.0)));
@@ -94,7 +96,8 @@ public class DecisionTreeTest
         assertNull(instance.evaluateNode(random, null));
         
         CategorizationTreeNode<Vectorizable, String, Boolean> rootNode =
-            new CategorizationTreeNode<Vectorizable, String, Boolean>("root");
+            new CategorizationTreeNode<Vectorizable, String, Boolean>(
+                null, "root");
         instance.setRootNode(rootNode);
         assertEquals("root", instance.evaluateNode(random, rootNode));
        
@@ -102,14 +105,16 @@ public class DecisionTreeTest
         assertEquals("root", instance.evaluateNode(random, rootNode));
         
         CategorizationTreeNode<Vectorizable, String, Boolean> child1 =
-            new CategorizationTreeNode<Vectorizable, String, Boolean>("child1");
+            new CategorizationTreeNode<Vectorizable, String, Boolean>(rootNode,
+                "child1");
         
         rootNode.addChild(false, child1);
         assertEquals("child1", instance.evaluateNode(new Vector3(0.0, 9.0, 0.0), rootNode));
         assertEquals("root", instance.evaluateNode(new Vector3(0.0, 11.0, 0.0), rootNode));
         
         CategorizationTreeNode<Vectorizable, String, Boolean> child2 =
-            new CategorizationTreeNode<Vectorizable, String, Boolean>("child2");
+            new CategorizationTreeNode<Vectorizable, String, Boolean>(rootNode,
+                "child2");
         rootNode.addChild(true, child2);
         assertEquals("child1", instance.evaluateNode(new Vector3(0.0, 9.0, 0.0), rootNode));
         assertEquals("child2", instance.evaluateNode(new Vector3(0.0, 11.0, 0.0), rootNode));

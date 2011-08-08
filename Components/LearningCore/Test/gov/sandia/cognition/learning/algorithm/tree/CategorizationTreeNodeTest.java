@@ -17,10 +17,7 @@ package gov.sandia.cognition.learning.algorithm.tree;
 
 import gov.sandia.cognition.learning.function.categorization.VectorElementThresholdCategorizer;
 import junit.framework.*;
-import gov.sandia.cognition.learning.function.categorization.Categorizer;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * This class implements JUnit tests for the following classes:
@@ -41,30 +38,35 @@ public class CategorizationTreeNodeTest
     
     public void testConstructors()
     {
+        DecisionTreeNode<Vector3, String> parent = null;
         CategorizationTreeNode<Vector3, String, Boolean> instance = 
             new CategorizationTreeNode<Vector3, String, Boolean>();
+        assertSame(parent, instance.getParent());
         assertNull(instance.getOutputCategory());
         assertNull(instance.getDecider());
         assertNull(instance.getIncomingValue());
         
         String outputCategory = "a";
-        instance = new CategorizationTreeNode<Vector3, String, Boolean>(
+        instance = new CategorizationTreeNode<Vector3, String, Boolean>(parent,
             outputCategory);
+        assertSame(parent, instance.getParent());
         assertSame(outputCategory, instance.getOutputCategory());
         assertNull(instance.getDecider());
         assertNull(instance.getIncomingValue());
         
         Object incomingValue = Math.random();
-        instance = new CategorizationTreeNode<Vector3, String, Boolean>(
+        instance = new CategorizationTreeNode<Vector3, String, Boolean>(parent,
             outputCategory, incomingValue);
+        assertSame(parent, instance.getParent());
         assertSame(outputCategory, instance.getOutputCategory());
         assertNull(instance.getDecider());
         assertSame(incomingValue, instance.getIncomingValue());
         
         VectorElementThresholdCategorizer decider = 
             new VectorElementThresholdCategorizer(4, Math.random());
-        instance = new CategorizationTreeNode<Vector3, String, Boolean>(
+        instance = new CategorizationTreeNode<Vector3, String, Boolean>(parent,
             decider, outputCategory, incomingValue);
+        assertSame(parent, instance.getParent());
         assertSame(outputCategory, instance.getOutputCategory());
         assertSame(decider, instance.getDecider());
         assertSame(incomingValue, instance.getIncomingValue());
@@ -81,7 +83,7 @@ public class CategorizationTreeNodeTest
             new VectorElementThresholdCategorizer(4, Math.random());
         
         CategorizationTreeNode<Vector3, String, Boolean> instance = 
-            new CategorizationTreeNode<Vector3, String, Boolean>(
+            new CategorizationTreeNode<Vector3, String, Boolean>(null,
                 decider, outputCategory, incomingValue);
         
         CategorizationTreeNode<Vector3, String, Boolean> clone = instance.clone();
@@ -99,7 +101,8 @@ public class CategorizationTreeNodeTest
             new CategorizationTreeNode<Vector3, String, Boolean>();
         
         CategorizationTreeNode<Vector3, String, Boolean> child = 
-            new CategorizationTreeNode<Vector3, String, Boolean>("child");
+            new CategorizationTreeNode<Vector3, String, Boolean>(instance,
+                "child");
         instance.addChild(false, child);
         assertEquals(1, instance.getChildMap().size());
         assertEquals(1, instance.getChildren().size());
@@ -127,7 +130,8 @@ public class CategorizationTreeNodeTest
         
         
         CategorizationTreeNode<Vector3, String, Boolean> child = 
-            new CategorizationTreeNode<Vector3, String, Boolean>("child");
+            new CategorizationTreeNode<Vector3, String, Boolean>(instance,
+                "child");
         instance.addChild(false, child);
         assertFalse(instance.isLeaf());
     }
@@ -141,14 +145,16 @@ public class CategorizationTreeNodeTest
             new VectorElementThresholdCategorizer(1, 7.0);
         CategorizationTreeNode<Vector3, String, Boolean> instance = 
             new CategorizationTreeNode<Vector3, String, Boolean>(
-                decider, "a", null);
+                null, decider, "a", null);
         
         assertNull(instance.chooseChild(new Vector3()));
         
         CategorizationTreeNode<Vector3, String, Boolean> child1 = 
-            new CategorizationTreeNode<Vector3, String, Boolean>("child1");
+            new CategorizationTreeNode<Vector3, String, Boolean>(
+                instance, "child1");
         CategorizationTreeNode<Vector3, String, Boolean> child2 = 
-            new CategorizationTreeNode<Vector3, String, Boolean>("child2");
+            new CategorizationTreeNode<Vector3, String, Boolean>(
+                instance, "child2");
         instance.addChild(false, child1);
         
         assertSame(child1, instance.chooseChild(new Vector3(0.0, 4.0, 0.0)));
@@ -165,7 +171,7 @@ public class CategorizationTreeNodeTest
     public void testGetOutput()
     {
         CategorizationTreeNode<Vector3, String, Boolean> instance = 
-            new CategorizationTreeNode<Vector3, String, Boolean>("a");
+            new CategorizationTreeNode<Vector3, String, Boolean>(null, "a");
         assertEquals("a", 
             instance.getOutput(new Vector3(Math.random(), Math.random(), Math.random())));
         
@@ -174,14 +180,44 @@ public class CategorizationTreeNodeTest
         
         instance.setDecider(new VectorElementThresholdCategorizer(1, 0.5));
         CategorizationTreeNode<Vector3, String, Boolean> child1 = 
-            new CategorizationTreeNode<Vector3, String, Boolean>("child1");
+            new CategorizationTreeNode<Vector3, String, Boolean>(
+                instance, "child1");
         CategorizationTreeNode<Vector3, String, Boolean> child2 = 
-            new CategorizationTreeNode<Vector3, String, Boolean>("child2");
+            new CategorizationTreeNode<Vector3, String, Boolean>(
+                instance, "child2");
         instance.addChild(false, child1);
         instance.addChild(true, child2);
         
         instance.setOutputCategory("b");
         assertEquals("b", instance.getOutput(new Vector3(Math.random(), Math.random(), Math.random())));
+    }
+
+    /**
+     * Test of getDepth method, of class gov.sandia.cognition.learning.algorithm.tree.CategorizationTreeNode.
+     */
+    public void testGetDepth()
+    {
+        CategorizationTreeNode<Vector3, String, Boolean> instance =
+            new CategorizationTreeNode<Vector3, String, Boolean>(null, "a");
+        assertEquals(1, instance.getDepth());
+
+        CategorizationTreeNode<Vector3, String, Boolean> child1 =
+            new CategorizationTreeNode<Vector3, String, Boolean>(
+                instance, "child1");
+        CategorizationTreeNode<Vector3, String, Boolean> child2 =
+            new CategorizationTreeNode<Vector3, String, Boolean>(
+                instance, "child2");
+        instance.addChild(false, child1);
+        instance.addChild(true, child2);
+
+        assertEquals(2, child1.getDepth());
+        assertEquals(2, child2.getDepth());
+
+        CategorizationTreeNode<Vector3, String, Boolean> child21 =
+            new CategorizationTreeNode<Vector3, String, Boolean>(
+                child2, "child21");
+        child2.addChild(true, child21);
+        assertEquals(3, child21.getDepth());
     }
 
     /**

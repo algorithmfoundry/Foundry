@@ -28,6 +28,7 @@ import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.mtj.Vector2;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import junit.framework.TestCase;
 
@@ -182,6 +183,45 @@ public class DatasetUtilTest
         for (int i = 0; i < nf.size(); i++)
         {
             assertEquals( nf.get( i ), result.getSecond().get( i ) );
+        }
+    }
+
+    /**
+     * Test of splitOnOutput method, of class DatasetUtil.
+     */
+    public void testSplitOnOutput()
+    {
+        Collection<InputOutputPair<Double, Boolean>> data =
+            new LinkedList<InputOutputPair<Double, Boolean>>();
+        LinkedList<Double> nt = new LinkedList<Double>();
+        LinkedList<Double> nf = new LinkedList<Double>();
+        int num = random.nextInt( 1000 ) + 100;
+
+        for (int i = 0; i < num; i++)
+        {
+            boolean c = random.nextBoolean();
+            double v = random.nextDouble();
+            if (c == true)
+            {
+                nt.add( v );
+            }
+            else
+            {
+                nf.add( v );
+            }
+            data.add( new DefaultInputOutputPair<Double, Boolean>( v, c ) );
+        }
+
+        Map<Boolean, List<Double>> map = DatasetUtil.splitOnOutput(data);
+        assertEquals(nt.size(), map.get(true).size());
+        assertEquals(nf.size(), map.get(false).size());
+        for (int i = 0; i < nt.size(); i++)
+        {
+            assertEquals( nt.get( i ), map.get(true).get( i ) );
+        }
+        for (int i = 0; i < nf.size(); i++)
+        {
+            assertEquals( nf.get( i ), map.get(false).get( i ) );
         }
     }
 

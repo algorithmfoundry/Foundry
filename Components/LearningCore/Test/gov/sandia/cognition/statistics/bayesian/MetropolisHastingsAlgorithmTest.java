@@ -113,9 +113,9 @@ public class MetropolisHastingsAlgorithmTest
 
         DataHistogram<GammaDistribution.PDF> gammas = mcmc.learn(samples);
 
-        ArrayList<Double> shapes = new ArrayList<Double>( gammas.getValues().size() );
-        ArrayList<Double> scales = new ArrayList<Double>( gammas.getValues().size() );
-        for( GammaDistribution.PDF gamma : gammas.getValues() )
+        ArrayList<Double> shapes = new ArrayList<Double>( gammas.getDomain().size() );
+        ArrayList<Double> scales = new ArrayList<Double>( gammas.getDomain().size() );
+        for( GammaDistribution.PDF gamma : gammas.getDomain() )
         {
             shapes.add( gamma.getShape() );
             scales.add( gamma.getScale() );
@@ -150,8 +150,8 @@ public class MetropolisHastingsAlgorithmTest
         mcmc.setRandom(RANDOM);
 
         DataHistogram<BernoulliDistribution.PMF> berns = mcmc.learn(samples);
-        ArrayList<Double> ps = new ArrayList<Double>( berns.getValues().size() );
-        for( BernoulliDistribution.PMF b : berns.getValues() )
+        ArrayList<Double> ps = new ArrayList<Double>( berns.getDomain().size() );
+        for( BernoulliDistribution.PMF b : berns.getDomain() )
         {
             ps.add( b.getP() );
         }

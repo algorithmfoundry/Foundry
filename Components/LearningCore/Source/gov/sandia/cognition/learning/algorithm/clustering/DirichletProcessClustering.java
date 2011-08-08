@@ -183,7 +183,7 @@ public class DirichletProcessClustering
         double maxPosterior = Double.NEGATIVE_INFINITY;
         DirichletProcessMixtureModel.Sample<Vector> maxSample = null;
         int i = 0;
-        for( DirichletProcessMixtureModel.Sample<Vector> sample : dpmm.getValues() )
+        for( DirichletProcessMixtureModel.Sample<Vector> sample : dpmm.getDomain() )
         {
             if( sample.getPosteriorLogLikelihood() != null )
             {

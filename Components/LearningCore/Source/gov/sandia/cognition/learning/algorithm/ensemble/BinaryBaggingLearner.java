@@ -17,6 +17,7 @@ package gov.sandia.cognition.learning.algorithm.ensemble;
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.algorithm.AbstractAnytimeBatchLearner;
+import gov.sandia.cognition.learning.algorithm.BatchLearner;
 import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.util.Randomized;
@@ -49,7 +50,7 @@ import java.util.Random;
 public class BinaryBaggingLearner<InputType>
     extends AbstractAnytimeBatchLearner
         <Collection<? extends InputOutputPair<? extends InputType,Boolean>>, 
-            WeightedBinaryEnsemble<InputType>>
+            WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>>>
     implements Randomized
 {
 
@@ -57,16 +58,19 @@ public class BinaryBaggingLearner<InputType>
     public static final int DEFAULT_MAX_ITERATIONS = 100;
 
     /** The learner to use to create the categorizer for each iteration. */
-    protected SupervisedBatchLearner<InputType, Boolean, ?> learner;
+    protected BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>>
+        learner;
 
     /** The random number generator to use. */
     protected Random random;
 
     /** The ensemble being created by the learner. */
-    private WeightedBinaryEnsemble<InputType> ensemble;
+    protected transient WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>>
+        ensemble;
 
     /** The data stored for efficient random access. */
-    private ArrayList<InputOutputPair<? extends InputType, Boolean>> dataList;
+    protected transient ArrayList<InputOutputPair<? extends InputType, Boolean>>
+        dataList;
 
     /**
      * Creates a new instance of BinaryBaggingLearner.
@@ -138,8 +142,9 @@ public class BinaryBaggingLearner<InputType>
         }
 
         // Create the ensemble where we will be storing the output.
-        WeightedBinaryEnsemble<InputType> localEmsemble = new WeightedBinaryEnsemble<InputType>(
-            new ArrayList<WeightedValue<? extends Evaluator<? super InputType,? extends Boolean>>>(
+        WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>> localEmsemble =
+            new WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>>(
+            new ArrayList<WeightedValue<Evaluator<? super InputType,? extends Boolean>>>(
                 this.getMaxIterations()));
         this.setEnsemble(localEmsemble);
 
@@ -186,7 +191,7 @@ public class BinaryBaggingLearner<InputType>
         this.setDataList(null);
     }
 
-    public WeightedBinaryEnsemble<InputType> getResult()
+    public WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>> getResult()
     {
         return this.getEnsemble();
     }
@@ -196,7 +201,8 @@ public class BinaryBaggingLearner<InputType>
      *
      * @return The learner used by the algorithm.
      */
-    public SupervisedBatchLearner<InputType, Boolean, ?> getLearner()
+    public BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>>
+        getLearner()
     {
         return this.learner;
     }
@@ -207,7 +213,7 @@ public class BinaryBaggingLearner<InputType>
      * @param   learner The learner for the algorithm to use.
      */
     public void setLearner(
-        final SupervisedBatchLearner<InputType, Boolean, ?> learner)
+        final BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>> learner)
     {
         this.learner = learner;
     }
@@ -228,7 +234,7 @@ public class BinaryBaggingLearner<InputType>
      *
      * @return The ensemble created by this learner.
      */
-    public WeightedBinaryEnsemble<InputType> getEnsemble()
+    public WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>> getEnsemble()
     {
         return this.ensemble;
     }
@@ -239,7 +245,7 @@ public class BinaryBaggingLearner<InputType>
      * @param  ensemble The ensemble created by this learner.
      */
     protected void setEnsemble(
-        final WeightedBinaryEnsemble<InputType> ensemble)
+        final WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>> ensemble)
     {
         this.ensemble = ensemble;
     }

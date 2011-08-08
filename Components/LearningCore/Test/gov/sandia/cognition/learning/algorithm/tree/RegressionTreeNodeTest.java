@@ -42,9 +42,9 @@ public class RegressionTreeNodeTest
      * @param testName The test name.
      */
     public RegressionTreeNodeTest(
-        String testName )
+        String testName)
     {
-        super( testName );
+        super(testName);
     }
 
     /**
@@ -52,52 +52,62 @@ public class RegressionTreeNodeTest
      */
     public void testConstructors()
     {
+        DecisionTreeNode<Vectorizable, Double> parent = null;
         RegressionTreeNode<Vectorizable, Object> instance =
             new RegressionTreeNode<Vectorizable, Object>();
-        assertNull( instance.getScalarFunction() );
-        assertNull( instance.getDecider() );
-        assertEquals( RegressionTreeNode.DEFAULT_VALUE, instance.getValue() );
-        assertNull( instance.getIncomingValue() );
+        assertSame(parent, instance.getParent());
+        assertNull(instance.getScalarFunction());
+        assertNull(instance.getDecider());
+        assertEquals(RegressionTreeNode.DEFAULT_VALUE, instance.getValue());
+        assertNull(instance.getIncomingValue());
 
+        parent = new RegressionTreeNode<Vectorizable, Object>();
         double value = Math.random();
-        instance = new RegressionTreeNode<Vectorizable, Object>( value );
-        assertNull( instance.getScalarFunction() );
-        assertNull( instance.getDecider() );
-        assertEquals( value, instance.getValue() );
-        assertNull( instance.getIncomingValue() );
+        instance = new RegressionTreeNode<Vectorizable, Object>(parent, value);
+        assertSame(parent, instance.getParent());
+        assertNull(instance.getScalarFunction());
+        assertNull(instance.getDecider());
+        assertEquals(value, instance.getValue());
+        assertNull(instance.getIncomingValue());
 
         VectorElementThresholdCategorizer decider =
-            new VectorElementThresholdCategorizer( 4, Math.random() );
-        instance = new RegressionTreeNode<Vectorizable, Object>( decider, value );
-        assertNull( instance.getScalarFunction() );
-        assertSame( decider, instance.getDecider() );
-        assertEquals( value, instance.getValue() );
-        assertNull( instance.getIncomingValue() );
+            new VectorElementThresholdCategorizer(4,
+            Math.random());
+        instance = new RegressionTreeNode<Vectorizable, Object>(parent, decider,
+            value);
+        assertSame(parent, instance.getParent());
+        assertNull(instance.getScalarFunction());
+        assertSame(decider, instance.getDecider());
+        assertEquals(value, instance.getValue());
+        assertNull(instance.getIncomingValue());
 
         KernelScalarFunction<Vectorizable> scalarFunction =
             new KernelScalarFunction<Vectorizable>();
-        instance = new RegressionTreeNode<Vectorizable, Object>(
-            scalarFunction, value );
-        assertSame( scalarFunction, instance.getScalarFunction() );
-        assertNull( instance.getDecider() );
-        assertEquals( value, instance.getValue() );
-        assertNull( instance.getIncomingValue() );
+        instance = new RegressionTreeNode<Vectorizable, Object>(parent,
+            scalarFunction, value);
+        assertSame(parent, instance.getParent());
+        assertSame(scalarFunction, instance.getScalarFunction());
+        assertNull(instance.getDecider());
+        assertEquals(value, instance.getValue());
+        assertNull(instance.getIncomingValue());
 
         Object incomingValue = "something";
-        instance = new RegressionTreeNode<Vectorizable, Object>(
-            scalarFunction, value, incomingValue );
-        assertSame( scalarFunction, instance.getScalarFunction() );
-        assertNull( instance.getDecider() );
-        assertEquals( value, instance.getValue() );
-        assertEquals( incomingValue, instance.getIncomingValue() );
+        instance = new RegressionTreeNode<Vectorizable, Object>(parent,
+            scalarFunction, value, incomingValue);
+        assertSame(parent, instance.getParent());
+        assertSame(scalarFunction, instance.getScalarFunction());
+        assertNull(instance.getDecider());
+        assertEquals(value, instance.getValue());
+        assertEquals(incomingValue, instance.getIncomingValue());
 
 
-        instance = new RegressionTreeNode<Vectorizable, Object>(
-            decider, scalarFunction, value, incomingValue );
-        assertSame( scalarFunction, instance.getScalarFunction() );
-        assertSame( decider, instance.getDecider() );
-        assertEquals( value, instance.getValue() );
-        assertEquals( incomingValue, instance.getIncomingValue() );
+        instance = new RegressionTreeNode<Vectorizable, Object>(parent,
+            decider, scalarFunction, value, incomingValue);
+        assertSame(parent, instance.getParent());
+        assertSame(scalarFunction, instance.getScalarFunction());
+        assertSame(decider, instance.getDecider());
+        assertEquals(value, instance.getValue());
+        assertEquals(incomingValue, instance.getIncomingValue());
     }
 
     /**
@@ -107,20 +117,20 @@ public class RegressionTreeNodeTest
     {
 
         VectorElementThresholdCategorizer decider =
-            new VectorElementThresholdCategorizer( 4, Math.random() );
+            new VectorElementThresholdCategorizer(4, Math.random());
         KernelScalarFunction<Vectorizable> scalarFunction =
             new KernelScalarFunction<Vectorizable>();
         Object incomingValue = "something";
 
         double value = Math.random();
         RegressionTreeNode<Vectorizable, Object> instance =
-            new RegressionTreeNode<Vectorizable, Object>(
-            decider, scalarFunction, value, incomingValue );
+            new RegressionTreeNode<Vectorizable, Object>(null,
+            decider, scalarFunction, value, incomingValue);
 
         RegressionTreeNode<Vectorizable, Object> clone = instance.clone();
-        assertSame( scalarFunction, instance.getScalarFunction() );
-        assertSame( decider, instance.getDecider() );
-        assertEquals( incomingValue, instance.getIncomingValue() );
+        assertSame(scalarFunction, instance.getScalarFunction());
+        assertSame(decider, instance.getDecider());
+        assertEquals(incomingValue, instance.getIncomingValue());
     }
 
     /**
@@ -130,26 +140,26 @@ public class RegressionTreeNodeTest
     {
         double value = Math.random();
         RegressionTreeNode<Vectorizable, Object> instance =
-            new RegressionTreeNode<Vectorizable, Object>( value );
-        assertEquals( value, instance.getOutput( new Vector3() ) );
+            new RegressionTreeNode<Vectorizable, Object>(null, value);
+        assertEquals(value, instance.getOutput(new Vector3()));
 
 
         KernelScalarFunction<Vectorizable> scalarFunction =
             new KernelScalarFunction<Vectorizable>();
-        scalarFunction.setKernel( LinearKernel.getInstance() );
-        scalarFunction.setBias( Math.random() );
-        scalarFunction.setExamples( Collections.singleton(
+        scalarFunction.setKernel(LinearKernel.getInstance());
+        scalarFunction.setBias(Math.random());
+        scalarFunction.setExamples(Collections.singleton(
             new DefaultWeightedValue<Vector3>(
-            new Vector3( Math.random(), Math.random(), Math.random() ),
-            Math.random() ) ) );
-        instance.setScalarFunction( scalarFunction );
+            new Vector3(Math.random(), Math.random(), Math.random()),
+            Math.random())));
+        instance.setScalarFunction(scalarFunction);
 
         for (int i = 0; i < 5; i++)
         {
             Vector3 input = new Vector3(
-                Math.random(), Math.random(), Math.random() );
-            double expected = scalarFunction.evaluate( input );
-            assertEquals( expected, (double) instance.getOutput( input ) );
+                Math.random(), Math.random(), Math.random());
+            double expected = scalarFunction.evaluate(input);
+            assertEquals(expected, (double) instance.getOutput(input));
         }
     }
 
@@ -168,15 +178,15 @@ public class RegressionTreeNodeTest
     {
         RegressionTreeNode<Vectorizable, Object> instance =
             new RegressionTreeNode<Vectorizable, Object>();
-        assertNull( instance.getScalarFunction() );
+        assertNull(instance.getScalarFunction());
 
         KernelScalarFunction<Vectorizable> scalarFunction =
             new KernelScalarFunction<Vectorizable>();
-        instance.setScalarFunction( scalarFunction );
-        assertSame( scalarFunction, instance.getScalarFunction() );
+        instance.setScalarFunction(scalarFunction);
+        assertSame(scalarFunction, instance.getScalarFunction());
 
-        instance.setScalarFunction( null );
-        assertNull( instance.getScalarFunction() );
+        instance.setScalarFunction(null);
+        assertNull(instance.getScalarFunction());
 
     }
 
@@ -195,15 +205,15 @@ public class RegressionTreeNodeTest
     {
         RegressionTreeNode<Vectorizable, Object> instance =
             new RegressionTreeNode<Vectorizable, Object>();
-        assertEquals( RegressionTreeNode.DEFAULT_VALUE, instance.getValue() );
+        assertEquals(RegressionTreeNode.DEFAULT_VALUE, instance.getValue());
 
         double value = Math.random();
-        instance.setValue( value );
-        assertEquals( value, instance.getValue() );
+        instance.setValue(value);
+        assertEquals(value, instance.getValue());
 
         value = -Math.random();
-        instance.setValue( value );
-        assertEquals( value, instance.getValue() );
+        instance.setValue(value);
+        assertEquals(value, instance.getValue());
     }
 
 }

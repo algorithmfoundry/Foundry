@@ -141,10 +141,10 @@ public class DirichletProcessMixtureModelTest
 
         assertEquals( d1.getTotalCount(), d2.getTotalCount() );
 
-        Iterator<DirichletProcessMixtureModel.Sample<Vector>> i1 =
-            d1.getValues().iterator();
-        Iterator<DirichletProcessMixtureModel.Sample<Vector>> i2 =
-            d2.getValues().iterator();
+        Iterator<? extends DirichletProcessMixtureModel.Sample<Vector>> i1 =
+            d1.getDomain().iterator();
+        Iterator<? extends DirichletProcessMixtureModel.Sample<Vector>> i2 =
+            d2.getDomain().iterator();
         while( i1.hasNext() )
         {
             DirichletProcessMixtureModel.Sample<Vector> s1 = i1.next();
@@ -191,7 +191,7 @@ public class DirichletProcessMixtureModelTest
         double maxLL = Double.NEGATIVE_INFINITY;
         int maxIndex = -1;
         int index = 0;
-        for( DirichletProcessMixtureModel.Sample<Vector> result : results.getValues() )
+        for( DirichletProcessMixtureModel.Sample<Vector> result : results.getDomain() )
         {
             ks.add( (double) result.getNumClusters() );
             Double ll = result.getPosteriorLogLikelihood();
@@ -266,7 +266,7 @@ public class DirichletProcessMixtureModelTest
         double maxLL = Double.NEGATIVE_INFINITY;
         int maxIndex = -1;
         int index = 0;
-        for( DirichletProcessMixtureModel.Sample<Vector> result : results.getValues() )
+        for( DirichletProcessMixtureModel.Sample<Vector> result : results.getDomain() )
         {
             ks.add( (double) result.getNumClusters() );
             Double ll = result.getPosteriorLogLikelihood();

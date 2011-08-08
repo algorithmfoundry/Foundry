@@ -19,6 +19,7 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.algorithm.AbstractAnytimeSupervisedBatchLearner;
+import gov.sandia.cognition.learning.algorithm.BatchLearner;
 import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.DefaultWeightedInputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.BinaryCategorizer;
@@ -26,6 +27,7 @@ import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.data.WeightedInputOutputPair;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 
 /**
@@ -63,9 +65,7 @@ import java.util.LinkedList;
     url="http://www.cse.ucsd.edu/~yfreund/papers/adaboost.pdf"
 )
 public class AdaBoost<InputType>
-    extends AbstractAnytimeSupervisedBatchLearner<InputType,Boolean,WeightedBinaryEnsemble<InputType>>
-//    extends AbstractAnytimeBatchLearner
-//    <Collection<? extends InputOutputPair<? extends InputType, Boolean>>,WeightedBinaryEnsemble<InputType>>
+    extends AbstractAnytimeSupervisedBatchLearner<InputType, Boolean, WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>>>
 {
 
     /** The default maximum number of iterations is {@value}. */
@@ -75,13 +75,15 @@ public class AdaBoost<InputType>
      * The "weak learner" that must learn from the weighted input-output pairs
      * on each iteration.
      */
-    protected SupervisedBatchLearner<InputType,Boolean,BinaryCategorizer<? super InputType>> weakLearner;
+    protected BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>>
+        weakLearner;
 
     /** The ensemble learned by the algorithm. */
-    protected WeightedBinaryEnsemble<InputType> ensemble;
+    protected transient WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>>
+        ensemble;
 
     /** An array list containing the weighted version of the data. */
-    protected ArrayList<DefaultWeightedInputOutputPair<InputType, Boolean>> weightedData;
+    protected transient ArrayList<DefaultWeightedInputOutputPair<InputType, Boolean>> weightedData;
 
     /**
      * Creates a new instance of AdaBoost.
@@ -98,7 +100,7 @@ public class AdaBoost<InputType>
      *         iteration.
      */
     public AdaBoost(
-        final SupervisedBatchLearner<InputType,Boolean,BinaryCategorizer<? super InputType>> weakLearner)
+        final BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>> weakLearner)
     {
         this(weakLearner, DEFAULT_MAX_ITERATIONS);
     }
@@ -113,7 +115,7 @@ public class AdaBoost<InputType>
      *      upper bound on the number of learners to create.
      */
     public AdaBoost(
-        final SupervisedBatchLearner<InputType,Boolean,BinaryCategorizer<? super InputType>> weakLearner,
+        final BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>> weakLearner,
         final int maxIterations)
     {
         super(maxIterations);
@@ -133,8 +135,8 @@ public class AdaBoost<InputType>
         }
 
         // Create the ensemble.
-        this.setEnsemble( new WeightedBinaryEnsemble<InputType>(
-            new LinkedList<WeightedValue<? extends Evaluator<? super InputType,? extends Boolean>>>()));
+        this.setEnsemble(new WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>>(
+            new LinkedList<WeightedValue<Evaluator<? super InputType, ? extends Boolean>>>()));
 
         // We initialize the weighted training examples and count them up
         // as we go so that we can initialize the weights in the next step.
@@ -167,7 +169,7 @@ public class AdaBoost<InputType>
     protected boolean step()
     {
         // First perform the weak learning algorithm.
-        BinaryCategorizer<? super InputType> learned =
+        Evaluator<? super InputType, ? extends Boolean> learned =
             this.weakLearner.learn(this.weightedData);
 
         if (learned == null)
@@ -279,7 +281,7 @@ public class AdaBoost<InputType>
         this.setWeightedData(null);
     }
 
-    public WeightedBinaryEnsemble<InputType> getResult()
+    public WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>> getResult()
     {
         return this.getEnsemble();
     }
@@ -290,7 +292,7 @@ public class AdaBoost<InputType>
      *
      * @return The weak learner for the algorithm to use.
      */
-    public SupervisedBatchLearner<InputType,Boolean,BinaryCategorizer<? super InputType>> getWeakLearner()
+    public BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>> getWeakLearner()
     {
         return this.weakLearner;
     }
@@ -302,7 +304,7 @@ public class AdaBoost<InputType>
      * @param   weakLearner The weak learner for the algorithm to use.
      */
     public void setWeakLearner(
-        final SupervisedBatchLearner<InputType,Boolean,BinaryCategorizer<? super InputType>> weakLearner)
+        final BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>> weakLearner)
     {
         this.weakLearner = weakLearner;
     }
@@ -312,7 +314,7 @@ public class AdaBoost<InputType>
      *
      * @return The ensemble created by this learner.
      */
-    public WeightedBinaryEnsemble<InputType> getEnsemble()
+    public WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>> getEnsemble()
     {
         return this.ensemble;
     }
@@ -323,7 +325,7 @@ public class AdaBoost<InputType>
      * @param  ensemble The ensemble created by this learner.
      */
     protected void setEnsemble(
-        final WeightedBinaryEnsemble<InputType> ensemble)
+        final WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>> ensemble)
     {
         this.ensemble = ensemble;
     }

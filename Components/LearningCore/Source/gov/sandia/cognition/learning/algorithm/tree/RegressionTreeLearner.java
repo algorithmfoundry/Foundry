@@ -21,6 +21,7 @@ import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.Categorizer;
+import gov.sandia.cognition.util.ArgumentChecker;
 import java.util.Collection;
 
 /**
@@ -42,6 +43,9 @@ public class RegressionTreeLearner<InputType>
     /** The default threshold for making a leaf node based on count. */
     public static final int DEFAULT_LEAF_COUNT_THRESHOLD = 4;
 
+    /** The default maximum depth to grow the tree to. */
+    public static final int DEFAULT_MAX_DEPTH = -1;
+
     /** The learning algorithm for the regression function. */
     protected BatchLearner
         <Collection<? extends InputOutputPair<? extends InputType, Double>>, 
@@ -51,6 +55,9 @@ public class RegressionTreeLearner<InputType>
     /** The threshold for making a node a leaf, determined by how many 
      *  instances fall in the threshold. */
     protected int leafCountThreshold;
+
+    /** The maximum depth for the tree. Ignored if less than 1. */
+    protected int maxDepth;
 
     /**
      * Creates a new instance of RegressionTreeLearner
@@ -73,7 +80,8 @@ public class RegressionTreeLearner<InputType>
              ? extends Evaluator<? super InputType, Double>>  
              regressionLearner)
     {
-        this(deciderLearner, regressionLearner, DEFAULT_LEAF_COUNT_THRESHOLD);
+        this(deciderLearner, regressionLearner, 
+            DEFAULT_LEAF_COUNT_THRESHOLD, DEFAULT_MAX_DEPTH);
     }
 
     /**
@@ -91,20 +99,16 @@ public class RegressionTreeLearner<InputType>
             <Collection<? extends InputOutputPair<? extends InputType, Double>>, 
              ? extends Evaluator<? super InputType, Double>>  
              regressionLearner,
-        final int leafCountThreshold)
+        final int leafCountThreshold,
+        final int maxDepth)
     {
         super(deciderLearner);
 
         this.setRegressionLearner(regressionLearner);
         this.setLeafCountThreshold(leafCountThreshold);
+        this.setMaxDepth(maxDepth);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param  data {@inheritDoc}
-     * @return {@inheritDoc}
-     */
     public RegressionTree<InputType> learn(
         Collection<? extends InputOutputPair<? extends InputType, Double>> data)
     {
@@ -139,10 +143,16 @@ public class RegressionTreeLearner<InputType>
             // Invalid data, nothing to learn.
             return null;
         }
+        
+        // Figure out the depth of the node.
+        int depth = parent == null ? 1 : 1 + parent.getDepth();
 
         // Determine if this is a leaf node by checking the cound threshold and
         // determining if all the outputs are equal.
-        final boolean isLeaf = data.size() <= this.leafCountThreshold || this.areAllOutputsEqual(data);
+        final boolean isLeaf =
+               data.size() <= this.leafCountThreshold
+            || (this.maxDepth > 0 && depth >= maxDepth)
+            || this.areAllOutputsEqual(data);
 
         // We use the mean value as part of the node.
         final double mean = DatasetUtil.computeOutputMean(data);
@@ -170,13 +180,14 @@ public class RegressionTreeLearner<InputType>
             //        tree will be the mean.
 
             // Create the leaf node.
-            return new RegressionTreeNode<InputType, Object>(scalarFunction,
-                mean);
+            return new RegressionTreeNode<InputType, Object>(
+                parent, scalarFunction, mean);
         }
 
         // We give the node we are creating the most common output value.
         final RegressionTreeNode<InputType, Object> node =
-            new RegressionTreeNode<InputType, Object>(decider, mean);
+            new RegressionTreeNode<InputType, Object>(
+                parent, decider, mean);
 
         // Learn the child nodes.
         this.learnChildNodes(node, data, decider);
@@ -235,13 +246,32 @@ public class RegressionTreeLearner<InputType>
     public void setLeafCountThreshold(
         final int leafCountThreshold)
     {
-        if (leafCountThreshold < 0)
-        {
-            throw new IllegalArgumentException(
-                "leafCountThreshold cannot be negative");
-        }
-
+        ArgumentChecker.assertIsNonNegative("leafCountThreshold", leafCountThreshold);
         this.leafCountThreshold = leafCountThreshold;
     }
 
+    /**
+     * Gets the maximum depth to grow the tree.
+     *
+     * @return
+     *      The maximum depth to grow the tree. Zero or less means no
+     *      maximum depth.
+     */
+    public int getMaxDepth()
+    {
+        return this.maxDepth;
+    }
+
+    /**
+     * Sets the maximum depth to grow the tree.
+     *
+     * @param   maxDepth
+     *      The maximum depth to grow the tree. Zero or less means no
+     *      maximum depth.
+     */
+    public void setMaxDepth(
+        final int maxDepth)
+    {
+        this.maxDepth = maxDepth;
+    }
 }

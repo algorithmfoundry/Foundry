@@ -14,7 +14,7 @@
 
 package gov.sandia.cognition.statistics;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * A data structure that allows the building of histograms.  That is, class
@@ -24,7 +24,7 @@ import java.util.Collection;
  * @since 3.0
  */
 public interface DataHistogram<DataType>
-    extends Distribution<DataType>
+    extends DiscreteDistribution<DataType>
 {
 
     /**
@@ -32,7 +32,7 @@ public interface DataHistogram<DataType>
      *
      * @param  value The value to add.
      */
-    void add(
+    public void add(
         DataType value);
     
     /**
@@ -41,7 +41,7 @@ public interface DataHistogram<DataType>
      * @param  value The value to add.
      * @param  count The number of value to add.
      */
-    void add(
+    public void add(
         DataType value,
         int count );
     
@@ -50,7 +50,7 @@ public interface DataHistogram<DataType>
      * 
      * @param  value The value to remove.
      */
-    void remove(
+    public void remove(
         DataType value);
     
     /**
@@ -59,9 +59,18 @@ public interface DataHistogram<DataType>
      * @param  value The value to remove.
      * @param  count The count of value to remove.
      */
-    void remove(
+    public void remove(
         DataType value,
         int count );
+
+    /**
+     * Adds all of the given values to the histogram.
+     *
+     * @param  values
+     *      The values to add.
+     */
+    public void addAll(
+        final Iterable<? extends DataType> values);
 
     /**
      * Adds all of the counts from the given other histogram to this one.
@@ -72,23 +81,16 @@ public interface DataHistogram<DataType>
      * @param   other
      *      The other histogram whose values should be added.
      */
-    <OtherDataType extends DataType> void addAll(
+    public <OtherDataType extends DataType> void addAll(
         final DataHistogram<OtherDataType> other);
 
-    /**
-     * Gets all of the values that have entries in the histogram.
-     *
-     * @return All of the values that have entries in the histogram.
-     */
-    Collection<DataType> getValues();
-    
     /**
      * Gets the count associated with the given value.
      *
      * @param  input The value to get the count of.
      * @return The number of values associated with the input.
      */
-    int getCount(
+    public int getCount(
         DataType input);
     
     /**
@@ -96,7 +98,7 @@ public interface DataHistogram<DataType>
      *
      * @return The total count of all values.
      */
-    int getTotalCount();
+    public int getTotalCount();
 
     /**
      * Gets the fraction of the count that a given value has. If there is
@@ -113,5 +115,59 @@ public interface DataHistogram<DataType>
      */
     public double getFraction(
         final DataType value);
+
+    /**
+     * Gets the size of the domain.
+     *
+     * @return
+     *      The size of the domain.
+     */
+    public int getDomainSize();
+    // TODO: Should this be pushed up into DiscreteDistribution?
+
+    /**
+     * Finds the maximum count over all values.
+     *
+     * @return
+     *      The maximum count over all values.
+     */
+    public int getMaximumCount();
+
+    /**
+     * Finds the first value with the maximum count.
+     *
+     * @return
+     *      First value with the maximum count, if one exists. If all the counts
+     *      are 0, null is returned.
+     */
+    public DataType getMaximumValue();
+
+    /**
+     * Gets all of the values that have the maximum count.
+     *
+     * @return
+     *      All of the values that have the maximum count. If all the counts are
+     *      zero, the list is empty.
+     */
+    public List<DataType> getMaximumValues();
     
+    /**
+     * Gets the entropy of the values in the histogram.
+     *
+     * @return The entropy of the values in the histogram.
+     */
+    public double getEntropy();
+
+    public DataHistogram.PMF<DataType> getProbabilityFunction();
+
+    /**
+     * A PMF of a DataHistogram
+     * @param <DataType> Type of data to use.
+     */
+    public static interface PMF<DataType>
+        extends DataHistogram<DataType>,
+        ProbabilityMassFunction<DataType>
+    {
+    }
+
 }

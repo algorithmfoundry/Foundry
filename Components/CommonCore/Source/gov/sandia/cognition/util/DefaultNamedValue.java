@@ -129,6 +129,25 @@ public class DefaultNamedValue<ValueType>
     }
 
     /**
+     * Convenience method for creating an new {@code DefaultNamedValue}.
+     * 
+     * @param   <T>
+     *      The value type.
+     * @param   name
+     *      The name.
+     * @param   value
+     *      The value.
+     * @return
+     *      A new default named value with the given name and value.
+     */
+    public static <T> DefaultNamedValue<T> create(
+        final String name,
+        final T value)
+    {
+        return new DefaultNamedValue<T>(name, value);
+    }
+
+    /**
      * Creates a list of named values from a collection of named objects. This
      * is useful for cases where objects may have a name but that name is not
      * the toString representation of the object but you want to treat it as

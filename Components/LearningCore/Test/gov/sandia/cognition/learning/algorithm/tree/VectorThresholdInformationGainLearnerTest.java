@@ -17,6 +17,7 @@ package gov.sandia.cognition.learning.algorithm.tree;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.VectorElementThresholdCategorizer;
+import gov.sandia.cognition.math.matrix.mtj.Vector2;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
 import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
 import gov.sandia.cognition.util.DefaultPair;
@@ -158,4 +159,57 @@ public class VectorThresholdInformationGainLearnerTest
         assertEquals(0.251, result.getFirst(), 0.001);
         assertEquals(2.5, result.getSecond());
     }
+
+    /**
+     * Tests a corner-case of creating a threshold where the first split is
+     * the result.
+     */
+    public void testThresholdBug()
+    {
+        VectorThresholdInformationGainLearner<Boolean> instance =
+            new VectorThresholdInformationGainLearner<Boolean>();
+
+        MapBasedDataHistogram<Boolean> baseCounts = null;
+        DefaultPair<Double, Double> result = null;
+
+        LinkedList<InputOutputPair<Vector2, Boolean>> data =
+            new LinkedList<InputOutputPair<Vector2, Boolean>>();
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), true));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), true));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), true));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 1.0763), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), true));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 1.0763), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), true));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), true));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 1.0763), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), true));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 1.0763), true));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 5.5639), false));
+
+        baseCounts = CategorizationTreeLearner.getOutputCounts(data);
+        result = instance.computeBestGainAndThreshold(data, 1, baseCounts);
+        assertEquals((5.5639 + 1.0763) / 2.0, result.getSecond());
+    }
+
 }

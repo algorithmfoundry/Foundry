@@ -19,11 +19,13 @@ import gov.sandia.cognition.algorithm.IterativeAlgorithmListener;
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.collection.FiniteCapacityBuffer;
 import gov.sandia.cognition.evaluator.Evaluator;
+import gov.sandia.cognition.factory.Factory;
 import gov.sandia.cognition.learning.algorithm.AbstractAnytimeSupervisedBatchLearner;
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
+import gov.sandia.cognition.statistics.DataHistogram;
 import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
@@ -91,6 +93,9 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
      *  vote on out-of-bag values. */
     protected boolean voteOutOfBagOnly;
 
+    /** Factory for counting votes. */
+    protected Factory<? extends DataHistogram<CategoryType>> counterFactory;
+
     /** The random number generator to use. */
     protected Random random;
 
@@ -106,12 +111,12 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
      *  that each ensemble member is only evaluated once on each training
      *  example.
      */
-    protected transient ArrayList<MapBasedDataHistogram<CategoryType>> dataFullEstimates;
+    protected transient ArrayList<DataHistogram<CategoryType>> dataFullEstimates;
 
     /** The running estimate of the ensemble for each example where an ensemble
      *  member can only vote on elements that were not in the bag used to train
      * it. */
-    protected transient ArrayList<MapBasedDataHistogram<CategoryType>> dataOutOfBagEstimates;
+    protected transient ArrayList<DataHistogram<CategoryType>> dataOutOfBagEstimates;
 
     /** A boolean for each example indicating if the ensemble currently gets the
      *  example correct or incorrect.
@@ -123,6 +128,9 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
 
     /** The indices of examples that the ensemble currently gets incorrect. */
     protected transient ArrayList<Integer> currentIncorrectIndices;
+
+    /** The size of sample to create on each iteration. */
+    protected transient int sampleSize;
 
     /** The number of correct examples to sample on each iteration. */
     protected transient int numCorrectToSample;
@@ -150,9 +158,8 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
      */
     public IVotingCategorizerLearner()
     {
-        this(null, DEFAULT_MAX_ITERATIONS, DEFAULT_PERCENT_TO_SAMPLE, 
-            DEFAULT_PROPORTION_INCORRECT_IN_SAMPLE,
-            DEFAULT_VOTE_OUT_OF_BAG_ONLY, new Random());
+        this(null, DEFAULT_MAX_ITERATIONS, DEFAULT_PERCENT_TO_SAMPLE,
+            new Random());
     }
 
     /**
@@ -177,7 +184,9 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
     {
         this(learner, maxIterations, percentToSample,
             DEFAULT_PROPORTION_INCORRECT_IN_SAMPLE,
-            DEFAULT_VOTE_OUT_OF_BAG_ONLY, random);
+            DEFAULT_VOTE_OUT_OF_BAG_ONLY,
+            new MapBasedDataHistogram.DefaultFactory<CategoryType>(2),
+            random);
     }
 
     /**
@@ -195,7 +204,10 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
      *      The percentage of incorrect examples to put in each sample. Must
      *      be between 0.0 and 1.0 (inclusive).
      * @param  voteOutOfBagOnly
-     *      Controls whether or not
+     *      Controls whether or not in-bag or out-of-bag votes are used to
+     *      determine accuracy.
+     * @param   counterFactory
+     *      The factory for counting votes.
      * @param  random
      *      The random number generator to use.
      */
@@ -205,6 +217,7 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
         final double percentToSample,
         final double proportionIncorrectInSample,
         final boolean voteOutOfBagOnly,
+        final Factory<? extends DataHistogram<CategoryType>> counterFactory,
         final Random random)
     {
         super(maxIterations);
@@ -213,6 +226,7 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
         this.setPercentToSample(percentToSample);
         this.setProportionIncorrectInSample(proportionIncorrectInSample);
         this.setVoteOutOfBagOnly(voteOutOfBagOnly);
+        this.setCounterFactory(counterFactory);
         this.setRandom(random);
     }
 
@@ -227,6 +241,11 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
             return false;
         }
 
+        if (this.random == null)
+        {
+            this.random = new Random();
+        }
+
         // Initialize the ensemble.
         this.ensemble = new WeightedVotingCategorizerEnsemble<InputType, CategoryType, Evaluator<? super InputType, ? extends CategoryType>>(
             DatasetUtil.findUniqueOutputs(this.data));
@@ -238,9 +257,9 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
         // We keep a running estimate of the output of the ensemble by
         // evaluating each member once.
         this.dataFullEstimates =
-            new ArrayList<MapBasedDataHistogram<CategoryType>>(dataSize);
+            new ArrayList<DataHistogram<CategoryType>>(dataSize);
         this.dataOutOfBagEstimates =
-            new ArrayList<MapBasedDataHistogram<CategoryType>>(dataSize);
+            new ArrayList<DataHistogram<CategoryType>>(dataSize);
 
         // We keep track of whether or not the current ensemble gets each
         // example correct.
@@ -248,21 +267,22 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
 
         // We keep track of the lists of the indices of the current correct
         // and incorrect examples.
-        this.currentCorrectIndices = new ArrayList<Integer>();
-        this.currentIncorrectIndices = new ArrayList<Integer>();
+        this.currentCorrectIndices = new ArrayList<Integer>(dataSize);
+        this.currentIncorrectIndices = new ArrayList<Integer>(dataSize);
 
         // Initialize the data estimates and the incorrect indices. All
         // examples are incorrect to start.
         for (int i = 0; i < dataSize; i++)
         {
-            this.dataFullEstimates.add(new MapBasedDataHistogram<CategoryType>());
-            this.dataOutOfBagEstimates.add(new MapBasedDataHistogram<CategoryType>());
+            this.dataFullEstimates.add(new MapBasedDataHistogram<CategoryType>(2));
+            this.dataOutOfBagEstimates.add(new MapBasedDataHistogram<CategoryType>(2));
+            this.dataOutOfBagEstimates.add(this.counterFactory.create());
             this.currentIncorrectIndices.add(i);
         }
 
         // Figure out how many total samples and then the numbers of correct
         // and incorrect samples..
-        final int sampleSize =
+        this.sampleSize =
             Math.max(1, (int) (this.percentToSample * dataSize));
         this.numIncorrectToSample =
             (int) (this.proportionIncorrectInSample * sampleSize);
@@ -358,11 +378,11 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
             this.currentMemberEstimates.set(i, memberGuess);
 
             // Get the full ensemble estimate for the current item.
-            final MapBasedDataHistogram<CategoryType> fullEstimate =
+            final DataHistogram<CategoryType> fullEstimate =
                 this.dataFullEstimates.get(i);
 
             // Get the out-of-bag estimate for the current item.
-            final MapBasedDataHistogram<CategoryType> outOfBagEstimate =
+            final DataHistogram<CategoryType> outOfBagEstimate =
                 this.dataOutOfBagEstimates.get(i);
             
             if (memberGuess != null)
@@ -399,7 +419,9 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
             // used to train every member so far. Thus, we assume that the
             // ensemble is getting it correct.
             // Otherwise, equality of the actual and the guess is used.
-            final boolean ensembleCorrect = ObjectUtil.equalsSafe(actual, ensembleGuess);
+            final boolean ensembleCorrect = ensembleGuess == null
+                || ObjectUtil.equalsSafe(actual, ensembleGuess);
+
             this.currentEnsembleCorrect[i] = ensembleCorrect;
 
             // Update the list of correct and incorrect indices.
@@ -438,7 +460,7 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
      *      The array of counters for the number of times each example is
      *      sampled.
      */
-    protected static final <DataType> void sampleIndicesWithReplacementInto(
+    protected static <DataType> void sampleIndicesWithReplacementInto(
         final ArrayList<Integer> fromIndices,
         final ArrayList<? extends DataType> baseData,
         final int numToSample,
@@ -602,6 +624,31 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
         this.voteOutOfBagOnly = voteOutOfBagOnly;
     }
 
+    /**
+     * Gets the factory used for creating the object for counting the votes of
+     * the learned ensemble members.
+     *
+     * @return
+     *      The factory used to create the vote counting objects.
+     */
+    public Factory<? extends DataHistogram<CategoryType>> getCounterFactory()
+    {
+        return this.counterFactory;
+    }
+    
+    /**
+     * Sets the factory used for creating the object for counting the votes of
+     * the learned ensemble members.
+     *
+     * @param   counterFactory
+     *      The factory used to create the vote counting objects.
+     */
+    public void setCounterFactory(
+        final Factory<? extends DataHistogram<CategoryType>> counterFactory)
+    {
+        this.counterFactory = counterFactory;
+    }
+
     public Random getRandom()
     {
         return this.random;
@@ -620,7 +667,7 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
      * @return
      *      The current estimates for each data point.
      */
-    public List<MapBasedDataHistogram<CategoryType>> getDataFullEstimates()
+    public List<DataHistogram<CategoryType>> getDataFullEstimates()
     {
         return Collections.unmodifiableList(this.dataFullEstimates);
     }
@@ -632,7 +679,7 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
      * @return
      *      The current out-of-bag estimates for each data point.
      */
-    public List<MapBasedDataHistogram<CategoryType>> getDataOutOfBagEstimates()
+    public List<DataHistogram<CategoryType>> getDataOutOfBagEstimates()
     {
         return Collections.unmodifiableList(this.dataOutOfBagEstimates);
     }
@@ -759,7 +806,7 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
                     
                     // Get the out-of-bag-votes to determine the ensemble's
                     // guess.
-                    final MapBasedDataHistogram<CategoryType> outOfBagVotes =
+                    final DataHistogram<CategoryType> outOfBagVotes =
                         learner.dataOutOfBagEstimates.get(i);
                     final CategoryType ensembleGuess =
                         outOfBagVotes.getMaximumValue();
@@ -800,7 +847,7 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
                 UnivariateStatisticsUtil.computeMean(this.smoothingBuffer);
             this.smoothedErrorRates.add(smoothedErrorRate);
 
-System.out.println("" + learner.getIteration() + "\t" + outOfBagEnsembleErrorRate + "\t" + this.outOfBagErrorCount + "\t" + smoothedErrorRate);
+//System.out.println("" + learner.getIteration() + "\t" + outOfBagEnsembleErrorRate + "\t" + this.outOfBagErrorCount + "\t" + smoothedErrorRate);
 
             // See if the algorithm is still making progress or not. Once the
             // smoothed error rate stops improving, its time to stop.
@@ -833,9 +880,9 @@ System.out.println("" + learner.getIteration() + "\t" + outOfBagEnsembleErrorRat
                 {
                     learner.ensemble.members.remove(i);
                 }
-System.out.println("Best index: " + bestIndex);
-System.out.println("Best raw error rate: " + bestRawErrorRate);
-System.out.println("Ensemble now has " + learner.ensemble.members.size() + " members.");
+//System.out.println("Best index: " + bestIndex);
+//System.out.println("Best raw error rate: " + bestRawErrorRate);
+//System.out.println("Ensemble now has " + learner.ensemble.members.size() + " members.");
             }
 
             // Save the smoothed error rate.

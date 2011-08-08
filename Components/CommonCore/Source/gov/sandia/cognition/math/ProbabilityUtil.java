@@ -34,7 +34,8 @@ public class ProbabilityUtil
         if ( probability < 0.0 || probability > 1.0 )
         {
             throw new IllegalArgumentException(
-                "Probability (" + probability + ") must be [0.0, 1.0]");
+                "Probability (" + probability + ") must be in [0.0, 1.0]");
         }
     }
+
 }

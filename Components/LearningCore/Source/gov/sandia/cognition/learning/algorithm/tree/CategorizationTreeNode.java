@@ -29,7 +29,8 @@ import gov.sandia.cognition.learning.function.categorization.Categorizer;
  */
 public class CategorizationTreeNode<InputType, OutputType, InteriorType>
     extends AbstractDecisionTreeNode<InputType, OutputType, InteriorType>
-{   
+{
+
     /** The output category of the node. All nodes should have this, but it
      *  is absolutely required for a leaf node. */
     protected OutputType outputCategory;
@@ -39,55 +40,56 @@ public class CategorizationTreeNode<InputType, OutputType, InteriorType>
      */
     public CategorizationTreeNode()
     {
-        this(null);
+        this(null, null);
     }
     
     /**
      * Creates a new instance of CategorizationTreeNode.
      *
-     * @param  outputCategory The output category.
+     * @param   parent The parent node of this node. Null if this is a root.
+     * @param   outputCategory The output category.
      */
     public CategorizationTreeNode(
+        final DecisionTreeNode<InputType, OutputType> parent,
         final OutputType outputCategory)
     {
-        this(outputCategory, null);
+        this(parent, outputCategory, null);
     }
     
     /**
      * Creates a new instance of CategorizationTreeNode.
      *
-     * @param  outputCategory The output category.
-     * @param  incomingValue The incoming value.
+     * @param   parent The parent node of this node. Null if this is a root.
+     * @param   outputCategory The output category.
+     * @param   incomingValue The incoming value.
      */
     public CategorizationTreeNode(
+        final DecisionTreeNode<InputType, OutputType> parent,
         final OutputType outputCategory,
         final Object incomingValue)
     {
-        this(null, outputCategory, incomingValue);
+        this(parent, null, outputCategory, incomingValue);
     }
     
     /**
      * Creates a new instance of CategorizationTreeNode.
      *
-     * @param  decider The decision function.
-     * @param  outputCategory The output category.
-     * @param  incomingValue The incoming value.
+     * @param   parent The parent node of this node. Null if this is a root.
+     * @param   decider The decision function.
+     * @param   outputCategory The output category.
+     * @param   incomingValue The incoming value.
      */
     public CategorizationTreeNode(
+        final DecisionTreeNode<InputType, OutputType> parent,
         final Categorizer<? super InputType, ? extends InteriorType> decider,
         final OutputType outputCategory,
         final Object incomingValue)
     {
-        super(decider, incomingValue);
+        super(parent, decider, incomingValue);
         
         this.setOutputCategory(outputCategory);
     }
     
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public CategorizationTreeNode<InputType, OutputType, InteriorType> 
@@ -97,12 +99,6 @@ public class CategorizationTreeNode<InputType, OutputType, InteriorType>
             super.clone();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param  input {@inheritDoc}
-     * @return {@inheritDoc}
-     */
     public OutputType getOutput(
         final InputType input)
     {
@@ -129,4 +125,5 @@ public class CategorizationTreeNode<InputType, OutputType, InteriorType>
     {
         this.outputCategory = outputCategory;
     }
+
 }

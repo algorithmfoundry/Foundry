@@ -14,6 +14,8 @@
 
 package gov.sandia.cognition.learning.algorithm.ensemble;
 
+import gov.sandia.cognition.annotation.PublicationReference;
+import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.algorithm.AbstractAnytimeSupervisedBatchLearner;
@@ -49,8 +51,14 @@ import java.util.Random;
  * @author  Justin Basilico
  * @since   3.0
  */
-// TODO: Find a publication reference for bagging.
-// -- jdbasil (2009-11-29)
+@PublicationReference(
+    title="Bagging Predictors",
+    author="Leo Breiman",
+    year=1996,
+    type=PublicationType.Journal,
+    publication="Machine Learning",
+    pages={123, 140},
+    url="http://www.springerlink.com/index/L4780124W2874025.pdf")
 public class BaggingCategorizerLearner<InputType, CategoryType>
     extends AbstractAnytimeSupervisedBatchLearner<InputType, CategoryType, WeightedVotingCategorizerEnsemble<InputType, CategoryType, Evaluator<? super InputType, ? extends CategoryType>>>
     implements Randomized
@@ -146,6 +154,11 @@ public class BaggingCategorizerLearner<InputType, CategoryType>
         {
             // This is an invalid dataset.
             return false;
+        }
+
+        if (this.random == null)
+        {
+            this.random = new Random();
         }
 
         // Create the ensemble where we will be storing the output.

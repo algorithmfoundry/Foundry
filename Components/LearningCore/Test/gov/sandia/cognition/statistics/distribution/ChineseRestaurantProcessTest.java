@@ -259,7 +259,8 @@ public class ChineseRestaurantProcessTest
             double p = instance.evaluate(d);
             if( p > 0.0 )
             {
-                System.out.printf( "SAMPLE = %.4e, PMF = %.4e, ratio = %.1f  ", hist.evaluate(d), p, hist.evaluate(d)/p );
+                System.out.printf( "SAMPLE = %.4e, PMF = %.4e, ratio = %.1f  ",
+                    hist.getFraction(d), p, hist.getFraction(d)/p );
                 System.out.println( d );
             }
             else

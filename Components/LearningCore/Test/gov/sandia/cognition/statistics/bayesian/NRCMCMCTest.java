@@ -96,12 +96,12 @@ public class NRCMCMCTest
         mcmc.setUpdater( new StateProposer() );
         
         DataHistogram<State> result = mcmc.learn( data );
-        ArrayList<Double> lam1 = new ArrayList<Double>( result.getValues().size() );
-        ArrayList<Double> lam2 = new ArrayList<Double>( result.getValues().size() );
-        ArrayList<Double> k1 = new ArrayList<Double>( result.getValues().size() );
-        ArrayList<Double> k2 = new ArrayList<Double>( result.getValues().size() );
-        ArrayList<Double> tc = new ArrayList<Double>( result.getValues().size() );
-        for( State state : result.getValues() )
+        ArrayList<Double> lam1 = new ArrayList<Double>( result.getDomain().size() );
+        ArrayList<Double> lam2 = new ArrayList<Double>( result.getDomain().size() );
+        ArrayList<Double> k1 = new ArrayList<Double>( result.getDomain().size() );
+        ArrayList<Double> k2 = new ArrayList<Double>( result.getDomain().size() );
+        ArrayList<Double> tc = new ArrayList<Double>( result.getDomain().size() );
+        for( State state : result.getDomain() )
         {
             lam1.add( 1.0 / state.block1.getScale() );
             k1.add( state.block1.getShape() );
@@ -121,7 +121,7 @@ public class NRCMCMCTest
         UnivariateGaussian sample2 = mle.learn(k2);
         UnivariateGaussian switchTime = mle.learn(tc);
 
-        System.out.println( "Num Samples: " + result.getValues().size() );
+        System.out.println( "Num Samples: " + result.getDomain().size() );
         System.out.println( "Lambda1: " + l1 + " (" + 1.0/target.block1.getScale() + ")" );
         System.out.println( "Lambda2: " + l2 + " (" + 1.0/target.block2.getScale() + ")" );
         System.out.println( "K1: " + sample1 + " (" + target.block1.getShape() + ")" );

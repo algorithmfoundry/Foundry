@@ -15,12 +15,12 @@
 
 package gov.sandia.cognition.learning.algorithm.ensemble;
 
-import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.function.categorization.KernelBinaryCategorizer;
 import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
 import gov.sandia.cognition.learning.function.categorization.BinaryCategorizer;
 import gov.sandia.cognition.learning.function.kernel.PolynomialKernel;
 import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.WeightedValue;
@@ -38,30 +38,32 @@ public class WeightedBinaryEnsembleTest
 {
 
     public WeightedBinaryEnsembleTest(
-        String testName )
+        String testName)
     {
-        super( testName );
+        super(testName);
     }
 
     public void testConstants()
     {
-        assertEquals( 1.0, WeightedBinaryEnsemble.DEFAULT_WEIGHT );
+        assertEquals(1.0, WeightedBinaryEnsemble.DEFAULT_WEIGHT);
     }
 
     public void testConstructors()
     {
-        WeightedBinaryEnsemble<Vector> instance = new WeightedBinaryEnsemble<Vector>();
-        assertNotNull( instance.getMembers() );
-        assertTrue( instance.getMembers().isEmpty() );
+        WeightedBinaryEnsemble<Vector, BinaryCategorizer<Vector>> instance =
+            new WeightedBinaryEnsemble<Vector, BinaryCategorizer<Vector>>();
+        assertNotNull(instance.getMembers());
+        assertTrue(instance.getMembers().isEmpty());
 
-        ArrayList<WeightedValue<? extends Evaluator<? super Vector,? extends Boolean>>> members =
-            new ArrayList<WeightedValue<? extends Evaluator<? super Vector,? extends Boolean>>>();
-        members.add( new DefaultWeightedValue<KernelBinaryCategorizer<Vector>>(
-            new KernelBinaryCategorizer<Vector>( new PolynomialKernel( 2 ) ),
-            Math.random() ) );
+        ArrayList<WeightedValue<BinaryCategorizer<Vector>>> members =
+            new  ArrayList<WeightedValue<BinaryCategorizer<Vector>>>  ();
+        members.add(new DefaultWeightedValue<BinaryCategorizer<Vector>>(
+            new KernelBinaryCategorizer<Vector>(new PolynomialKernel(2)),
+            Math.random()));
 
-        instance = new WeightedBinaryEnsemble<Vector>( members );
-        assertSame( members, instance.getMembers() );
+        instance = new WeightedBinaryEnsemble<Vector, BinaryCategorizer<Vector>>(
+            members);
+        assertSame(members, instance.getMembers());
     }
 
     /**
@@ -69,22 +71,23 @@ public class WeightedBinaryEnsembleTest
      */
     public void testAdd()
     {
-        WeightedBinaryEnsemble<Vector> instance = new WeightedBinaryEnsemble<Vector>();
+        WeightedBinaryEnsemble<Vector, BinaryCategorizer<Vector>> instance =
+            new WeightedBinaryEnsemble<Vector, BinaryCategorizer<Vector>>();
         KernelBinaryCategorizer<Vector> member =
-            new KernelBinaryCategorizer<Vector>( new PolynomialKernel( 2 ) );
-        instance.add( member );
-        assertEquals( 1, instance.getMembers().size() );
-        assertSame( member, instance.getMembers().get( 0 ).getValue() );
-        assertEquals( WeightedBinaryEnsemble.DEFAULT_WEIGHT,
-            instance.getMembers().get( 0 ).getWeight() );
+            new KernelBinaryCategorizer<Vector>(new PolynomialKernel(2));
+        instance.add(member);
+        assertEquals(1, instance.getMembers().size());
+        assertSame(member, instance.getMembers().get(0).getValue());
+        assertEquals(WeightedBinaryEnsemble.DEFAULT_WEIGHT,
+            instance.getMembers().get(0).getWeight());
 
         member =
-            new KernelBinaryCategorizer<Vector>( new PolynomialKernel( 4 ) );
+            new KernelBinaryCategorizer<Vector>(new PolynomialKernel(4));
         double weight = Math.random();
-        instance.add( member, weight );
-        assertEquals( 2, instance.getMembers().size() );
-        assertSame( member, instance.getMembers().get( 1 ).getValue() );
-        assertEquals( weight, instance.getMembers().get( 1 ).getWeight() );
+        instance.add(member, weight);
+        assertEquals(2, instance.getMembers().size());
+        assertSame(member, instance.getMembers().get(1).getValue());
+        assertEquals(weight, instance.getMembers().get(1).getWeight());
     }
 
     /**
@@ -92,31 +95,36 @@ public class WeightedBinaryEnsembleTest
      */
     public void testEvaluate()
     {
-        WeightedBinaryEnsemble<Vector> instance = new WeightedBinaryEnsemble<Vector>();
+        WeightedBinaryEnsemble<Vector, BinaryCategorizer<Vectorizable>> instance =
+            new WeightedBinaryEnsemble<Vector, BinaryCategorizer<Vectorizable>>();
 
-        assertTrue( instance.evaluate( new Vector3( Math.random(), Math.random(), Math.random() ) ) );
+        assertTrue(instance.evaluate(new Vector3(Math.random(), Math.random(),
+            Math.random())));
 
         LinearBinaryCategorizer categorizer = new LinearBinaryCategorizer(
-            new Vector3( Math.random(), Math.random(), Math.random() ), Math.random() );
-        instance.add( categorizer );
+            new Vector3(Math.random(), Math.random(), Math.random()),
+            Math.random());
+        instance.add(categorizer);
 
         int count = 10;
 
         for (int i = 0; i < count; i++)
         {
-            Vector input = new Vector3( Math.random(), Math.random(), Math.random() );
-            Boolean expected = categorizer.evaluate( input );
+            Vector input = new Vector3(Math.random(), Math.random(),
+                Math.random());
+            Boolean expected = categorizer.evaluate(input);
 
-            assertEquals( expected, instance.evaluate( input ) );
+            assertEquals(expected, instance.evaluate(input));
         }
 
-        instance.add( categorizer, -3.0 );
+        instance.add(categorizer, -3.0);
         for (int i = 0; i < count; i++)
         {
-            Vector input = new Vector3( Math.random(), Math.random(), Math.random() );
-            Boolean expected = !categorizer.evaluate( input );
+            Vector input = new Vector3(Math.random(), Math.random(),
+                Math.random());
+            Boolean expected = !categorizer.evaluate(input);
 
-            assertEquals( expected, instance.evaluate( input ) );
+            assertEquals(expected, instance.evaluate(input));
         }
     }
 
@@ -125,32 +133,37 @@ public class WeightedBinaryEnsembleTest
      */
     public void testEvaluateAsDouble()
     {
-        WeightedBinaryEnsemble<Vector> instance = new WeightedBinaryEnsemble<Vector>();
+        WeightedBinaryEnsemble<Vector, BinaryCategorizer<Vectorizable>> instance =
+            new WeightedBinaryEnsemble<Vector, BinaryCategorizer<Vectorizable>>();
 
 
-        assertEquals( 0.0, instance.evaluateAsDouble( new Vector3( Math.random(), Math.random(), Math.random() ) ) );
+        assertEquals(0.0, instance.evaluateAsDouble(new Vector3(Math.random(),
+            Math.random(), Math.random())));
 
         LinearBinaryCategorizer categorizer = new LinearBinaryCategorizer(
-            new Vector3( Math.random(), Math.random(), Math.random() ), Math.random() );
-        instance.add( categorizer );
+            new Vector3(Math.random(), Math.random(), Math.random()),
+            Math.random());
+        instance.add(categorizer);
 
         int count = 10;
 
         for (int i = 0; i < count; i++)
         {
-            Vector input = new Vector3( Math.random(), Math.random(), Math.random() );
-            double expected = categorizer.evaluate( input ) ? +1.0 : -1.0;
+            Vector input = new Vector3(Math.random(), Math.random(),
+                Math.random());
+            double expected = categorizer.evaluate(input) ? +1.0 : -1.0;
 
-            assertEquals( expected, instance.evaluateAsDouble( input ) );
+            assertEquals(expected, instance.evaluateAsDouble(input));
         }
 
-        instance.add( categorizer, -3.0 );
+        instance.add(categorizer, -3.0);
         for (int i = 0; i < count; i++)
         {
-            Vector input = new Vector3( Math.random(), Math.random(), Math.random() );
-            double expected = !categorizer.evaluate( input ) ? +0.5 : -0.5;
+            Vector input = new Vector3(Math.random(), Math.random(),
+                Math.random());
+            double expected = !categorizer.evaluate(input) ? +0.5 : -0.5;
 
-            assertEquals( expected, instance.evaluateAsDouble( input ) );
+            assertEquals(expected, instance.evaluateAsDouble(input));
         }
     }
 
@@ -167,18 +180,19 @@ public class WeightedBinaryEnsembleTest
      */
     public void testSetMembers()
     {
-        WeightedBinaryEnsemble<Vector> instance = new WeightedBinaryEnsemble<Vector>();
+        WeightedBinaryEnsemble<Vector, BinaryCategorizer<Vector>> instance =
+            new WeightedBinaryEnsemble<Vector, BinaryCategorizer<Vector>>();
 
-        ArrayList<WeightedValue<? extends Evaluator<? super Vector,? extends Boolean>>> members =
-            new ArrayList<WeightedValue<? extends Evaluator<? super Vector,? extends Boolean>>>();
-        members.add( new DefaultWeightedValue<BinaryCategorizer<Vector>>(
-            new KernelBinaryCategorizer<Vector>( new PolynomialKernel( 2 ) ),
-            Math.random() ) );
-        instance.setMembers( members );
-        assertSame( members, instance.getMembers() );
+        ArrayList<WeightedValue<BinaryCategorizer<Vector>>> members =
+            new ArrayList<WeightedValue<BinaryCategorizer<Vector>>>();
+        members.add(new DefaultWeightedValue<BinaryCategorizer<Vector>>(
+            new KernelBinaryCategorizer<Vector>(new PolynomialKernel(2)),
+            Math.random()));
+        instance.setMembers(members);
+        assertSame(members, instance.getMembers());
 
-        instance.setMembers( null );
-        assertNull( instance.getMembers() );
+        instance.setMembers(null);
+        assertNull(instance.getMembers());
     }
 
 }

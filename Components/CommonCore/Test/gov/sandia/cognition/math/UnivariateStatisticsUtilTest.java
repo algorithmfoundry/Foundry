@@ -396,6 +396,19 @@ public class UnivariateStatisticsUtilTest
         assertEquals( 0.0, result.getFirst() );
         assertEquals( 0.0, result.getSecond() );
 
+        // This example is from the Wikipedia page: http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
+        // First demonstrate that for these simple values the mean is 10 and variance is 30.
+        Collection<Double> xd = Arrays.asList(4.0, 7.0, 13.0, 16.0);
+        result = UnivariateStatisticsUtil.computeMeanAndVariance(xd);
+        assertEquals(10.0, result.getFirst(), EPS);
+        assertEquals(30.0, result.getSecond(), EPS);
+
+        // Now shift the mean by adding 10^9 and check that the variance remains
+        // 30.
+        xd = Arrays.asList(1.0e9 + 4.0, 1e9 + 7, 1e9 + 13, 1e9 + 16);
+        result = UnivariateStatisticsUtil.computeMeanAndVariance(xd);
+        assertEquals(1e9 + 10.0, result.getFirst(), EPS);
+        assertEquals(30.0, result.getSecond(), EPS);
     }
 
     public void testComputeWeightedMeanAndVariance()
@@ -445,6 +458,37 @@ public class UnivariateStatisticsUtilTest
         result = UnivariateStatisticsUtil.computeWeightedMeanAndVariance(data);
         assertEquals( 0.0, result.getFirst() );
         assertEquals( 0.0, result.getSecond() );
+
+        // This example is from the Wikipedia page: http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
+        // First demonstrate that for these simple values the mean is 10 and variance is 30.
+        Collection<Double> xd = Arrays.asList(4.0, 7.0, 13.0, 16.0);
+        data.clear();
+        for (Double x : xd)
+        {
+            data.add(DefaultWeightedValue.create(x, 1.0));
+        }
+        result = UnivariateStatisticsUtil.computeWeightedMeanAndVariance(data);
+        assertEquals(10.0, result.getFirst(), EPS);
+        assertEquals(22.5, result.getSecond(), EPS);
+
+        // Now shift the mean by adding 10^9 and check that the variance remains
+        // 30.
+        xd = Arrays.asList(1.0e9 + 4.0, 1e9 + 7, 1e9 + 13, 1e9 + 16);
+        data.clear();
+        for (Double x : xd)
+        {
+            data.add(DefaultWeightedValue.create(x, 1.0));
+        }
+        result = UnivariateStatisticsUtil.computeWeightedMeanAndVariance(data);
+        assertEquals(1e9 + 10.0, result.getFirst(), EPS);
+        assertEquals(22.5, result.getSecond(), EPS);
+
+        data.add(0, DefaultWeightedValue.create(1.0, 0.0));
+        data.add(0, DefaultWeightedValue.create(1.0, 0.0));
+        data.add(4, DefaultWeightedValue.create(1.0, 0.0));
+        result = UnivariateStatisticsUtil.computeWeightedMeanAndVariance(data);
+        assertEquals(1e9 + 10.0, result.getFirst(), EPS);
+        assertEquals(22.5, result.getSecond(), EPS);
 
     }
 

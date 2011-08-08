@@ -98,31 +98,34 @@ public abstract class AbstractDecisionTreeLearner<InputType, OutputType>
         final Categorizer<? super InputType, ? extends DecisionType> decider)
     {
         // We split the data up by the decider that we just created.
-        final Map
-            <DecisionType, 
-             LinkedList<InputOutputPair<? extends InputType, OutputType>>>
-                splitsMap = this.splitData(data, decider);
+        final Map<DecisionType, LinkedList<InputOutputPair<? extends InputType, OutputType>>>
+            splitsMap = this.splitData(data, decider);
+
+        if (splitsMap.size() < 2)
+        {
+            // Don't make child nodes if there are less than 2 children.
+            return;
+        }
         
         // Loop through the split up data and learn a child node for each value.
-        for ( Map.Entry
-                <DecisionType, LinkedList
-                    <InputOutputPair<? extends InputType, OutputType>>>
-            entry : splitsMap.entrySet() )
+        for (Map.Entry<DecisionType, LinkedList<InputOutputPair<? extends InputType, OutputType>>> entry
+            : splitsMap.entrySet())
         {
             // Get the decision value the child node is for.
             final DecisionType value = entry.getKey();
-            
+
             // Learn the child node.
-            final AbstractDecisionTreeNode<InputType, OutputType, ?> child = 
+            final AbstractDecisionTreeNode<InputType, OutputType, ?> child =
                 this.learnNode(entry.getValue(), node);
-            
-            if ( child != null )
+
+            if (child != null)
             {
                 // Add the child.
                 child.setIncomingValue(value);
                 node.addChild(value, child);
             }
-            // else - No child was learned.
+            // else - This should not happen unless something went wrong in
+            //        the creation of the child.
         }
     }
     
@@ -152,7 +155,7 @@ public abstract class AbstractDecisionTreeLearner<InputType, OutputType>
             splitsMap = new HashMap
                 <DecisionType, 
                  LinkedList
-                    <InputOutputPair<? extends InputType, OutputType>>>();
+                    <InputOutputPair<? extends InputType, OutputType>>>(2);
         
         // Go through all the examples and apply the decider to them.
         for ( InputOutputPair<? extends InputType, OutputType> example : data )

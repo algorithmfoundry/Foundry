@@ -32,6 +32,14 @@ public interface DecisionTreeNode<InputType, OutputType>
     extends CloneableSerializable
 {
     /**
+     * Gets the parent node for this node. Null if it is the root node.
+     *
+     * @return
+     *      The parent node for this node.
+     */
+    DecisionTreeNode<InputType, OutputType> getParent();
+
+    /**
      * Gets the collection of children of the node.
      *
      * @return The collection of children of the node.
@@ -76,4 +84,20 @@ public interface DecisionTreeNode<InputType, OutputType>
      * @return The incoming value to the node, if any.
      */
     Object getIncomingValue();
+
+    /**
+     * Gets the depth of the node in the tree.
+     *
+     * @return
+     *      The depth of the node. The root is depth 1.
+     */
+    int getDepth();
+
+    /**
+     * Gets the size of the sub-tree from this node.
+     *
+     * @return
+     *      The size of the sub-tree rooted at this node. Must be positive.
+     */
+    int getTreeSize();
 }

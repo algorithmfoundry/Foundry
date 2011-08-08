@@ -154,15 +154,14 @@ public class ScalarSummaryStatistics
         double a2 = (1.0-CONFIDENCE_REGION)/2.0;
         double confidenceLower = UnivariateStatisticsUtil.computePercentile(sortedData,a2);
         double confidenceUpper = UnivariateStatisticsUtil.computePercentile(sortedData,1.0-a2);
-        System.out.println( "A2 = " + a2 + ", Low = " + confidenceLower + ", Upper = " + confidenceUpper );
 
         int numSamples = data.size();
 
-        result = UnivariateStatisticsUtil.computeMeanAndVariance(data);
+        result = UnivariateStatisticsUtil.computeMeanAndVariance(sortedData);
         double mean = result.getFirst();
         double variance = result.getSecond();
-        double skewness = UnivariateStatisticsUtil.computeSkewness(data);
-        double kurtosis = UnivariateStatisticsUtil.computeKurtosis(data);
+        double skewness = UnivariateStatisticsUtil.computeSkewness(sortedData);
+        double kurtosis = UnivariateStatisticsUtil.computeKurtosis(sortedData);
         return new ScalarSummaryStatistics(min, max, quintiles, confidenceLower,
             confidenceUpper, median, numSamples, mean, variance, skewness,
             kurtosis);

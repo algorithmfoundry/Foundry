@@ -36,6 +36,7 @@ import junit.framework.TestCase;
 public class LearnerValidationExperimentTest
     extends TestCase
 {
+    public static final double EPSILON = 1e-10;
     public LearnerValidationExperimentTest(
         String testName)
     {
@@ -120,7 +121,7 @@ public class LearnerValidationExperimentTest
         ConfidenceInterval result =instance.evaluatePerformance(learner, examples);
         
         assertNotNull(result);
-        assertEquals(1.0 / examples.size(), result.getCentralValue());
+        assertEquals(1.0 / examples.size(), result.getCentralValue(), EPSILON);
         
         assertEquals(examples.size(), instance.getNumTrials());
         assertEquals(examples.size(), instance.getStatistics().size());

@@ -115,6 +115,11 @@ public class RandomSubVectorThresholdLearner<OutputType>
     public VectorElementThresholdCategorizer learn(
         final Collection<? extends InputOutputPair<? extends Vectorizable, OutputType>> data)
     {
+        if (this.random == null)
+        {
+            this.random = new Random();
+        }
+        
         // Gets the dimensionality of the input.
         final int dimensionality = DatasetUtil.getInputDimensionality(data);
 

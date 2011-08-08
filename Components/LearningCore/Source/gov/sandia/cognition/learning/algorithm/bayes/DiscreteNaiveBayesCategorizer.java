@@ -257,7 +257,7 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
                 conditionalPMFIterator.next();
             if( input != null )
             {
-                conditionalProbability *= conditionalPMF.evaluate(input);
+                conditionalProbability *= conditionalPMF.getFraction(input);
             }
             if( conditionalProbability <= 0.0 )
             {
@@ -412,7 +412,7 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
         InputType input,
         CategoryType category )
     {
-        return this.conditionalProbabilities.get(category).get(index).evaluate(input);
+        return this.conditionalProbabilities.get(category).get(index).getFraction(input);
     }
 
     /**
@@ -427,7 +427,7 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
     public double getPriorProbability(
         CategoryType category )
     {
-        return this.priorProbabilities.evaluate(category);
+        return this.priorProbabilities.getFraction(category);
     }
 
     /**

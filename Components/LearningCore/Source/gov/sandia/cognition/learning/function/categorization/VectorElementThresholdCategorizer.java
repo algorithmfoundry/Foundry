@@ -106,4 +106,11 @@ public class VectorElementThresholdCategorizer
         this.index = index;
     }
     
+    /**
+     * Returns string representation of this threshold categorizer.
+     */
+    public String toString()
+    {
+	return "f(x) = x[" + index + "] >= " + getThreshold();
+    }
 }

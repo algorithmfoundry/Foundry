@@ -130,7 +130,7 @@ public class AdaBoostTest
         AdaBoost<Vectorizable> instance = new AdaBoost<Vectorizable>(
             weakLearner, maxIterations );
 
-        WeightedBinaryEnsemble<Vectorizable> learned = instance.learn( examples );
+        WeightedBinaryEnsemble<Vectorizable, ?> learned = instance.learn( examples );
         assertNotNull( learned );
         assertSame( learned, instance.getResult() );
         assertSame( learned, instance.getEnsemble() );

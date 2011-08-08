@@ -68,12 +68,14 @@ public class RegressionTreeLearnerTest
         
         int leafCountThreshold = 
             RegressionTreeLearner.DEFAULT_LEAF_COUNT_THRESHOLD + 1;
+        int maxDepth = 10;
         instance = new RegressionTreeLearner<Vectorizable>(
-            deciderLearner, regressionLearner, leafCountThreshold);
+            deciderLearner, regressionLearner, leafCountThreshold, maxDepth);
         
         assertSame(deciderLearner, instance.getDeciderLearner());
         assertSame(regressionLearner, instance.getRegressionLearner());
         assertEquals(leafCountThreshold, instance.getLeafCountThreshold());
+        assertEquals(maxDepth, instance.getMaxDepth());
     }
 
     /**

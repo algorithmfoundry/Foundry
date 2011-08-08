@@ -37,6 +37,8 @@ import junit.framework.TestCase;
 public class ParallelLearnerValidationExperimentTest
     extends TestCase
 {
+    public static final double EPSILON = 1e-10;
+
     /**
      * Creates a new test.
      *
@@ -103,7 +105,7 @@ public class ParallelLearnerValidationExperimentTest
         ConfidenceInterval result =instance.evaluatePerformance(learner, examples);
         
         assertNotNull(result);
-        assertEquals(1.0 / examples.size(), result.getCentralValue());
+        assertEquals(1.0 / examples.size(), result.getCentralValue(), EPSILON);
         
         assertEquals(examples.size(), instance.getNumTrials());
         assertEquals(examples.size(), instance.getStatistics().size());

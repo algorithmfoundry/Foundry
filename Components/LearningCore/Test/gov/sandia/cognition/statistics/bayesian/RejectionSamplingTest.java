@@ -111,8 +111,8 @@ public class RejectionSamplingTest
         instance.setRandom(RANDOM);
 
         DataHistogram<Double> berns = instance.learn(samples);
-        ArrayList<Double> ps = new ArrayList<Double>( berns.getValues().size() );
-        for( Double b : berns.getValues() )
+        ArrayList<Double> ps = new ArrayList<Double>( berns.getDomain().size() );
+        for( Double b : berns.getDomain() )
         {
             ps.add( b );
         }
@@ -159,8 +159,8 @@ public class RejectionSamplingTest
         instance.setRandom(RANDOM);
 
         DataHistogram<Double> berns = instance.learn(samples);
-        ArrayList<Double> ps = new ArrayList<Double>( berns.getValues().size() );
-        for( Double b : berns.getValues() )
+        ArrayList<Double> ps = new ArrayList<Double>( berns.getDomain().size() );
+        for( Double b : berns.getDomain() )
         {
             ps.add( b );
         }
