@@ -220,8 +220,8 @@ public class LearningExperimentExample
         // As luck would have it, we've created this class for you!!
         StudentTConfidence ttest = new StudentTConfidence();
 
-        SupervisedLearnerComparisonExperiment<Vector,Double, Double,ConfidenceInterval> comparison =
-            new SupervisedLearnerComparisonExperiment<Vector, Double, Double, ConfidenceInterval>(
+        SupervisedLearnerComparisonExperiment<Vector,Double, Number, ConfidenceInterval> comparison =
+            new SupervisedLearnerComparisonExperiment<Vector, Double, Number, ConfidenceInterval>(
                 foldCreator, rms, ttest, tdistribution );
 
         comparison.evaluate(adapterLeaner, knn, labeledDataset);

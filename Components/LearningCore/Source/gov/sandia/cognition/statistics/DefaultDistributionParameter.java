@@ -74,8 +74,8 @@ public class DefaultDistributionParameter<ParameterType,ConditionalType extends 
      * Name of the parameter
      */
     public DefaultDistributionParameter(
-        ConditionalType conditionalDistribution,
-        String parameterName )
+        final ConditionalType conditionalDistribution,
+        final String parameterName )
     {
         super( parameterName );
         this.setConditionalDistribution(conditionalDistribution);
@@ -89,8 +89,8 @@ public class DefaultDistributionParameter<ParameterType,ConditionalType extends 
      * PropertyDescriptor from the Introspector that has a setter and a getter.
      */
     public DefaultDistributionParameter(
-        ConditionalType conditionalDistribution,
-        PropertyDescriptor descriptor )
+        final ConditionalType conditionalDistribution,
+        final PropertyDescriptor descriptor )
     {
         this( conditionalDistribution, descriptor.getName() );
         this.parameterGetter = descriptor.getReadMethod();
@@ -117,8 +117,8 @@ public class DefaultDistributionParameter<ParameterType,ConditionalType extends 
      * Name of the parameter
      */
     protected void assignParameterMethods(
-        Distribution<?> conditionalDistribution,
-        String parameterName )
+        final Distribution<?> conditionalDistribution,
+        final String parameterName )
     {
 
         this.parameterGetter = null;
@@ -187,6 +187,7 @@ public class DefaultDistributionParameter<ParameterType,ConditionalType extends 
 
 
     @SuppressWarnings("unchecked")
+    @Override
     public ParameterType getValue()
     {
         ParameterType retval = null;
@@ -208,8 +209,9 @@ public class DefaultDistributionParameter<ParameterType,ConditionalType extends 
         return retval;
     }
 
+    @Override
     public void setValue(
-        ParameterType value )
+        final ParameterType value )
     {
         try
         {
@@ -239,14 +241,14 @@ public class DefaultDistributionParameter<ParameterType,ConditionalType extends 
      * Conditional conditionalDistribution associated with the parameter.
      */
     protected void setConditionalDistribution(
-        ConditionalType conditionalDistribution)
+        final ConditionalType conditionalDistribution)
     {
         this.conditionalDistribution = conditionalDistribution;
     }
 
     @Override
     public void setName(
-        String name)
+        final String name)
     {
         this.parameterGetter = null;
         this.parameterSetter = null;

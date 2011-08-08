@@ -12,18 +12,19 @@
 
 package gov.sandia.cognition.learning.algorithm.perceptron;
 
-import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
-import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
-import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.learning.algorithm.perceptron.kernel.KernelBinaryCategorizerOnlineLearnerAdapter;
+import gov.sandia.cognition.learning.function.categorization.DefaultKernelBinaryCategorizer;
+import org.junit.Test;
 import gov.sandia.cognition.math.matrix.mtj.SparseVectorFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.Vector2;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import gov.sandia.cognition.util.ObjectUtil;
-import java.util.ArrayList;
-import java.util.Random;
-import junit.framework.TestCase;
+import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
+import gov.sandia.cognition.learning.data.InputOutputPair;
+import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
+import gov.sandia.cognition.math.matrix.Vector;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for class OnlinePassiveAggressivePerceptron.
@@ -32,26 +33,23 @@ import junit.framework.TestCase;
  * @since   3.1.1
  */
 public class OnlinePassiveAggressivePerceptronTest
-    extends TestCase
+    extends KernelizableBinaryCategorizerOnlineLearnerTestHarness
 {
 
-    protected Random random = new Random(211);
-    
+    protected boolean aggressiveCheck = true;
+
     /**
      * Creates a new test.
-     *
-     * @param   testName The test name.
      */
-    public OnlinePassiveAggressivePerceptronTest(
-        String testName)
+    public OnlinePassiveAggressivePerceptronTest()
     {
-        super(testName);
     }
 
 
     /**
      * Test of constructors of class OnlinePassiveAggressivePerceptron.
      */
+    @Test
     public void testConstructors()
     {
         VectorFactory<?> factory = VectorFactory.getDefault();
@@ -67,84 +65,26 @@ public class OnlinePassiveAggressivePerceptronTest
     /**
      * Test of createInitialLearnedObject method, of class OnlinePassiveAggressivePerceptron.
      */
+    @Test
     public void testCreateInitialLearnedObject()
     {
-        OnlinePassiveAggressivePerceptron instance = new OnlinePassiveAggressivePerceptron();
+        OnlinePassiveAggressivePerceptron instance = this.createLinearInstance();
         LinearBinaryCategorizer result = instance.createInitialLearnedObject();
         assertNull(result.getWeights());
-        assertEquals(0.0, result.getBias());
+        assertEquals(0.0, result.getBias(), 0.0);
         assertNotSame(result, instance.createInitialLearnedObject());
     }
 
     /**
-     * Test learning a linearly separable example.
+     * Test of computeUpdate method, of class OnlinePassiveAggressivePerceptron.
      */
-    public void testLearnSeparable()
-    {
-        int d = 10;
-        int trainCount = 1000;
-        int testCount = 100;
-        LinearBinaryCategorizer real = new LinearBinaryCategorizer(
-            VectorFactory.getDenseDefault().createUniformRandom(d, -1, +1, random), 0.0);
-
-        ArrayList<InputOutputPair<Vector, Boolean>> trainData =
-            new ArrayList<InputOutputPair<Vector, Boolean>>(trainCount);
-        for (int i = 0; i < trainCount; i++)
-        {
-            Vector input = VectorFactory.getDenseDefault().createUniformRandom(
-                d, -1, +1, random);
-            boolean output = real.evaluate(input);
-            trainData.add(DefaultInputOutputPair.create(input, output));
-        }
-
-        ArrayList<InputOutputPair<Vector, Boolean>> testData =
-            new ArrayList<InputOutputPair<Vector, Boolean>>(testCount);
-        for (int i = 0; i < testCount; i++)
-        {
-            Vector input = VectorFactory.getDenseDefault().createUniformRandom(
-                d, -1, +1, random);
-            boolean actual = real.evaluate(input);
-            testData.add(DefaultInputOutputPair.create(input, actual));
-        }
-
-        OnlinePassiveAggressivePerceptron instance = new OnlinePassiveAggressivePerceptron();
-        LinearBinaryCategorizer learned = instance.createInitialLearnedObject();
-
-        for (InputOutputPair<Vector, Boolean> example : trainData)
-        {
-            instance.update(learned, example);
-            assertEquals(example.getOutput(), learned.evaluate(example.getInput()));
-        }
-
-
-        double cosine = learned.getWeights().unitVector().cosine(real.getWeights().unitVector());
-        assertTrue(cosine > 0.99);
-
-        int correctCount = 0;
-        for (InputOutputPair<Vector, Boolean> example : testData)
-        {
-            boolean actual = example.getOutput();
-            boolean predicted = learned.evaluate(example.getInput());
-
-            if (actual == predicted)
-            {
-                correctCount++;
-            }
-        }
-        double accuracy = (double) correctCount / testData.size();
-        assertTrue(accuracy > 0.95);
-
-    }
-
-    /**
-     * Test of update method, of class OnlinePassiveAggressivePerceptron.
-     */
-    public void testUpdate()
+    @Test
+    public void testComputeUpdate()
     {
         OnlinePassiveAggressivePerceptron instance = new OnlinePassiveAggressivePerceptron();
-        LinearBinaryCategorizer result = instance.createInitialLearnedObject();
+        LinearBinaryCategorizer result = new LinearBinaryCategorizer();
         assertNull(result.getWeights());
-        assertEquals(0.0, result.getBias());
+        assertEquals(0.0, result.getBias(), 0.0);
 
         Vector input = new Vector2(2.0, 3.0);
         Boolean output = true;
@@ -203,8 +143,95 @@ public class OnlinePassiveAggressivePerceptronTest
     }
 
     /**
+     * Test of update method, of class OnlinePassiveAggressivePerceptron.
+     */
+    @Test
+    public void testUpdate()
+    {
+        OnlinePassiveAggressivePerceptron instance = this.createLinearInstance();
+        LinearBinaryCategorizer result = instance.createInitialLearnedObject();
+        assertNull(result.getWeights());
+        assertEquals(0.0, result.getBias(), 0.0);
+
+        Vector input = new Vector2(2.0, 3.0);
+        Boolean output = true;
+        instance.update(result, input, output);
+        if (this.aggressiveCheck)
+        {
+            assertEquals(output, result.evaluate(input));
+        }
+
+        input = new Vector2(4.0, 4.0);
+        output = true;
+        instance.update(result, input, output);
+        if (this.aggressiveCheck)
+        {
+            assertEquals(output, result.evaluate(input));
+        }
+
+        input = new Vector2(1.0, 1.0);
+        output = false;
+        instance.update(result, input, output);
+        if (this.aggressiveCheck)
+        {
+            assertEquals(output, result.evaluate(input));
+        }
+
+        input = new Vector2(1.0, 1.0);
+        output = false;
+        instance.update(result, input, output);
+        if (this.aggressiveCheck)
+        {
+            assertEquals(output, result.evaluate(input));
+        }
+
+        input = new Vector2(2.0, 3.0);
+        output = true;
+        instance.update(result, input, output);
+        if (this.aggressiveCheck)
+        {
+            assertEquals(output, result.evaluate(input));
+        }
+
+
+        result = instance.createInitialLearnedObject();
+
+        MultivariateGaussian positive = new MultivariateGaussian(2);
+        positive.setMean(new Vector2(1.0, 1.0));
+        positive.getCovariance().setElement(0, 0, 0.2);
+        positive.getCovariance().setElement(1, 1, 2.0);
+
+        MultivariateGaussian negative = new MultivariateGaussian(2);
+        negative.setMean(new Vector2(-1.0, -1.0));
+        negative.getCovariance().setElement(0, 0, 0.2);
+        negative.getCovariance().setElement(1, 1, 2.0);
+
+        for (int i = 0; i < 4000; i++)
+        {
+            output = random.nextBoolean();
+            input = (output ? positive : negative).sample(random);
+
+            Vector oldWeights = ObjectUtil.cloneSafe(result.getWeights());
+            double prediction = result.evaluateAsDouble(input);
+
+            double loss = 1.0 - prediction * (output ? +1 : -1);
+            instance.update(result, DefaultInputOutputPair.create(input, output));
+
+            if (loss <= 0.0)
+            {
+                assertEquals(oldWeights, result.getWeights());
+            }
+            if (this.aggressiveCheck)
+            {
+                assertEquals(output, result.evaluate(input));
+            }
+        }
+    }
+
+    /**
      * Test of getVectorFactory method, of class OnlinePassiveAggressivePerceptron.
      */
+    @Test
     public void testGetVectorFactory()
     {
         this.testSetVectorFactory();
@@ -213,13 +240,14 @@ public class OnlinePassiveAggressivePerceptronTest
     /**
      * Test of setVectorFactory method, of class OnlinePassiveAggressivePerceptron.
      */
+    @Test
     public void testSetVectorFactory()
     {
         VectorFactory<?> factory = VectorFactory.getDefault();
-        OnlinePassiveAggressivePerceptron instance = new OnlinePassiveAggressivePerceptron();
+        OnlinePassiveAggressivePerceptron instance = this.createLinearInstance();
         assertSame(VectorFactory.getDefault(), instance.getVectorFactory());
 
-        factory = new SparseVectorFactoryMTJ();
+        factory = VectorFactory.getSparseDefault();
         instance.setVectorFactory(factory);
         assertSame(factory, instance.getVectorFactory());
 
@@ -231,191 +259,40 @@ public class OnlinePassiveAggressivePerceptronTest
         instance.setVectorFactory(factory);
         assertSame(factory, instance.getVectorFactory());
     }
-    
-    /**
-     * Test of update method, of class OnlinePassiveAggressivePerceptron.
-     */
-    public void testLinearSoftMargin()
+
+    @Override
+    protected OnlinePassiveAggressivePerceptron createLinearInstance()
     {
-        OnlinePassiveAggressivePerceptron instance = new OnlinePassiveAggressivePerceptron.LinearSoftMargin();
-        LinearBinaryCategorizer result = instance.createInitialLearnedObject();
-        assertNull(result.getWeights());
-        assertEquals(0.0, result.getBias());
+        return new OnlinePassiveAggressivePerceptron();
+    }
 
-        MultivariateGaussian positive = new MultivariateGaussian(2);
-        positive.setMean(new Vector2(1.0, 1.0));
-        positive.getCovariance().setElement(0, 0, 0.2);
-        positive.getCovariance().setElement(1, 1, 2.0);
+    @Override
+    protected void applyUpdate(
+        KernelBinaryCategorizerOnlineLearnerAdapter<Vector> learner,
+        DefaultKernelBinaryCategorizer<Vector> target,
+        InputOutputPair<Vector, Boolean> example)
+    {
+        super.applyUpdate(learner, target, example);
 
-        MultivariateGaussian negative = new MultivariateGaussian(2);
-        negative.setMean(new Vector2(-1.0, -1.0));
-        negative.getCovariance().setElement(0, 0, 0.2);
-        negative.getCovariance().setElement(1, 1, 2.0);
-
-        for (int i = 0; i < 4000; i++)
+        if (this.aggressiveCheck)
         {
-            Boolean output = random.nextBoolean();
-            Vector input = (output ? positive : negative).sample(random);
-
-            Vector oldWeights = ObjectUtil.cloneSafe(result.getWeights());
-            double prediction = result.evaluateAsDouble(input);
-
-            double loss = 1.0 - prediction * (output ? +1 : -1);
-            instance.update(result, DefaultInputOutputPair.create(input, output));
-            
-            if (loss <= 0.0)
-            {
-                assertEquals(oldWeights, result.getWeights());
-            }
+            assertEquals(example.getOutput(), target.evaluate(example.getInput()));
         }
     }
 
-    public void testLinearSoftMarginOnLinearlySeparable()
+    @Override
+    protected void applyUpdate(
+        KernelizableBinaryCategorizerOnlineLearner learner,
+        LinearBinaryCategorizer target,
+        InputOutputPair<Vector, Boolean> example)
     {
-        int d = 10;
-        int trainCount = 1000;
-        int testCount = 100;
-        LinearBinaryCategorizer real = new LinearBinaryCategorizer(
-            VectorFactory.getDenseDefault().createUniformRandom(d, -1, +1, random), 0.0);
+        super.applyUpdate(learner, target, example);
 
-        ArrayList<InputOutputPair<Vector, Boolean>> trainData =
-            new ArrayList<InputOutputPair<Vector, Boolean>>(trainCount);
-        for (int i = 0; i < trainCount; i++)
+        if (this.aggressiveCheck)
         {
-            Vector input = VectorFactory.getDenseDefault().createUniformRandom(
-                d, -1, +1, random);
-            boolean output = real.evaluate(input);
-            trainData.add(DefaultInputOutputPair.create(input, output));
-        }
-
-        ArrayList<InputOutputPair<Vector, Boolean>> testData =
-            new ArrayList<InputOutputPair<Vector, Boolean>>(testCount);
-        for (int i = 0; i < testCount; i++)
-        {
-            Vector input = VectorFactory.getDenseDefault().createUniformRandom(
-                d, -1, +1, random);
-            boolean actual = real.evaluate(input);
-            testData.add(DefaultInputOutputPair.create(input, actual));
-        }
-
-        OnlinePassiveAggressivePerceptron instance = new OnlinePassiveAggressivePerceptron.LinearSoftMargin();
-        LinearBinaryCategorizer learned = instance.createInitialLearnedObject();
-
-        for (InputOutputPair<Vector, Boolean> example : trainData)
-        {
-            instance.update(learned, example);
-        }
-
-
-        double cosine = learned.getWeights().unitVector().cosine(real.getWeights().unitVector());
-        assertTrue(cosine > 0.99);
-
-        int correctCount = 0;
-        for (InputOutputPair<Vector, Boolean> example : testData)
-        {
-            boolean actual = example.getOutput();
-            boolean predicted = learned.evaluate(example.getInput());
-
-            if (actual == predicted)
-            {
-                correctCount++;
-            }
-        }
-        double accuracy = (double) correctCount / testData.size();
-        assertTrue(accuracy > 0.95);
-    }
-    
-    /**
-     * Test of update method, of class OnlinePassiveAggressivePerceptron.
-     */
-    public void testQuadraticSoftMargin()
-    {
-        OnlinePassiveAggressivePerceptron instance = new OnlinePassiveAggressivePerceptron.QuadraticSoftMargin();
-        LinearBinaryCategorizer result = instance.createInitialLearnedObject();
-        assertNull(result.getWeights());
-        assertEquals(0.0, result.getBias());
-
-        MultivariateGaussian positive = new MultivariateGaussian(2);
-        positive.setMean(new Vector2(1.0, 1.0));
-        positive.getCovariance().setElement(0, 0, 0.2);
-        positive.getCovariance().setElement(1, 1, 2.0);
-
-        MultivariateGaussian negative = new MultivariateGaussian(2);
-        negative.setMean(new Vector2(-1.0, -1.0));
-        negative.getCovariance().setElement(0, 0, 0.2);
-        negative.getCovariance().setElement(1, 1, 2.0);
-
-        for (int i = 0; i < 4000; i++)
-        {
-            Boolean output = random.nextBoolean();
-            Vector input = (output ? positive : negative).sample(random);
-
-            Vector oldWeights = ObjectUtil.cloneSafe(result.getWeights());
-            double prediction = result.evaluateAsDouble(input);
-
-            double loss = 1.0 - prediction * (output ? +1 : -1);
-            instance.update(result, DefaultInputOutputPair.create(input, output));
-
-            if (loss <= 0.0)
-            {
-                assertEquals(oldWeights, result.getWeights());
-            }
+            assertEquals(example.getOutput(), target.evaluate(example.getInput()));
         }
     }
 
-    public void testQuadraticSoftMarginOnLinearlySeparable()
-    {
-        int d = 10;
-        int trainCount = 1000;
-        int testCount = 100;
-        LinearBinaryCategorizer real = new LinearBinaryCategorizer(
-            VectorFactory.getDenseDefault().createUniformRandom(d, -1, +1, random), 0.0);
-
-        ArrayList<InputOutputPair<Vector, Boolean>> trainData =
-            new ArrayList<InputOutputPair<Vector, Boolean>>(trainCount);
-        for (int i = 0; i < trainCount; i++)
-        {
-            Vector input = VectorFactory.getDenseDefault().createUniformRandom(
-                d, -1, +1, random);
-            boolean output = real.evaluate(input);
-            trainData.add(DefaultInputOutputPair.create(input, output));
-        }
-
-        ArrayList<InputOutputPair<Vector, Boolean>> testData =
-            new ArrayList<InputOutputPair<Vector, Boolean>>(testCount);
-        for (int i = 0; i < testCount; i++)
-        {
-            Vector input = VectorFactory.getDenseDefault().createUniformRandom(
-                d, -1, +1, random);
-            boolean actual = real.evaluate(input);
-            testData.add(DefaultInputOutputPair.create(input, actual));
-        }
-
-        OnlinePassiveAggressivePerceptron instance = new OnlinePassiveAggressivePerceptron.QuadraticSoftMargin();
-        LinearBinaryCategorizer learned = instance.createInitialLearnedObject();
-
-        for (InputOutputPair<Vector, Boolean> example : trainData)
-        {
-            instance.update(learned, example);
-        }
-
-
-        double cosine = learned.getWeights().unitVector().cosine(real.getWeights().unitVector());
-        assertTrue(cosine > 0.99);
-
-        int correctCount = 0;
-        for (InputOutputPair<Vector, Boolean> example : testData)
-        {
-            boolean actual = example.getOutput();
-            boolean predicted = learned.evaluate(example.getInput());
-
-            if (actual == predicted)
-            {
-                correctCount++;
-            }
-        }
-        double accuracy = (double) correctCount / testData.size();
-        assertTrue(accuracy > 0.95);
-    }
 
 }

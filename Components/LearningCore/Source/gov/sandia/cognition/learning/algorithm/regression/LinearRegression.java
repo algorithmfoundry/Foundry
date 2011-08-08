@@ -185,6 +185,7 @@ public class LinearRegression<InputType>
      * @return 
      * LinearCombinationFunction that minimizes the RMS error of the outputs.
      */
+    @Override
     public VectorFunctionLinearDiscriminant<InputType> learn(
         Collection<? extends InputOutputPair<? extends InputType, Double>> data )
     {
@@ -656,6 +657,12 @@ public class LinearRegression<InputType>
             double chiSquare )
         {
             this.chiSquare = chiSquare;
+        }
+
+        @Override
+        public double getTestStatistic()
+        {
+            return this.getChiSquare();
         }
 
     }

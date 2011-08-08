@@ -39,6 +39,7 @@ public interface ProbabilityDensityFunction<DataType>
     ProbabilityFunction<DataType>
 {
 
+    @Override
     public ProbabilityDensityFunction<DataType> getProbabilityFunction();
 
 }

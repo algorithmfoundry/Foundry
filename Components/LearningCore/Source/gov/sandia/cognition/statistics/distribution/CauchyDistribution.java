@@ -18,8 +18,8 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
+import gov.sandia.cognition.statistics.AbstractClosedFormSmoothUnivariateDistribution;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import java.util.ArrayList;
 import java.util.Random;
@@ -39,7 +39,7 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Cauchy_distribution"
 )
 public class CauchyDistribution 
-    extends AbstractClosedFormSmoothScalarDistribution
+    extends AbstractClosedFormSmoothUnivariateDistribution
 {
 
     /**
@@ -78,8 +78,8 @@ public class CauchyDistribution
      * Scale of the distribution, must be greater than zero.
      */
     public CauchyDistribution(
-        double location,
-        double scale)
+        final double location,
+        final double scale)
     {
         this.location = location;
         this.scale = scale;
@@ -91,7 +91,7 @@ public class CauchyDistribution
      * CauchyDistribution to copy.
      */
     public CauchyDistribution(
-        CauchyDistribution other )
+        final CauchyDistribution other )
     {
         this( other.getLocation(), other.getScale() );
     }
@@ -119,7 +119,7 @@ public class CauchyDistribution
      * Central location (also the median and mode) of the distribution.
      */
     public void setLocation(
-        double location)
+        final double location)
     {
         this.location = location;
     }
@@ -140,7 +140,7 @@ public class CauchyDistribution
      * Scale of the distribution, must be greater than zero.
      */
     public void setScale(
-        double scale)
+        final double scale)
     {
         if( scale <= 0.0 )
         {
@@ -150,6 +150,7 @@ public class CauchyDistribution
         this.scale = scale;
     }
 
+    @Override
     public Double getMean()
     {
         // The mean of a Cauchy is undefined due to its heavy tails.
@@ -160,9 +161,10 @@ public class CauchyDistribution
         return this.getLocation();
     }
 
+    @Override
     public ArrayList<? extends Double> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
     {
         ArrayList<Double> samples = new ArrayList<Double>( numSamples );
         for( int n = 0; n < numSamples; n++ )
@@ -176,40 +178,47 @@ public class CauchyDistribution
         return samples;
     }
 
+    @Override
     public CauchyDistribution.CDF getCDF()
     {
         return new CauchyDistribution.CDF( this );
     }
 
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues(
             this.getLocation(), this.getScale() );
     }
 
+    @Override
     public void convertFromVector(
-        Vector parameters)
+        final Vector parameters)
     {
         parameters.assertDimensionalityEquals(2);
         this.setLocation( parameters.getElement(0) );
         this.setScale( parameters.getElement(1) );
     }
 
+    @Override
     public double getVariance()
     {
         return Double.POSITIVE_INFINITY;
     }
 
+    @Override
     public CauchyDistribution.PDF getProbabilityFunction()
     {
         return new CauchyDistribution.PDF( this );
     }
 
+    @Override
     public Double getMinSupport()
     {
         return Double.NEGATIVE_INFINITY;
     }
 
+    @Override
     public Double getMaxSupport()
     {
         return Double.POSITIVE_INFINITY;
@@ -220,7 +229,7 @@ public class CauchyDistribution
      */
     public static class PDF
         extends CauchyDistribution
-        implements ScalarProbabilityDensityFunction
+        implements UnivariateProbabilityDensityFunction
     {
 
         /**
@@ -239,8 +248,8 @@ public class CauchyDistribution
          * Scale of the distribution, must be greater than zero.
          */
         public PDF(
-            double location,
-            double scale)
+            final double location,
+            final double scale)
         {
             super( location, scale );
         }
@@ -251,31 +260,35 @@ public class CauchyDistribution
          * CauchyDistribution to copy.
          */
         public PDF(
-            CauchyDistribution other )
+            final CauchyDistribution other )
         {
             super( other );
         }
 
+        @Override
         public double logEvaluate(
             final Double input)
         {
             return this.logEvaluate((double) input);
         }
 
+        @Override
         public double logEvaluate(
-            double input)
+            final double input)
         {
             return Math.log(this.evaluate(input));
         }
 
+        @Override
         public Double evaluate(
-            Double input)
+            final Double input)
         {
             return this.evaluate( input.doubleValue() );
         }
 
+        @Override
         public double evaluate(
-            double input)
+            final double input)
         {
             final double leading = Math.PI * this.scale;
             final double d1 = (input - this.location) / this.scale;
@@ -316,8 +329,8 @@ public class CauchyDistribution
          * Scale of the distribution, must be greater than zero.
          */
         public CDF(
-            double location,
-            double scale)
+            final double location,
+            final double scale)
         {
             super( location, scale );
         }
@@ -328,19 +341,21 @@ public class CauchyDistribution
          * CauchyDistribution to copy.
          */
         public CDF(
-            CauchyDistribution other )
+            final CauchyDistribution other )
         {
             super( other );
         }
 
+        @Override
         public Double evaluate(
-            Double input)
+            final Double input)
         {
             return this.evaluate( input.doubleValue() );
         }
 
+        @Override
         public double evaluate(
-            double input)
+            final double input)
         {
             double d1 = Math.atan( (input - this.location)/this.scale );
             return d1/Math.PI + 0.5;
@@ -352,13 +367,15 @@ public class CauchyDistribution
             return this;
         }
 
+        @Override
         public CauchyDistribution.PDF getDerivative()
         {
             return this.getProbabilityFunction();
         }
 
+        @Override
         public Double differentiate(
-            Double input)
+            final Double input)
         {
             return this.getDerivative().evaluate(input);
         }

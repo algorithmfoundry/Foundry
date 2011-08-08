@@ -105,7 +105,7 @@ public class InverseWishartDistribution
      * the degrees of freedom to two plus the dimensionality.
      */
     public InverseWishartDistribution(
-        int dimensionality )
+        final int dimensionality )
     {
         this( MatrixFactory.getDefault().createIdentity(dimensionality, dimensionality ),
             dimensionality + 2 );
@@ -120,8 +120,8 @@ public class InverseWishartDistribution
      * dimensionality.
      */
     public InverseWishartDistribution(
-        Matrix inverseScale,
-        int degreesOfFreedom)
+        final Matrix inverseScale,
+        final int degreesOfFreedom)
     {
         this.setInverseScale(inverseScale);
         this.setDegreesOfFreedom(degreesOfFreedom);
@@ -158,6 +158,7 @@ public class InverseWishartDistribution
         return this.getInverseScale().getNumRows();
     }
 
+    @Override
     public Matrix getMean()
     {
         final int p = this.getInputDimensionality();
@@ -181,10 +182,10 @@ public class InverseWishartDistribution
      * Covariance matrix inverse.
      */
     public static Matrix sample(
-        Random random,
-        Vector mean,
-        Matrix covarianceSqrt,
-        int degreesOfFreedom )
+        final Random random,
+        final Vector mean,
+        final Matrix covarianceSqrt,
+        final int degreesOfFreedom )
     {
         ArrayList<Vector> xs = MultivariateGaussian.sample(
             mean, covarianceSqrt, random, degreesOfFreedom );
@@ -196,9 +197,10 @@ public class InverseWishartDistribution
         return sum.getSum().inverse();
     }
 
+    @Override
     public ArrayList<Matrix> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
     {
 
         // We need to sample from a Multivariate Gaussian here.
@@ -218,6 +220,7 @@ public class InverseWishartDistribution
         
     }
 
+    @Override
     public Vector convertToVector()
     {
         Vector dof =
@@ -226,8 +229,9 @@ public class InverseWishartDistribution
         return dof.stack(matrix);
     }
 
+    @Override
     public void convertFromVector(
-        Vector parameters)
+        final Vector parameters)
     {
         int p = this.getInputDimensionality();
         parameters.assertDimensionalityEquals( 1 + p*p );
@@ -255,7 +259,7 @@ public class InverseWishartDistribution
      * Inverse scale matrix, must be symmetric and positive definite.
      */
     public void setInverseScale(
-        Matrix inverseScale)
+        final Matrix inverseScale)
     {
         this.scaleSqrt = null;
         this.inverseScale = inverseScale;
@@ -279,7 +283,7 @@ public class InverseWishartDistribution
      * dimensionality.
      */
     public void setDegreesOfFreedom(
-        int degreesOfFreedom)
+        final int degreesOfFreedom)
     {
         if( degreesOfFreedom <= this.getInputDimensionality() )
         {
@@ -289,6 +293,7 @@ public class InverseWishartDistribution
         this.degreesOfFreedom = degreesOfFreedom;
     }
 
+    @Override
     public InverseWishartDistribution.PDF getProbabilityFunction()
     {
         return new InverseWishartDistribution.PDF( this );
@@ -343,8 +348,8 @@ public class InverseWishartDistribution
          * dimensionality.
          */
         public PDF(
-            Matrix inverseScale,
-            int degreesOfFreedom)
+            final Matrix inverseScale,
+            final int degreesOfFreedom)
         {
             super( inverseScale, degreesOfFreedom );
         }
@@ -355,19 +360,21 @@ public class InverseWishartDistribution
          * InverseWishartDistribution to copy
          */
         public PDF(
-            InverseWishartDistribution other )
+            final InverseWishartDistribution other )
         {
             super( other );
         }
 
+        @Override
         public Double evaluate(
-            Matrix input)
+            final Matrix input)
         {
             return Math.exp( this.logEvaluate(input) );
         }
 
+        @Override
         public double logEvaluate(
-            Matrix input)
+            final Matrix input)
         {
             final int m = this.getDegreesOfFreedom();
             final int p = this.getInputDimensionality();
@@ -417,8 +424,8 @@ public class InverseWishartDistribution
          * Logarithm of the Multivariate Gamma Function
          */
         public static double logEvaluate(
-            double x,
-            int p )
+            final double x,
+            final int p )
         {
             double logSum = 0.0;
             logSum += p*(p-1)/4.0 * LOG_PI;

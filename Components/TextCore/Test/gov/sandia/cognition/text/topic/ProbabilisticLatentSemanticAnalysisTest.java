@@ -20,7 +20,6 @@ import gov.sandia.cognition.math.matrix.SparseVectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
-import gov.sandia.cognition.text.topic.ProbabilisticLatentSemanticAnalysis.Transform;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @TODO    Document this.
+ * Unit tests for class ProbabilisticLatentSemanticAnalysis.
  *
  * @author  Justin Basilico
  * @since   3.0
@@ -58,7 +57,7 @@ public class ProbabilisticLatentSemanticAnalysisTest
     @Test
     public void testLearn()
     {
-        final Random random = new Random(111);
+        final Random random = new Random(211);
         
         double[][] data = new double[][] {
             { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -82,15 +81,15 @@ public class ProbabilisticLatentSemanticAnalysisTest
             documents.add(VectorFactory.getDefault().copyArray(d));
         }
 
-
         ProbabilisticLatentSemanticAnalysis instance = new ProbabilisticLatentSemanticAnalysis(random);
         instance.addIterativeAlgorithmListener(new ProbabilisticLatentSemanticAnalysis.StatusPrinter());
 
         int rank = 2;
         instance.setRequestedRank(rank);
-        ProbabilisticLatentSemanticAnalysis.Transform result =
+        ProbabilisticLatentSemanticAnalysis.Result result =
             instance.learn(documents);
         assertSame(result, instance.getResult());
+        assertEquals(rank, result.latents.length);
 
         System.out.println("Result:");
         for (ProbabilisticLatentSemanticAnalysis.LatentData latent : result.latents)
@@ -105,12 +104,14 @@ public class ProbabilisticLatentSemanticAnalysisTest
         for (Vector document : documents)
         {
             Vector transformed = result.evaluate(document);
+            assertEquals(1.0, transformed.sum(), 0.00001);
             System.out.println("    p(z|q) = " + transformed.toString(format));
         }
 
         Vector zeros = documents.get(0).clone();
         zeros.zero();
         Vector transformed = result.evaluate(zeros);
+        assertEquals(0.0, transformed.sum(), 0.00001);
         System.out.println("    p(z|0) = " + transformed.toString(format));
 
         Vector ones = zeros.clone();
@@ -121,13 +122,12 @@ public class ProbabilisticLatentSemanticAnalysisTest
             tens.setElement(i, 10.0);
         }
         
-        transformed = result.evaluate(ones);
-        System.out.println("    p(z|1) = " + transformed.toString(format));
+        Vector transformed1s = result.evaluate(ones);
+        System.out.println("    p(z|1) = " + transformed1s.toString(format));
 
-        transformed = result.evaluate(tens);
-        System.out.println("    p(z|10) = " + transformed.toString(format));
-
-        // TODO: Have this test actually try to assert something.
+        Vector transformed10s = result.evaluate(tens);
+        System.out.println("    p(z|10) = " + transformed10s.toString(format));
+        assertTrue(transformed1s.equals(transformed10s, 0.01));
     }
 
     /**
@@ -314,6 +314,4 @@ D = [
 0 0 0 0 0 0 1 1 1;
 0 0 0 0 0 0 0 1 1];
 
-TODO: Put in more code for how to actually compute PLSA with the data.
- *
  */

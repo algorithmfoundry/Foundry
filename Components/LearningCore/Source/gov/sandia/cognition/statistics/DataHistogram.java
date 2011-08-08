@@ -33,7 +33,7 @@ public interface DataHistogram<DataType>
      * @param  value The value to add.
      */
     public void add(
-        DataType value);
+        final DataType value);
     
     /**
      * Adds the given number of the given value to the histogram.
@@ -42,8 +42,8 @@ public interface DataHistogram<DataType>
      * @param  count The number of value to add.
      */
     public void add(
-        DataType value,
-        int count );
+        final DataType value,
+        final int count );
     
     /**
      * Removes one of the given value from the histogram.
@@ -51,7 +51,7 @@ public interface DataHistogram<DataType>
      * @param  value The value to remove.
      */
     public void remove(
-        DataType value);
+        final DataType value);
     
     /**
      * Removes the given number of the given value to the histogram.
@@ -60,8 +60,8 @@ public interface DataHistogram<DataType>
      * @param  count The count of value to remove.
      */
     public void remove(
-        DataType value,
-        int count );
+        final DataType value,
+        final int count );
 
     /**
      * Adds all of the given values to the histogram.
@@ -91,7 +91,7 @@ public interface DataHistogram<DataType>
      * @return The number of values associated with the input.
      */
     public int getCount(
-        DataType input);
+        final DataType input);
 
     /**
      * Determines whether or not the histogram is empty. It is empty if the
@@ -158,6 +158,7 @@ public interface DataHistogram<DataType>
      */
     public double getEntropy();
 
+    @Override
     public DataHistogram.PMF<DataType> getProbabilityFunction();
 
     /**

@@ -144,6 +144,7 @@ public class ChiSquareConfidence
 
     }
 
+    @Override
     public ChiSquareConfidence.Statistic evaluateNullHypothesis(
         Collection<? extends Number> data1,
         Collection<? extends Number> data2)
@@ -226,6 +227,12 @@ public class ChiSquareConfidence
         public double getDegreesOfFreedom()
         {
             return this.degreesOfFreedom;
+        }
+
+        @Override
+        public double getTestStatistic()
+        {
+            return this.getChiSquare();
         }
 
     }

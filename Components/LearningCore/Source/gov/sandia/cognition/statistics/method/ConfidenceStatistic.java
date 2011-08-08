@@ -38,4 +38,13 @@ public interface ConfidenceStatistic
      */
     public double getNullHypothesisProbability();
     
+    /**
+     * Gets the statistic from which we compute the null-hypothesis probability.
+     * In an ANOVA, this would be the "F" statistic.  In a t-test, this would
+     * be the "t" value.  And so forth.
+     * @return
+     * Confidence statistic used to compute the null-hypothesis probability.
+     */
+    public double getTestStatistic();
+
 }

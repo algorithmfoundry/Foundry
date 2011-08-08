@@ -21,6 +21,7 @@ import gov.sandia.cognition.learning.algorithm.minimization.line.LineMinimizerDe
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.statistics.DataHistogram;
 import gov.sandia.cognition.statistics.ProbabilityFunction;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
@@ -90,8 +91,9 @@ public class RejectionSampling<ObservationType,ParameterType>
         return clone;
     }
 
+    @Override
     public DataHistogram<ParameterType> learn(
-        Collection<? extends ObservationType> data)
+        final Collection<? extends ObservationType> data)
     {
         DataHistogram<ParameterType> retval =
             new MapBasedDataHistogram<ParameterType>( this.getNumSamples() );
@@ -135,7 +137,7 @@ public class RejectionSampling<ObservationType,ParameterType>
      * Number of samples.
      */
     public void setNumSamples(
-        int numSamples)
+        final int numSamples)
     {
         this.numSamples = numSamples;
     }
@@ -156,7 +158,7 @@ public class RejectionSampling<ObservationType,ParameterType>
      * Updater for the ImportanceSampling algorithm.
      */
     public void setUpdater(
-        RejectionSampling.Updater<ObservationType, ParameterType> updater)
+        final RejectionSampling.Updater<ObservationType, ParameterType> updater)
     {
         this.updater = updater;
     }
@@ -174,7 +176,7 @@ public class RejectionSampling<ObservationType,ParameterType>
          * Defines the parameter that connects the conditional and prior
          * distributions.
          */
-        BayesianParameter<Double,? extends ProbabilityFunction<ObservationType>,? extends ProbabilityFunction<Double>> conjunctive;
+        BayesianParameter<Double,? extends ProbabilityFunction<ObservationType>,? extends UnivariateProbabilityDensityFunction> conjunctive;
 
         /**
          * Data to consider
@@ -190,8 +192,8 @@ public class RejectionSampling<ObservationType,ParameterType>
          * Data to consider
          */
         public ScalarEstimator(
-            BayesianParameter<Double,? extends ProbabilityFunction<ObservationType>,? extends ProbabilityFunction<Double>> conjunctive,
-            Iterable<? extends ObservationType> data )
+            final BayesianParameter<Double,? extends ProbabilityFunction<ObservationType>,? extends UnivariateProbabilityDensityFunction> conjunctive,
+            final Iterable<? extends ObservationType> data )
         {
             this.conjunctive = conjunctive;
             this.data = data;
@@ -206,7 +208,7 @@ public class RejectionSampling<ObservationType,ParameterType>
          * Logarithm of the conjunctive likelihood for the given parameter
          */
         public double logConjunctive(
-            Double parameter )
+            final Double parameter )
         {
             double logSum = this.conjunctive.getParameterPrior().logEvaluate(parameter);
             if( !Double.isInfinite(logSum) )
@@ -229,7 +231,7 @@ public class RejectionSampling<ObservationType,ParameterType>
          * conjunctive distribution
          */
         public double estimateScalarFactor(
-            ProbabilityFunction<Double> sampler )
+            final UnivariateProbabilityDensityFunction sampler )
         {
             MinimizerFunction f = new MinimizerFunction( sampler );
             LineMinimizerDerivativeFree minimizer =
@@ -260,13 +262,14 @@ public class RejectionSampling<ObservationType,ParameterType>
              * Sampler function
              */
             public MinimizerFunction(
-                ProbabilityFunction<Double> sampler)
+                final ProbabilityFunction<Double> sampler)
             {
                 this.sampler = sampler;
             }
             
+            @Override
             public Double evaluate(
-                Double parameter)
+                final Double parameter)
             {
                 // Find the point where the conjuctive is the largest compared
                 // to the sampler: min(logSampler - logConjuctive)
@@ -305,8 +308,8 @@ public class RejectionSampling<ObservationType,ParameterType>
          * Probability of accepting the parameter
          */
         public double computeAcceptanceProbability(
-            ParameterType parameter,
-            Iterable<? extends ObservationType> data );
+            final ParameterType parameter,
+            final Iterable<? extends ObservationType> data );
 
         /**
          * Samples from the parameter prior
@@ -316,7 +319,7 @@ public class RejectionSampling<ObservationType,ParameterType>
          * Location of the proposed sample
          */
         public ParameterType makeProposal(
-            Random random );
+            final Random random );
 
     }
 
@@ -369,7 +372,7 @@ public class RejectionSampling<ObservationType,ParameterType>
          * distributions.
          */
         public DefaultUpdater(
-            BayesianParameter<ParameterType,? extends ProbabilityFunction<ObservationType>,? extends ProbabilityFunction<ParameterType>> conjuctive)
+            final BayesianParameter<ParameterType,? extends ProbabilityFunction<ObservationType>,? extends ProbabilityFunction<ParameterType>> conjuctive)
         {
             this( conjuctive, (conjuctive != null) ? conjuctive.getParameterPrior() : null );
         }
@@ -384,8 +387,8 @@ public class RejectionSampling<ObservationType,ParameterType>
          * distribution.
          */
         public DefaultUpdater(
-            BayesianParameter<ParameterType,? extends ProbabilityFunction<ObservationType>,? extends ProbabilityFunction<ParameterType>> conjuctive,
-            ProbabilityFunction<ParameterType> sampler)
+            final BayesianParameter<ParameterType,? extends ProbabilityFunction<ObservationType>,? extends ProbabilityFunction<ParameterType>> conjuctive,
+            final ProbabilityFunction<ParameterType> sampler)
         {
             this( conjuctive, null, sampler );
         }
@@ -403,9 +406,9 @@ public class RejectionSampling<ObservationType,ParameterType>
          * distribution.
          */
         public DefaultUpdater(
-            BayesianParameter<ParameterType,? extends ProbabilityFunction<ObservationType>,? extends ProbabilityFunction<ParameterType>> conjuctive,
-            Double scale,
-            ProbabilityFunction<ParameterType> sampler)
+            final BayesianParameter<ParameterType,? extends ProbabilityFunction<ObservationType>,? extends ProbabilityFunction<ParameterType>> conjuctive,
+            final Double scale,
+            final ProbabilityFunction<ParameterType> sampler)
         {
             this.setConjuctive(conjuctive);
             this.setScale(scale);
@@ -413,9 +416,10 @@ public class RejectionSampling<ObservationType,ParameterType>
             this.setProposals(0);
         }
 
+        @Override
         public double computeAcceptanceProbability(
-            ParameterType parameter,
-            Iterable<? extends ObservationType> data)
+            final ParameterType parameter,
+            final Iterable<? extends ObservationType> data)
         {
             if( this.scale == null )
             {
@@ -430,8 +434,9 @@ public class RejectionSampling<ObservationType,ParameterType>
             return Math.exp( logSum );
         }
 
+        @Override
         public ParameterType makeProposal(
-            Random random)
+            final Random random)
         {
             this.proposals++;
             ParameterType parameter = null;
@@ -466,7 +471,7 @@ public class RejectionSampling<ObservationType,ParameterType>
          * distributions.
          */
         public void setConjuctive(
-            BayesianParameter<ParameterType,? extends ProbabilityFunction<ObservationType>,? extends ProbabilityFunction<ParameterType>> conjuctive)
+            final BayesianParameter<ParameterType,? extends ProbabilityFunction<ObservationType>,? extends ProbabilityFunction<ParameterType>> conjuctive)
         {
             this.conjuctive = conjuctive;
         }
@@ -482,13 +487,13 @@ public class RejectionSampling<ObservationType,ParameterType>
          */
         @SuppressWarnings("unchecked")
         public double computeOptimalScale(
-            Iterable<? extends ObservationType> data )
+            final Iterable<? extends ObservationType> data )
         {
             ScalarEstimator<ObservationType> estimator =
                 new ScalarEstimator<ObservationType>(
-                    (BayesianParameter<Double,? extends ProbabilityFunction<ObservationType>,? extends ProbabilityFunction<Double>>) this.getConjuctive(), data );
+                    (BayesianParameter<Double,? extends ProbabilityFunction<ObservationType>,? extends UnivariateProbabilityDensityFunction>) this.getConjuctive(), data );
             return estimator.estimateScalarFactor(
-                (ProbabilityFunction<Double>) this.getSampler() );
+                (UnivariateProbabilityDensityFunction) this.getSampler() );
         }
 
         /**
@@ -507,9 +512,9 @@ public class RejectionSampling<ObservationType,ParameterType>
          */
         @SuppressWarnings("unchecked")
         public UnivariateGaussian.PDF computeGaussianSampler(
-            Iterable<? extends ObservationType> data,
-            Random random,
-            int numSamples )
+            final Iterable<? extends ObservationType> data,
+            final Random random,
+            final int numSamples )
         {
             ArrayList<? extends ParameterType> parameters =
                 this.conjuctive.getParameterPrior().sample(random, numSamples);
@@ -551,7 +556,7 @@ public class RejectionSampling<ObservationType,ParameterType>
          * conjunctive distribution.
          */
         public void setScale(
-            Double scale)
+            final Double scale)
         {
             this.scale = scale;
         }
@@ -572,7 +577,7 @@ public class RejectionSampling<ObservationType,ParameterType>
          * Number of proposals suggested
          */
         protected void setProposals(
-            int proposals)
+            final int proposals)
         {
             this.proposals = proposals;
         }
@@ -595,7 +600,7 @@ public class RejectionSampling<ObservationType,ParameterType>
          * distribution.
          */
         public void setSampler(
-            ProbabilityFunction<ParameterType> sampler)
+            final ProbabilityFunction<ParameterType> sampler)
         {
             this.sampler = sampler;
         }

@@ -18,8 +18,8 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormScalarDistribution;
-import gov.sandia.cognition.statistics.ClosedFormScalarCumulativeDistributionFunction;
+import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
+import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.method.InverseTransformSampling;
 import java.util.ArrayList;
 import java.util.Random;
@@ -40,7 +40,7 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Kolmogorov_distribution#Kolmogorov_distribution"
 )
 public class KolmogorovDistribution
-    extends AbstractClosedFormScalarDistribution<Double>
+    extends AbstractClosedFormUnivariateDistribution<Double>
 {
 
     /**
@@ -62,45 +62,53 @@ public class KolmogorovDistribution
     {
     }
 
+    @Override
     public Double getMean()
     {
         return MEAN;
     }
 
+    @Override
     public ArrayList<Double> sample(
-        Random random,
-        int numSamples )
+        final Random random,
+        final int numSamples )
     {
         return InverseTransformSampling.sample(
             this.getCDF(), random, numSamples);
     }
 
+    @Override
     public double getVariance()
     {
         return VARIANCE;
     }
 
+    @Override
     public KolmogorovDistribution.CDF getCDF()
     {
         return new KolmogorovDistribution.CDF();
     }
 
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().createVector(0);
     }
 
+    @Override
     public void convertFromVector(
-        Vector parameters)
+        final Vector parameters)
     {
         parameters.assertDimensionalityEquals(0);
     }
 
+    @Override
     public Double getMinSupport()
     {
         return 0.0;
     }
 
+    @Override
     public Double getMaxSupport()
     {
         return Double.POSITIVE_INFINITY;
@@ -114,7 +122,7 @@ public class KolmogorovDistribution
      */
     public static class CDF
         extends KolmogorovDistribution
-        implements ClosedFormScalarCumulativeDistributionFunction<Double>
+        implements ClosedFormCumulativeDistributionFunction<Double>
     {
 
         /**
@@ -125,8 +133,9 @@ public class KolmogorovDistribution
             super();
         }
 
+        @Override
         public Double evaluate(
-            Double input )
+            final Double input )
         {
             return evaluate( input.doubleValue() );
         }
@@ -159,7 +168,7 @@ public class KolmogorovDistribution
             url="http://www.nrbook.com/a/bookcpdf.php"
         )
         public static double evaluate(
-            double input )
+            final double input )
         {
 
             if (input < 0.0)

@@ -42,6 +42,7 @@ public interface DiscreteDistribution<DataType>
      */
     public int getDomainSize();
 
+    @Override
     public ProbabilityMassFunction<DataType> getProbabilityFunction();
 
 }

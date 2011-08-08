@@ -21,9 +21,9 @@ import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormScalarDistribution;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistribution;
-import gov.sandia.cognition.statistics.ClosedFormScalarCumulativeDistributionFunction;
+import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
+import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistribution;
+import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
@@ -48,8 +48,8 @@ import java.util.Random;
     url="http://mathworld.wolfram.com/BetaBinomialDistribution.html"
 )
 public class BetaBinomialDistribution 
-    extends AbstractClosedFormScalarDistribution<Number>
-    implements ClosedFormDiscreteScalarDistribution<Number>,
+    extends AbstractClosedFormUnivariateDistribution<Number>
+    implements ClosedFormDiscreteUnivariateDistribution<Number>,
     EstimableDistribution<Number,BetaBinomialDistribution>
 {
 
@@ -103,9 +103,9 @@ public class BetaBinomialDistribution
      * must be greater than zero
      */
     public BetaBinomialDistribution(
-        int n,
-        double shape,
-        double scale )
+        final int n,
+        final double shape,
+        final double scale )
     {
         this.setN(n);
         this.setShape(shape);
@@ -118,7 +118,7 @@ public class BetaBinomialDistribution
      * BetaBinomialDistribution to copy
      */
     public BetaBinomialDistribution(
-        BetaBinomialDistribution other )
+        final BetaBinomialDistribution other )
     {
         this( other.getN(), other.getShape(), other.getScale() );
     }
@@ -145,7 +145,7 @@ public class BetaBinomialDistribution
      * Shape, similar to the beta parameter shape, must be greater than zero
      */
     public void setShape(
-        double shape)
+        final double shape)
     {
         if( shape <= 0.0 )
         {
@@ -170,7 +170,7 @@ public class BetaBinomialDistribution
      * Scale, similar to the beta parameter scale, must be greater than zero
      */
     public void setScale(
-        double scale)
+        final double scale)
     {
         if( scale <= 0.0 )
         {
@@ -197,7 +197,7 @@ public class BetaBinomialDistribution
      * must be greater than zero
      */
     public void setN(
-        int n)
+        final int n)
     {
         if( n < 1 )
         {
@@ -206,32 +206,37 @@ public class BetaBinomialDistribution
         this.n = n;
     }
 
+    @Override
     public Number getMean()
     {
         return this.n * this.shape / (this.shape+this.scale);
     }
 
+    @Override
     public ArrayList<? extends Number> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
     {
         return ProbabilityMassFunctionUtil.sample(
             this.getProbabilityFunction(), random, numSamples);
     }
 
+    @Override
     public BetaBinomialDistribution.CDF getCDF()
     {
         return new BetaBinomialDistribution.CDF( this );
     }
 
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues(
             this.n, this.shape, this.scale );
     }
 
+    @Override
     public void convertFromVector(
-        Vector parameters)
+        final Vector parameters)
     {
         parameters.assertDimensionalityEquals(3);
         this.setN( (int) parameters.getElement(0) );
@@ -239,16 +244,19 @@ public class BetaBinomialDistribution
         this.setScale(parameters.getElement(2) );
     }
 
-    public Number getMinSupport()
+    @Override
+    public Integer getMinSupport()
     {
         return 0;
     }
 
-    public Number getMaxSupport()
+    @Override
+    public Integer getMaxSupport()
     {
         return this.n;
     }
 
+    @Override
     public double getVariance()
     {
         final double ss = this.shape + this.scale;
@@ -257,6 +265,7 @@ public class BetaBinomialDistribution
         return numer / denom;
     }
 
+    @Override
     public Collection<Integer> getDomain()
     {
         return new IntegerCollection(0, (int) Math.ceil(this.n) );
@@ -268,11 +277,13 @@ public class BetaBinomialDistribution
         return ((int) Math.ceil(this.n)) + 1;
     }
 
+    @Override
     public BetaBinomialDistribution.PMF getProbabilityFunction()
     {
         return new BetaBinomialDistribution.PMF( this );
     }
 
+    @Override
     public BetaBinomialDistribution.MomentMatchingEstimator getEstimator()
     {
         return new BetaBinomialDistribution.MomentMatchingEstimator();
@@ -305,9 +316,9 @@ public class BetaBinomialDistribution
          * must be greater than zero
          */
         public PMF(
-            int n,
-            double shape,
-            double scale )
+            final int n,
+            final double shape,
+            final double scale )
         {
             super( n, shape, scale );
         }
@@ -318,7 +329,7 @@ public class BetaBinomialDistribution
          * BetaBinomialDistribution to copy
          */
         public PMF(
-            BetaBinomialDistribution other )
+            final BetaBinomialDistribution other )
         {
             super( other );
         }
@@ -329,14 +340,16 @@ public class BetaBinomialDistribution
             return this;
         }
 
+        @Override
         public Double evaluate(
-            Number input)
+            final Number input)
         {
             return Math.exp( this.logEvaluate(input) );
         }
 
+        @Override
         public double logEvaluate(
-            Number input)
+            final Number input)
         {
             if( input.doubleValue() < 0.0 )
             {
@@ -355,6 +368,7 @@ public class BetaBinomialDistribution
             return logSum;
         }
 
+        @Override
         public double getEntropy()
         {
             return ProbabilityMassFunctionUtil.getEntropy(this);
@@ -367,7 +381,7 @@ public class BetaBinomialDistribution
      */
     public static class CDF
         extends BetaBinomialDistribution
-        implements ClosedFormScalarCumulativeDistributionFunction<Number>
+        implements ClosedFormCumulativeDistributionFunction<Number>
     {
 
         /**
@@ -389,9 +403,9 @@ public class BetaBinomialDistribution
          * must be greater than zero
          */
         public CDF(
-            int n,
-            double shape,
-            double scale )
+            final int n,
+            final double shape,
+            final double scale )
         {
             super( n, shape, scale );
         }
@@ -402,13 +416,14 @@ public class BetaBinomialDistribution
          * BetaBinomialDistribution to copy
          */
         public CDF(
-            BetaBinomialDistribution other )
+            final BetaBinomialDistribution other )
         {
             super( other );
         }
 
+        @Override
         public Double evaluate(
-            Number input)
+            final Number input)
         {
             return ProbabilityMassFunctionUtil.computeCumulativeValue(
                 input.intValue(),this);
@@ -451,8 +466,9 @@ public class BetaBinomialDistribution
         {
         }
 
+        @Override
         public BetaBinomialDistribution learn(
-            Collection<? extends Number> data)
+            final Collection<? extends Number> data)
         {
             Pair<Double,Double> pair =
                 UnivariateStatisticsUtil.computeMeanAndVariance(data);
@@ -494,9 +510,9 @@ public class BetaBinomialDistribution
          * given parameters.
          */
         public static BetaBinomialDistribution.PMF learn(
-            int N,
-            double mean,
-            double variance )
+            final int N,
+            final double mean,
+            final double variance )
         {
 
             double denom = N*((variance/mean) - mean - 1.0) + mean;

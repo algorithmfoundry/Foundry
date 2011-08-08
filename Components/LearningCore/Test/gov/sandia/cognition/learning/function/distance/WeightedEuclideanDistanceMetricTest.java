@@ -22,7 +22,7 @@ import gov.sandia.cognition.math.matrix.mtj.Vector2;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
 
 /**
- * @TODO    Document this.
+ * Unit tests for class WeightedEuclideanDistanceMetric.
  *
  * @author  Justin Basilico
  * @since   3.1

@@ -16,7 +16,7 @@ package gov.sandia.cognition.statistics.distribution;
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistributionTestHarness;
+import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistributionTestHarness;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -25,7 +25,7 @@ import java.util.Collection;
  * @author Kevin R. Dixon
  */
 public class DeterministicDistributionTest
-    extends ClosedFormDiscreteScalarDistributionTestHarness<Double>
+    extends ClosedFormDiscreteUnivariateDistributionTestHarness<Double>
 {
 
     /**

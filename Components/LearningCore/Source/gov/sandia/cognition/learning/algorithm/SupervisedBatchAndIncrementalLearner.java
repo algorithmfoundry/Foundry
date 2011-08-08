@@ -28,7 +28,7 @@ import gov.sandia.cognition.learning.data.InputOutputPair;
  * @param   <ResultType> The type of object created by the learning algorithm.
  *          For example, a {@code LinearBinaryCategorizer}.
  * @author  Justin Basilico
- * @since   3.1.2
+ * @since   3.2.0
  */
 public interface SupervisedBatchAndIncrementalLearner<InputType, OutputType, ResultType extends Evaluator<? super InputType, ? extends OutputType>>
     extends SupervisedIncrementalLearner<InputType, OutputType, ResultType>,

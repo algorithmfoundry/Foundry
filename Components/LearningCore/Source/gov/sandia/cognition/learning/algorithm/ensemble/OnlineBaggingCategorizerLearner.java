@@ -2,7 +2,7 @@
  * File:                OnlineBaggingCategorizerLearner.java
  * Authors:             Justin Basilico
  * Company:             Sandia National Laboratories
- * Project:             Incremental Learning Core
+ * Project:             Cognitive Foundry Learning Core
  * 
  * Copyright March 21, 2011, Sandia Corporation.
  * Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive 

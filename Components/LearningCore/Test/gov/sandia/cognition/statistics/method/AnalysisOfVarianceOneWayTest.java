@@ -65,7 +65,7 @@ public class AnalysisOfVarianceOneWayTest
         data.add( Arrays.asList( 1.0, 2.0, 2.0, 0.0, 0.0 ) );
 
         AnalysisOfVarianceOneWay.Statistic stat =
-            AnalysisOfVarianceOneWay.evaluateNullHypothesis( data );
+            AnalysisOfVarianceOneWay.INSTANCE.evaluateNullHypothesis( data );
 
         final double EPS = 1e-4;
         assertEquals( 0.0017708, stat.getNullHypothesisProbability(), EPS );
@@ -94,7 +94,7 @@ public class AnalysisOfVarianceOneWayTest
         data.add( Arrays.asList( 1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 5.0, 5.0 ) );
 
         AnalysisOfVarianceOneWay.Statistic stat =
-            AnalysisOfVarianceOneWay.evaluateNullHypothesis( data );
+            AnalysisOfVarianceOneWay.INSTANCE.evaluateNullHypothesis( data );
 
         System.out.println( "p = " + stat.getNullHypothesisProbability() );
         System.out.println( "F = " + stat.getF() );

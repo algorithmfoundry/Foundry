@@ -17,7 +17,7 @@ package gov.sandia.cognition.math;
 import junit.framework.TestCase;
 
 /**
- * @TODO    Document this.
+ * Unit tests for class ProbabilityUtil.
  *
  * @author  Justin Basilico
  * @since   3.0

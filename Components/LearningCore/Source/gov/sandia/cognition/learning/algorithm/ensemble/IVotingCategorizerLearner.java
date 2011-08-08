@@ -348,12 +348,7 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
         this.currentBag.clear();
 
         // Sample into the bag.
-        sampleIndicesWithReplacementInto(correctIndices, this.dataList,
-            this.numCorrectToSample, this.random,
-            this.currentBag, this.dataInBag);
-        sampleIndicesWithReplacementInto(incorrectIndices, this.dataList,
-            this.numIncorrectToSample, this.random,
-            this.currentBag, this.dataInBag);
+        this.createBag(correctIndices, incorrectIndices);
 
         // Learn the ensemble member.
         this.currentMember = this.learner.learn(this.currentBag);
@@ -446,6 +441,27 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
         return true;
     }
 
+    /**
+     * Create the next sample (bag) of examples to learn the next ensemble
+     * member from.
+     *
+     * @param   correctIndices
+     *      The list of indices the ensemble is currently getting correct.
+     * @param   incorrectIndices
+     *      The list of indices the ensemble is currently getting incorrect.
+     */
+    protected void createBag(
+        final ArrayList<Integer> correctIndices,
+        final ArrayList<Integer> incorrectIndices)
+    {
+        sampleIndicesWithReplacementInto(correctIndices, this.dataList,
+            this.numCorrectToSample, this.random,
+            this.currentBag, this.dataInBag);
+        sampleIndicesWithReplacementInto(incorrectIndices, this.dataList,
+            this.numIncorrectToSample, this.random,
+            this.currentBag, this.dataInBag);
+    }
+    
     /**
      * Takes the given number of samples from the given list and places them in
      * the given output list. It samples with replacement, which means that a

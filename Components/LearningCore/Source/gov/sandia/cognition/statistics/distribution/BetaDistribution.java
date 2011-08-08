@@ -20,11 +20,11 @@ import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
+import gov.sandia.cognition.statistics.AbstractClosedFormSmoothUnivariateDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
 import gov.sandia.cognition.statistics.EstimableDistribution;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.Pair;
@@ -48,7 +48,7 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Beta_distribution"
 )
 public class BetaDistribution
-    extends AbstractClosedFormSmoothScalarDistribution
+    extends AbstractClosedFormSmoothUnivariateDistribution
     implements EstimableDistribution<Double,BetaDistribution>
 {
 
@@ -88,8 +88,8 @@ public class BetaDistribution
      * Beta shape parameter, must be greater than 0 (typically greater than 1)
      */
     public BetaDistribution(
-        double alpha,
-        double beta )
+        final double alpha,
+        final double beta )
     {
         this.setAlpha( alpha );
         this.setBeta( beta );
@@ -101,7 +101,7 @@ public class BetaDistribution
      * BetaDistribution to copy
      */
     public BetaDistribution(
-        BetaDistribution other  )
+        final BetaDistribution other  )
     {
         this( other.getAlpha(), other.getBeta() );
     }
@@ -112,11 +112,13 @@ public class BetaDistribution
         return (BetaDistribution) super.clone();
     }
 
+    @Override
     public Double getMean()
     {
         return this.getAlpha() / (this.getAlpha() + this.getBeta());
     }
 
+    @Override
     public double getVariance()
     {
         double numerator = this.getAlpha() * this.getBeta();
@@ -125,9 +127,10 @@ public class BetaDistribution
         return numerator / denominator;
     }
     
+    @Override
     public ArrayList<Double> sample(
-        Random random,
-        int numSamples )
+        final Random random,
+        final int numSamples )
     {
         ArrayList<Double> samples = new ArrayList<Double>( numSamples );
         ArrayList<Double> Xs = GammaDistribution.sample(
@@ -148,6 +151,7 @@ public class BetaDistribution
      * @return
      * 2-dimensional Vector with [alpha beta]
      */
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues(
@@ -159,8 +163,9 @@ public class BetaDistribution
      * @param parameters
      * 2-dimensional Vector with [alpha beta]
      */
+    @Override
     public void convertFromVector(
-        Vector parameters )
+        final Vector parameters )
     {
         if (parameters.getDimensionality() != 2)
         {
@@ -188,7 +193,7 @@ public class BetaDistribution
      * Alpha shape parameter, must be greater than 0 (typically greater than 1)
      */
     public void setAlpha(
-        double alpha )
+        final double alpha )
     {
         if (alpha <= 0.0)
         {
@@ -213,7 +218,7 @@ public class BetaDistribution
      * Beta shape parameter, must be greater than 0 (typically greater than 1)
      */
     public void setBeta(
-        double beta )
+        final double beta )
     {
         if (beta <= 0.0)
         {
@@ -222,26 +227,31 @@ public class BetaDistribution
         this.beta = beta;
     }
 
+    @Override
     public BetaDistribution.CDF getCDF()
     {
         return new BetaDistribution.CDF( this );
     }
 
+    @Override
     public BetaDistribution.PDF getProbabilityFunction()
     {
         return new BetaDistribution.PDF( this );
     }
 
+    @Override
     public Double getMinSupport()
     {
         return 0.0;
     }
 
+    @Override
     public Double getMaxSupport()
     {
         return 1.0;
     }
 
+    @Override
     public BetaDistribution.MomentMatchingEstimator getEstimator()
     {
         return new BetaDistribution.MomentMatchingEstimator();
@@ -276,8 +286,9 @@ public class BetaDistribution
         {
         }
 
+        @Override
         public BetaDistribution learn(
-            Collection<? extends Double> data)
+            final Collection<? extends Double> data)
         {
             Pair<Double,Double> pair =
                 UnivariateStatisticsUtil.computeMeanAndVariance(data);
@@ -295,8 +306,8 @@ public class BetaDistribution
          * given parameters.
          */
         public static BetaDistribution learn(
-            double mean,
-            double variance )
+            final double mean,
+            final double variance )
         {
             double apb = mean*(1.0-mean) / variance - 1.0;
             double alpha = Math.abs(apb * mean);
@@ -335,8 +346,9 @@ public class BetaDistribution
         {
         }
 
+        @Override
         public BetaDistribution learn(
-            Collection<? extends WeightedValue<? extends Double>> data)
+            final Collection<? extends WeightedValue<? extends Double>> data)
         {
             Pair<Double,Double> pair =
                 UnivariateStatisticsUtil.computeWeightedMeanAndVariance(data);
@@ -351,7 +363,7 @@ public class BetaDistribution
      */
     public static class PDF
         extends BetaDistribution
-        implements ScalarProbabilityDensityFunction
+        implements UnivariateProbabilityDensityFunction
     {    
 
         /**
@@ -370,8 +382,8 @@ public class BetaDistribution
          * Beta shape parameter, must be greater than 0 (typically greater than 1)
          */
         public PDF(
-            double alpha,
-            double beta )
+            final double alpha,
+            final double beta )
         {
             super( alpha, beta );
         }        
@@ -382,19 +394,21 @@ public class BetaDistribution
          * Underlying Beta Distribution
          */
         public PDF(
-            BetaDistribution other )
+            final BetaDistribution other )
         {
             super( other );
         }
 
+        @Override
         public Double evaluate(
-            Double input )
+            final Double input )
         {
             return this.evaluate( input.doubleValue() );
         }
         
+        @Override
         public double evaluate(
-            double input )
+            final double input )
         {
             return evaluate( input, this.getAlpha(), this.getBeta() );
         }
@@ -411,9 +425,9 @@ public class BetaDistribution
          * beta(x;alpha,beta)
          */
         public static double evaluate(
-            double x,
-            double alpha,
-            double beta )
+            final double x,
+            final double alpha,
+            final double beta )
         {
             double p;
             if (x < 0.0)
@@ -433,14 +447,16 @@ public class BetaDistribution
 
         }
         
+        @Override
         public double logEvaluate(
             final Double input)
         {
             return this.logEvaluate((double) input);
         }
 
+        @Override
         public double logEvaluate(
-            double input)
+            final double input)
         {
             return logEvaluate(input, this.getAlpha(), this.getBeta() );
         }
@@ -457,9 +473,9 @@ public class BetaDistribution
          * beta(x;alpha,beta)
          */
         public static double logEvaluate(
-            double x,
-            double alpha,
-            double beta )
+            final double x,
+            final double alpha,
+            final double beta )
         {
             double plog;
             if (x < 0.0)
@@ -514,8 +530,8 @@ public class BetaDistribution
          * Beta shape parameter, must be greater than 0 (typically greater than 1)
          */
         public CDF(
-            double alpha,
-            double beta )
+            final double alpha,
+            final double beta )
         {
             super( alpha, beta );
         }        
@@ -526,19 +542,21 @@ public class BetaDistribution
          * Underlying Beta Distribution
          */
         public CDF(
-            BetaDistribution other )
+            final BetaDistribution other )
         {
             super( other );
         }
 
+        @Override
         public Double evaluate(
-            Double input )
+            final Double input )
         {
             return this.evaluate( input.doubleValue() );
         }
 
+        @Override
         public double evaluate(
-            double input )
+            final double input )
         {
             return evaluate(
                 input, this.getAlpha(), this.getBeta() );
@@ -556,9 +574,9 @@ public class BetaDistribution
          * Beta(x;alpha,beta)
          */
         public static double evaluate(
-            double x,
-            double alpha,
-            double beta )
+            final double x,
+            final double alpha,
+            final double beta )
         {
             double p;
             if (x <= 0.0)
@@ -583,13 +601,15 @@ public class BetaDistribution
             return this;
         }
 
+        @Override
         public BetaDistribution.PDF getDerivative()
         {
             return this.getProbabilityFunction();
         }
 
+        @Override
         public Double differentiate(
-            Double input)
+            final Double input)
         {
             return this.getDerivative().evaluate(input);
         }

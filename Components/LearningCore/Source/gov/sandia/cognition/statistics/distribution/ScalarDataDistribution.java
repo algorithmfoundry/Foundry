@@ -19,7 +19,7 @@ import gov.sandia.cognition.collection.NumberComparator;
 import gov.sandia.cognition.statistics.CumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
-import gov.sandia.cognition.statistics.ScalarDistribution;
+import gov.sandia.cognition.statistics.UnivariateDistribution;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,7 +34,7 @@ import java.util.Collections;
  */
 public class ScalarDataDistribution
     extends MapBasedPointMassDistribution<Number>
-    implements ScalarDistribution<Number>
+    implements UnivariateDistribution<Number>
 {
 
     /**

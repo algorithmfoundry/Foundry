@@ -16,7 +16,7 @@ package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.collection.IntegerCollection;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistributionTestHarness;
+import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistributionTestHarness;
 import java.util.Random;
 
 /**
@@ -25,7 +25,7 @@ import java.util.Random;
  * @author krdixon
  */
 public class YuleSimonDistributionTest
-    extends ClosedFormDiscreteScalarDistributionTestHarness<Number>
+    extends ClosedFormDiscreteUnivariateDistributionTestHarness<Number>
 {
 
     /**

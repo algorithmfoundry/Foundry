@@ -21,10 +21,10 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormScalarDistribution;
-import gov.sandia.cognition.statistics.ClosedFormScalarCumulativeDistributionFunction;
+import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
+import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.InvertibleCumulativeDistributionFunction;
-import gov.sandia.cognition.statistics.SmoothScalarDistribution;
+import gov.sandia.cognition.statistics.SmoothUnivariateDistribution;
 import gov.sandia.cognition.util.ArgumentChecker;
 import gov.sandia.cognition.util.ObjectUtil;
 import gov.sandia.cognition.util.Pair;
@@ -62,7 +62,7 @@ import java.util.concurrent.Callable;
     }
 )
 public class StudentizedRangeDistribution
-    extends AbstractClosedFormScalarDistribution<Double>
+    extends AbstractClosedFormUnivariateDistribution<Double>
     implements Randomized
 {
 
@@ -112,8 +112,8 @@ public class StudentizedRangeDistribution
      * Number of subjects in each treatment minus one.
      */
     public StudentizedRangeDistribution(
-        int treatmentCount,
-        double degreesOfFreedom)
+        final int treatmentCount,
+        final double degreesOfFreedom)
     {
         this.setTreatmentCount(treatmentCount);
         this.setDegreesOfFreedom(degreesOfFreedom);
@@ -126,7 +126,7 @@ public class StudentizedRangeDistribution
      * StudentizedRangeDistribution to copy
      */
     public StudentizedRangeDistribution(
-        StudentizedRangeDistribution other )
+        final StudentizedRangeDistribution other )
     {
         this( other.getTreatmentCount(), other.getDegreesOfFreedom() );
     }
@@ -142,12 +142,12 @@ public class StudentizedRangeDistribution
 
     @Override
     public ArrayList<Double> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
     {
 
         ArrayList<SampleRange> tasks = new ArrayList<SampleRange>( numSamples );
-        SmoothScalarDistribution t;
+        SmoothUnivariateDistribution t;
         if( this.getDegreesOfFreedom() < 30.0 )
         {
             t = new StudentTDistribution(this.getDegreesOfFreedom());
@@ -194,7 +194,7 @@ public class StudentizedRangeDistribution
 
     @Override
     public void convertFromVector(
-        Vector parameters)
+        final Vector parameters)
     {
         parameters.assertDimensionalityEquals(2);
         this.setTreatmentCount( (int) parameters.getElement(0) );
@@ -236,7 +236,7 @@ public class StudentizedRangeDistribution
      * Number of comparisons made
      */
     public void setTreatmentCount(
-        int treatmentCount)
+        final int treatmentCount)
     {
         ArgumentChecker.assertIsInRangeInclusive(
             "treatmentCount", treatmentCount, 2.0, Double.POSITIVE_INFINITY );
@@ -259,7 +259,7 @@ public class StudentizedRangeDistribution
      * Number of subjects in each treatment minus one.
      */
     public void setDegreesOfFreedom(
-        double degreesOfFreedom)
+        final double degreesOfFreedom)
     {
         ArgumentChecker.assertIsPositive("degreesOfFreedom", degreesOfFreedom);
         this.degreesOfFreedom = degreesOfFreedom;
@@ -273,7 +273,7 @@ public class StudentizedRangeDistribution
 
     @Override
     public void setRandom(
-        Random random)
+        final Random random)
     {
         this.random = random;
     }
@@ -298,7 +298,7 @@ public class StudentizedRangeDistribution
         /**
          * Distribution from which we sample, Student-t or Gaussian
          */
-        SmoothScalarDistribution t;
+        SmoothUnivariateDistribution t;
 
         /**
          * Creates a new instance of SampleRange
@@ -310,9 +310,9 @@ public class StudentizedRangeDistribution
          * Distribution from which we sample, Student-t or Gaussian
          */
         public SampleRange(
-            Random random,
-            int treatmentCount,
-            SmoothScalarDistribution t )
+            final Random random,
+            final int treatmentCount,
+            final SmoothUnivariateDistribution t )
         {
             this.random = random;
             this.treatmentCount = treatmentCount;
@@ -339,7 +339,7 @@ public class StudentizedRangeDistribution
      */
     public static class CDF
         extends StudentizedRangeDistribution
-        implements ClosedFormScalarCumulativeDistributionFunction<Double>,
+        implements ClosedFormCumulativeDistributionFunction<Double>,
         InvertibleCumulativeDistributionFunction<Double>
     {
 
@@ -359,8 +359,8 @@ public class StudentizedRangeDistribution
          * Number of subjects in each treatment minus one.
          */
         public CDF(
-            int treatmentCount,
-            double degreesOfFreedom)
+            final int treatmentCount,
+            final double degreesOfFreedom)
         {
             super( treatmentCount, degreesOfFreedom );
         }
@@ -371,7 +371,7 @@ public class StudentizedRangeDistribution
          * StudentizedRangeDistribution to copy
          */
         public CDF(
-            StudentizedRangeDistribution other )
+            final StudentizedRangeDistribution other )
         {
             super( other );
         }
@@ -379,14 +379,14 @@ public class StudentizedRangeDistribution
 
         @Override
         public Double evaluate(
-            Double input)
+            final Double input)
         {
             return APStat.prtrng(input, this.getDegreesOfFreedom(), this.getTreatmentCount() );
         }
 
         @Override
         public Double inverse(
-            double probability)
+            final double probability)
         {
             return APStat.qtrng(probability, this.getDegreesOfFreedom(), this.getTreatmentCount() );
         }

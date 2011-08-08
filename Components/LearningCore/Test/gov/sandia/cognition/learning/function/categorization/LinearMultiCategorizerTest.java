@@ -29,7 +29,7 @@ import static org.junit.Assert.*;
  * Unit tests for class LinearMultiCategorizer.
  *
  * @author  Justin Basilico
- * @since   3.1.2
+ * @since   3.2.0
  */
 public class LinearMultiCategorizerTest
 {

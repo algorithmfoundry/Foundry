@@ -42,7 +42,7 @@ public class DistributionParameterUtil
      * If the system could not perform introspection on the Distribution.
      */
     static <ConditionalType extends ClosedFormDistribution<?>> Collection<DistributionParameter<?,ConditionalType>> findAll(
-        ConditionalType distribution )
+        final ConditionalType distribution )
         throws IntrospectionException
     {
 

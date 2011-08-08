@@ -42,6 +42,6 @@ public interface ProbabilityFunction<DataType>
      * Natural logarithm of the distribution function.
      */
     public double logEvaluate(
-        DataType input );
+        final DataType input );
 
 }

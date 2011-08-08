@@ -14,14 +14,14 @@
 
 package gov.sandia.cognition.statistics.distribution;
 
-import gov.sandia.cognition.statistics.ScalarDistributionTestHarness;
+import gov.sandia.cognition.statistics.UnivariateDistributionTestHarness;
 
 /**
  *
  * @author Kevin R. Dixon
  */
 public class KolmogorovDistributionTest
-    extends ScalarDistributionTestHarness<Double>
+    extends UnivariateDistributionTestHarness<Double>
 {
 
     /**

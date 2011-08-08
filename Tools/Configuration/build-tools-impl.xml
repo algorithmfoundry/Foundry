@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+   File:                build-tools-impl.xml
+   Authors:             Justin Basilico
+   Company:             Sandia National Laboratories
+   Project:             Cognitive Foundry
+
+   Copyright May 28, 2009, Sandia Corporation.
+   Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+   license for use of this work by or on behalf of the U.S. Government. Export
+   of this program may require a license from the United States Government.
+   See CopyrightHistory.txt for complete details.
+
+   Description:
+   This is an Ant build script for extending a standard NetBeans project
+   with extra tools. It is meant to be included from a base build script. It
+   also has a target for Hudson to run the tools.
+-->
+
+<project name="Cognitive Foundry Build Tools" default="all" basedir="." >
+    <description>Build script for extended build tools.</description>
+
+    <!--
+            ======================
+            INITIALIZATION SECTION
+            ======================
+    -->
+    <target name="-post-test-run">
+        <!-- Overwrite the behavior that automatically fails. -->
+    </target>
+
+    <!-- We don't want to preview the javadoc on the build server. -->
+    <property name="javadoc.preview" value="false"/>
+
+    <target name="-pre-init-tools">
+        <!-- Customization hook. -->
+    </target>
+    <target name="-do-init-tools" depends="init,-pre-init-tools">
+
+        <!-- These are the standard NetBeans properties we depend on. -->
+        <fail unless="src.dir">Must set src.dir</fail>
+        <fail unless="test.src.dir">Must set test.src.dir</fail>
+        <fail unless="build.classes.dir">Must set build.classes.dir</fail>
+        <fail unless="dist.jar">Must set dist.jar</fail>
+
+        <!-- These are the properties that our tool config depends on. -->
+        <fail unless="tools.dir">Must set tools.dir</fail>
+        <fail unless="tools.config.dir">Must set tools.config.dir</fail>
+
+        <!-- Load in the tools properties. -->
+        <property file="${tools.config.dir}/tools.properties" />
+
+        <fail unless="build.reports.dir">Must set build.reports.dir</fail>
+        <fail unless="build.reports.xml.dir">Must set build.reports.xml.dir</fail>
+        <fail unless="build.reports.html.dir">Must set build.reports.html.dir</fail>
+        
+        <mkdir dir="${build.reports.dir}"/>
+        <mkdir dir="${build.reports.xml.dir}"/>
+        <mkdir dir="${build.reports.html.dir}"/>
+    </target>
+    <target name="-post-init-tools">
+        <!-- Customization hook. -->
+    </target>
+
+    <target name="init-tools" depends="init,-pre-init-tools,-do-init-tools,-post-init-tools"/>
+
+    <!--
+            ================
+            JAVANCSS SECTION
+            ================
+    -->
+
+    <target name="-init-javancss" depends="init,init-tools">
+        <!-- Default properties -->
+        <property name="tool.javancss.report.xml.file" value="${build.reports.xml.dir}/javancss-report.xml"/>
+        <property name="tool.javancss.report.html.file" value="${build.reports.html.dir}/javancss-report.html"/>
+
+        <fail unless="tool.javancss.dir">Must set tool.javancss.dir</fail>
+        <fail unless="tool.javancss.xsl.file">Must set tool.javancss.xsl.file</fail>
+
+        <path id="tool.javancss.classpath">
+            <fileset dir="${tool.javancss.dir}/lib">
+                <include name="*.jar"/>
+            </fileset>
+        </path>
+        <taskdef name="javancss" classpathref="tool.javancss.classpath" classname="javancss.JavancssAntTask" />
+    </target>
+
+    <target name="-pre-javancss">
+        <!-- Customization hook. -->
+    </target>
+    <target name="-do-javancss" depends="-init-javancss,-pre-javancss">
+        <javancss srcdir="${src.dir}" includes="**/*.java" generateReport="true" outputfile="${tool.javancss.report.xml.file}" format="xml"/>
+    </target>
+    <target name="-post-javancss">
+        <!-- Customization hook. -->
+    </target>
+
+    <target name="-pre-javancss-report-html">
+        <!-- Customization hook. -->
+    </target>
+    <target name="-do-javancss-report-html" depends="javancss,-pre-javancss-report-html">
+        <xslt
+            in="${tool.javancss.report.xml.file}"
+            out="${tool.javancss.report.html.file}"
+            style="${tool.javancss.xsl.file}" />
+    </target>
+    <target name="-post-javancss-report-html">
+        <!-- Customization hook. -->
+    </target>
+
+    <target name="javancss" depends="-init-javancss,-pre-javancss,-do-javancss,-post-javancss"/>
+    <target name="javancss-report-html" depends="javancss,-pre-javancss-report-html,-do-javancss-report-html,-post-javancss-report-html"/>
+
+    <!--
+            ==================
+            CHECKSTYLE SECTION
+            ==================
+    -->
+    <target name="-init-checkstyle" depends="init-tools">
+
+        <!-- Default properties -->
+        <property name="tool.checkstyle.report.xml.file" value="${build.reports.xml.dir}/checkstyle-report.xml"/>
+        <property name="tool.checkstyle.report.html.file" value="${build.reports.html.dir}/checkstyle-report.html"/>
+
+        <fail unless="tool.checkstyle.dir">Must set tool.checkstyle.dir</fail>
+        <fail unless="tool.checkstyle.config.file">Must set tool.checkstyle.config.file</fail>
+        <fail unless="tool.checkstyle.xsl.file">Must set tool.checkstyle.xsl.file</fail>
+
+        <path id="tool.checkstyle.classpath">
+            <fileset dir="${tool.checkstyle.dir}">
+                <include name="*.jar"/>
+            </fileset>
+        </path>
+    </target>
+
+    <target name="-pre-checkstyle">
+        <!-- Customization hook. -->
+    </target>
+    <target name="-do-checkstyle" depends="-init-checkstyle,-pre-checkstyle">
+        <taskdef resource="checkstyletask.properties" classpathref="tool.checkstyle.classpath" />
+        <checkstyle config="${tool.checkstyle.config.file}"
+              failureProperty="checkstyle.failure"
+              failOnViolation="false">
+            <formatter type="xml" tofile="${tool.checkstyle.report.xml.file}"/>
+
+            <fileset dir="${src.dir}" excludes="${excludes}" includes="${includes}">
+                <filename name="**/*.java"/>
+            </fileset>
+        </checkstyle>
+    </target>
+    <target name="-post-checkstyle">
+        <!-- Customization hook. -->
+    </target>
+
+    <target name="-pre-checkstyle-report-html">
+        <!-- Customization hook. -->
+    </target>
+    <target name="-do-checkstyle-report-html" depends="checkstyle,-pre-checkstyle-report-html">
+        <xslt
+            in="${tool.checkstyle.report.xml.file}"
+            out="${tool.checkstyle.report.html.file}"
+            style="${tool.checkstyle.xsl.file}"/>
+    </target>
+    <target name="-post-checkstyle-report-html">
+        <!-- Customization hook. -->
+    </target>
+
+    <target name="checkstyle" depends="-init-checkstyle,-pre-checkstyle,-do-checkstyle,-post-checkstyle" description="Runs CheckStyle."/>
+    <target name="checkstyle-report-html" depends="checkstyle,-pre-checkstyle-report-html,-do-checkstyle-report-html,-post-checkstyle-report-html" description="Generates a HTML report for CheckStyle."/>
+
+    <!--
+            ===========
+            PMD SECTION
+            ===========
+    -->
+    <target name="-init-pmd" depends="init-tools">
+        <property name="tool.pmd.report.xml.file" value="${build.reports.xml.dir}/pmd-report.xml"/>
+        <property name="tool.pmd.report.html.file" value="${build.reports.html.dir}/pmd-report.html"/>
+
+
+        <fail unless="tool.pmd.dir">Must set tool.pmd.dir</fail>
+        <fail unless="tool.pmd.ruleset.dir">Must set tool.pmd.ruleset.dir</fail>
+        <fail unless="tool.pmd.ruleset.files">Must set tool.pmd.ruleset.files</fail>
+        <fail unless="tool.pmd.xsl.file">Must set tool.pmd.xsl.file</fail>
+
+        <path id="tool.pmd.classpath">
+            <fileset dir="${tool.pmd.dir}/lib">
+                <include name="*.jar"/>
+            </fileset>
+        </path>
+    </target>
+
+    <target name="-pre-pmd">
+        <!-- Customization hook. -->
+    </target>
+    <target name="-do-pmd" depends="-init-pmd,-pre-pmd">
+        <taskdef name="pmd" classpathref="tool.pmd.classpath" classname="net.sourceforge.pmd.ant.PMDTask" />
+        <pmd shortFilenames="true"
+             rulesetfiles="${tool.pmd.ruleset.files}"
+             auxclasspath="${tool.pmd.ruleset.dir}">
+            <formatter type="xml" toFile="${tool.pmd.report.xml.file}"/>
+            <!-- <formatter type="summaryhtml" toFile="${tool.pmd.report.html.file}" /> -->
+
+            <fileset dir="${src.dir}" excludes="${excludes}" includes="${includes}">
+                <filename name="**/*.java"/>
+            </fileset>
+        </pmd>
+    </target>
+    <target name="-post-pmd">
+        <!-- Customization hook. -->
+    </target>
+
+    <target name="-pre-pmd-report-html">
+        <!-- Customization hook. -->
+    </target>
+    <target name="-do-pmd-report-html" depends="pmd,-pre-pmd-report-html">
+        <xslt
+            in="${tool.pmd.report.xml.file}"
+            out="${tool.pmd.report.html.file}"
+            style="${tool.pmd.xsl.file}" />
+    </target>
+    <target name="-post-pmd-report-html">
+        <!-- Customization hook. -->
+    </target>
+
+    <target name="pmd" depends="-init-pmd,-pre-pmd,-do-pmd,-post-pmd" description="Runs PMD static code analyzer."/>
+    <target name="pmd-report-html" depends="pmd,-pre-pmd-report-html,-do-pmd-report-html,-post-pmd-report-html" description="Generates a HTML report for PMD"/>
+
+    <!--
+            ===========
+            CPD SECTION
+            ===========
+    -->
+    <target name="-init-cpd" depends="init-tools,-init-pmd">
+        <property name="tool.cpd.report.xml.file" value="${build.reports.xml.dir}/cpd-report.xml"/>
+        <property name="tool.cpd.report.html.file" value="${build.reports.html.dir}/cpd-report.html"/>
+
+        <fail unless="tool.cpd.xsl.file">Must set tool.cpd.xsl.file</fail>
+    </target>
+
+    <target name="-pre-cpd">
+        <!-- Customization hook. -->
+    </target>
+    <target name="-do-cpd" depends="-init-cpd,-pre-cpd">
+        <taskdef name="cpd" classpathref="tool.pmd.classpath" classname="net.sourceforge.pmd.cpd.CPDTask"/>
+        <cpd minimumTokenCount="100"
+            ignoreLiterals="true" format="xml" encoding="UTF-8"
+            outputFile="${tool.cpd.report.xml.file}">
+            <fileset dir="${src.dir}" excludes="${excludes}" includes="${includes}">
+                <filename name="**/*.java"/>
+            </fileset>
+        </cpd>
+    </target>
+    <target name="-post-cpd">
+        <!-- Customization hook. -->
+    </target>
+
+    <target name="-pre-cpd-report-html">
+        <!-- Customization hook. -->
+    </target>
+    <target name="-do-cpd-report-html" depends="cpd,-pre-cpd-report-html">
+        <xslt
+            in="${tool.cpd.report.xml.file}"
+            out="${tool.cpd.report.html.file}"
+            style="${tool.cpd.xsl.file}" />
+    </target>
+    <target name="-post-cpd-report-html">
+        <!-- Customization hook. -->
+    </target>
+
+    <target name="cpd" depends="-init-cpd,-pre-cpd,-do-cpd,-post-cpd" description="Runs Copy-Paste-Detector (CPD) static code analyzer, from PMD."/>
+    <target name="cpd-report-html" depends="cpd,-pre-cpd-report-html,-do-cpd-report-html,-post-cpd-report-html" description="Generates a HTML report for CPD."/>
+
+    <!--
+            ================
+            FINDBUGS SECTION
+            ================
+    -->
+    <target name="-init-findbugs" depends="init-tools">
+
+        <!-- Default property values -->
+        <property name="tool.findbugs.report.xml.file" value="${build.reports.xml.dir}/findbugs-report.xml"/>
+        <property name="tool.findbugs.report.html.file" value="${build.reports.html.dir}/findbugs-report.html"/>
+
+        <fail unless="tool.findbugs.dir">Must set tool.findbugs.dir</fail>
+        <fail unless="tool.findbugs.report.xml.file">Must set tool.findbugs.report.xml.file</fail>
+        <fail unless="tool.findbugs.report.html.file">Must set tool.findbugs.report.html.file</fail>
+        <fail unless="tool.findbugs.xsl.file">Must set tool.findbugs.xsl.file</fail>
+
+        <path id="tool.findbugs.classpath">
+            <fileset dir="${tool.findbugs.dir}/lib">
+                <include name="*.jar"/>
+            </fileset>
+        </path>
+    </target>
+
+    <target name="-pre-findbugs">
+        <!-- Customization hook. -->
+    </target>
+    <target name="-do-findbugs" depends="jar,-init-findbugs,-pre-findbugs">
+        <taskdef name="findbugs" classpathref="tool.findbugs.classpath" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" />
+        <findbugs home="${tool.findbugs.dir}"
+              output="xml" outputFile="${tool.findbugs.report.xml.file}"
+              jvmargs="${tool.findbugs.jvmargs}">
+            <auxClasspath path="${javac.classpath}" />
+            <sourcePath path="${src.dir}" />
+            <class location="${dist.jar}" />
+        </findbugs>
+    </target>
+    <target name="-post-findbugs">
+        <!-- Customization hook. -->
+    </target>
+
+    <target name="-pre-findbugs-report-html">
+        <!-- Customization hook. -->
+    </target>
+    <target name="-do-findbugs-report-html" depends="findbugs,-pre-findbugs-report-html">
+        <xslt
+            in="${tool.findbugs.report.xml.file}"
+            out="${tool.findbugs.report.html.file}"
+            style="${tool.findbugs.xsl.file}" />
+    </target>
+    <target name="-post-findbugs-report-html">
+        <!-- Customization hook. -->
+    </target>
+
+    <target name="findbugs" depends="-init-findbugs,-pre-findbugs,-do-findbugs,-post-findbugs" description="Runs FindBugs static code analyzer."/>
+    <target name="findbugs-report-html" depends="findbugs,-pre-findbugs-report-html,-do-findbugs-report-html,-post-findbugs-report-html" description="Generates a HTML report for FindBugs."/>
+
+    <!--
+            =================
+            COBERTURA SECTION
+            =================
+    -->
+    <target name="-init-cobertura" depends="init-tools">
+
+        <!-- Default property values -->
+        <!-- Note that cobertura automatically writes to this file. -->
+        <property name="tool.cobertura.report.xml.file" value="${build.reports.xml.dir}/coverage.xml" />
+        <property name="tool.cobertura.report.html.dir" value="${build.reports.html.dir}/cobertura" />
+        <property name="tool.cobertura.data.file" value="${build.test.cobertura.dir}/cobertura.ser"/>
+
+        <!-- This is required so that when Hudson loads a Cobertura report file
+             it can actually find the source and link to it. Doing this
+             property in this manner makes it come up as an absolute path. -->
+        <property name="tool.cobertura.source.dir" location="${src.dir}" />
+
+        <fail unless="tool.cobertura.dir">Must set tool.cobertura.dir</fail>
+        <fail unless="build.test.cobertura.dir">Must set build.test.cobertura.dir</fail>
+        <fail unless="build.test.cobertura.classes.dir">Must set build.test.cobertura.classes.dir</fail>
+        <fail unless="build.test.cobertura.results.dir">Must set build.test.cobertura.results.dir</fail>
+
+        <mkdir dir="${build.test.cobertura.dir}" />
+
+        <path id="tool.cobertura.classpath">
+            <fileset dir="${tool.cobertura.dir}/">
+                <include name="cobertura.jar" />
+                <include name="lib/*.jar" />
+            </fileset>
+        </path>
+        <taskdef classpathref="tool.cobertura.classpath" resource="tasks.properties"/>
+    </target>
+
+    <target name="-pre-cobertura-instrument">
+        <!-- Customization hook. -->
+    </target>
+    <target name="-do-cobertura-instrument" depends="init,compile-test,-init-cobertura,-pre-cobertura-instrument">
+        <delete dir="${build.test.cobertura.classes.dir}" failonerror="false" />
+        <delete file="${tool.cobertura.data.file}" failonerror="false" />
+
+        <mkdir dir="${build.test.cobertura.classes.dir}" />
+        <cobertura-instrument todir="${build.test.cobertura.classes.dir}"
+            datafile="${tool.cobertura.data.file}" >
+            <fileset dir="${build.classes.dir}">
+                <include name="**/*.class"/>
+            </fileset>
+        </cobertura-instrument>
+    </target>
+    <target name="-post-cobertura-instrument">
+        <!-- Customization hook. -->
+    </target>
+    <target name="cobertura-instrument" depends="init,compile-test,-init-cobertura,-pre-cobertura-instrument,-do-cobertura-instrument,-post-cobertura-instrument"/>
+
+    <target name="-pre-cobertura-test-run">
+        <!-- Customization hook. -->
+    </target>
+    <target name="-do-cobertura-test-run" depends="cobertura-instrument,-pre-test-run,-pre-cobertura-test-run">
+
+        <mkdir dir="${build.test.cobertura.results.dir}" />
+
+        <!-- This is mostly copied from the -init-macrodef-junit in build-impl.xml -->
+        <junit dir="${work.dir}" errorproperty="tests.failed" failureproperty="tests.failed" 
+            fork="true" showoutput="true">
+            <!--
+                It is important that fork is true above so that cobertura will
+                produce its output.
+            -->
+
+            <batchtest todir="${build.test.cobertura.results.dir}">
+                <fileset dir="${test.src.dir}" excludes="${excludes}" includes="${includes}">
+                    <filename name="**/*Test.java"/>
+                </fileset>
+            </batchtest>
+
+            <!--
+                Specify the name of the coverage data file to use.
+            -->
+            <sysproperty key="net.sourceforge.cobertura.datafile" file="${tool.cobertura.data.file}"/>
+            
+            <!--
+                The instrumented classes reference classes used by the
+                Cobertura runtime, so Cobertura and its dependencies
+                must be on your classpath.
+            -->
+            <classpath refid="tool.cobertura.classpath"/>
+
+            <!--
+                Note the classpath order: instrumented classes are before the
+                original (uninstrumented) classes.  This is important.
+            -->
+            <classpath path="${build.test.cobertura.classes.dir}"/>
+
+            <classpath>
+                <path path="${run.test.classpath}"/>
+            </classpath>
+            
+            <syspropertyset>
+                <propertyref prefix="test-sys-prop."/>
+                <mapper from="test-sys-prop.*" to="*" type="glob"/>
+            </syspropertyset>
+            <formatter type="brief" usefile="false"/>
+            <formatter type="xml"/>
+            <jvmarg line="${run.jvmargs}"/>
+        </junit>
+    </target>
+    <target name="-post-cobertura-test-run">
+        <!-- Customization hook. -->
+    </target>
+
+    <target name="-do-cobertura-report-xml" depends="-init-cobertura">
+        <cobertura-report datafile="${tool.cobertura.data.file}" srcdir="${tool.cobertura.source.dir}" destdir="${build.reports.xml.dir}" format="xml" />
+    </target>
+
+    <target name="-pre-cobertura-report-html">
+        <!-- Customization hook. -->
+    </target>
+    <target name="-do-cobertura-report-html" depends="-init-cobertura">
+        <delete file="${tool.cobertura.report.html.dir}" failonerror="false" />
+        <cobertura-report datafile="${tool.cobertura.data.file}" srcdir="${tool.cobertura.source.dir}" destdir="${tool.cobertura.report.html.dir}" format="html" />
+    </target>
+    <target name="-post-cobertura-report-html">
+        <!-- Customization hook. -->
+    </target>
+    
+    <target name="cobertura-test-coverage" depends="-init-cobertura,-pre-cobertura-test-run,-do-cobertura-test-run,-do-cobertura-report-xml,-post-cobertura-test-run" description="Runs Cobertura code coverage on tests."/>
+    <target name="cobertura-test-coverage-report-html" depends="cobertura-test-coverage,-pre-cobertura-report-html,-do-cobertura-report-html,-post-cobertura-report-html" description="Generates a HTML report for Cobertura on tests."/>
+
+    <!--
+            ============
+            META SECTION
+            ============
+    -->
+    <target name="all-tools" depends="jar,javadoc,test,javancss,checkstyle,pmd,cpd,findbugs,cobertura-test-coverage"/>
+    <target name="all-tools-report-html" depends="all-tools,javancss-report-html,checkstyle-report-html,pmd-report-html,pmd-report-html,cpd-report-html,findbugs-report-html,cobertura-test-coverage-report-html"/>
+    <target name="hudson" depends="clean,all-tools" description="Target used by Hudson."/>
+</project>

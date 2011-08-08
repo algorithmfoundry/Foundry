@@ -15,8 +15,9 @@
 package gov.sandia.cognition.statistics.bayesian;
 
 import gov.sandia.cognition.math.Ring;
+import gov.sandia.cognition.statistics.ClosedFormDistribution;
 import gov.sandia.cognition.statistics.Distribution;
-import gov.sandia.cognition.util.Randomized;
+import gov.sandia.cognition.statistics.DistributionWithMean;
 import java.util.Collection;
 import java.util.Iterator;
 import junit.framework.TestCase;
@@ -71,7 +72,7 @@ public abstract class RecursiveBayesianEstimatorTestHarness<ObservationType,Para
      * @return
      * estimate type distribution
      */
-    public abstract Distribution<ObservationType> createConditionalDistribution();
+    public abstract ClosedFormDistribution<ObservationType> createConditionalDistribution();
 
     /**
      * Creates data sampled from the conditional distribution.
@@ -93,8 +94,8 @@ public abstract class RecursiveBayesianEstimatorTestHarness<ObservationType,Para
      * @return
      */
     public <DataType> boolean identical(
-        Distribution<? extends DataType> d1,
-        Distribution<? extends DataType> d2 )
+        DistributionWithMean<? extends DataType> d1,
+        DistributionWithMean<? extends DataType> d2 )
     {
 
         if( !this.equals( d1.getMean(), d2.getMean() ) )
@@ -260,13 +261,13 @@ public abstract class RecursiveBayesianEstimatorTestHarness<ObservationType,Para
         BeliefType p2 = c2.learn(data);
 
         // We'll just make sure the means are approximately the same
-        ParameterType onlineMean = p1.getMean();
-        ParameterType batchMean = p2.getMean();
+        ParameterType onlineMean = ((DistributionWithMean<ParameterType>)p1).getMean();
+        ParameterType batchMean = ((DistributionWithMean<ParameterType>)p2).getMean();
         System.out.println( "Conditional: " + conditional );
         System.out.println( "Online Mean: " + onlineMean );
         System.out.println( "Batch Mean:  " + batchMean );
 
-        this.identical(p1, p2);
+        this.identical((DistributionWithMean<ParameterType>)p1, (DistributionWithMean<ParameterType>)p2);
 
     }
 
@@ -293,11 +294,11 @@ public abstract class RecursiveBayesianEstimatorTestHarness<ObservationType,Para
         }
 
         BeliefType p2 = instance.createInitialLearnedObject();
-        this.identical(pclone, p2);
+        this.identical((DistributionWithMean<ParameterType>)pclone, (DistributionWithMean<ParameterType>)p2);
 
         instance.update(p2, data);
 
-        this.identical(p1, p2);
+        this.identical((DistributionWithMean<ParameterType>)p1, (DistributionWithMean<ParameterType>)p2);
 
     }
 

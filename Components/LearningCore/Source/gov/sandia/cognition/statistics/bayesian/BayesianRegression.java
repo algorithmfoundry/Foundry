@@ -20,6 +20,7 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.statistics.ClosedFormDistribution;
 import gov.sandia.cognition.statistics.Distribution;
 
 /**
@@ -66,7 +67,6 @@ import gov.sandia.cognition.statistics.Distribution;
 )
 public interface BayesianRegression<InputType,OutputType,PosteriorType extends Distribution<? extends Vector>>
     extends BayesianEstimator<InputOutputPair<? extends InputType, OutputType>, Vector, PosteriorType>
-//    IncrementalLearner<InputOutputPair<? extends InputType, OutputType>, PosteriorType>
 {
 
     /**
@@ -95,8 +95,8 @@ public interface BayesianRegression<InputType,OutputType,PosteriorType extends D
      * Conditional distribution from which outputs are generated.
      */
     public Distribution<OutputType> createConditionalDistribution(
-        InputType input,
-        Vector weights );
+        final InputType input,
+        final Vector weights );
 
     /**
      * Creates the predictive distribution of outputs given the weight posterior
@@ -105,7 +105,7 @@ public interface BayesianRegression<InputType,OutputType,PosteriorType extends D
      * @return
      * Predictive distribution of outputs given the posterior.
      */
-    public Evaluator<? super InputType,? extends Distribution<OutputType>> createPredictiveDistribution(
-        PosteriorType posterior );
+    public Evaluator<? super InputType,? extends ClosedFormDistribution<OutputType>> createPredictiveDistribution(
+        final PosteriorType posterior );
     
 }

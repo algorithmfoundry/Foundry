@@ -16,6 +16,7 @@ package gov.sandia.cognition.statistics.montecarlo;
 
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.evaluator.Evaluator;
+import gov.sandia.cognition.statistics.ClosedFormComputableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityFunction;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.statistics.method.ConfidenceInterval;
@@ -74,7 +75,7 @@ public abstract class MonteCarloSamplerTestHarness<DataType extends Number,Sampl
      * @return
      * Target function
      */
-    public abstract ProbabilityFunction<Double> createTargetFunctionInstance();
+    public abstract ClosedFormComputableDistribution<Double> createTargetFunctionInstance();
 
     /**
      * Tests constructors.
@@ -94,7 +95,7 @@ public abstract class MonteCarloSamplerTestHarness<DataType extends Number,Sampl
     {
         System.out.println( "clone" );
 
-        ProbabilityFunction<Double> f =this.createTargetFunctionInstance();
+        ProbabilityFunction<Double> f =this.createTargetFunctionInstance().getProbabilityFunction();
 
         MonteCarloSampler<DataType,SampleType,? super FunctionType> instance =
             this.createInstance();
@@ -137,7 +138,7 @@ public abstract class MonteCarloSamplerTestHarness<DataType extends Number,Sampl
     {
         System.out.println("sample");
 
-        ProbabilityFunction<Double> f =this.createTargetFunctionInstance();
+        ClosedFormComputableDistribution<Double> f =this.createTargetFunctionInstance();
 
         MonteCarloSampler<DataType,SampleType,? super FunctionType> instance =
             this.createInstance();
@@ -158,7 +159,7 @@ public abstract class MonteCarloSamplerTestHarness<DataType extends Number,Sampl
                 (ArrayList<? extends WeightedValue<? extends Double>>) samples );
         }
 
-        double mean = f.getMean().doubleValue();
+        double mean = f.getMean();
 
         System.out.println( "Mean: " + mean );
         System.out.println( "Monte Carlo: " + pdf );

@@ -132,12 +132,13 @@ public class MultivariatePolyaDistribution
         return clone;
     }
 
+    @Override
     public Vector getMean()
     {
-//        return this.parameters.clone();
         return this.parameters.scale( this.numTrials / this.parameters.norm1() );
     }
 
+    @Override
     public ArrayList<Vector> sample(
         Random random,
         int numSamples)
@@ -185,16 +186,19 @@ public class MultivariatePolyaDistribution
         this.numTrials = numTrials;
     }
 
+    @Override
     public MultivariatePolyaDistribution.PMF getProbabilityFunction()
     {
         return new MultivariatePolyaDistribution.PMF( this );
     }
 
+    @Override
     public Vector convertToVector()
     {
         return ObjectUtil.cloneSafe(this.getParameters());
     }
 
+    @Override
     public void convertFromVector(
         Vector parameters)
     {
@@ -251,6 +255,7 @@ public class MultivariatePolyaDistribution
         this.parameters = parameters;
     }
 
+    @Override
     public MultinomialDistribution.Domain getDomain()
     {
         return new MultinomialDistribution.Domain(
@@ -333,6 +338,7 @@ public class MultivariatePolyaDistribution
             return this;
         }
 
+        @Override
         public double logEvaluate(
             Vector input)
         {
@@ -340,32 +346,36 @@ public class MultivariatePolyaDistribution
             input.assertDimensionalityEquals(dim);
             final int ni = (int) Math.round( input.norm1() );
             final int N = this.getNumTrials();
+            final double A = this.parameters.norm1();
             if( ni != N )
             {
                 return Math.log(0.0);
             }
-            
-            // This is the multinomial coefficient on the input
+
             double logSum = 0.0;
-            logSum += MathUtil.logFactorial(N);
+            logSum += Math.log(ni);
+            logSum += MathUtil.logBetaFunction(A, ni);
             for( int i = 0; i < dim; i++ )
             {
-                logSum -= MathUtil.logFactorial(
-                    (int) input.getElement(i));
+                double pi = this.parameters.getElement(i);
+                double xi = input.getElement(i);
+                if( (pi > 0.0) && (xi > 0.0) )
+                {
+                    logSum -= Math.log(xi);
+                    logSum -= MathUtil.logBetaFunction( pi, xi );
+                }
             }
-            logSum -= MathUtil.logMultinomialBetaFunction( this.parameters );
-            logSum += MathUtil.logMultinomialBetaFunction(
-                input.plus( this.parameters ) );
-
             return logSum;
         }
 
+        @Override
         public Double evaluate(
             Vector input)
         {
             return Math.exp( this.logEvaluate(input) );
         }
 
+        @Override
         public double getEntropy()
         {
             return ProbabilityMassFunctionUtil.getEntropy(this);

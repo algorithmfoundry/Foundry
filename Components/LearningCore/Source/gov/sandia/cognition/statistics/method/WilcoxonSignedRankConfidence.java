@@ -58,7 +58,7 @@ import java.util.Iterator;
 )
 public class WilcoxonSignedRankConfidence
     extends AbstractCloneableSerializable
-    implements NullHypothesisEvaluator<Collection<Double>>
+    implements NullHypothesisEvaluator<Collection<? extends Number>>
 {
     
     /**
@@ -72,9 +72,10 @@ public class WilcoxonSignedRankConfidence
     {
     }
     
+    @Override
     public WilcoxonSignedRankConfidence.Statistic evaluateNullHypothesis(
-        Collection<Double> data1,
-        Collection<Double> data2)
+        Collection<? extends Number> data1,
+        Collection<? extends Number> data2)
     {
         
         if( data1.size() != data2.size() )
@@ -88,12 +89,12 @@ public class WilcoxonSignedRankConfidence
         int numNonzero = 0;
         ArrayList<Double> rawDifference = new ArrayList<Double>(N);
         ArrayList<Double> absDifference = new ArrayList<Double>(N);
-        Iterator<Double> i1 = data1.iterator();
-        Iterator<Double> i2 = data2.iterator();
+        Iterator<? extends Number> i1 = data1.iterator();
+        Iterator<? extends Number> i2 = data2.iterator();
         while( i1.hasNext() )
         {
             // Only add nonzero differences
-            double difference = i1.next() - i2.next();
+            double difference = i1.next().doubleValue() - i2.next().doubleValue();
             if( difference != 0.0 )
             {
                 numNonzero++;
@@ -129,16 +130,16 @@ public class WilcoxonSignedRankConfidence
      * @return Ranks of the indices of the values
      */
     public static double[] ranks(
-        Collection<Double> values )
+        Collection<? extends Number> values )
     {
         
         // Sort them first
         int N = values.size();
         double[] array = new double[ N ];
         int index = 0;
-        for( Double value : values )
+        for( Number value : values )
         {
-            array[index] = value;
+            array[index] = value.doubleValue();
             index++;
         }
         int[] sortedIndices = ArrayIndexSorter.sortArrayAscending( array );
@@ -340,7 +341,13 @@ public class WilcoxonSignedRankConfidence
         {
             this.z = z;
         }
-        
+
+        @Override
+        public double getTestStatistic()
+        {
+            return this.getZ();
+        }
+
     }
     
 }

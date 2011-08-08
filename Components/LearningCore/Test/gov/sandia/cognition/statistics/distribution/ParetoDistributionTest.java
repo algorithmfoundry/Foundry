@@ -15,7 +15,7 @@
 package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.SmoothScalarDistributionTestHarness;
+import gov.sandia.cognition.statistics.SmoothUnivariateDistributionTestHarness;
 import java.util.Random;
 
 /**
@@ -24,7 +24,7 @@ import java.util.Random;
  * @author krdixon
  */
 public class ParetoDistributionTest
-    extends SmoothScalarDistributionTestHarness
+    extends SmoothUnivariateDistributionTestHarness
 {
 
     /**

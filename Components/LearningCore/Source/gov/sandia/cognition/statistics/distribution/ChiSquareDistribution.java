@@ -18,8 +18,8 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
+import gov.sandia.cognition.statistics.AbstractClosedFormSmoothUnivariateDistribution;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import java.util.ArrayList;
 import java.util.Random;
@@ -43,7 +43,7 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Chi-square_distribution"
 )
 public class ChiSquareDistribution
-    extends AbstractClosedFormSmoothScalarDistribution
+    extends AbstractClosedFormSmoothUnivariateDistribution
 {
 
     /**
@@ -72,7 +72,7 @@ public class ChiSquareDistribution
      * must be greater than 0.0
      */
     public ChiSquareDistribution(
-        double degreesOfFreedom )
+        final double degreesOfFreedom )
     {
         this.setDegreesOfFreedom( degreesOfFreedom );
     }
@@ -83,7 +83,7 @@ public class ChiSquareDistribution
      * ChiSquareDistribution to copy
      */
     public ChiSquareDistribution(
-        ChiSquareDistribution other )
+        final ChiSquareDistribution other )
     {
         this( other.getDegreesOfFreedom() );
     }
@@ -112,7 +112,7 @@ public class ChiSquareDistribution
      * must be greater than 0.0
      */
     public void setDegreesOfFreedom(
-        double degreesOfFreedom )
+        final double degreesOfFreedom )
     {
         if (degreesOfFreedom <= 0.0)
         {
@@ -122,11 +122,13 @@ public class ChiSquareDistribution
         this.degreesOfFreedom = degreesOfFreedom;
     }
 
+    @Override
     public Double getMean()
     {
         return this.getDegreesOfFreedom();
     }
 
+    @Override
     public double getVariance()
     {
         return 2.0 * this.getDegreesOfFreedom();
@@ -137,6 +139,7 @@ public class ChiSquareDistribution
      * @return 
      * 1-dimensional Vector containing the degrees of freedom
      */
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues( this.getDegreesOfFreedom() );
@@ -147,8 +150,9 @@ public class ChiSquareDistribution
      * @param parameters 
      * 1-dimensional Vector containing the degrees of freedom
      */
+    @Override
     public void convertFromVector(
-        Vector parameters )
+        final Vector parameters )
     {
         if (parameters.getDimensionality() != 1)
         {
@@ -158,9 +162,10 @@ public class ChiSquareDistribution
         this.setDegreesOfFreedom( parameters.getElement( 0 ) );
     }
 
+    @Override
     public ArrayList<Double> sample(
-        Random random,
-        int numSamples )
+        final Random random,
+        final int numSamples )
     {
         return sample( this.degreesOfFreedom, random, numSamples);
     }
@@ -177,29 +182,33 @@ public class ChiSquareDistribution
      * Samples from the GammaDistribution using the Chi-Square DOFs.
      */
     public static ArrayList<Double> sample(
-        double degreesOfFreedom,
-        Random random,
-        int numSamples )
+        final double degreesOfFreedom,
+        final Random random,
+        final int numSamples )
     {
         return GammaDistribution.sample(
             degreesOfFreedom/2.0, 2.0, random, numSamples);
     }
 
+    @Override
     public ChiSquareDistribution.CDF getCDF()
     {
         return new ChiSquareDistribution.CDF( this );
     }
 
+    @Override
     public ChiSquareDistribution.PDF getProbabilityFunction()
     {
         return new ChiSquareDistribution.PDF( this );
     }
 
+    @Override
     public Double getMinSupport()
     {
         return 0.0;
     }
 
+    @Override
     public Double getMaxSupport()
     {
         return Double.POSITIVE_INFINITY;
@@ -210,7 +219,7 @@ public class ChiSquareDistribution
      */
     public static class PDF
         extends ChiSquareDistribution
-        implements ScalarProbabilityDensityFunction
+        implements UnivariateProbabilityDensityFunction
     {
 
         /**
@@ -228,7 +237,7 @@ public class ChiSquareDistribution
          * must be greater than 0.0
          */
         public PDF(
-            double degreesOfFreedom )
+            final double degreesOfFreedom )
         {
             super( degreesOfFreedom );
         }
@@ -239,19 +248,21 @@ public class ChiSquareDistribution
          * ChiSquareDistribution to copy
          */
         public PDF(
-            ChiSquareDistribution other )
+            final ChiSquareDistribution other )
         {
             super( other );
         }
     
+        @Override
         public Double evaluate(
-            Double input )
+            final Double input )
         {
             return this.evaluate( input.doubleValue() );
         }
         
+        @Override
         public double evaluate(
-            double input )
+            final double input )
         {
             return evaluate( input, this.getDegreesOfFreedom() );
         }
@@ -266,20 +277,22 @@ public class ChiSquareDistribution
          * p(x|dof)
          */
         public static double evaluate(
-            double x,
-            double degreesOfFreedom )
+            final double x,
+            final double degreesOfFreedom )
         {
             return Math.exp(logEvaluate(x, degreesOfFreedom));
         }
 
+        @Override
         public double logEvaluate(
             final Double input)
         {
             return this.logEvaluate((double) input);
         }
 
+        @Override
         public double logEvaluate(
-            double input)
+            final double input)
         {
             return logEvaluate(input, this.getDegreesOfFreedom());
         }
@@ -294,8 +307,8 @@ public class ChiSquareDistribution
          * Natural logarithm of the PDF.
          */
         public static double logEvaluate(
-            double x,
-            double degreesOfFreedom )
+            final double x,
+            final double degreesOfFreedom )
         {
             return GammaDistribution.PDF.logEvaluate( x, degreesOfFreedom/2.0, 2.0 );
         }
@@ -331,7 +344,7 @@ public class ChiSquareDistribution
          * must be greater than 0.0
          */
         public CDF(
-            double degreesOfFreedom )
+            final double degreesOfFreedom )
         {
             super( degreesOfFreedom );
         }
@@ -342,19 +355,21 @@ public class ChiSquareDistribution
          * ChiSquareDistribution to copy
          */
         public CDF(
-            ChiSquareDistribution other )
+            final ChiSquareDistribution other )
         {
             super( other );
         }
     
+        @Override
         public double evaluate(
-            double input )
+            final double input )
         {
             return evaluate( input, this.getDegreesOfFreedom() );
         }
         
+        @Override
         public Double evaluate(
-            Double input )
+            final Double input )
         {
             return this.evaluate( input.doubleValue() );
         }        
@@ -370,8 +385,8 @@ public class ChiSquareDistribution
          * Pr{ y <= input | degreesOfFreedom }
          */
         public static double evaluate(
-            double input,
-            double degreesOfFreedom )
+            final double input,
+            final double degreesOfFreedom )
         {
             if( degreesOfFreedom <= 0.0 )
             {
@@ -388,13 +403,15 @@ public class ChiSquareDistribution
             return this;
         }
 
+        @Override
         public ChiSquareDistribution.PDF getDerivative()
         {
             return this.getProbabilityFunction();
         }
 
+        @Override
         public Double differentiate(
-            Double input)
+            final Double input)
         {
             return this.getDerivative().evaluate(input);
         }

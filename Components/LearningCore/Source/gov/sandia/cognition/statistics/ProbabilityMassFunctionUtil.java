@@ -52,7 +52,7 @@ public class ProbabilityMassFunctionUtil
         url="http://en.wikipedia.org/wiki/Entropy_(Information_theory)"
     )
     public static <DataType> double getEntropy(
-        ProbabilityMassFunction<DataType> pmf )
+        final ProbabilityMassFunction<DataType> pmf )
     {
         // Compute the entropy by looping over the values in the maps
         Collection<? extends DataType> domain = pmf.getDomain();
@@ -77,9 +77,9 @@ public class ProbabilityMassFunctionUtil
      * Samples drawn according to the given PMF.
      */
     public static <DataType> ArrayList<DataType> sample(
-        ProbabilityMassFunction<DataType> pmf,
-        Random random,
-        int numSamples )
+        final ProbabilityMassFunction<DataType> pmf,
+        final Random random,
+        final int numSamples )
     {
         ArrayList<DataType> samples;
         if( numSamples == 1 )
@@ -106,8 +106,8 @@ public class ProbabilityMassFunctionUtil
      * Single sample from the PMF
      */
     public static <DataType> DataType sampleSingle(
-        ProbabilityMassFunction<DataType> pmf,
-        Random random )
+        final ProbabilityMassFunction<DataType> pmf,
+        final Random random )
     {
         double p = random.nextDouble();
         for( DataType x : pmf.getDomain() )
@@ -133,9 +133,9 @@ public class ProbabilityMassFunctionUtil
      */
     @SuppressWarnings("unchecked")
     public static <DataType> ArrayList<DataType> sampleMultiple(
-        ProbabilityMassFunction<DataType> pmf,
-        Random random,
-        int numSamples )
+        final ProbabilityMassFunction<DataType> pmf,
+        final Random random,
+        final int numSamples )
     {
 
         // Compute the cumulative probability counts.
@@ -176,11 +176,11 @@ public class ProbabilityMassFunctionUtil
      * Samples draw proportionately from the cumulative weights
      */
     public static <DataType> ArrayList<DataType> sampleMultiple(
-        double[] cumulativeWeights,
-        double weightSum,
-        List<? extends DataType> domain,
-        Random random,
-        int numSamples )
+        final double[] cumulativeWeights,
+        final double weightSum,
+        final List<? extends DataType> domain,
+        final Random random,
+        final int numSamples )
     {
 
         int index;
@@ -215,9 +215,9 @@ public class ProbabilityMassFunctionUtil
      * A single sample from the domain proportionately from the weights
      */
     public static <DataType> DataType sampleSingle(
-        double[] weights,
-        Collection<? extends DataType> domain,
-        Random random )
+        final double[] weights,
+        final Collection<? extends DataType> domain,
+        final Random random )
     {
 
         double sum = 0.0;
@@ -252,8 +252,8 @@ public class ProbabilityMassFunctionUtil
      * Value of x such that p >= CDF(x) and p <= CDF(x_next).
      */
     public static <DataType extends Number> InputOutputPair<DataType,Double> inverse(
-        CumulativeDistributionFunction<DataType> cdf,
-        double p )
+        final CumulativeDistributionFunction<DataType> cdf,
+        final double p )
     {
         ProbabilityUtil.assertIsProbability(p);
         for( DataType x : ((DiscreteDistribution<DataType>) cdf).getDomain() )
@@ -279,8 +279,8 @@ public class ProbabilityMassFunctionUtil
      * CDF value of the distirbution for the given input
      */
     public static double computeCumulativeValue(
-        int input,
-        ClosedFormDiscreteScalarDistribution<? super Integer> distribution )
+        final int input,
+        final ClosedFormDiscreteUnivariateDistribution<? super Integer> distribution )
     {
 
         int minx = distribution.getMinSupport().intValue();

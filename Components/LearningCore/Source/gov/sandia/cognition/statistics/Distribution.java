@@ -16,6 +16,7 @@ package gov.sandia.cognition.statistics;
 
 import gov.sandia.cognition.util.CloneableSerializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -31,15 +32,6 @@ import java.util.Random;
 public interface Distribution<DataType>
     extends CloneableSerializable
 {
-
-    /**
-     * Gets the arithmetic mean, or "first central moment" or "expectation",
-     * of the distribution.
-     * @return
-     * Mean of the distribution.
-     */
-    public DataType getMean();
-    
     /**
      * Draws a single random sample from the distribution.
      * @param random
@@ -48,7 +40,7 @@ public interface Distribution<DataType>
      * Sample drawn according to this distribution.
      */
     public DataType sample(
-        Random random );
+        final Random random);
     
     /**
      * Draws multiple random samples from the distribution.  It is generally
@@ -62,7 +54,14 @@ public interface Distribution<DataType>
      * Samples drawn according to this distribution.
      */
     public ArrayList<? extends DataType> sample(
-        Random random,
-        int numSamples );    
+        final Random random,
+        final int numSamples);
+
+// TODO: For efficiency purposes, this class should have a method as follows:
+// -- jdbasil (2010-10-06)
+//    public void sampleInto(
+//        final Random random,
+//        final int sampleCount,
+//        final Collection<? super DataType> output);
     
 }

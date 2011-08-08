@@ -19,11 +19,11 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
+import gov.sandia.cognition.statistics.AbstractClosedFormSmoothUnivariateDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
 import gov.sandia.cognition.statistics.EstimableDistribution;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.DefaultWeightedValue;
@@ -53,7 +53,7 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Log-normal_distribution"
 )
 public class LogNormalDistribution
-    extends AbstractClosedFormSmoothScalarDistribution
+    extends AbstractClosedFormSmoothUnivariateDistribution
     implements EstimableDistribution<Double,LogNormalDistribution>
 {
 
@@ -98,8 +98,8 @@ public class LogNormalDistribution
      * Variance of the underlying distribution, (0,infinity)
      */
     public LogNormalDistribution(
-        double logNormalMean,
-        double logNormalVariance )
+        final double logNormalMean,
+        final double logNormalVariance )
     {
         super();
         this.setLogNormalMean( logNormalMean );
@@ -111,7 +111,7 @@ public class LogNormalDistribution
      * @param other LogNormalDistribution to copy
      */
     public LogNormalDistribution(
-        LogNormalDistribution other )
+        final LogNormalDistribution other )
     {
         this( other.getLogNormalMean(), other.getLogNormalVariance() );
     }
@@ -121,6 +121,7 @@ public class LogNormalDistribution
      * @return 
      * 2-dimensional Vector with ( logNormalMean logNormalVariance )
      */
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues(
@@ -133,8 +134,9 @@ public class LogNormalDistribution
      * @param parameters 
      * 2-dimensional Vector with ( logNormalMean logNormalVariance )
      */
+    @Override
     public void convertFromVector(
-        Vector parameters )
+        final Vector parameters )
     {
         if( parameters.getDimensionality() != 2 )
         {
@@ -161,7 +163,7 @@ public class LogNormalDistribution
      * Mean of the underlying distribution, (-infinity,+infinity)
      */
     public void setLogNormalMean(
-        double logNormalMean )
+        final double logNormalMean )
     {
         this.logNormalMean = logNormalMean;
     }
@@ -182,7 +184,7 @@ public class LogNormalDistribution
      * Variance of the underlying distribution, (0,infinity)
      */
     public void setLogNormalVariance(
-        double logNormalVariance )
+        final double logNormalVariance )
     {
         if( logNormalVariance <= 0.0 )
         {
@@ -192,12 +194,14 @@ public class LogNormalDistribution
         this.logNormalVariance = logNormalVariance;
     }
 
+    @Override
     public Double getMean()
     {
         double exp = this.getLogNormalMean() + 0.5 * this.getLogNormalVariance();
         return Math.exp( exp );
     }
 
+    @Override
     public double getVariance()
     {
         double exp1 = this.getLogNormalVariance();
@@ -207,9 +211,10 @@ public class LogNormalDistribution
         return (Math.expm1( exp1 ) * Math.exp( exp2 ));
     }
 
+    @Override
     public ArrayList<Double> sample(
-        Random random,
-        int numSamples )
+        final Random random,
+        final int numSamples )
     {
         ArrayList<Double> samples = new ArrayList<Double>( numSamples );
         final double std = Math.sqrt(this.logNormalVariance);
@@ -222,11 +227,13 @@ public class LogNormalDistribution
         return samples;
     }
 
+    @Override
     public LogNormalDistribution.CDF getCDF()
     {
         return new LogNormalDistribution.CDF( this );
     }
 
+    @Override
     public LogNormalDistribution.PDF getProbabilityFunction()
     {
         return new LogNormalDistribution.PDF( this );
@@ -238,16 +245,19 @@ public class LogNormalDistribution
         return "Log-Mean: " + this.logNormalMean + " Log-Variance: " + this.logNormalVariance;
     }
 
+    @Override
     public Double getMinSupport()
     {
         return 0.0;
     }
 
+    @Override
     public Double getMaxSupport()
     {
         return Double.POSITIVE_INFINITY;
     }
 
+    @Override
     public LogNormalDistribution.MaximumLikelihoodEstimator getEstimator()
     {
         return new LogNormalDistribution.MaximumLikelihoodEstimator();
@@ -258,7 +268,7 @@ public class LogNormalDistribution
      */
     public static class PDF
         extends LogNormalDistribution
-        implements ScalarProbabilityDensityFunction
+        implements UnivariateProbabilityDensityFunction
     {
 
         /**
@@ -277,8 +287,8 @@ public class LogNormalDistribution
          * Variance of the underlying distribution, (0,infinity)
          */
         public PDF(
-            double logNormalMean,
-            double logNormalVariance )
+            final double logNormalMean,
+            final double logNormalVariance )
         {
             super( logNormalMean, logNormalVariance );
         }
@@ -288,19 +298,21 @@ public class LogNormalDistribution
          * @param other LogNormalDistribution to copy
          */
         public PDF(
-            LogNormalDistribution other )
+            final LogNormalDistribution other )
         {
             super( other );
         }
 
+        @Override
         public Double evaluate(
-            Double input )
+            final Double input )
         {
             return this.evaluate( input.doubleValue() );
         }
         
+        @Override
         public double evaluate(
-            double input )
+            final double input )
         {
             return evaluate( 
                 input, this.getLogNormalMean(), this.getLogNormalVariance() );
@@ -319,9 +331,9 @@ public class LogNormalDistribution
          * pdf(input|mean,variance)
          */
         public static double evaluate(
-            double input,
-            double logNormalMean,
-            double logNormalVariance )
+            final double input,
+            final double logNormalMean,
+            final double logNormalVariance )
         {
             if (input <= 0)
             {
@@ -334,14 +346,16 @@ public class LogNormalDistribution
             return exp / denom;
         }
 
+        @Override
         public double logEvaluate(
             final Double input)
         {
             return this.logEvaluate((double) input);
         }
 
+        @Override
         public double logEvaluate(
-            double input)
+            final double input)
         {
             return logEvaluate(input, this.getLogNormalMean(), this.getLogNormalVariance());
         }
@@ -358,9 +372,9 @@ public class LogNormalDistribution
          * Natural logarithm of the PDF.
          */
         public static double logEvaluate(
-            double input,
-            double logNormalMean,
-            double logNormalVariance )
+            final double input,
+            final double logNormalMean,
+            final double logNormalVariance )
         {
             final double logInput = Math.log(input);
             final double delta = logInput - logNormalMean;
@@ -370,7 +384,7 @@ public class LogNormalDistribution
         }
 
         @Override
-        public PDF getProbabilityFunction()
+        public LogNormalDistribution.PDF getProbabilityFunction()
         {
             return this;
         }
@@ -401,8 +415,8 @@ public class LogNormalDistribution
          * Variance of the underlying distribution, (0,infinity)
          */
         public CDF(
-            double logNormalMean,
-            double logNormalVariance )
+            final double logNormalMean,
+            final double logNormalVariance )
         {
             super( logNormalMean, logNormalVariance );
         }
@@ -412,13 +426,14 @@ public class LogNormalDistribution
          * @param other LogNormalDistribution to copy
          */
         public CDF(
-            LogNormalDistribution other )
+            final LogNormalDistribution other )
         {
             super( other );
         }
 
+        @Override
         public double evaluate(
-            double input )
+            final double input )
         {
             return evaluate(
                 input, this.getLogNormalMean(), this.getLogNormalVariance() );
@@ -436,9 +451,9 @@ public class LogNormalDistribution
          * CDF of the distribution
          */
         public static double evaluate(
-            double x,
-            double logNormalMean,
-            double logNormalVariance )
+            final double x,
+            final double logNormalMean,
+            final double logNormalVariance )
         {
             if (x <= 0.0)
             {
@@ -451,8 +466,9 @@ public class LogNormalDistribution
             return 0.5 * (1 + erf);
         }
 
+        @Override
         public Double evaluate(
-            Double input )
+            final Double input )
         {
             return this.evaluate( input.doubleValue() );
         }        
@@ -463,13 +479,15 @@ public class LogNormalDistribution
             return this;
         }
 
+        @Override
         public LogNormalDistribution.PDF getDerivative()
         {
             return this.getProbabilityFunction();
         }
 
+        @Override
         public Double differentiate(
-            Double input)
+            final Double input)
         {
             return this.getDerivative().evaluate(input);
         }
@@ -491,8 +509,9 @@ public class LogNormalDistribution
         {
         }
 
+        @Override
         public LogNormalDistribution.PDF learn(
-            Collection<? extends Double> data)
+            final Collection<? extends Double> data)
         {
             ArrayList<Double> logdata = new ArrayList<Double>( data.size() );
             for( Double value : data )
@@ -523,8 +542,9 @@ public class LogNormalDistribution
         {
         }
 
+        @Override
         public LogNormalDistribution.PDF learn(
-            Collection<? extends WeightedValue<? extends Double>> data )
+            final Collection<? extends WeightedValue<? extends Double>> data )
         {
             ArrayList<DefaultWeightedValue<Double>> logdata =
                 new ArrayList<DefaultWeightedValue<Double>>( data.size() );

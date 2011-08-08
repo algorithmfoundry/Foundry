@@ -17,8 +17,8 @@ package gov.sandia.cognition.statistics.method;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorReader;
 import gov.sandia.cognition.statistics.ClosedFormComputableDistribution;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistribution;
-import gov.sandia.cognition.statistics.SmoothScalarDistribution;
+import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistribution;
+import gov.sandia.cognition.statistics.SmoothUnivariateDistribution;
 import gov.sandia.cognition.statistics.distribution.BetaDistribution;
 import gov.sandia.cognition.statistics.distribution.CauchyDistribution;
 import gov.sandia.cognition.statistics.distribution.ExponentialDistribution;
@@ -166,17 +166,17 @@ public class MaximumLikelihoodDistributionEstimatorTest
         System.out.println( "getDistributionClasses" );
 
         System.out.println( "\n=========== Smooth =========" );
-        LinkedList<SmoothScalarDistribution> i1 =
-            MaximumLikelihoodDistributionEstimator.getDistributionClasses( SmoothScalarDistribution.class );
-        for( SmoothScalarDistribution distribution : i1 )
+        LinkedList<SmoothUnivariateDistribution> i1 =
+            MaximumLikelihoodDistributionEstimator.getDistributionClasses( SmoothUnivariateDistribution.class );
+        for( SmoothUnivariateDistribution distribution : i1 )
         {
             System.out.println( distribution.getClass().getCanonicalName() + ": " + distribution.convertToVector() );
         }
 
         System.out.println( "\n=========== Discrete =======" );
-        LinkedList<ClosedFormDiscreteScalarDistribution> i2 =
-            MaximumLikelihoodDistributionEstimator.getDistributionClasses( ClosedFormDiscreteScalarDistribution.class );
-        for( ClosedFormDiscreteScalarDistribution distribution : i2 )
+        LinkedList<ClosedFormDiscreteUnivariateDistribution> i2 =
+            MaximumLikelihoodDistributionEstimator.getDistributionClasses( ClosedFormDiscreteUnivariateDistribution.class );
+        for( ClosedFormDiscreteUnivariateDistribution distribution : i2 )
         {
             System.out.println( distribution.getClass().getCanonicalName() + ": " + distribution.convertToVector() );
         }
@@ -191,7 +191,7 @@ public class MaximumLikelihoodDistributionEstimatorTest
         WeibullDistribution target = new WeibullDistribution( 5.0, 1.0 );
         ArrayList<Double> samples = target.sample(RANDOM,100);
 
-        SmoothScalarDistribution distribution =
+        SmoothUnivariateDistribution distribution =
             MaximumLikelihoodDistributionEstimator.estimateContinuousDistribution(samples);
         System.out.println( "ML Distribution: " + distribution.getClass().getCanonicalName() + ": " + distribution.convertToVector() );
 

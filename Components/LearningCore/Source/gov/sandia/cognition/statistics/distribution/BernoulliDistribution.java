@@ -19,9 +19,9 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.ProbabilityUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormScalarDistribution;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistribution;
-import gov.sandia.cognition.statistics.ClosedFormScalarCumulativeDistributionFunction;
+import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
+import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistribution;
+import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
 import java.util.ArrayList;
@@ -45,8 +45,8 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Bernoulli_distribution"
 )
 public class BernoulliDistribution 
-    extends AbstractClosedFormScalarDistribution<Number>
-    implements ClosedFormDiscreteScalarDistribution<Number>
+    extends AbstractClosedFormUnivariateDistribution<Number>
+    implements ClosedFormDiscreteUnivariateDistribution<Number>
 {
 
     /**
@@ -75,7 +75,7 @@ public class BernoulliDistribution
      * probability "p" and value "0" with probability 1-p.
      */
     public BernoulliDistribution(
-        double p )
+        final double p )
     {
         this.setP( p );
     }
@@ -85,29 +85,33 @@ public class BernoulliDistribution
      * @param other BernoulliDistribution to copy
      */
     public BernoulliDistribution(
-        BernoulliDistribution other )
+        final BernoulliDistribution other )
     {
         this( other.getP() );
     }
 
+    @Override
     public Double getMean()
     {
         return this.getP();
     }
 
+    @Override
     public Integer getMinSupport()
     {
         return 0;
     }
 
+    @Override
     public Integer getMaxSupport()
     {
         return 1;
     }
 
+    @Override
     public ArrayList<Integer> sample(
-        Random random,
-        int numSamples )
+        final Random random,
+        final int numSamples )
     {
         
         ArrayList<Integer> samples = new ArrayList<Integer>( numSamples );
@@ -128,13 +132,15 @@ public class BernoulliDistribution
         
     }
 
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues( this.getP() );
     }
 
+    @Override
     public void convertFromVector(
-        Vector parameters )
+        final Vector parameters )
     {
         if( parameters.getDimensionality() != 1 )
         {
@@ -144,11 +150,13 @@ public class BernoulliDistribution
         this.setP( parameters.getElement(0) );
     }
 
+    @Override
     public double getVariance()
     {
         return this.getP() * (1.0-this.getP());
     }
 
+    @Override
     public List<Integer> getDomain()
     {
         return Arrays.asList( 0, 1 );
@@ -178,17 +186,19 @@ public class BernoulliDistribution
      * probability "p" and value "0" with probability 1-p.
      */
     public void setP(
-        double p )
+        final double p )
     {
         ProbabilityUtil.assertIsProbability(p);
         this.p = p;
     }
 
+    @Override
     public BernoulliDistribution.CDF getCDF()
     {
         return new CDF( this );
     }
 
+    @Override
     public BernoulliDistribution.PMF getProbabilityFunction()
     {
         return new PMF( this );
@@ -223,7 +233,7 @@ public class BernoulliDistribution
          * probability "p" and value "0" with probability 1-p.
          */
         public PMF(
-            double p )
+            final double p )
         {
             super( p );
         }
@@ -234,18 +244,20 @@ public class BernoulliDistribution
          * BernoulliDistribution to copy
          */
         public PMF(
-            BernoulliDistribution other )
+            final BernoulliDistribution other )
         {
             super( other );
         }
         
+        @Override
         public double getEntropy()
         {
             return ProbabilityMassFunctionUtil.getEntropy( this );
         }
 
+        @Override
         public Double evaluate(
-            Number input )
+            final Number input )
         {
             if( input.intValue() == 0 )
             {
@@ -261,8 +273,9 @@ public class BernoulliDistribution
             }
         }
 
+        @Override
         public double logEvaluate(
-            Number input)
+            final Number input)
         {
             return Math.log( this.evaluate(input) );
         }
@@ -280,7 +293,7 @@ public class BernoulliDistribution
      */
     public static class CDF
         extends BernoulliDistribution
-        implements ClosedFormScalarCumulativeDistributionFunction<Number>
+        implements ClosedFormCumulativeDistributionFunction<Number>
     {
 
         /**
@@ -298,7 +311,7 @@ public class BernoulliDistribution
          * probability "p" and value "0" with probability 1-p.
          */
         public CDF(
-            double p )
+            final double p )
         {
             super( p );
         }
@@ -309,13 +322,14 @@ public class BernoulliDistribution
          * BernoulliDistribution to copy
          */
         public CDF(
-            BernoulliDistribution other )
+            final BernoulliDistribution other )
         {
             super( other );
         }        
         
+        @Override
         public Double evaluate(
-            Number input )
+            final Number input )
         {
             if( input.intValue() < 0 )
             {

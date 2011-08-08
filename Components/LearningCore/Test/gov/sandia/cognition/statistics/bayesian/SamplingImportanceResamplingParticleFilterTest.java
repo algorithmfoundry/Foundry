@@ -28,6 +28,8 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
+import java.util.Random;
+import junit.framework.TestCase;
 
 /**
  * Unit tests for SamplingImportanceResamplingParticleFilterTest.
@@ -35,8 +37,25 @@ import java.util.ArrayList;
  * @author krdixon
  */
 public class SamplingImportanceResamplingParticleFilterTest
-    extends RecursiveBayesianEstimatorTestHarness<Double, Double, PointMassDistribution<Double>>
+    extends TestCase
+//    extends RecursiveBayesianEstimatorTestHarness<Double, Double, ScalarDataDistribution>
 {
+
+    /**
+     * Random number generator to use for a fixed random seed.
+     */
+    public Random RANDOM = new Random( 1 );
+
+    /**
+     * Default tolerance of the regression tests, {@value}.
+     */
+    public double TOLERANCE = 1e-5;
+
+    /**
+     * Default number of samples to draw, {@value}.
+     */
+    public int NUM_SAMPLES = 100;
+
 
     /**
      * Tests for class SamplingImportanceResamplingParticleFilterTest.
@@ -124,7 +143,6 @@ public class SamplingImportanceResamplingParticleFilterTest
         System.out.println( "Target: " + target );
     }
 
-    @Override
     public SamplingImportanceResamplingParticleFilter<Double,Double> createInstance()
     {
         SamplingImportanceResamplingParticleFilter<Double,Double> particleFilter =
@@ -136,8 +154,7 @@ public class SamplingImportanceResamplingParticleFilterTest
         return particleFilter;
     }
 
-    @Override
-    public Distribution<Double> createConditionalDistribution()
+    public UnivariateGaussian createConditionalDistribution()
     {
         double mean = RANDOM.nextGaussian();
         double variance = RANDOM.nextDouble() * 2.0 + 1.0;

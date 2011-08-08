@@ -85,6 +85,7 @@ public class DefaultBayesianParameter<ParameterType,ConditionalType extends Clos
         return clone;
     }
 
+    @Override
     public PriorType getParameterPrior()
     {
         return this.parameterPrior;
@@ -101,11 +102,37 @@ public class DefaultBayesianParameter<ParameterType,ConditionalType extends Clos
         this.parameterPrior = parameterPrior;
     }
 
+    @Override
     public void updateConditionalDistribution(
         Random random)
     {
         ParameterType parameter = this.parameterPrior.sample(random);
         this.setValue(parameter);
+    }
+
+    /**
+     * Creates a new instance of DefaultBayesianParameter
+     * @param conditionalDistribution
+     * Distribution from which to pull the parameters.
+     * @param parameterName
+     * Name of the parameter
+     * @param parameterPrior
+     * Distribution of values that the parameter is assumed to take.
+     * @param <ParameterType> Type of parameters.
+     * @param <ConditionalType>
+     * Type of parameterized distribution that generates observations.
+     * @param <PriorType>
+     * Assumed underlying distribution of parameters of the conditional distribution.
+     * @return
+     * Creates a new instance of DefaultBayesianParameter
+     */
+    public static <ParameterType,ConditionalType extends ClosedFormDistribution<?>,PriorType extends Distribution<ParameterType>> DefaultBayesianParameter<ParameterType,ConditionalType,PriorType> create(
+        ConditionalType conditionalDistribution,
+        String parameterName,
+        PriorType parameterPrior )
+    {
+        return new DefaultBayesianParameter<ParameterType, ConditionalType, PriorType>(
+            conditionalDistribution, parameterName, parameterPrior);
     }
 
 }

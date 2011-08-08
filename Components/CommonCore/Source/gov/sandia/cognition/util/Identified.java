@@ -22,7 +22,7 @@ package gov.sandia.cognition.util;
  *      The type of identifier for this object. Must have valid implementations
  *      of equals and hashCode.
  * @author  Justin Basilico
- * @since   3.1.2
+ * @since   3.2.0
  */
 public interface Identified<IdentifierType>
 {

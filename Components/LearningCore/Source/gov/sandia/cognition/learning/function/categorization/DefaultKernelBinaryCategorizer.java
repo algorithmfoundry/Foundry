@@ -26,7 +26,7 @@ import java.util.Collection;
  * @param   <InputType>
  *      The input type for the categorizer.
  * @author  Justin Basilico
- * @since   3.1.2
+ * @since   3.2.0
  */
 public class DefaultKernelBinaryCategorizer<InputType>
     extends KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>>

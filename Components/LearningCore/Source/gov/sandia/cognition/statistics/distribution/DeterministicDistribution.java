@@ -19,9 +19,9 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.UnivariateScalarFunction;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormScalarDistribution;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistribution;
-import gov.sandia.cognition.statistics.ClosedFormScalarCumulativeDistributionFunction;
+import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
+import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistribution;
+import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
 import java.util.ArrayList;
@@ -43,8 +43,8 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Degenerate_distribution"
 )
 public class DeterministicDistribution
-    extends AbstractClosedFormScalarDistribution<Double>
-    implements ClosedFormDiscreteScalarDistribution<Double>
+    extends AbstractClosedFormUnivariateDistribution<Double>
+    implements ClosedFormDiscreteUnivariateDistribution<Double>
 {
 
     /**
@@ -71,7 +71,7 @@ public class DeterministicDistribution
      * Location of the distribution
      */
     public DeterministicDistribution(
-        double point )
+        final double point )
     {
         this.setPoint( point );
     }
@@ -81,7 +81,7 @@ public class DeterministicDistribution
      * @param other DeterministicDistribution to copy
      */
     public DeterministicDistribution(
-        DeterministicDistribution other )
+        final DeterministicDistribution other )
     {
         this( other.getPoint() );
     }
@@ -102,19 +102,21 @@ public class DeterministicDistribution
      * Location of the distribution
      */
     public void setPoint(
-        double point )
+        final double point )
     {
         this.point = point;
     }
 
+    @Override
     public Double getMean()
     {
         return this.getPoint();
     }
 
+    @Override
     public ArrayList<Double> sample(
-        Random random,
-        int numSamples )
+        final Random random,
+        final int numSamples )
     {
         ArrayList<Double> samples = new ArrayList<Double>( numSamples );
         for( int n = 0; n < numSamples; n++ )
@@ -124,13 +126,15 @@ public class DeterministicDistribution
         return samples;
     }
 
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues( this.getPoint() );
     }
 
+    @Override
     public void convertFromVector(
-        Vector parameters )
+        final Vector parameters )
     {
         if( parameters.getDimensionality() != 1 )
         {
@@ -139,26 +143,31 @@ public class DeterministicDistribution
         this.setPoint( parameters.getElement( 0 ) );
     }
 
+    @Override
     public double getVariance()
     {
         return 0.0;
     }
 
+    @Override
     public DeterministicDistribution.CDF getCDF()
     {
         return new DeterministicDistribution.CDF( this );
     }
 
+    @Override
     public Double getMinSupport()
     {
         return this.getPoint();
     }
 
+    @Override
     public Double getMaxSupport()
     {
         return this.getPoint();
     }
 
+    @Override
     public Collection<Double> getDomain()
     {
         return Arrays.asList( this.getPoint() );
@@ -170,6 +179,7 @@ public class DeterministicDistribution
         return 1;
     }
 
+    @Override
     public DeterministicDistribution.PMF getProbabilityFunction()
     {
         return new DeterministicDistribution.PMF( this );
@@ -197,7 +207,7 @@ public class DeterministicDistribution
          * Location of the distribution
          */
         public PMF(
-            double point )
+            final double point )
         {
             super( point );
         }
@@ -207,24 +217,27 @@ public class DeterministicDistribution
          * @param other DeterministicDistribution to copy
          */
         public PMF(
-            DeterministicDistribution other )
+            final DeterministicDistribution other )
         {
             super( other );
         }
 
+        @Override
         public double getEntropy()
         {
             return ProbabilityMassFunctionUtil.getEntropy(this);
         }
 
+        @Override
         public double logEvaluate(
-            Double input)
+            final Double input)
         {
             return Math.log(this.evaluate(input));
         }
 
+        @Override
         public Double evaluate(
-            Double input)
+            final Double input)
         {
             return (input.doubleValue() == this.getPoint()) ? 1.0 : 0.0;
         }
@@ -242,7 +255,7 @@ public class DeterministicDistribution
      */
     public static class CDF
         extends DeterministicDistribution
-        implements ClosedFormScalarCumulativeDistributionFunction<Double>,
+        implements ClosedFormCumulativeDistributionFunction<Double>,
         UnivariateScalarFunction
     {
 
@@ -260,7 +273,7 @@ public class DeterministicDistribution
          * Location of the distribution
          */
         public CDF(
-            double point )
+            final double point )
         {
             super( point );
         }
@@ -270,19 +283,21 @@ public class DeterministicDistribution
          * @param other DeterministicDistribution to copy
          */
         public CDF(
-            DeterministicDistribution other )
+            final DeterministicDistribution other )
         {
             super( other );
         }
         
+        @Override
         public Double evaluate(
-            Double input )
+            final Double input )
         {
             return this.evaluate( input.doubleValue() );
         }
 
+        @Override
         public double evaluate(
-            double input )
+            final double input )
         {
             return (input < this.getPoint()) ? 0.0 : 1.0;
         }

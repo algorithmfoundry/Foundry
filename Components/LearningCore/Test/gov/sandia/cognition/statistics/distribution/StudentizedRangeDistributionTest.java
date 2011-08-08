@@ -15,7 +15,7 @@
 package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.ClosedFormScalarDistributionTestHarness;
+import gov.sandia.cognition.statistics.ClosedFormUnivariateDistributionTestHarness;
 import static org.junit.Assert.*;
 
 /**
@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
  * @author krdixon
  */
 public class StudentizedRangeDistributionTest
-    extends ClosedFormScalarDistributionTestHarness<Double>
+    extends ClosedFormUnivariateDistributionTestHarness<Double>
 {
 
     /**

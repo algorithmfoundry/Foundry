@@ -27,7 +27,7 @@ import gov.sandia.cognition.util.CloneableSerializable;
  * described in java.lang.Double.
  * 
  * @author  Justin Basilico
- * @since   3.1.2
+ * @since   3.2.0
  */
 public class MutableDouble
     extends Number

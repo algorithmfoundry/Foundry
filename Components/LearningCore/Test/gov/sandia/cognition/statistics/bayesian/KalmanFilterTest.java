@@ -19,7 +19,6 @@ import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.signals.LinearDynamicalSystem;
-import gov.sandia.cognition.statistics.Distribution;
 import gov.sandia.cognition.statistics.bayesian.conjugate.MultivariateGaussianMeanBayesianEstimator;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import java.util.ArrayList;
@@ -49,6 +48,7 @@ public class KalmanFilterTest
      * @return
      * instance
      */
+    @Override
     public KalmanFilter createInstance()
     {
         final int stateDim = 2;
@@ -84,7 +84,7 @@ public class KalmanFilterTest
     }
 
     @Override
-    public Distribution<Vector> createConditionalDistribution()
+    public MultivariateGaussian createConditionalDistribution()
     {
         Vector mean = VectorFactory.getDefault().copyValues( RANDOM.nextGaussian() );
         Matrix covariance = MatrixFactory.getDefault().createMatrix(1,1);
@@ -95,6 +95,7 @@ public class KalmanFilterTest
     /**
      * Tests the constructors of class KalmanFilterTest.
      */
+    @Override
     public void testConstructors()
     {
         System.out.println( "Constructors" );
@@ -136,6 +137,7 @@ public class KalmanFilterTest
      * Tests if the output of the Kalman filter can be equivalent to the
      * conjugate prior estimator.
      */
+    @Override
     public void testKnownValues()
     {
         System.out.println( "MVGCOnjugateEquivalent" );

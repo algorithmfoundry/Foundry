@@ -22,9 +22,9 @@ import gov.sandia.cognition.math.ProbabilityUtil;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormScalarDistribution;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistribution;
-import gov.sandia.cognition.statistics.ClosedFormScalarCumulativeDistributionFunction;
+import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
+import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistribution;
+import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
@@ -49,8 +49,8 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Binomial_distribution"
 )
 public class BinomialDistribution
-    extends AbstractClosedFormScalarDistribution<Number>
-    implements ClosedFormDiscreteScalarDistribution<Number>,
+    extends AbstractClosedFormUnivariateDistribution<Number>
+    implements ClosedFormDiscreteUnivariateDistribution<Number>,
     EstimableDistribution<Number,BinomialDistribution>
 {
 
@@ -90,8 +90,8 @@ public class BinomialDistribution
      * Probability of a positive outcome (Bernoulli probability), [0,1]
      */
     public BinomialDistribution(
-        int N,
-        double p )
+        final int N,
+        final double p )
     {
         this.setN( N );
         this.setP( p );
@@ -102,7 +102,7 @@ public class BinomialDistribution
      * @param other BinomialDistribution to copy
      */
     public BinomialDistribution(
-        BinomialDistribution other  )
+        final BinomialDistribution other  )
     {
         this( other.getN(), other.getP() );
     }
@@ -113,6 +113,7 @@ public class BinomialDistribution
         return (BinomialDistribution) super.clone();
     }
     
+    @Override
     public Double getMean()
     {
         return this.N * this.p;
@@ -125,26 +126,30 @@ public class BinomialDistribution
      * @return
      * Variance of the distribution.
      */
+    @Override
     public double getVariance()
     {
         return this.N*this.p*(1.0-this.p);
     }
     
+    @Override
     public ArrayList<Number> sample(
-        Random random,
-        int numSamples )
+        final Random random,
+        final int numSamples )
     {
         return ProbabilityMassFunctionUtil.sample(
             this.getProbabilityFunction(), random, numSamples);
     }
 
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues( this.getN(), this.getP() );
     }
 
+    @Override
     public void convertFromVector(
-        Vector parameters )
+        final Vector parameters )
     {
         if( parameters.getDimensionality() != 2 )
         {
@@ -171,7 +176,7 @@ public class BinomialDistribution
      * Total number of experiments, must be greater than zero
      */
     public void setN(
-        int N )
+        final int N )
     {
         if (N < 1)
         {
@@ -196,12 +201,13 @@ public class BinomialDistribution
      * Probability of a positive outcome (Bernoulli probability), [0,1]
      */
     public void setP(
-        double p )
+        final double p )
     {
         ProbabilityUtil.assertIsProbability(p);
         this.p = p;
     }
 
+    @Override
     public Collection<Integer> getDomain()
     {
         return new IntegerCollection( 0, this.getN() );
@@ -213,26 +219,31 @@ public class BinomialDistribution
         return this.getN() + 1;
     }
 
+    @Override
     public BinomialDistribution.CDF getCDF()
     {
         return new BinomialDistribution.CDF( this );
     }
 
+    @Override
     public BinomialDistribution.PMF getProbabilityFunction()
     {
         return new BinomialDistribution.PMF( this );
     }
 
+    @Override
     public Integer getMinSupport()
     {
         return 0;
     }
 
+    @Override
     public Integer getMaxSupport()
     {
         return this.getN();
     }
 
+    @Override
     public BinomialDistribution.MaximumLikelihoodEstimator getEstimator()
     {
         return new BinomialDistribution.MaximumLikelihoodEstimator();
@@ -262,8 +273,8 @@ public class BinomialDistribution
          * Probability of a positive outcome (Bernoulli probability), [0,1]
          */
         public PMF(
-            int N,
-            double p )
+            final int N,
+            final double p )
         {
             super( N, p );
         }
@@ -273,7 +284,7 @@ public class BinomialDistribution
          * @param other BinomialDistribution to copy
          */
         public PMF(
-            BinomialDistribution other )
+            final BinomialDistribution other )
         {
             super( other );
         }
@@ -288,8 +299,9 @@ public class BinomialDistribution
          * Probability of exactly input successes in N experiments with expected
          * per-trial success probability (Bernoulli) p
          */
+        @Override
         public Double evaluate(
-            Number input )
+            final Number input )
         {
             return evaluate( this.getN(), input.intValue(), this.getP() );
         }
@@ -309,9 +321,9 @@ public class BinomialDistribution
          * per-trial success probability (Bernoulli) p
          */
         public static double evaluate(
-            int N,
-            int k,
-            double p )
+            final int N,
+            final int k,
+            final double p )
         {
             if (k < 0)
             {
@@ -327,8 +339,9 @@ public class BinomialDistribution
             }
         }
 
+        @Override
         public double logEvaluate(
-            Number input)
+            final Number input)
         {
             return logEvaluate( this.getN(), input.intValue(), this.getP() );
         }
@@ -345,9 +358,9 @@ public class BinomialDistribution
          * Computes the natural logarithm of the PMF.
          */
         public static double logEvaluate(
-            int N,
-            int k,
-            double p )
+            final int N,
+            final int k,
+            final double p )
         {
             if (k < 0)
             {
@@ -366,6 +379,7 @@ public class BinomialDistribution
             }
         }
 
+        @Override
         public double getEntropy()
         {
             return ProbabilityMassFunctionUtil.getEntropy( this );
@@ -385,7 +399,7 @@ public class BinomialDistribution
      */
     public static class CDF
         extends BinomialDistribution
-        implements ClosedFormScalarCumulativeDistributionFunction<Number>
+        implements ClosedFormCumulativeDistributionFunction<Number>
     {
 
         /**
@@ -404,8 +418,8 @@ public class BinomialDistribution
          * Probability of a positive outcome (Bernoulli probability), [0,1]
          */
         public CDF(
-            int N,
-            double p )
+            final int N,
+            final double p )
         {
             super( N, p );
         }
@@ -415,13 +429,14 @@ public class BinomialDistribution
          * @param other Underlying Binomial PMF to use
          */
         public CDF(
-            BinomialDistribution other  )
+            final BinomialDistribution other  )
         {
             super( other );
         }
 
+        @Override
         public Double evaluate(
-            Number input )
+            final Number input )
         {
             int k = input.intValue();
             return evaluate( this.getN(), k, this.getP() );
@@ -438,9 +453,9 @@ public class BinomialDistribution
          * Value of the Binomial CDF(N,n,p)
          */
         public static double evaluate(
-            int N,
-            int k,
-            double p )
+            final int N,
+            final int k,
+            final double p )
         {
 
             double retval;
@@ -486,8 +501,9 @@ public class BinomialDistribution
         {
         }
 
+        @Override
         public BinomialDistribution.PMF learn(
-            Collection<? extends Number> data )
+            final Collection<? extends Number> data )
         {
             double r = UnivariateStatisticsUtil.computeMaximum(data);
 //            int N = (int) Math.ceil( r );

@@ -106,8 +106,8 @@ public class ChineseRestaurantProcess
      * must be greater than zero.
      */
     public ChineseRestaurantProcess(
-        double alpha,
-        int numCustomers)
+        final double alpha,
+        final int numCustomers)
     {
         this.setAlpha(alpha);
         this.setNumCustomers(numCustomers);
@@ -119,7 +119,7 @@ public class ChineseRestaurantProcess
      * CRP to copy
      */
     public ChineseRestaurantProcess(
-        ChineseRestaurantProcess other )
+        final ChineseRestaurantProcess other )
     {
         this( other.getAlpha(), other.getNumCustomers() );
     }
@@ -130,13 +130,15 @@ public class ChineseRestaurantProcess
         return (ChineseRestaurantProcess) super.clone();
     }
 
+    @Override
     public Vector getMean()
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public Vector sample(
-        Random random)
+        final Random random)
     {
 
         ArrayList<Integer> tables = new ArrayList<Integer>( this.numCustomers );
@@ -178,10 +180,10 @@ public class ChineseRestaurantProcess
      * Chinese Restaurant Process.
      */
     public static int sampleNextCustomer(
-        Collection<Integer> tables,
+        final Collection<Integer> tables,
         final int numCustomers,
         final double alpha,
-        Random random )
+        final Random random )
     {
         double p = random.nextDouble();
         double pnew = alpha / (numCustomers + alpha);
@@ -207,9 +209,10 @@ public class ChineseRestaurantProcess
             "Bad computation in sampleNextcustomer!!!" );
     }
 
+    @Override
     public ArrayList<Vector> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
     {
         ArrayList<Vector> samples = new ArrayList<Vector>( numSamples );
         for( int n = 0; n < numSamples; n++ )
@@ -235,7 +238,7 @@ public class ChineseRestaurantProcess
      * CRP concentration parameter, must be greater than zero.
      */
     public void setAlpha(
-        double alpha)
+        final double alpha)
     {
         if( alpha <= 0.0 )
         {
@@ -262,7 +265,7 @@ public class ChineseRestaurantProcess
      * must be greater than zero.
      */
     public void setNumCustomers(
-        int numCustomers)
+        final int numCustomers)
     {
         if( numCustomers <= 0 )
         {
@@ -272,6 +275,7 @@ public class ChineseRestaurantProcess
         this.numCustomers = numCustomers;
     }
 
+    @Override
     public MultiCollection<Vector> getDomain()
     {
         ArrayList<MultinomialDistribution.Domain> domain =
@@ -290,19 +294,22 @@ public class ChineseRestaurantProcess
         return this.getDomain().size();
     }
 
+    @Override
     public ChineseRestaurantProcess.PMF getProbabilityFunction()
     {
         return new ChineseRestaurantProcess.PMF( this );
     }
 
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues(
             this.getAlpha(), this.getNumCustomers() );
     }
 
+    @Override
     public void convertFromVector(
-        Vector parameters)
+        final Vector parameters)
     {
         parameters.assertDimensionalityEquals(2);
         this.setAlpha( parameters.getElement(0) );
@@ -334,8 +341,8 @@ public class ChineseRestaurantProcess
          * must be greater than zero.
          */
         public PMF(
-            double alpha,
-            int numCustomers)
+            final double alpha,
+            final int numCustomers)
         {
             super( alpha, numCustomers );
         }
@@ -346,7 +353,7 @@ public class ChineseRestaurantProcess
          * CRP to copy
          */
         public PMF(
-            ChineseRestaurantProcess other )
+            final ChineseRestaurantProcess other )
         {
             super( other );
         }
@@ -357,13 +364,15 @@ public class ChineseRestaurantProcess
             return this;
         }
 
+        @Override
         public double getEntropy()
         {
             return ProbabilityMassFunctionUtil.getEntropy(this);
         }
 
+        @Override
         public double logEvaluate(
-            Vector input)
+            final Vector input)
         {
             final int numTables = input.getDimensionality();
             double logSum = numTables * Math.log( this.alpha );
@@ -398,8 +407,9 @@ public class ChineseRestaurantProcess
             return logSum;
         }
 
+        @Override
         public Double evaluate(
-            Vector input)
+            final Vector input)
         {
             return Math.exp( this.logEvaluate(input) );
         }

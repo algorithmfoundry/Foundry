@@ -14,7 +14,7 @@
 
 package gov.sandia.cognition.learning.function.cost;
 
-import gov.sandia.cognition.statistics.ScalarDistribution;
+import gov.sandia.cognition.statistics.UnivariateDistribution;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.statistics.method.KolmogorovSmirnovConfidence;
 import java.util.ArrayList;

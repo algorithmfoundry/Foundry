@@ -30,7 +30,7 @@ import java.util.Set;
 import junit.framework.TestCase;
 
 /**
- * @TODO    Document this.
+ * Unit tests for class WinnerTakeAllCategorizer.
  *
  * @author  Justin Basilico
  * @since   3.0

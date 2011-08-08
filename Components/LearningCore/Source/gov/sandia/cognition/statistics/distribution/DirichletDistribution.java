@@ -69,7 +69,7 @@ public class DirichletDistribution
      * Dimensionality of the distribution
      */
     public DirichletDistribution(
-        int dimensionality )
+        final int dimensionality )
     {
         this( VectorFactory.getDefault().createVector(dimensionality,1.0) );
     }
@@ -82,7 +82,7 @@ public class DirichletDistribution
      *
      */
     public DirichletDistribution(
-        Vector parameters )
+        final Vector parameters )
     {
         this.setParameters(parameters);
     }
@@ -93,7 +93,7 @@ public class DirichletDistribution
      * DirichletDistribution to copy.
      */
     public DirichletDistribution(
-        DirichletDistribution other )
+        final DirichletDistribution other )
     {
         this( ObjectUtil.cloneSafe( other.getParameters() ) );
     }
@@ -106,14 +106,16 @@ public class DirichletDistribution
         return clone;
     }
 
+    @Override
     public Vector getMean()
     {
         return this.parameters.scale( 1.0/this.parameters.norm1() );
     }
 
+    @Override
     public ArrayList<Vector> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
     {
 
         GammaDistribution.CDF gammaRV = new GammaDistribution.CDF(1.0, 1.0);
@@ -149,13 +151,15 @@ public class DirichletDistribution
         return data;
     }
 
+    @Override
     public Vector convertToVector()
     {
         return ObjectUtil.cloneSafe(this.getParameters());
     }
 
+    @Override
     public void convertFromVector(
-        Vector parameters)
+        final Vector parameters)
     {
         parameters.assertSameDimensionality( this.getParameters() );
         this.setParameters( ObjectUtil.cloneSafe(parameters) );
@@ -179,7 +183,7 @@ public class DirichletDistribution
      * and each element must be positive.
      */
     public void setParameters(
-        Vector parameters)
+        final Vector parameters)
     {
 
         final int N = parameters.getDimensionality();
@@ -201,6 +205,7 @@ public class DirichletDistribution
         this.parameters = parameters;
     }
 
+    @Override
     public DirichletDistribution.PDF getProbabilityFunction()
     {
         return new DirichletDistribution.PDF( this );
@@ -230,7 +235,7 @@ public class DirichletDistribution
          * and each element must be positive.
          */
         public PDF(
-            Vector parameters )
+            final Vector parameters )
         {
             super( parameters );
         }
@@ -241,7 +246,7 @@ public class DirichletDistribution
          * DirichletDistribution to copy.
          */
         public PDF(
-            DirichletDistribution other )
+            final DirichletDistribution other )
         {
             super( other );
         }
@@ -256,8 +261,9 @@ public class DirichletDistribution
          * @return
          * Dirichlet PDF evaluated about the given (unnormalized) input.
          */
+        @Override
         public Double evaluate(
-            Vector input)
+            final Vector input)
         {
             Vector xn = input.scale( 1.0 / input.norm1() );
 
@@ -282,8 +288,9 @@ public class DirichletDistribution
             return Math.exp(logsum);
         }
 
+        @Override
         public double logEvaluate(
-            Vector input)
+            final Vector input)
         {
             Vector xn = input.scale( 1.0 / input.norm1() );
 
@@ -308,6 +315,7 @@ public class DirichletDistribution
             return logsum;
         }
 
+        @Override
         public int getInputDimensionality()
         {
             return (this.parameters != null) ? this.parameters.getDimensionality() : 0;

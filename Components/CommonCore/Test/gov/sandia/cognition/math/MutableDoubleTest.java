@@ -24,7 +24,7 @@ import gov.sandia.cognition.math.matrix.mtj.Vector2;
  * Unit tests for class MutableDouble.
  *
  * @author  Justin Basilico
- * @since   3.1.2
+ * @since   3.2.0
  */
 public class MutableDoubleTest
     extends RingTestHarness<MutableDouble>

@@ -16,6 +16,8 @@ package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.statistics.AbstractDistribution;
+import gov.sandia.cognition.statistics.ClosedFormDistribution;
+import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -29,6 +31,7 @@ import java.util.Random;
 
 public class MultivariateGaussianInverseGammaDistribution
     extends AbstractDistribution<Vector>
+    implements ClosedFormDistribution<Vector>
 {
 
     /**
@@ -60,7 +63,7 @@ public class MultivariateGaussianInverseGammaDistribution
      * Dimensionality of the multivariate Gaussian
      */
     public MultivariateGaussianInverseGammaDistribution(
-        int dimensionality )
+        final int dimensionality )
     {
         this( new MultivariateGaussian( dimensionality ),
             new InverseGammaDistribution() );
@@ -74,21 +77,33 @@ public class MultivariateGaussianInverseGammaDistribution
      * Inverse-Gamma component
      */
     public MultivariateGaussianInverseGammaDistribution(
-        MultivariateGaussian gaussian,
-        InverseGammaDistribution inverseGamma)
+        final MultivariateGaussian gaussian,
+        final InverseGammaDistribution inverseGamma)
     {
         this.gaussian = gaussian;
         this.inverseGamma = inverseGamma;
     }
 
+    @Override
+    public MultivariateGaussianInverseGammaDistribution clone()
+    {
+        MultivariateGaussianInverseGammaDistribution clone =
+            (MultivariateGaussianInverseGammaDistribution) super.clone();
+        clone.setGaussian( ObjectUtil.cloneSafe( this.getGaussian() ) );
+        clone.setInverseGamma( ObjectUtil.cloneSafe( this.getInverseGamma() ) );
+        return clone;
+    }
+
+    @Override
     public Vector getMean()
     {
         return this.getGaussian().getMean();
     }
 
+    @Override
     public ArrayList<Vector> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
     {
 
         ArrayList<? extends Double> varianceScales =
@@ -112,7 +127,7 @@ public class MultivariateGaussianInverseGammaDistribution
      */
     public MultivariateGaussian getGaussian()
     {
-        return gaussian;
+        return this.gaussian;
     }
 
     /**
@@ -121,7 +136,7 @@ public class MultivariateGaussianInverseGammaDistribution
      * Gaussian component
      */
     public void setGaussian(
-        MultivariateGaussian gaussian)
+        final MultivariateGaussian gaussian)
     {
         this.gaussian = gaussian;
     }
@@ -142,9 +157,27 @@ public class MultivariateGaussianInverseGammaDistribution
      * Inverse-Gamma component
      */
     public void setInverseGamma(
-        InverseGammaDistribution inverseGamma)
+        final InverseGammaDistribution inverseGamma)
     {
         this.inverseGamma = inverseGamma;
+    }
+
+    @Override
+    public Vector convertToVector()
+    {
+        return this.getGaussian().convertToVector().stack(
+            this.getInverseGamma().convertToVector() );
+    }
+
+    @Override
+    public void convertFromVector(
+        final Vector parameters)
+    {
+        int dim = this.getGaussian().getInputDimensionality();
+        int N = dim + dim*dim;
+        parameters.assertDimensionalityEquals(N+2);
+        this.getGaussian().convertFromVector(parameters.subVector(0, N-1) );
+        this.getInverseGamma().convertFromVector( parameters.subVector(N, N+1) );
     }
 
 }

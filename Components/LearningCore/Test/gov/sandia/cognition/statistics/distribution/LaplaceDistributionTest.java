@@ -15,7 +15,7 @@
 package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.SmoothScalarDistributionTestHarness;
+import gov.sandia.cognition.statistics.SmoothUnivariateDistributionTestHarness;
 
 /**
  * Unit tests for LaplaceDistributionTest.
@@ -23,7 +23,7 @@ import gov.sandia.cognition.statistics.SmoothScalarDistributionTestHarness;
  * @author krdixon
  */
 public class LaplaceDistributionTest
-    extends SmoothScalarDistributionTestHarness
+    extends SmoothUnivariateDistributionTestHarness
 {
 
     /**

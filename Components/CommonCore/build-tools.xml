@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+   File:                build-tools.xml
+   Authors:             Justin Basilico
+   Company:             Sandia National Laboratories
+   Project:             Cognitive Foundry
+
+   Copyright May 28, 2009, Sandia Corporation.
+   Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+   license for use of this work by or on behalf of the U.S. Government. Export
+   of this program may require a license from the United States Government.
+
+   Description:
+   This Ant build script provides a set of extra build tools. These tools
+   provide things such as source-code and byte-code analysis, metrics, and
+   coverage reports.
+
+   To use the build script from NetBeans, you have to set the tools.dir to the
+   location that contains the binaries for the set of build tools that the
+   script makes use of. The place to do this is by modifying the
+   nbproject/private/private.properties file. This ensures you can use a path
+   that is local to your specific system but that it will not propagate that
+   system-specific path to other projects.
+-->
+
+<project name="Cognitive Foundry Common Core (tools)" default="default" basedir=".">
+    <description>Extra build tools.</description>
+
+    <property name="tools.config.dir" value="../../Tools/Configuration"/>
+
+    <!-- We make use of the NetBeans project build file. -->
+    <import file="build.xml"/>
+
+    <!-- We also make use of the implementation of the build tool script. -->
+    <import file="../../Tools/Configuration/build-tools-impl.xml"/>
+
+    <target name="-post-test-run">
+        <!-- Overwrite the behavior that automatically fails. -->
+    </target>
+
+</project>

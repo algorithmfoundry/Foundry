@@ -14,9 +14,7 @@
 
 package gov.sandia.cognition.statistics.method;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Random;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -25,23 +23,8 @@ import static org.junit.Assert.*;
  * @author krdixon
  */
 public class NemenyiConfidenceTest
+    extends MultipleHypothesisComparisonTestHarness
 {
-
-    /**
-     * Random number generator to use for a fixed random seed.
-     */
-    public final Random RANDOM = new Random( 1 );
-
-    /**
-     * Default tolerance of the regression tests, {@value}.
-     */
-    public final double TOLERANCE = 1e-5;
-
-    /**
-     * Default number of samples to test against, {@value}.
-     */
-    public final int NUM_SAMPLES = 1000;
-
 
     /**
      * Default Constructor
@@ -54,6 +37,7 @@ public class NemenyiConfidenceTest
      * Test of clone method, of class FriedmanConfidence.
      */
     @Test
+    @Override
     public void testConstructors()
     {
         System.out.println("Constructors");
@@ -61,52 +45,42 @@ public class NemenyiConfidenceTest
         assertNotNull( instance );
     }
 
-
-    /**
-     * Test of evaluateNullHypothesis method, of class NemenyiConfidence.
-     */
-    @Test
-    public void testEvaluateNullHypothesis_Collection_Collection()
+    @Override
+    public NemenyiConfidence createInstance()
     {
-        System.out.println("evaluateNullHypothesis");
-        Collection<Double> A = Arrays.asList( 9.0, 9.5, 5.0, 7.5, 9.5, 7.5, 8.0, 7.0, 8.5, 6.0 );
-        Collection<Double> C = Arrays.asList( 6.0, 8.0, 4.0, 6.0, 7.0, 6.5, 6.0, 4.0, 6.5, 3.0 );
-        NemenyiConfidence instance = new NemenyiConfidence();
-        NemenyiConfidence.Statistic result = instance.evaluateNullHypothesis(A,C);
-        System.out.println( "Result: " + result );
+        return new NemenyiConfidence();
     }
-
-    /**
-     * Test of evaluateNullHypothesis method, of class NemenyiConfidence.
-     */
+ 
+    @Override
     @Test
-    public void testEvaluateNullHypothesis_Collection()
+    public void testKnownValues()
     {
-        System.out.println("evaluateNullHypothesis");
+        System.out.println( "Known Values" );
+        Collection<? extends Collection<Double>> experiment = createData1();
 
-        // From: http://faculty.vassar.edu/lowry/ch15a.html
-        Collection<Double> A = Arrays.asList( 9.0, 9.5, 5.0, 7.5, 9.5, 7.5, 8.0, 7.0, 8.5, 6.0 );
-        Collection<Double> B = Arrays.asList( 7.0, 6.5, 7.0, 7.5, 5.0, 8.0, 6.0, 6.5, 7.0, 7.0 );
-        Collection<Double> C = Arrays.asList( 6.0, 8.0, 4.0, 6.0, 7.0, 6.5, 6.0, 4.0, 6.5, 3.0 );
-
-        @SuppressWarnings("unchecked")
-        Collection<? extends Collection<Double>> experiment = Arrays.asList( A, B, C );
-
-        NemenyiConfidence.Statistic result =
-            NemenyiConfidence.evaluateNullHypothesis(experiment);
+        NemenyiConfidence instance = this.createInstance();
+        NemenyiConfidence.Statistic result = instance.evaluateNullHypotheses( experiment );
         System.out.println( "Result: " + result );
 
         assertEquals( 3, result.getTreatmentCount() );
         assertEquals( 10, result.getSubjectCount() );
-        assertNotNull( result.getZ() );
-        assertNotNull( result.getP() );
-        assertEquals( 2.65, result.getTreatmentRankMeans().get(0), TOLERANCE );
-        assertEquals( 2.1, result.getTreatmentRankMeans().get(1), TOLERANCE );
-        assertEquals( 1.25, result.getTreatmentRankMeans().get(2), TOLERANCE );
+        assertEquals( 2.65, result.getTreatmentMeans().get(0), TOLERANCE );
+        assertEquals( 2.1, result.getTreatmentMeans().get(1), TOLERANCE );
+        assertEquals( 1.25, result.getTreatmentMeans().get(2), TOLERANCE );
 
+        for( int i = 0; i < result.getTreatmentCount(); i++ )
+        {
+            for( int j = 0; j < result.getTreatmentCount(); j++ )
+            {
+                System.out.println( "(" + i + "," + j + "): " +
+                    "z = " + result.getTestStatistic(i, j) +
+                    ", p = " + result.getNullHypothesisProbability(i, j) +
+                    ", NH = " + result.acceptNullHypothesis(i, j) );
+            }
+        }
 
         NemenyiConfidence.Statistic clone = result.clone();
-        assertNotSame( result.getTreatmentRankMeans(), clone.getTreatmentRankMeans() );
+        assertNotSame( result.getTreatmentMeans(), clone.getTreatmentMeans() );
         assertEquals( result.toString(), clone.toString() );
 
     }

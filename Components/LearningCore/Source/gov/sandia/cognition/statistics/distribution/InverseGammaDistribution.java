@@ -19,8 +19,8 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
+import gov.sandia.cognition.statistics.AbstractClosedFormSmoothUnivariateDistribution;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import java.util.ArrayList;
 import java.util.Random;
@@ -39,7 +39,7 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Inverse-gamma_distribution"
 )
 public class InverseGammaDistribution 
-    extends AbstractClosedFormSmoothScalarDistribution
+    extends AbstractClosedFormSmoothUnivariateDistribution
 {
 
     /**
@@ -78,8 +78,8 @@ public class InverseGammaDistribution
      * Scale parameter, must be greater than zero.
      */
     public InverseGammaDistribution(
-        double shape,
-        double scale)
+        final double shape,
+        final double scale)
     {
         this.shape = shape;
         this.scale = scale;
@@ -91,7 +91,7 @@ public class InverseGammaDistribution
      * InverseGammaDistribution to copy
      */
     public InverseGammaDistribution(
-        InverseGammaDistribution other )
+        final InverseGammaDistribution other )
     {
         this( other.getShape(), other.getScale() );
     }
@@ -118,7 +118,7 @@ public class InverseGammaDistribution
      * Shape parameter, must be greater than zero.
      */
     public void setShape(
-        double shape)
+        final double shape)
     {
         if( shape <= 0.0 )
         {
@@ -144,7 +144,7 @@ public class InverseGammaDistribution
      * Scale parameter, must be greater than zero.
      */
     public void setScale(
-        double scale)
+        final double scale)
     {
         if( scale <= 0.0 )
         {
@@ -154,9 +154,10 @@ public class InverseGammaDistribution
         this.scale = scale;
     }
 
+    @Override
     public ArrayList<? extends Double> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
     {
         ArrayList<Double> gammas = GammaDistribution.sample(
             this.shape, 1.0/this.scale, random, numSamples);
@@ -169,11 +170,13 @@ public class InverseGammaDistribution
         return samples;
     }
 
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues( this.shape, this.scale );
     }
 
+    @Override
     public void convertFromVector(
         Vector parameters)
     {
@@ -182,6 +185,7 @@ public class InverseGammaDistribution
         this.setScale( parameters.getElement(1) );
     }
 
+    @Override
     public Double getMean()
     {
         if( this.shape > 1.0 )
@@ -195,6 +199,7 @@ public class InverseGammaDistribution
         }
     }
 
+    @Override
     public double getVariance()
     {
         if( this.shape > 2.0 )
@@ -210,11 +215,13 @@ public class InverseGammaDistribution
         }
     }
 
+    @Override
     public InverseGammaDistribution.CDF getCDF()
     {
         return new InverseGammaDistribution.CDF( this );
     }
 
+    @Override
     public InverseGammaDistribution.PDF getProbabilityFunction()
     {
         return new InverseGammaDistribution.PDF( this );
@@ -226,11 +233,13 @@ public class InverseGammaDistribution
         return "Shape = " + this.getShape() + ", Scale = " + this.getScale();
     }
 
+    @Override
     public Double getMinSupport()
     {
         return 0.0;
     }
 
+    @Override
     public Double getMaxSupport()
     {
         return Double.POSITIVE_INFINITY;
@@ -260,8 +269,8 @@ public class InverseGammaDistribution
          * Scale parameter, must be greater than zero.
          */
         public CDF(
-            double shape,
-            double scale)
+            final double shape,
+            final double scale)
         {
             super( shape, scale );
         }
@@ -272,19 +281,21 @@ public class InverseGammaDistribution
          * InverseGammaDistribution to copy
          */
         public CDF(
-            InverseGammaDistribution other )
+            final InverseGammaDistribution other )
         {
             super( other );
         }
 
+        @Override
         public Double evaluate(
-            Double input)
+            final Double input)
         {
             return this.evaluate(input.doubleValue());
         }
 
+        @Override
         public double evaluate(
-            double input)
+            final double input)
         {
             if( input > 0.0 )
             {
@@ -302,13 +313,15 @@ public class InverseGammaDistribution
             return this;
         }
 
+        @Override
         public InverseGammaDistribution.PDF getDerivative()
         {
             return this.getProbabilityFunction();
         }
 
+        @Override
         public Double differentiate(
-            Double input)
+            final Double input)
         {
             return this.getDerivative().evaluate(input);
         }
@@ -320,7 +333,7 @@ public class InverseGammaDistribution
      */
     public static class PDF
         extends InverseGammaDistribution
-        implements ScalarProbabilityDensityFunction
+        implements UnivariateProbabilityDensityFunction
     {
 
         /**
@@ -339,8 +352,8 @@ public class InverseGammaDistribution
          * Scale parameter, must be greater than zero.
          */
         public PDF(
-            double shape,
-            double scale)
+            final double shape,
+            final double scale)
         {
             super( shape, scale );
         }
@@ -351,7 +364,7 @@ public class InverseGammaDistribution
          * InverseGammaDistribution to copy
          */
         public PDF(
-            InverseGammaDistribution other )
+            final InverseGammaDistribution other )
         {
             super( other );
         }
@@ -362,14 +375,16 @@ public class InverseGammaDistribution
             return this;
         }
 
+        @Override
         public double logEvaluate(
             final Double input)
         {
             return this.logEvaluate((double) input);
         }
 
+        @Override
         public double logEvaluate(
-            double input)
+            final double input)
         {
             if( input > 0.0 )
             {
@@ -386,14 +401,16 @@ public class InverseGammaDistribution
             }
         }
 
+        @Override
         public Double evaluate(
-            Double input)
+            final Double input)
         {
             return this.evaluate( input.doubleValue() );
         }
 
+        @Override
         public double evaluate(
-            double input)
+            final double input)
         {
             return Math.exp(this.logEvaluate(input));
         }

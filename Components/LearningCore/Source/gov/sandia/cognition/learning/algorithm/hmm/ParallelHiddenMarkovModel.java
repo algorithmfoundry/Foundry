@@ -22,6 +22,7 @@ import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.statistics.ComputableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.DefaultPair;
@@ -93,7 +94,7 @@ public class ParallelHiddenMarkovModel<ObservationType>
     public ParallelHiddenMarkovModel(
         Vector initialProbability,
         Matrix transitionProbability,
-        Collection<? extends ProbabilityFunction<ObservationType>> emissionFunctions )
+        Collection<? extends ComputableDistribution<ObservationType>> emissionFunctions )
     {
         super( initialProbability, transitionProbability, emissionFunctions );
     }
@@ -138,68 +139,6 @@ public class ParallelHiddenMarkovModel<ObservationType>
      * Observation likelihood tasks
      */
     transient protected ArrayList<ObservationLikelihoodTask<ObservationType>> observationLikelihoodTasks;
-
-    /*
-    @Override
-    protected ArrayList<Vector> computeObservationLikelihoods(
-        Collection<? extends ObservationType> observations)
-    {
-
-        final int k = this.getNumStates();
-        if( this.observationLikelihoodTasks == null )
-        {
-            this.observationLikelihoodTasks =
-                new ArrayList<ObservationLikelihoodTask<ObservationType>>( k );
-        }
-
-        // Make sure it's the right size
-        this.observationLikelihoodTasks.ensureCapacity(k);
-        while( this.observationLikelihoodTasks.size() > k )
-        {
-            this.observationLikelihoodTasks.remove(
-                this.observationLikelihoodTasks.size()-1 );
-        }
-        while( this.observationLikelihoodTasks.size() < k )
-        {
-            this.observationLikelihoodTasks.add(
-                new ObservationLikelihoodTask<ObservationType>() );
-        }
-
-        int i = 0;
-        for( ProbabilityFunction<ObservationType> pdf : this.getEmissionFunctions() )
-        {
-            ObservationLikelihoodTask<ObservationType> task =
-                this.observationLikelihoodTasks.get(i);
-            task.observations = observations;
-            task.distributionFunction = pdf;
-            i++;
-        }
-
-        ArrayList<double[]> results = null;
-        try
-        {
-            results = ParallelUtil.executeInParallel(
-                this.observationLikelihoodTasks, this.getThreadPool());
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException( e );
-        }
-
-        final int N = observations.size();
-        ArrayList<Vector> b = new ArrayList<Vector>( N );
-        for( int n = 0; n < N; n++ )
-        {
-            double[] bn = new double[ k ];
-            for( i = 0; i < k; i++ )
-            {
-                bn[i] = results.get(i)[n];
-            }
-            b.add( VectorFactory.getDefault().copyArray(bn) );
-        }
-        return b;
-    }
-     */
 
     @Override
     public double computeMultipleObservationLogLikelihood(

@@ -33,11 +33,12 @@ import java.util.Collection;
  * @since 3.1
  */
 @ConfidenceTestAssumptions(
-    name="Friedman test",
+    name="Friedman's test",
     alsoKnownAs="",
     description={
-        "The Friedman test determines if the rankings associated with various treatments are equal.",
-        "This is a nonparametric rank-based alternative to ANOVA."
+        "Friedman's test determines if the rankings associated with various treatments are equal.",
+        "This is a nonparametric rank-based alternative to ANOVA, a multiple comparison generalization similar to the difference between Student's t-test and Wilcoxon rank-signed test.",
+        "Friedman's test tends to have as much power as ANOVA, but without ANOVA's parameteric assumptions"
     },
     assumptions={
         "All data came from same distribution, without considering treatment effects.",
@@ -70,9 +71,15 @@ import java.util.Collection;
 )
 public class FriedmanConfidence 
     extends AbstractCloneableSerializable
-    implements NullHypothesisEvaluator<Collection<Double>>
+    implements BlockExperimentComparison<Number>
 {
 
+    /**
+     * Default instance.
+     */
+    public static final FriedmanConfidence INSTANCE =
+        new FriedmanConfidence();
+    
     /** 
      * Creates a new instance of FriedmanConfidence 
      */
@@ -83,22 +90,15 @@ public class FriedmanConfidence
     @Override
     @SuppressWarnings("unchecked")
     public FriedmanConfidence.Statistic evaluateNullHypothesis(
-        Collection<Double> data1,
-        Collection<Double> data2)
+        final Collection<? extends Number> data1,
+        final Collection<? extends Number> data2)
     {
         return evaluateNullHypothesis( Arrays.asList( data1, data2 ) );
     }
 
-    /**
-     * Computes the Confidence test results for the given experiment tabluea
-     * @param data
-     * Collection of treatments, where each treatment must have the same number
-     * of subjects in each treatment
-     * @return
-     * Confidence statistic describing the confidence test results
-     */
-    public static FriedmanConfidence.Statistic evaluateNullHypothesis(
-        Collection<? extends Collection<? extends Number>> data )
+    @Override
+    public FriedmanConfidence.Statistic evaluateNullHypothesis(
+        final Collection<? extends Collection<? extends Number>> data )
     {
 
         // There are "K" treatments
@@ -120,7 +120,7 @@ public class FriedmanConfidence
      * An mean rank for each of the treatments
      */
     public static ArrayList<Double> computeTreatmentRankMeans(
-        Collection<? extends Collection<? extends Number>> data )
+        final Collection<? extends Collection<? extends Number>> data )
     {
         // There are "K" treatments
         int K = data.size();
@@ -178,7 +178,6 @@ public class FriedmanConfidence
             double treatmentRankMean =
                 UnivariateStatisticsUtil.computeMean(treatmentRanks);
             treatmentRankMeans.add( treatmentRankMean );
-            System.out.println( "TreatmentRankMean: " + treatmentRankMean );
         }
 
         return treatmentRankMeans;
@@ -238,9 +237,9 @@ public class FriedmanConfidence
          * Mean rank for each treatment
          */
         public Statistic(
-            int treatmentCount,
-            int subjectCount,
-            ArrayList<Double> treatmentRankMeans )
+            final int treatmentCount,
+            final int subjectCount,
+            final ArrayList<Double> treatmentRankMeans )
         {
             this( treatmentCount, subjectCount, treatmentRankMeans,
                 computeChiSquare(treatmentCount, subjectCount,treatmentRankMeans) );
@@ -258,10 +257,10 @@ public class FriedmanConfidence
          * Value of the chi-square error for the treatment ranks
          */
         protected Statistic(
-            int treatmentCount,
-            int subjectCount,
-            ArrayList<Double> treatmentRankMeans,
-            double chiSquare )
+            final int treatmentCount,
+            final int subjectCount,
+            final ArrayList<Double> treatmentRankMeans,
+            final double chiSquare )
         {
             this( treatmentCount, subjectCount, treatmentRankMeans, chiSquare,
                 ((subjectCount-1) * chiSquare) / (subjectCount*(treatmentCount-1) - chiSquare));
@@ -281,11 +280,11 @@ public class FriedmanConfidence
          * F-statistic for the corrected chi-square using Snedecor's F distribution
          */
         protected Statistic(
-            int treatmentCount,
-            int subjectCount,
-            ArrayList<Double> treatmentRankMeans,
-            double chiSquare,
-            double F )
+            final int treatmentCount,
+            final int subjectCount,
+            final ArrayList<Double> treatmentRankMeans,
+            final double chiSquare,
+            final double F )
         {
             super(1.0 - SnedecorFDistribution.CDF.evaluate(
                 F, treatmentCount-1.0, (treatmentCount-1.0)*(subjectCount-1.0) ));
@@ -312,9 +311,9 @@ public class FriedmanConfidence
          * Value of the chi-square error for the treatment ranks
          */
         protected static double computeChiSquare(
-            int treatmentCount,
-            int subjectCount,
-            ArrayList<Double> treatmentRankMeans )
+            final int treatmentCount,
+            final int subjectCount,
+            final ArrayList<Double> treatmentRankMeans )
         {
             final double rankMean = UnivariateStatisticsUtil.computeMean(treatmentRankMeans);
             final double treatmentSumSquared = subjectCount * UnivariateStatisticsUtil.computeSumSquaredDifference(treatmentRankMeans, rankMean);
@@ -399,6 +398,12 @@ public class FriedmanConfidence
         public double getF()
         {
             return this.F;
+        }
+
+        @Override
+        public double getTestStatistic()
+        {
+            return this.getF();
         }
 
     }

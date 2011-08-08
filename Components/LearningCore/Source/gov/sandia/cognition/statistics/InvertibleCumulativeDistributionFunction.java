@@ -33,6 +33,6 @@ public interface InvertibleCumulativeDistributionFunction<NumberType extends Num
      * Inverse of the CDF for the given probability.
      */
     public NumberType inverse(
-        double probability );
+        final double probability );
 
 }

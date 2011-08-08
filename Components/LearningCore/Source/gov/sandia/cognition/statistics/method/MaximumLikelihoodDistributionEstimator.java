@@ -28,11 +28,11 @@ import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorReader;
 import gov.sandia.cognition.statistics.ClosedFormComputableDistribution;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistribution;
+import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityFunction;
-import gov.sandia.cognition.statistics.SmoothScalarDistribution;
+import gov.sandia.cognition.statistics.SmoothUnivariateDistribution;
 import gov.sandia.cognition.statistics.distribution.BetaBinomialDistribution;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
@@ -353,15 +353,15 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
      * @throws Exception
      *      If there is an error in the estimation.
      */
-    public static SmoothScalarDistribution estimateContinuousDistribution(
+    public static SmoothUnivariateDistribution estimateContinuousDistribution(
         Collection<Double> data )
         throws Exception
     {
-        LinkedList<SmoothScalarDistribution> distributions =
-            getDistributionClasses( SmoothScalarDistribution.class );
+        LinkedList<SmoothUnivariateDistribution> distributions =
+            getDistributionClasses( SmoothUnivariateDistribution.class );
         MaximumLikelihoodDistributionEstimator<Double> estimator =
             new MaximumLikelihoodDistributionEstimator<Double>( distributions );
-        return (SmoothScalarDistribution) estimator.learn(data);
+        return (SmoothUnivariateDistribution) estimator.learn(data);
     }
 
     /**
@@ -375,17 +375,17 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
      *      If there is an error in the estimation.
      */
     @SuppressWarnings("unchecked")
-    public static ClosedFormDiscreteScalarDistribution estimateDiscreteDistribution(
+    public static ClosedFormDiscreteUnivariateDistribution estimateDiscreteDistribution(
         Collection<? extends Number> data )
         throws Exception
     {
 
-        LinkedList<ClosedFormDiscreteScalarDistribution> distributions =
-            getDistributionClasses( ClosedFormDiscreteScalarDistribution.class );
+        LinkedList<ClosedFormDiscreteUnivariateDistribution> distributions =
+            getDistributionClasses( ClosedFormDiscreteUnivariateDistribution.class );
         MaximumLikelihoodDistributionEstimator estimator =
             new MaximumLikelihoodDistributionEstimator(
             (Collection<? extends ClosedFormComputableDistribution>) distributions);
-        return (ClosedFormDiscreteScalarDistribution) estimator.learn(data);
+        return (ClosedFormDiscreteUnivariateDistribution) estimator.learn(data);
 
 
     }

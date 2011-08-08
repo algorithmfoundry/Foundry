@@ -45,7 +45,7 @@ import java.util.Set;
  *      The type of output categories. Can be any type that has a valid
  *      equals and hashCode method.
  * @author  Justin Basilico
- * @since   3.1.2
+ * @since   3.2.0
  * @see     Perceptron
  * @see     OnlinePerceptron
  */

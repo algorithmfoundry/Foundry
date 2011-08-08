@@ -25,9 +25,9 @@ import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
-import gov.sandia.cognition.statistics.SmoothScalarDistribution;
+import gov.sandia.cognition.statistics.SmoothUnivariateDistribution;
 import gov.sandia.cognition.util.ArgumentChecker;
 import gov.sandia.cognition.util.DefaultNamedValue;
 import gov.sandia.cognition.util.DefaultWeightedValue;
@@ -83,8 +83,8 @@ import java.util.Random;
     url = "http://en.wikipedia.org/wiki/Mixture_density"
 )
 public class ScalarMixtureDensityModel
-    extends LinearMixtureModel<Double, SmoothScalarDistribution>
-    implements SmoothScalarDistribution
+    extends LinearMixtureModel<Double, SmoothUnivariateDistribution>
+    implements SmoothUnivariateDistribution
 {
 
     /** 
@@ -101,7 +101,7 @@ public class ScalarMixtureDensityModel
      * Distributions that comprise the SMDM with equal prior weight
      */
     public ScalarMixtureDensityModel(
-        SmoothScalarDistribution ... distributions )
+        SmoothUnivariateDistribution ... distributions )
     {
         this( Arrays.asList(distributions) );
     }
@@ -112,7 +112,7 @@ public class ScalarMixtureDensityModel
      * Distributions that comprise the SMDM with equal prior weight
      */
     public ScalarMixtureDensityModel(
-        Collection<? extends SmoothScalarDistribution> distributions )
+        final Collection<? extends SmoothUnivariateDistribution> distributions )
     {
         this( distributions, null );
     }
@@ -125,8 +125,8 @@ public class ScalarMixtureDensityModel
      * Weights proportionate by which the distributions are sampled
      */
     public ScalarMixtureDensityModel(
-        Collection<? extends SmoothScalarDistribution> distributions,
-        double[] priorWeights)
+        final Collection<? extends SmoothUnivariateDistribution> distributions,
+        final double[] priorWeights)
     {
         super( distributions, priorWeights );
     }
@@ -137,7 +137,7 @@ public class ScalarMixtureDensityModel
      * SMDM to copy
      */
     public ScalarMixtureDensityModel(
-        ScalarMixtureDensityModel other )
+        final ScalarMixtureDensityModel other )
     {
         this( ObjectUtil.cloneSmartElementsAsArrayList(other.getDistributions()),
             ObjectUtil.deepCopy(other.getPriorWeights()) );
@@ -160,7 +160,7 @@ public class ScalarMixtureDensityModel
     {
         int dim = this.getDistributionCount();
         ArrayList<Vector> parameters = new ArrayList<Vector>( this.getDistributionCount() );
-        for( SmoothScalarDistribution d : this.distributions )
+        for( SmoothUnivariateDistribution d : this.distributions )
         {
             Vector p = d.convertToVector();
             dim += p.getDimensionality();
@@ -188,12 +188,12 @@ public class ScalarMixtureDensityModel
 
     @Override
     public void convertFromVector(
-        Vector parameters)
+        final Vector parameters)
     {
         int dim = this.getDistributionCount();
         ArrayList<Vector> ps =
             new ArrayList<Vector>( this.getDistributionCount() );
-        for( SmoothScalarDistribution d : this.distributions )
+        for( SmoothUnivariateDistribution d : this.distributions )
         {
             Vector p = d.convertToVector();
             dim += p.getDimensionality();
@@ -227,7 +227,7 @@ public class ScalarMixtureDensityModel
     public Double getMinSupport()
     {
         double minMin = Double.POSITIVE_INFINITY;
-        for( SmoothScalarDistribution d : this.getDistributions() )
+        for( SmoothUnivariateDistribution d : this.getDistributions() )
         {
             final double min = d.getMinSupport();
             if( minMin > min )
@@ -248,7 +248,7 @@ public class ScalarMixtureDensityModel
     public Double getMaxSupport()
     {
         double maxMax = Double.NEGATIVE_INFINITY;
-        for( SmoothScalarDistribution d : this.getDistributions() )
+        for( SmoothUnivariateDistribution d : this.getDistributions() )
         {
             final double max = d.getMaxSupport();
             if( maxMax < max )
@@ -272,7 +272,7 @@ public class ScalarMixtureDensityModel
         int i = 0;
         final double priorSum = this.getPriorWeightSum();
 
-        for( SmoothScalarDistribution d : this.getDistributions() )
+        for( SmoothUnivariateDistribution d : this.getDistributions() )
         {
             final double prior = this.getPriorWeights()[i];
             sum += prior * d.getMean();
@@ -307,7 +307,7 @@ public class ScalarMixtureDensityModel
         
         double result = 0.0;
         int i = 0;
-        for( SmoothScalarDistribution distribution : this.getDistributions() )
+        for( SmoothUnivariateDistribution distribution : this.getDistributions() )
         {
             final double mi = distribution.getMean();
             final double prior = this.priorWeights[i] / priorWeightSum;
@@ -335,7 +335,7 @@ public class ScalarMixtureDensityModel
      */
     public static class PDF
         extends ScalarMixtureDensityModel
-        implements ScalarProbabilityDensityFunction
+        implements UnivariateProbabilityDensityFunction
     {
 
         /**
@@ -352,7 +352,7 @@ public class ScalarMixtureDensityModel
          * Distributions that comprise the SMDM with equal prior weight
          */
         public PDF(
-            SmoothScalarDistribution ... distributions )
+            SmoothUnivariateDistribution ... distributions )
         {
             super( distributions );
         }
@@ -363,7 +363,7 @@ public class ScalarMixtureDensityModel
          * Distributions that comprise the SMDM with equal prior weight
          */
         public PDF(
-            Collection<? extends SmoothScalarDistribution> distributions )
+            final Collection<? extends SmoothUnivariateDistribution> distributions )
         {
             super( distributions );
         }
@@ -376,8 +376,8 @@ public class ScalarMixtureDensityModel
          * Weights proportionate by which the distributions are sampled
          */
         public PDF(
-            Collection<? extends SmoothScalarDistribution> distributions,
-            double[] priorWeights)
+            final Collection<? extends SmoothUnivariateDistribution> distributions,
+            final double[] priorWeights)
         {
             super( distributions, priorWeights );
         }
@@ -388,35 +388,35 @@ public class ScalarMixtureDensityModel
          * SMDM to copy
          */
         public PDF(
-            ScalarMixtureDensityModel other )
+            final ScalarMixtureDensityModel other )
         {
             super( other );
         }
 
         @Override
         public double logEvaluate(
-            Double input)
+            final Double input)
         {
             return this.logEvaluate(input.doubleValue());
         }
 
         @Override
         public Double evaluate(
-            Double input)
+            final Double input)
         {
             return this.evaluate( input.doubleValue() );
         }
 
         @Override
         public double evaluate(
-            double input)
+            final double input)
         {
             final double weightSum = this.getPriorWeightSum();
             double sum = 0.0;
             int i = 0;
-            for( SmoothScalarDistribution d : this.distributions )
+            for( SmoothUnivariateDistribution d : this.distributions )
             {
-                ScalarProbabilityDensityFunction pdf =
+                UnivariateProbabilityDensityFunction pdf =
                     d.getProbabilityFunction();
                 final double prior = this.priorWeights[i];
                 sum += prior * pdf.evaluate(input);
@@ -433,7 +433,7 @@ public class ScalarMixtureDensityModel
 
         @Override
         public double logEvaluate(
-            double input)
+            final double input)
         {
             return Math.log( this.evaluate(input) );
         }
@@ -462,7 +462,7 @@ public class ScalarMixtureDensityModel
          * Distributions that comprise the SMDM with equal prior weight
          */
         public CDF(
-            SmoothScalarDistribution ... distributions )
+            SmoothUnivariateDistribution ... distributions )
         {
             super( distributions );
         }
@@ -473,7 +473,7 @@ public class ScalarMixtureDensityModel
          * Distributions that comprise the SMDM with equal prior weight
          */
         public CDF(
-            Collection<? extends SmoothScalarDistribution> distributions )
+            final Collection<? extends SmoothUnivariateDistribution> distributions )
         {
             super( distributions );
         }
@@ -486,8 +486,8 @@ public class ScalarMixtureDensityModel
          * Weights proportionate by which the distributions are sampled
          */
         public CDF(
-            Collection<? extends SmoothScalarDistribution> distributions,
-            double[] priorWeights)
+            final Collection<? extends SmoothUnivariateDistribution> distributions,
+            final double[] priorWeights)
         {
             super( distributions, priorWeights );
         }
@@ -498,7 +498,7 @@ public class ScalarMixtureDensityModel
          * SMDM to copy
          */
         public CDF(
-            ScalarMixtureDensityModel other )
+            final ScalarMixtureDensityModel other )
         {
             super( other );
         }
@@ -511,19 +511,19 @@ public class ScalarMixtureDensityModel
 
         @Override
         public Double evaluate(
-            Double input)
+            final Double input)
         {
             return this.evaluate( input.doubleValue() );
         }
 
         @Override
         public double evaluate(
-            double input)
+            final double input)
         {
             final double weightSum = this.getPriorWeightSum();
             double sum = 0.0;
             int i = 0;
-            for( SmoothScalarDistribution d : this.distributions )
+            for( SmoothUnivariateDistribution d : this.distributions )
             {
                 SmoothCumulativeDistributionFunction cdf = d.getCDF();
                 final double prior = this.priorWeights[i];
@@ -535,7 +535,7 @@ public class ScalarMixtureDensityModel
 
         @Override
         public Double differentiate(
-            Double input)
+            final Double input)
         {
             return this.getDerivative().evaluate(input.doubleValue());
         }
@@ -577,7 +577,7 @@ public class ScalarMixtureDensityModel
         /**
          * Collection of learners used to create each component.
          */
-        private Collection<? extends DistributionWeightedEstimator<Double,? extends SmoothScalarDistribution>> learners;
+        private Collection<? extends DistributionWeightedEstimator<Double,? extends SmoothUnivariateDistribution>> learners;
 
         /**
          * Random number generator.
@@ -602,7 +602,7 @@ public class ScalarMixtureDensityModel
         /**
          * Currently estimated set of distributions from the data
          */
-        private transient ArrayList<ScalarProbabilityDensityFunction> distributions;
+        private transient ArrayList<UnivariateProbabilityDensityFunction> distributions;
 
         /**
          * Priors associated with the current estimates from the data
@@ -636,7 +636,7 @@ public class ScalarMixtureDensityModel
          */
         public EMLearner(
             int numClusters,
-            DistributionWeightedEstimator<Double,? extends SmoothScalarDistribution> learner,
+            DistributionWeightedEstimator<Double,? extends SmoothUnivariateDistribution> learner,
             Random random )
         {
 
@@ -644,8 +644,8 @@ public class ScalarMixtureDensityModel
             this.setTolerance(DEFAULT_TOLERANCE );
             this.setRandom( random );
 
-            ArrayList<DistributionWeightedEstimator<Double, ? extends SmoothScalarDistribution>> ll =
-                new ArrayList<DistributionWeightedEstimator<Double, ? extends SmoothScalarDistribution>>( numClusters );
+            ArrayList<DistributionWeightedEstimator<Double, ? extends SmoothUnivariateDistribution>> ll =
+                new ArrayList<DistributionWeightedEstimator<Double, ? extends SmoothUnivariateDistribution>>( numClusters );
             for( int k = 0; k < numClusters; k++ )
             {
                 ll.add(learner);
@@ -663,7 +663,7 @@ public class ScalarMixtureDensityModel
          */
         public EMLearner(
             Random random,
-            DistributionWeightedEstimator<Double,? extends SmoothScalarDistribution> ... learners )
+            DistributionWeightedEstimator<Double,? extends SmoothUnivariateDistribution> ... learners )
         {
 
             super( DEFAULT_MAX_ITERATIONS );
@@ -721,9 +721,9 @@ public class ScalarMixtureDensityModel
             }
 
             // This is the initial distribution estimates
-            this.distributions = new ArrayList<ScalarProbabilityDensityFunction>( K );
+            this.distributions = new ArrayList<UnivariateProbabilityDensityFunction>( K );
             int k = 0;
-            for( DistributionWeightedEstimator<Double,? extends SmoothScalarDistribution> learner : this.learners )
+            for( DistributionWeightedEstimator<Double,? extends SmoothUnivariateDistribution> learner : this.learners )
             {
                 for( int n = 0; n < N; n++ )
                 {
@@ -758,7 +758,7 @@ public class ScalarMixtureDensityModel
                 System.arraycopy(an, 0, anold, 0, K);
                 int k = 0;
                 double sum = 0.0;
-                for( ScalarProbabilityDensityFunction pdf : this.distributions )
+                for( UnivariateProbabilityDensityFunction pdf : this.distributions )
                 {
                     final double ank = pdf.evaluate(xn);
                     an[k] = ank;
@@ -788,13 +788,13 @@ public class ScalarMixtureDensityModel
 
             // Now update the distributions... the "M" step
             int k = 0;
-            for( DistributionWeightedEstimator<Double,? extends SmoothScalarDistribution> learner : this.learners )
+            for( DistributionWeightedEstimator<Double,? extends SmoothUnivariateDistribution> learner : this.learners )
             {
                 for( int n = 0; n < N; n++ )
                 {
                     this.weightedData.get(n).setWeight(this.assignments.get(n)[k]);
                 }
-                SmoothScalarDistribution distribution = learner.learn( this.weightedData );
+                SmoothUnivariateDistribution distribution = learner.learn( this.weightedData );
                 this.distributions.set( k, distribution.getProbabilityFunction() );
                 k++;
             }
@@ -843,7 +843,7 @@ public class ScalarMixtureDensityModel
          * @return
          * Collection of learners used to create each component.
          */
-        public Collection<? extends DistributionWeightedEstimator<Double, ? extends SmoothScalarDistribution>> getLearners()
+        public Collection<? extends DistributionWeightedEstimator<Double, ? extends SmoothUnivariateDistribution>> getLearners()
         {
             return this.learners;
         }
@@ -854,7 +854,7 @@ public class ScalarMixtureDensityModel
          * Collection of learners used to create each component.
          */
         public void setLearners(
-            Collection<? extends DistributionWeightedEstimator<Double, ? extends SmoothScalarDistribution>> learners)
+            Collection<? extends DistributionWeightedEstimator<Double, ? extends SmoothUnivariateDistribution>> learners)
         {
             this.learners = learners;
         }

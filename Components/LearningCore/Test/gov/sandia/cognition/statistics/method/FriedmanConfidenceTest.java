@@ -92,7 +92,7 @@ public class FriedmanConfidenceTest
         Collection<? extends Collection<Double>> experiment = Arrays.asList( A, B, C );
 
         FriedmanConfidence.Statistic result =
-            FriedmanConfidence.evaluateNullHypothesis(experiment);
+            FriedmanConfidence.INSTANCE.evaluateNullHypothesis(experiment);
         System.out.println( "Result: " + result );
 
         assertEquals( 9.95, result.getChiSquare(), TOLERANCE );
@@ -127,7 +127,7 @@ public class FriedmanConfidenceTest
         Collection<? extends Collection<Integer>> experiment = Arrays.asList( A, B, C );
 
         FriedmanConfidence.Statistic result =
-            FriedmanConfidence.evaluateNullHypothesis(experiment);
+            FriedmanConfidence.INSTANCE.evaluateNullHypothesis(experiment);
         System.out.println( "Result: " + result );
 
         assertEquals( 3.884892407768348E-5, result.getNullHypothesisProbability(), TOLERANCE );

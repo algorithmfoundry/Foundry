@@ -15,14 +15,14 @@
 package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.SmoothScalarDistributionTestHarness;
+import gov.sandia.cognition.statistics.SmoothUnivariateDistributionTestHarness;
 
 /**
  *
  * @author Kevin R. Dixon
  */
 public class UniformDistributionTest
-    extends SmoothScalarDistributionTestHarness
+    extends SmoothUnivariateDistributionTestHarness
 {
 
     /**

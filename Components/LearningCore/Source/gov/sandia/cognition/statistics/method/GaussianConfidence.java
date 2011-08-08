@@ -17,7 +17,7 @@ package gov.sandia.cognition.statistics.method;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
-import gov.sandia.cognition.statistics.ScalarDistribution;
+import gov.sandia.cognition.statistics.UnivariateDistribution;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.Pair;
@@ -56,8 +56,8 @@ import java.util.Collection;
 )
 public class GaussianConfidence
     extends AbstractCloneableSerializable
-    implements NullHypothesisEvaluator<Collection<? extends Double>>,
-    ConfidenceIntervalEvaluator<Collection<? extends Double>>
+    implements NullHypothesisEvaluator<Collection<? extends Number>>,
+    ConfidenceIntervalEvaluator<Collection<? extends Number>>
 {
 
     /**
@@ -71,9 +71,10 @@ public class GaussianConfidence
     {
     }
 
+    @Override
     public GaussianConfidence.Statistic evaluateNullHypothesis(
-        Collection<? extends Double> data1,
-        Collection<? extends Double> data2 )
+        Collection<? extends Number> data1,
+        Collection<? extends Number> data2 )
     {
         int N1 = data1.size();
         UnivariateGaussian g1 =
@@ -145,8 +146,9 @@ public class GaussianConfidence
 
     }
 
+    @Override
     public ConfidenceInterval computeConfidenceInterval(
-        Collection<? extends Double> data,
+        Collection<? extends Number> data,
         double confidence )
     {
         UnivariateGaussian g = UnivariateGaussian.MaximumLikelihoodEstimator.learn(
@@ -170,7 +172,7 @@ public class GaussianConfidence
      * at the desired level of confidence
      */
     public static ConfidenceInterval computeConfidenceInterval(
-        ScalarDistribution<?> dataDistribution,
+        UnivariateDistribution<?> dataDistribution,
         int numSamples,
         double confidence )
     {
@@ -187,6 +189,7 @@ public class GaussianConfidence
         year=2009,
         url="http://en.wikipedia.org/wiki/Standard_error_(statistics)"
     )
+    @Override
     public ConfidenceInterval computeConfidenceInterval(
         double mean,
         double variance,
@@ -249,6 +252,12 @@ public class GaussianConfidence
             double z )
         {
             this.z = z;
+        }
+
+        @Override
+        public double getTestStatistic()
+        {
+            return this.getZ();
         }
 
     }

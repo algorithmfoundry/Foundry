@@ -53,7 +53,7 @@ public abstract class AbstractSufficientStatistic<DataType, DistributionType>// 
 
     @Override
     public void update(
-        Iterable<? extends DataType> values)
+        final Iterable<? extends DataType> values)
     {
         for( DataType value : values )
         {
@@ -73,11 +73,9 @@ public abstract class AbstractSufficientStatistic<DataType, DistributionType>// 
      * Number of data points used to create this SufficientStatistic
      */
     protected void setCount(
-        long count)
+        final long count)
     {
         this.count = count;
     }
-
-
 
 }

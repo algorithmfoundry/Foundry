@@ -13,19 +13,22 @@
 package gov.sandia.cognition.learning.algorithm.bayes;
 
 import gov.sandia.cognition.collection.CollectionUtil;
+import gov.sandia.cognition.learning.algorithm.AbstractBatchAndIncrementalLearner;
+import gov.sandia.cognition.learning.algorithm.IncrementalLearner;
 import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.data.DefaultWeightedValueDiscriminant;
 import gov.sandia.cognition.learning.function.categorization.Categorizer;
 import gov.sandia.cognition.learning.function.categorization.DiscriminantCategorizer;
+import gov.sandia.cognition.math.LogMath;
 import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorInputEvaluator;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.statistics.DataHistogram;
 import gov.sandia.cognition.statistics.DistributionEstimator;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
@@ -50,7 +53,7 @@ import java.util.Set;
  * @author  Justin Basilico
  * @since   3.1
  */
-public class VectorNaiveBayesCategorizer<CategoryType, DistributionType extends ScalarProbabilityDensityFunction>
+public class VectorNaiveBayesCategorizer<CategoryType, DistributionType extends UnivariateProbabilityDensityFunction>
     extends AbstractCloneableSerializable
     implements Categorizer<Vectorizable, CategoryType>,
         VectorInputEvaluator<Vectorizable, CategoryType>,
@@ -118,13 +121,6 @@ public class VectorNaiveBayesCategorizer<CategoryType, DistributionType extends 
     public CategoryType evaluate(
         final Vectorizable input)
     {
-        return this.evaluateWithDiscriminant(input).getValue();
-    }
-
-    @Override
-    public DefaultWeightedValueDiscriminant<CategoryType> evaluateWithDiscriminant(
-        final Vectorizable input)
-    {
         final Vector vector = input.convertToVector();
 
         // We want to find the category with the maximum posterior distribution.
@@ -147,8 +143,44 @@ public class VectorNaiveBayesCategorizer<CategoryType, DistributionType extends 
             }
         }
 
+        return maxCategory;
+    }
+
+    @Override
+    public DefaultWeightedValueDiscriminant<CategoryType> evaluateWithDiscriminant(
+        final Vectorizable input)
+    {
+        final Vector vector = input.convertToVector();
+
+        // We want to find the category with the maximum posterior distribution.
+        // We also compute the denominator in order to have a valid descriminant
+        // value, which means adding together all of the posteriors.
+        double maxLogPosterior = Double.NEGATIVE_INFINITY;
+        double logDenominator = Double.NEGATIVE_INFINITY;
+        CategoryType maxCategory = null;
+        for (CategoryType category : this.getCategories())
+        {
+            // Compute the posterior probability for the category.
+            final double logPosterior = this.computeLogPosterior(
+                vector, category);
+
+            // See if the new posterior is the best found so far.
+            if (maxCategory == null || logPosterior > maxLogPosterior)
+            {
+                maxLogPosterior = logPosterior;
+                maxCategory = category;
+            }
+
+            logDenominator = LogMath.add(logDenominator, logPosterior);
+        }
+
+        // The discriminant is the log of the maximum likelihood estimate,
+        // which is the probability the input belongs to the most likely class.
+        // This would be P(y) * P(x|y) / P(x), but since we are in log space,
+        // the division is just substraction.
+        final double logMaximumLikelihood = maxLogPosterior - logDenominator;
         return DefaultWeightedValueDiscriminant.create(
-            maxCategory, maxLogPosterior);
+            maxCategory, logMaximumLikelihood);
     }
 
     /**
@@ -275,20 +307,20 @@ public class VectorNaiveBayesCategorizer<CategoryType, DistributionType extends 
     }
 
     /**
-     * A supervised batch learner for a vector Naive Bayes categorizer.
+     * A supervised batch distributionLearner for a vector Naive Bayes categorizer.
      *
      * @param   <CategoryType>
      *      The output category type for the categorizer. Must implement equals and
      *      hash code.
      * @param   <DistributionType>
-     *      The type of distribution that the learner produces.
+     *      The type of distribution that the distributionLearner produces.
      */
-    public static class Learner<CategoryType, DistributionType extends ScalarProbabilityDensityFunction>
+    public static class Learner<CategoryType, DistributionType extends UnivariateProbabilityDensityFunction>
         extends AbstractCloneableSerializable
         implements SupervisedBatchLearner<Vectorizable, CategoryType, VectorNaiveBayesCategorizer<CategoryType, DistributionType>>
     {
 
-        /** The learner for the distribution of each dimension of each category. */
+        /** The distributionLearner for the distribution of each dimension of each category. */
         protected DistributionEstimator<? super Double, ? extends DistributionType> distributionEstimator;
 
         /**
@@ -396,7 +428,7 @@ public class VectorNaiveBayesCategorizer<CategoryType, DistributionType extends 
     }
 
     /**
-     * A supervised batch learner for a vector Naive Bayes categorizer that fits
+     * A supervised batch distributionLearner for a vector Naive Bayes categorizer that fits
      * a Gaussian.
      *
      * @param   <CategoryType>
@@ -484,6 +516,124 @@ public class VectorNaiveBayesCategorizer<CategoryType, DistributionType extends 
 
             return result;
         }
+
+    }
+
+    /**
+     * An online (incremental) distributionLearner for the Naive Bayes 
+     * categorizer that uses an incremental distribution learner for the
+     * distribution representing each dimension for each category.
+     *
+     * @param   <CategoryType>
+     *      The output category type for the categorizer. Must implement equals and
+     *      hash code.
+     * @param   <DistributionType>
+     *      The type of the distributions used to compute the conditionals for each
+     *      dimension.
+     * @author  Justin Basilico
+     * @since   3.3.0
+     */
+    public static class OnlineLearner<CategoryType, DistributionType extends UnivariateProbabilityDensityFunction>
+        extends AbstractBatchAndIncrementalLearner<InputOutputPair<? extends Vectorizable, CategoryType>, VectorNaiveBayesCategorizer<CategoryType, DistributionType>>
+    {
+        /** The incremental learner for the distribution used to represent each
+         *  dimension. By the generic, it must learn a univariate probability
+         *  density function. */
+        protected IncrementalLearner<? super Double, DistributionType> distributionLearner;
+
+        /**
+         * Creates a new learner with a null distribution learner.
+         */
+        public OnlineLearner()
+        {
+            this(null);
+        }
+
+        /**
+         * Creates a new learner with a given distribution learner.
+         *
+         * @param   distributionLearner
+         *      The learner for the distribution representing each dimension.
+         */
+        public OnlineLearner(
+            final IncrementalLearner<? super Double, DistributionType> distributionLearner)
+        {
+            super();
+
+            this.setDistributionLearner(distributionLearner);
+        }
+
+        @Override
+        public VectorNaiveBayesCategorizer<CategoryType, DistributionType> createInitialLearnedObject()
+        {
+            return new VectorNaiveBayesCategorizer<CategoryType, DistributionType>();
+        }
+
+        @Override
+        public void update(
+            final VectorNaiveBayesCategorizer<CategoryType, DistributionType> target,
+            final InputOutputPair<? extends Vectorizable, CategoryType> data)
+        {
+            // Get the input vector and the output category.
+            final Vector input = data.getInput().convertToVector();
+            final CategoryType category = data.getOutput();
+
+            // Increment the priors for the category.
+            target.getPriors().add(category);
+
+            List<DistributionType> conditionals =
+                target.getConditionals().get(category);
+
+            final int dimensionality = input.getDimensionality();
+            if (conditionals == null)
+            {
+                // Have not seen this category yet. Initialize it.
+                conditionals = new ArrayList<DistributionType>(dimensionality);
+
+                for (int i = 0; i < dimensionality; i++)
+                {
+                    conditionals.add(
+                        this.distributionLearner.createInitialLearnedObject());
+                }
+
+                target.getConditionals().put(category, conditionals);
+            }
+
+            // Update all the conditionals for the category.
+            for (int i = 0; i < dimensionality; i++)
+            {
+                final DistributionType conditional = conditionals.get(i);
+
+                this.distributionLearner.update(
+                    conditional, input.getElement(i));
+            }
+        }
+
+        /**
+         * Gets the learner used for the distribution representing each
+         * dimension.
+         *
+         * @return
+         *      The distribution learner.
+         */
+        public IncrementalLearner<? super Double, DistributionType> getDistributionLearner()
+        {
+            return this.distributionLearner;
+        }
+
+        /**
+         * Sets the learner used for the distribution representing each
+         * dimension.
+         *
+         * @param   distributionLearner
+         *      The distribution learner.
+         */
+        public void setDistributionLearner(
+            final IncrementalLearner<? super Double, DistributionType> distributionLearner)
+        {
+            this.distributionLearner = distributionLearner;
+        }
+
 
     }
 

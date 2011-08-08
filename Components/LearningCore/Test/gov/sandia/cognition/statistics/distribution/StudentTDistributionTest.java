@@ -16,7 +16,7 @@
 package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.SmoothScalarDistributionTestHarness;
+import gov.sandia.cognition.statistics.SmoothUnivariateDistributionTestHarness;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import java.util.ArrayList;
 
@@ -25,7 +25,7 @@ import java.util.ArrayList;
  * @author Kevin R. Dixon
  */
 public class StudentTDistributionTest
-    extends SmoothScalarDistributionTestHarness
+    extends SmoothUnivariateDistributionTestHarness
 {
 
     /**

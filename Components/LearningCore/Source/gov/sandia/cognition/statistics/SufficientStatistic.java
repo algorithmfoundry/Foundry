@@ -55,7 +55,7 @@ public interface SufficientStatistic<DataType, DistributionType>// extends Distr
      * Distribution to modify by side effect
      */
     public void create(
-        DistributionType distribution);
+        final DistributionType distribution);
 
     /**
      * Updates the sufficient statistics from the given value
@@ -63,7 +63,7 @@ public interface SufficientStatistic<DataType, DistributionType>// extends Distr
      * Value to update the sufficient statistics
      */
     void update(
-        DataType value);
+        final DataType value);
 
     /**
      * Updates the sufficient statistics from the given set of values
@@ -71,6 +71,6 @@ public interface SufficientStatistic<DataType, DistributionType>// extends Distr
      * Values to update the sufficient statistics
      */
     void update(
-        Iterable<? extends DataType> values);
+        final Iterable<? extends DataType> values);
 
 }

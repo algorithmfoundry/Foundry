@@ -15,7 +15,7 @@
 package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.MultivariateDistributionTestHarness;
+import gov.sandia.cognition.statistics.MultivariateClosedFormDistributionTestHarness;
 
 /**
  * Unit tests for MultivariateGaussianInverseGammaDistributionTest.
@@ -23,7 +23,7 @@ import gov.sandia.cognition.statistics.MultivariateDistributionTestHarness;
  * @author krdixon
  */
 public class MultivariateGaussianInverseGammaDistributionTest
-    extends MultivariateDistributionTestHarness<Vector>
+    extends MultivariateClosedFormDistributionTestHarness<Vector>
 {
 
     /**
@@ -40,6 +40,7 @@ public class MultivariateGaussianInverseGammaDistributionTest
     /**
      * Tests the constructors of class MultivariateGaussianInverseGammaDistributionTest.
      */
+    @Override
     public void testConstructors()
     {
         System.out.println( "Constructors" );
@@ -123,6 +124,18 @@ public class MultivariateGaussianInverseGammaDistributionTest
         TOLERANCE = 1e-1;
         super.testGetMean();
         TOLERANCE = temp;
+    }
+
+    @Override
+    public void testKnownConvertToVector()
+    {
+        System.out.println( "known convertToVector" );
+
+        MultivariateGaussianInverseGammaDistribution instance = this.createInstance();
+        Vector v1 = instance.getGaussian().convertToVector();
+        Vector v2 = instance.getInverseGamma().convertToVector();
+        Vector expected = v1.stack(v2);
+        assertEquals( expected, instance.convertToVector() );
     }
 
 }

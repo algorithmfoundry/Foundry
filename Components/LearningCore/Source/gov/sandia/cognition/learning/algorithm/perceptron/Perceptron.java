@@ -19,6 +19,7 @@ import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.learning.algorithm.AbstractAnytimeSupervisedBatchLearner;
+import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.math.matrix.DimensionalityMismatchException;
@@ -161,35 +162,14 @@ public class Perceptron
         }
 
         // Computer the dimensionality of the data and ensure it is correct.
-        int dimensionality = -1;
-        Vector first = null;
-
-        for (InputOutputPair<? extends Vectorizable, ? extends Boolean> example : this.getData())
-        {
-            if (data == null)
-            {
-                continue;
-            }
-
-            final Vector input = example.getInput().convertToVector();
-
-            if (first == null)
-            {
-                first = input;
-                dimensionality = input.getDimensionality();
-            }
-            else if (dimensionality != input.getDimensionality())
-            {
-                throw new DimensionalityMismatchException(dimensionality,
-                    input.getDimensionality());
-            }
-        }
+        int dimensionality = DatasetUtil.getInputDimensionality(this.getData());
 
         if (dimensionality < 0)
         {
             // There was no data.
             return false;
         }
+        DatasetUtil.assertInputDimensionalitiesAllEqual(this.getData());
 
         // Initialize the result object.
         this.setResult(new LinearBinaryCategorizer(
@@ -205,7 +185,8 @@ public class Perceptron
         this.setErrorCount(0);
 
         // Loop over all the training instances.
-        for (InputOutputPair<? extends Vectorizable, ? extends Boolean> example : this.getData())
+        for (InputOutputPair<? extends Vectorizable, ? extends Boolean> example
+            : this.getData())
         {
             if (example == null)
             {
@@ -218,7 +199,8 @@ public class Perceptron
             final boolean actual = example.getOutput();
             final double prediction = this.result.evaluateAsDouble(input);
 
-            if ((actual && prediction <= this.marginPositive) || (!actual && prediction >= -this.marginNegative))
+            if (   (actual && prediction <= this.marginPositive)
+                || (!actual && prediction >= -this.marginNegative))
             {
                 // The classification was incorrect so we need to update
                 // the perceptron.
@@ -246,7 +228,7 @@ public class Perceptron
                 // Update the bias directly.
                 this.result.setBias(bias);
             }
-        // else - The classification was correct, no need to update.
+            // else - The classification was correct, no need to update.
         }
 
         // Keep going while the error count is positive.
@@ -333,11 +315,6 @@ public class Perceptron
         this.vectorFactory = vectorFactory;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@inheritDoc}
-     */
     public LinearBinaryCategorizer getResult()
     {
         return this.result;

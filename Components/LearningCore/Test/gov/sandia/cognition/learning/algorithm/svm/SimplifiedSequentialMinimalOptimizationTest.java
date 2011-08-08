@@ -25,7 +25,7 @@ import java.util.Random;
 import junit.framework.TestCase;
 
 /**
- * @TODO    Document this.
+ * Unit tests for class SimplifiedSequentialMinimalOptimization.
  *
  * @author  Justin Basilico
  * @since   3.0

@@ -18,9 +18,9 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
+import gov.sandia.cognition.statistics.AbstractClosedFormSmoothUnivariateDistribution;
 import gov.sandia.cognition.statistics.InvertibleCumulativeDistributionFunction;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import java.util.ArrayList;
 import java.util.Random;
@@ -43,7 +43,7 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Pareto_distribution"
 )
 public class ParetoDistribution 
-    extends AbstractClosedFormSmoothScalarDistribution
+    extends AbstractClosedFormSmoothUnivariateDistribution
 {
 
     /**
@@ -94,9 +94,9 @@ public class ParetoDistribution
      * Amount to shift the distribution to the left.
      */
     public ParetoDistribution(
-        double shape,
-        double scale,
-        double shift )
+        final double shape,
+        final double scale,
+        final double shift )
     {
         this.setShape(shape);
         this.setScale(scale);
@@ -109,7 +109,7 @@ public class ParetoDistribution
      * ParetoDistribution to copy
      */
     public ParetoDistribution(
-        ParetoDistribution other )
+        final ParetoDistribution other )
     {
         this( other.getShape(), other.getScale(), other.getShift() );
     }
@@ -136,7 +136,7 @@ public class ParetoDistribution
      * Shape parameter, must be greater than zero.
      */
     public void setShape(
-        double shape)
+        final double shape)
     {
         if( shape <= 0.0 )
         {
@@ -163,7 +163,7 @@ public class ParetoDistribution
      * Scale parameter, must be greater than zero.
      */
     public void setScale(
-        double scale)
+        final double scale)
     {
         if( scale <= 0.0 )
         {
@@ -173,6 +173,7 @@ public class ParetoDistribution
         this.scale = scale;
     }
 
+    @Override
     public Double getMean()
     {
         if( this.shape > 1.0 )
@@ -187,6 +188,7 @@ public class ParetoDistribution
     }
 
 
+    @Override
     public double getVariance()
     {
         if( this.shape > 2.0 )
@@ -204,9 +206,10 @@ public class ParetoDistribution
         }
     }
 
+    @Override
     public ArrayList<? extends Double> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
     {
         ArrayList<Double> samples = new ArrayList<Double>( numSamples );
         final double exp = 1.0/this.shape;
@@ -219,12 +222,14 @@ public class ParetoDistribution
         return samples;
     }
 
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues(
             this.shape, this.scale, this.shift );
     }
 
+    @Override
     public void convertFromVector(
         Vector parameters)
     {
@@ -234,21 +239,25 @@ public class ParetoDistribution
         this.setShift( parameters.getElement(2) );
     }
 
+    @Override
     public ParetoDistribution.PDF getProbabilityFunction()
     {
         return new ParetoDistribution.PDF( this );
     }
 
+    @Override
     public ParetoDistribution.CDF getCDF()
     {
         return new ParetoDistribution.CDF( this );
     }
 
+    @Override
     public Double getMinSupport()
     {
         return this.scale - this.shift;
     }
 
+    @Override
     public Double getMaxSupport()
     {
         return Double.POSITIVE_INFINITY;
@@ -276,7 +285,7 @@ public class ParetoDistribution
      * Amount to shift the distribution to the left.
      */
     public void setShift(
-        double shift)
+        final double shift)
     {
         this.shift = shift;
     }
@@ -308,9 +317,9 @@ public class ParetoDistribution
          * Amount to shift the distribution to the left.
          */
         public CDF(
-            double shape,
-            double scale,
-            double shift )
+            final double shape,
+            final double scale,
+            final double shift )
         {
             super( shape, scale, shift );
         }
@@ -321,17 +330,19 @@ public class ParetoDistribution
          * ParetoDistribution to copy
          */
         public CDF(
-            ParetoDistribution other )
+            final ParetoDistribution other )
         {
             super( other );
         }
 
+        @Override
         public Double evaluate(
             Double input)
         {
             return this.evaluate(input.doubleValue());
         }
 
+        @Override
         public double evaluate(
             double input)
         {
@@ -351,19 +362,22 @@ public class ParetoDistribution
             return this;
         }
 
+        @Override
         public ParetoDistribution.PDF getDerivative()
         {
             return this.getProbabilityFunction();
         }
 
+        @Override
         public Double differentiate(
-            Double input)
+            final Double input)
         {
             return this.getDerivative().evaluate(input);
         }
 
+        @Override
         public Double inverse(
-            double probability)
+            final double probability)
         {
             if( probability <= 0.0 )
             {
@@ -386,7 +400,7 @@ public class ParetoDistribution
      */
     public static class PDF
         extends ParetoDistribution
-        implements ScalarProbabilityDensityFunction
+        implements UnivariateProbabilityDensityFunction
     {
 
         /**
@@ -407,9 +421,9 @@ public class ParetoDistribution
          * Amount to shift the distribution to the left.
          */
         public PDF(
-            double shape,
-            double scale,
-            double shift )
+            final double shape,
+            final double scale,
+            final double shift )
         {
             super( shape, scale, shift );
         }
@@ -420,7 +434,7 @@ public class ParetoDistribution
          * ParetoDistribution to copy
          */
         public PDF(
-            ParetoDistribution other )
+            final ParetoDistribution other )
         {
             super( other );
         }
@@ -431,14 +445,16 @@ public class ParetoDistribution
             return this;
         }
 
+        @Override
         public double logEvaluate(
             final Double input)
         {
             return this.logEvaluate((double) input);
         }
 
+        @Override
         public double logEvaluate(
-            double input)
+            final double input)
         {
 //            if( input > this.scale )
             if( (input+this.shift) > this.scale )
@@ -453,14 +469,16 @@ public class ParetoDistribution
             }
         }
 
+        @Override
         public Double evaluate(
-            Double input)
+            final Double input)
         {
             return this.evaluate(input.doubleValue());
         }
 
+        @Override
         public double evaluate(
-            double input)
+            final double input)
         {
             return Math.exp(this.logEvaluate(input));
         }

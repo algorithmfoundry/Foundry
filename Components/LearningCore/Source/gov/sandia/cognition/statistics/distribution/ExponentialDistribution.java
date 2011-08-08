@@ -19,12 +19,12 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
+import gov.sandia.cognition.statistics.AbstractClosedFormSmoothUnivariateDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
 import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.InvertibleCumulativeDistributionFunction;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.WeightedValue;
@@ -46,7 +46,7 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Exponential_distribution"
 )
 public class ExponentialDistribution 
-    extends AbstractClosedFormSmoothScalarDistribution
+    extends AbstractClosedFormSmoothUnivariateDistribution
     implements EstimableDistribution<Double,ExponentialDistribution>
 {
 
@@ -74,7 +74,7 @@ public class ExponentialDistribution
      * Rate, or inverse scale, of the distribution, must be greater than zero.
      */
     public ExponentialDistribution(
-        double rate )
+        final double rate )
     {
         this.setRate(rate);
     }
@@ -85,7 +85,7 @@ public class ExponentialDistribution
      * ExponentialDistribution to copy.
      */
     public ExponentialDistribution(
-        ExponentialDistribution other )
+        final ExponentialDistribution other )
     {
         this( other.getRate() );
     }
@@ -93,8 +93,7 @@ public class ExponentialDistribution
     @Override
     public ExponentialDistribution clone()
     {
-        ExponentialDistribution clone = (ExponentialDistribution) super.clone();
-        return clone;
+        return (ExponentialDistribution) super.clone();
     }
 
     /**
@@ -113,7 +112,7 @@ public class ExponentialDistribution
      * Rate, or inverse scale, of the distribution, must be greater than zero.
      */
     public void setRate(
-        double rate)
+        final double rate)
     {
         if( rate <= 0.0 )
         {
@@ -122,6 +121,7 @@ public class ExponentialDistribution
         this.rate = rate;
     }
 
+    @Override
     public Double getMean()
     {
         return 1.0/this.getRate();
@@ -138,9 +138,10 @@ public class ExponentialDistribution
         pages=39,
         notes="Example 2.5"
     )
+    @Override
     public ArrayList<Double> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
     {
 
         final double negativeInverseScale = -1.0/this.rate;
@@ -154,44 +155,52 @@ public class ExponentialDistribution
         return retval;
     }
 
+    @Override
     public ExponentialDistribution.CDF getCDF()
     {
         return new ExponentialDistribution.CDF( this );
     }
 
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues( this.getRate() );
     }
 
+    @Override
     public void convertFromVector(
-        Vector parameters)
+        final Vector parameters)
     {
         parameters.assertDimensionalityEquals(1);
         this.setRate( parameters.getElement(0) );
     }
 
+    @Override
     public double getVariance()
     {
         double d2 = this.rate * this.rate;
         return 1.0/d2;
     }
 
+    @Override
     public ExponentialDistribution.PDF getProbabilityFunction()
     {
         return new ExponentialDistribution.PDF( this );
     }
 
+    @Override
     public Double getMinSupport()
     {
         return 0.0;
     }
 
+    @Override
     public Double getMaxSupport()
     {
         return Double.POSITIVE_INFINITY;
     }
 
+    @Override
     public ExponentialDistribution.MaximumLikelihoodEstimator getEstimator()
     {
         return new ExponentialDistribution.MaximumLikelihoodEstimator();
@@ -208,7 +217,7 @@ public class ExponentialDistribution
      */
     public static class PDF
         extends ExponentialDistribution
-        implements ScalarProbabilityDensityFunction
+        implements UnivariateProbabilityDensityFunction
     {
 
         /**
@@ -225,7 +234,7 @@ public class ExponentialDistribution
          * Rate, or inverse scale, of the distribution, must be greater than zero.
          */
         public PDF(
-            double rate )
+            final double rate )
         {
             super( rate );
         }
@@ -236,19 +245,21 @@ public class ExponentialDistribution
          * ExponentialDistribution to copy.
          */
         public PDF(
-            ExponentialDistribution other )
+            final ExponentialDistribution other )
         {
             super( other );
         }
 
+        @Override
         public Double evaluate(
             Double input)
         {
             return this.evaluate( input.doubleValue() );
         }
 
+        @Override
         public double evaluate(
-            double input)
+            final double input)
         {
             if( input < 0.0 )
             {
@@ -260,14 +271,16 @@ public class ExponentialDistribution
             }
         }
 
+        @Override
         public double logEvaluate(
             final Double input)
         {
             return this.logEvaluate((double) input);
         }
 
+        @Override
         public double logEvaluate(
-            double input)
+            final double input)
         {
             if( input < 0.0 )
             {
@@ -312,7 +325,7 @@ public class ExponentialDistribution
          * Rate, or inverse scale, of the distribution, must be greater than zero.
          */
         public CDF(
-            double rate )
+            final double rate )
         {
             super( rate );
         }
@@ -323,19 +336,21 @@ public class ExponentialDistribution
          * ExponentialDistribution to copy.
          */
         public CDF(
-            ExponentialDistribution other )
+            final ExponentialDistribution other )
         {
             super( other );
         }
         
+        @Override
         public Double evaluate(
-            Double input)
+            final Double input)
         {
             return this.evaluate(input.doubleValue());
         }
 
+        @Override
         public double evaluate(
-            double input)
+            final double input)
         {
             if( input <= 0.0 )
             {
@@ -353,19 +368,22 @@ public class ExponentialDistribution
             return this;
         }
 
+        @Override
         public ExponentialDistribution.PDF getDerivative()
         {
             return this.getProbabilityFunction();
         }
 
+        @Override
         public Double differentiate(
-            Double input)
+            final Double input)
         {
             return this.getDerivative().evaluate(input);
         }
 
+        @Override
         public Double inverse(
-            double probability)
+            final double probability)
         {
             if( probability <= 0.0 )
             {
@@ -399,8 +417,9 @@ public class ExponentialDistribution
         {
         }
 
+        @Override
         public ExponentialDistribution learn(
-            Collection<? extends Double> data)
+            final Collection<? extends Double> data)
         {
             double mean = UnivariateStatisticsUtil.computeMean(data);
             return new ExponentialDistribution( 1.0/mean );
@@ -423,8 +442,9 @@ public class ExponentialDistribution
         {
         }
 
+        @Override
         public ExponentialDistribution learn(
-            Collection<? extends WeightedValue<? extends Double>> data)
+            final Collection<? extends WeightedValue<? extends Double>> data)
         {
             double mean = UnivariateStatisticsUtil.computeWeightedMean(data);
             return new ExponentialDistribution(1.0/mean);

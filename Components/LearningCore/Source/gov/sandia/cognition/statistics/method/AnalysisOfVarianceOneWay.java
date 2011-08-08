@@ -67,9 +67,15 @@ import java.util.Collection;
 )
 public class AnalysisOfVarianceOneWay
     extends AbstractCloneableSerializable
-    implements NullHypothesisEvaluator<Collection<? extends Number>>
+    implements BlockExperimentComparison<Number>
 {
     
+    /**
+     * Default instance.
+     */
+    public static final AnalysisOfVarianceOneWay INSTANCE =
+        new AnalysisOfVarianceOneWay();
+
     /**
      * Creates a new instance of AnalysisOfVarianceOneWay
      */
@@ -77,14 +83,6 @@ public class AnalysisOfVarianceOneWay
     {
     }
     
-    /**
-     * Computes the ANOVA statistics for and arbitrary number of Collection 
-     * of treatments, where each treatment can have a different 
-     * number of samples.
-     * @param data A Collection of treatments, where each treatment can
-     * have a different number of samples
-     * @return ANOVA Confidence statistics
-     */
     @PublicationReference(
         author={
             "Frederick J. Gravetter",
@@ -96,8 +94,9 @@ public class AnalysisOfVarianceOneWay
         pages={406,412},
         notes="Chapter 13.3"
     )
-    static public AnalysisOfVarianceOneWay.Statistic evaluateNullHypothesis(
-        Collection<? extends Collection<? extends Number>> data )
+    @Override
+    public AnalysisOfVarianceOneWay.Statistic evaluateNullHypothesis(
+        final Collection<? extends Collection<? extends Number>> data )
     {
         
         // I apologize for this clunky notation... it comes from a social
@@ -157,11 +156,12 @@ public class AnalysisOfVarianceOneWay
      * @return ANOVA Confidence statistics
      */
     @SuppressWarnings("unchecked")
+    @Override
     public AnalysisOfVarianceOneWay.Statistic evaluateNullHypothesis(
-        Collection<? extends Number> data1,
-        Collection<? extends Number> data2)
+        final Collection<? extends Number> data1,
+        final Collection<? extends Number> data2)
     {
-        return AnalysisOfVarianceOneWay.evaluateNullHypothesis(
+        return this.evaluateNullHypothesis(
             Arrays.asList( data1, data2 ) );
     }
     
@@ -199,9 +199,9 @@ public class AnalysisOfVarianceOneWay
          * Degrees of freedom within the treatments
          */
         public Statistic(
-            double F,
-            double DFbetween,
-            double DFwithin )
+            final double F,
+            final double DFbetween,
+            final double DFwithin )
         {
             super( 1 - SnedecorFDistribution.CDF.evaluate( F, DFbetween, DFwithin ) );
             this.setF( F );
@@ -231,7 +231,7 @@ public class AnalysisOfVarianceOneWay
          * Input to the Snedecor F-distribution
          */
         protected void setF(
-            double F)
+            final double F)
         {
             this.F = F;
         }
@@ -252,7 +252,7 @@ public class AnalysisOfVarianceOneWay
          * Degrees of freedom between the treatments
          */
         protected void setDFbetween(
-            double DFbetween)
+            final double DFbetween)
         {
             this.DFbetween = DFbetween;
         }
@@ -273,11 +273,17 @@ public class AnalysisOfVarianceOneWay
          * Degrees of freedom within the treatments
          */
         protected void setDFwithin(
-            double DFwithin)
+            final double DFwithin)
         {
             this.DFwithin = DFwithin;
         }
-        
+
+        @Override
+        public double getTestStatistic()
+        {
+            return this.getF();
+        }
+
     }
     
 }

@@ -19,15 +19,14 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.NumberAverager;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
+import gov.sandia.cognition.statistics.AbstractClosedFormSmoothUnivariateDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
 import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.InvertibleCumulativeDistributionFunction;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
-import gov.sandia.cognition.util.ObjectUtil;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,7 +48,7 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Laplace_distribution"
 )
 public class LaplaceDistribution 
-    extends AbstractClosedFormSmoothScalarDistribution
+    extends AbstractClosedFormSmoothUnivariateDistribution
     implements EstimableDistribution<Double,LaplaceDistribution>
 {
 
@@ -89,8 +88,8 @@ public class LaplaceDistribution
      * Scale factor of the distribution, must be greater than zero.
      */
     public LaplaceDistribution(
-        double mean,
-        double scale )
+        final double mean,
+        final double scale )
     {
         super();
         this.setMean(mean);
@@ -102,7 +101,7 @@ public class LaplaceDistribution
      * @param other LaplaceDistribution to copy
      */
     public LaplaceDistribution(
-        LaplaceDistribution other )
+        final LaplaceDistribution other )
     {
         this( other.getMean(), other.getScale() );
     }
@@ -113,6 +112,7 @@ public class LaplaceDistribution
         return (LaplaceDistribution) super.clone();
     }
 
+    @Override
     public Double getMean()
     {
         return this.mean;
@@ -124,7 +124,7 @@ public class LaplaceDistribution
      * Mean of the distribution
      */
     public void setMean(
-        double mean)
+        final double mean)
     {
         this.mean = mean;
     }
@@ -145,7 +145,7 @@ public class LaplaceDistribution
      * Scale factor of the distribution, must be greater than zero.
      */
     public void setScale(
-        double scale)
+        final double scale)
     {
         if( scale <= 0.0 )
         {
@@ -154,9 +154,10 @@ public class LaplaceDistribution
         this.scale = scale;
     }
 
+    @Override
     public ArrayList<Double> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
     {
         ArrayList<Double> samples = new ArrayList<Double>( numSamples );
         for( int n = 0; n < numSamples; n++ )
@@ -168,20 +169,23 @@ public class LaplaceDistribution
         return samples;
     }
 
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues(
             this.getMean(), this.getScale() );
     }
 
+    @Override
     public void convertFromVector(
-        Vector parameters)
+        final Vector parameters)
     {
         parameters.assertDimensionalityEquals(2);
         this.setMean( parameters.getElement(0) );
         this.setScale( parameters.getElement(1) );
     }
 
+    @Override
     public double getVariance()
     {
         final double b = this.getScale();
@@ -194,26 +198,31 @@ public class LaplaceDistribution
         return "Mean: " + this.getMean() + ", Scale: " + this.getScale();
     }
 
+    @Override
     public LaplaceDistribution.CDF getCDF()
     {
         return new LaplaceDistribution.CDF( this );
     }
 
+    @Override
     public LaplaceDistribution.PDF getProbabilityFunction()
     {
         return new LaplaceDistribution.PDF( this );
     }
 
+    @Override
     public Double getMinSupport()
     {
         return Double.NEGATIVE_INFINITY;
     }
 
+    @Override
     public Double getMaxSupport()
     {
         return Double.POSITIVE_INFINITY;
     }
 
+    @Override
     public LaplaceDistribution.MaximumLikelihoodEstimator getEstimator()
     {
         return new LaplaceDistribution.MaximumLikelihoodEstimator();
@@ -244,8 +253,8 @@ public class LaplaceDistribution
          * Scale factor of the distribution, must be greater than zero.
          */
         public CDF(
-            double mean,
-            double scale )
+            final double mean,
+            final double scale )
         {
             super(mean,scale);
         }
@@ -255,19 +264,21 @@ public class LaplaceDistribution
          * @param other LaplaceDistribution to copy
          */
         public CDF(
-            LaplaceDistribution other )
+            final LaplaceDistribution other )
         {
             super( other );
         }
 
+        @Override
         public Double evaluate(
-            Double input)
+            final Double input)
         {
             return this.evaluate(input.doubleValue());
         }
 
+        @Override
         public double evaluate(
-            double input)
+            final double input)
         {
             if( input == Double.NEGATIVE_INFINITY )
             {
@@ -289,8 +300,9 @@ public class LaplaceDistribution
          * @return
          * Finds the value of the CDF "x" so that CDF(x)=p.
          */
+        @Override
         public Double inverse(
-            double p )
+            final double p )
         {
             return inverse( this, p );
         }
@@ -306,8 +318,8 @@ public class LaplaceDistribution
          * Finds the value of the CDF "x" so that CDF(x)=p.
          */
         public static double inverse(
-            LaplaceDistribution laplace,
-            double p )
+            final LaplaceDistribution laplace,
+            final double p )
         {
             if( p <= 0.0 )
             {
@@ -331,13 +343,15 @@ public class LaplaceDistribution
             return this;
         }
 
+        @Override
         public LaplaceDistribution.PDF getDerivative()
         {
             return this.getProbabilityFunction();
         }
 
+        @Override
         public Double differentiate(
-            Double input)
+            final Double input)
         {
             return this.getDerivative().evaluate(input);
         }
@@ -349,7 +363,7 @@ public class LaplaceDistribution
      */
     public static class PDF
         extends LaplaceDistribution
-        implements ScalarProbabilityDensityFunction
+        implements UnivariateProbabilityDensityFunction
     {
 
         /**
@@ -368,8 +382,8 @@ public class LaplaceDistribution
          * Scale factor of the distribution, must be greater than zero.
          */
         public PDF(
-            double mean,
-            double scale )
+            final double mean,
+            final double scale )
         {
             super(mean,scale);
         }
@@ -379,33 +393,37 @@ public class LaplaceDistribution
          * @param other LaplaceDistribution to copy
          */
         public PDF(
-            LaplaceDistribution other )
+            final LaplaceDistribution other )
         {
             super( other );
         }
 
+        @Override
         public double evaluate(
-            double input)
+            final double input)
         {
             double front = 0.5 / this.scale;
             double exponent = -Math.abs(input-this.mean) / this.scale;
             return front * Math.exp(exponent);
         }
 
+        @Override
         public Double evaluate(
             Double input)
         {
             return this.evaluate( input.doubleValue() );
         }
 
+        @Override
         public double logEvaluate(
             final Double input)
         {
             return this.logEvaluate((double) input);
         }
 
+        @Override
         public double logEvaluate(
-            double input)
+            final double input)
         {
             final double n1 = Math.log( 0.5 / this.scale );
             final double n2 = -Math.abs(input-this.mean) / this.scale;
@@ -437,8 +455,9 @@ public class LaplaceDistribution
             super();
         }
 
+        @Override
         public LaplaceDistribution learn(
-            Collection<? extends Double> data)
+            final Collection<? extends Double> data)
         {
 
             final double mean = NumberAverager.INSTANCE.summarize(data);
@@ -479,8 +498,9 @@ public class LaplaceDistribution
          * @return
          * Maximum Likelihood UnivariateGaussian that generated the data
          */
+        @Override
         public LaplaceDistribution learn(
-            Collection<? extends WeightedValue<? extends Double>> data )
+            final Collection<? extends WeightedValue<? extends Double>> data )
         {
 
             double mean = 0.0;

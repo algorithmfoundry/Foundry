@@ -18,7 +18,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @TODO    Document this.
+ * Unit tests for class DefaultPrecisionRecallPair.
  *
  * @author  Justin Basilico
  * @since   3.0
@@ -31,7 +31,7 @@ public class DefaultPrecisionRecallPairTest
     }
 
     /**
-     * Test of constructors of class DefaultTermOccurence.
+     * Test of constructors of class DefaultPrecisionRecallPair.
      */
     @Test
     public void testConstructors()

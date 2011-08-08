@@ -22,7 +22,7 @@ import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.mtj.DenseMatrix;
 import gov.sandia.cognition.math.matrix.mtj.decomposition.EigenDecompositionRightMTJ;
-import gov.sandia.cognition.statistics.ProbabilityFunction;
+import gov.sandia.cognition.statistics.ComputableDistribution;
 import gov.sandia.cognition.statistics.MultivariateDistributionTestHarness;
 import gov.sandia.cognition.statistics.distribution.BinomialDistribution;
 import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
@@ -415,7 +415,8 @@ public class HiddenMarkovModelTest
     {
         System.out.println("setEmissionFunctions");
         HiddenMarkovModel<Vector> instance = this.createInstance();
-        Collection<? extends ProbabilityFunction<Vector>> emissionFunctions = instance.getEmissionFunctions();
+        Collection<? extends ComputableDistribution<Vector>> emissionFunctions =
+            instance.getEmissionFunctions();
         assertNotNull( emissionFunctions );
         instance.setEmissionFunctions(null);
         assertNull( instance.getEmissionFunctions() );
@@ -453,6 +454,7 @@ public class HiddenMarkovModelTest
 
     }
 
+    /*
     @Override
     public void testGetMean()
     {
@@ -513,7 +515,8 @@ public class HiddenMarkovModelTest
         }
 
     }
-
+     */
+    
     /**
      * viterbi
      */

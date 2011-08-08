@@ -22,7 +22,7 @@ import java.util.Collection;
  * @param   <ResultType>
  *      Result type from both the online- and batch-learning interfaces.
  * @author  Justin Basilico
- * @since   3.1.2
+ * @since   3.2.0
  */
 public interface BatchAndIncrementalLearner<DataType, ResultType>
     extends BatchLearner<Collection<? extends DataType>, ResultType>,

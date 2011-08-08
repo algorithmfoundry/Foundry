@@ -40,7 +40,7 @@ import gov.sandia.cognition.evaluator.Evaluator;
     url="http://en.wikipedia.org/wiki/Cumulative_distribution_function"
 )
 public interface CumulativeDistributionFunction<NumberType extends Number>
-    extends ScalarDistribution<NumberType>,
+    extends UnivariateDistribution<NumberType>,
     Evaluator<NumberType,Double>
 {
 }

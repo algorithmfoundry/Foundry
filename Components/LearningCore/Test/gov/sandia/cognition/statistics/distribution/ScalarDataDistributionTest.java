@@ -14,7 +14,7 @@
 package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.collection.CollectionUtil;
-import gov.sandia.cognition.statistics.ScalarDistributionTestHarness;
+import gov.sandia.cognition.statistics.UnivariateDistributionTestHarness;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +26,7 @@ import java.util.List;
  * @author Kevin R. Dixon
  */
 public class ScalarDataDistributionTest
-    extends ScalarDistributionTestHarness<Number>
+    extends UnivariateDistributionTestHarness<Number>
 {
 
     /**

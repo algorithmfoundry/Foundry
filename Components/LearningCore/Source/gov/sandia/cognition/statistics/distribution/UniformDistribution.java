@@ -19,11 +19,11 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
+import gov.sandia.cognition.statistics.AbstractClosedFormSmoothUnivariateDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.InvertibleCumulativeDistributionFunction;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.Pair;
@@ -46,7 +46,7 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Uniform_distribution_(continuous)"
 )
 public class UniformDistribution
-    extends AbstractClosedFormSmoothScalarDistribution
+    extends AbstractClosedFormSmoothUnivariateDistribution
     implements EstimableDistribution<Double,UniformDistribution>
 {
 
@@ -86,8 +86,8 @@ public class UniformDistribution
      * Maximum bound on the distribution
      */
     public UniformDistribution(
-        double minSupport,
-        double maxSupport )
+        final double minSupport,
+        final double maxSupport )
     {
         this.setMinSupport( minSupport );
         this.setMaxSupport( maxSupport );
@@ -99,7 +99,7 @@ public class UniformDistribution
      * UniformDistribution to copy
      */
     public UniformDistribution(
-        UniformDistribution other )
+        final UniformDistribution other )
     {
         this( other.getMinSupport(), other.getMaxSupport() );
     }
@@ -110,20 +110,23 @@ public class UniformDistribution
         return (UniformDistribution) super.clone();
     }    
     
+    @Override
     public Double getMean()
     {
         return (this.getMaxSupport() + this.getMinSupport()) / 2.0;
     }
 
+    @Override
     public double getVariance()
     {
         double d = this.getMaxSupport() - this.getMinSupport();
         return d * d / 12.0;
     }
 
+    @Override
     public ArrayList<Double> sample(
-        Random random,
-        int numSamples )
+        final Random random,
+        final int numSamples )
     {
         ArrayList<Double> samples = new ArrayList<Double>( numSamples );
         final double a = UniformDistribution.this.getMinSupport();
@@ -137,6 +140,7 @@ public class UniformDistribution
         return samples;
     }
     
+    @Override
     public Double getMinSupport()
     {
         return this.minSupport;
@@ -148,11 +152,12 @@ public class UniformDistribution
      * Minimum x bound on the distribution
      */
     public void setMinSupport(
-        double minSupport )
+        final double minSupport )
     {
         this.minSupport = minSupport;
     }
 
+    @Override
     public Double getMaxSupport()
     {
         return this.maxSupport;
@@ -164,25 +169,23 @@ public class UniformDistribution
      * Maximum x bound on the distribution
      */
     public void setMaxSupport(
-        double maxSupport )
+        final double maxSupport )
     {
         this.maxSupport = maxSupport;
     }    
     
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues(
             this.getMinSupport(), this.getMaxSupport() );
     }
 
+    @Override
     public void convertFromVector(
-        Vector parameters )
+        final Vector parameters )
     {
-        if( parameters.getDimensionality() != 2 )
-        {
-            throw new IllegalArgumentException(
-                "Parameters must be dimension 2" );
-        }
+        parameters.assertDimensionalityEquals(2);
         double a = parameters.getElement(0);
         double b = parameters.getElement(1);
 
@@ -190,17 +193,20 @@ public class UniformDistribution
         this.setMaxSupport( Math.max(a, b) );
     }
 
+    @Override
     public UniformDistribution.CDF getCDF()
     {
         return new UniformDistribution.CDF( this );
 
     }
 
+    @Override
     public UniformDistribution.PDF getProbabilityFunction()
     {
         return new UniformDistribution.PDF( this );
     }
 
+    @Override
     public UniformDistribution.MaximumLikelihoodEstimator getEstimator()
     {
         return new UniformDistribution.MaximumLikelihoodEstimator();
@@ -231,8 +237,8 @@ public class UniformDistribution
          * Maximum bound on the distribution
          */
         public CDF(
-            double minSupport,
-            double maxSupport )
+            final double minSupport,
+            final double maxSupport )
         {
             super( minSupport, maxSupport );
         }
@@ -243,25 +249,27 @@ public class UniformDistribution
          * UniformDistribution to copy
          */
         public CDF(
-            UniformDistribution other )
+            final UniformDistribution other )
         {
             super( other );
         }
         
         @Override
-        public CDF clone()
+        public UniformDistribution.CDF clone()
         {
             return (CDF) super.clone();
         }
 
+        @Override
         public double evaluate(
-            double input )
+            final double input )
         {
             return evaluate( input, this.getMinSupport(), this.getMaxSupport() );
         }
 
+        @Override
         public Double evaluate(
-            Double input )
+            final Double input )
         {
             return this.evaluate( input.doubleValue() );
         }
@@ -277,9 +285,9 @@ public class UniformDistribution
          * @param input Input to evaluate the CDF at
          */
         public static double evaluate(
-            double input,
-            double minSupport,
-            double maxSupport )
+            final double input,
+            final double minSupport,
+            final double maxSupport )
         {
             double p;
             if (input < minSupport)
@@ -304,19 +312,22 @@ public class UniformDistribution
             return this;
         }
 
+        @Override
         public UniformDistribution.PDF getDerivative()
         {
             return this.getProbabilityFunction();
         }
 
+        @Override
         public Double differentiate(
-            Double input)
+            final Double input)
         {
             return this.getDerivative().evaluate(input);
         }
 
+        @Override
         public Double inverse(
-            double probability)
+            final double probability)
         {
             if( probability <= 0.0 )
             {
@@ -339,7 +350,7 @@ public class UniformDistribution
      */
     public static class PDF
         extends UniformDistribution
-        implements ScalarProbabilityDensityFunction
+        implements UnivariateProbabilityDensityFunction
     {
         
         /** 
@@ -358,8 +369,8 @@ public class UniformDistribution
          * Maximum bound on the distribution
          */
         public PDF(
-            double minSupport,
-            double maxSupport )
+            final double minSupport,
+            final double maxSupport )
         {
             super( minSupport, maxSupport );
         }
@@ -370,13 +381,14 @@ public class UniformDistribution
          * UniformDistribution to copy
          */
         public PDF(
-            UniformDistribution other )
+            final UniformDistribution other )
         {
             super( other );
         }        
         
+        @Override
         public double evaluate(
-            double input )
+            final double input )
         {
             return evaluate( input, this.getMinSupport(), this.getMaxSupport() );
         }
@@ -392,9 +404,9 @@ public class UniformDistribution
          * @param input Input to evaluate the CDF at
          */
         public static double evaluate(
-            double input,
-            double minSupport,
-            double maxSupport )
+            final double input,
+            final double minSupport,
+            final double maxSupport )
         {
             
             if( (input < minSupport) ||
@@ -417,26 +429,29 @@ public class UniformDistribution
             
         }
 
+        @Override
         public Double evaluate(
-            Double input )
+            final Double input )
         {
             return this.evaluate( input.doubleValue() );
         }
 
+        @Override
         public double logEvaluate(
             final Double input)
         {
             return this.logEvaluate((double) input);
         }
         
+        @Override
         public double logEvaluate(
-            double input)
+            final double input)
         {
             return Math.log( this.evaluate(input) );
         }
 
         @Override
-        public PDF getProbabilityFunction()
+        public UniformDistribution.PDF getProbabilityFunction()
         {
             return this;
         }
@@ -465,8 +480,9 @@ public class UniformDistribution
         {
         }
 
+        @Override
         public UniformDistribution.PDF learn(
-            Collection<? extends Double> data)
+            final Collection<? extends Double> data)
         {
             Pair<Double,Double> result = UnivariateStatisticsUtil.computeMinAndMax(data);
             final double min = result.getFirst();

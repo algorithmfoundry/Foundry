@@ -22,17 +22,15 @@ import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.scalar.VectorFunctionLinearDiscriminant;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.statistics.ClosedFormComputableDistribution;
+import gov.sandia.cognition.statistics.ClosedFormDistribution;
 import gov.sandia.cognition.statistics.Distribution;
-import gov.sandia.cognition.statistics.ProbabilityFunction;
-import gov.sandia.cognition.statistics.ScalarDistribution;
+import gov.sandia.cognition.statistics.UnivariateDistribution;
 import gov.sandia.cognition.statistics.SufficientStatistic;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
-import gov.sandia.cognition.statistics.method.AnalysisOfVarianceOneWay;
-import gov.sandia.cognition.statistics.method.ChiSquareConfidence;
 import gov.sandia.cognition.statistics.method.ConfidenceInterval;
 import gov.sandia.cognition.statistics.method.GaussianConfidence;
 import gov.sandia.cognition.statistics.method.KolmogorovSmirnovConfidence;
-import gov.sandia.cognition.statistics.method.StudentTConfidence;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.ArrayList;
 import junit.framework.TestCase;
@@ -43,7 +41,7 @@ import java.util.Random;
  * @param <PosteriorType> Posterior type
  * @author krdixon
  */
-public abstract class BayesianRegressionTestHarness<PosteriorType extends Distribution<Vector>>
+public abstract class BayesianRegressionTestHarness<PosteriorType extends ClosedFormDistribution<Vector>>
     extends TestCase
 {
 
@@ -215,7 +213,7 @@ public abstract class BayesianRegressionTestHarness<PosteriorType extends Distri
      */
     public static ArrayList<InputOutputPair<Double,Double>> createData(
         ArrayList<Double> inputs,
-        Evaluator<? super Double,? extends ScalarDistribution<Double>> model,
+        Evaluator<? super Double,? extends UnivariateDistribution<Double>> model,
         Random random )
     {
 
@@ -224,7 +222,7 @@ public abstract class BayesianRegressionTestHarness<PosteriorType extends Distri
         for( int n = 0; n < inputs.size(); n++ )
         {
             Double input = inputs.get(n);
-            ScalarDistribution<Double> outputDistribution = model.evaluate( input );
+            UnivariateDistribution<Double> outputDistribution = model.evaluate( input );
             samples.add( new DefaultInputOutputPair<Double, Double>(
                 input, outputDistribution.sample(random) ) );
         }
@@ -291,12 +289,12 @@ public abstract class BayesianRegressionTestHarness<PosteriorType extends Distri
         System.out.println( "learn" );
 
         System.out.println("createConditionalDistribution");
-        BayesianRegression<Double,Double,? extends Distribution<Vector>> instance =
+        BayesianRegression<Double,Double,? extends ClosedFormDistribution<Vector>> instance =
             this.createInstance();
         ArrayList<Double> inputs = createInputs(RANDOM);
-        Evaluator<? super Double,? extends ScalarDistribution<Double>> target = this.createModel();
+        Evaluator<? super Double,? extends UnivariateDistribution<Double>> target = this.createModel();
         ArrayList<InputOutputPair<Double,Double>> data = createData(inputs, target, RANDOM);
-        Distribution<Vector> posterior = instance.learn(data);
+        ClosedFormDistribution<Vector> posterior = instance.learn(data);
 
         Vector mean = posterior.getMean();
 
@@ -326,7 +324,7 @@ public abstract class BayesianRegressionTestHarness<PosteriorType extends Distri
         // This is similar to Bishop's example on p. 157
 
         ArrayList<Double> inputs = createInputs(RANDOM);
-        Evaluator<? super Double,? extends ScalarDistribution<Double>> target = this.createModel();
+        Evaluator<? super Double,? extends UnivariateDistribution<Double>> target = this.createModel();
         ArrayList<InputOutputPair<Double,Double>> samples =
             createData(inputs, target, RANDOM);
 
@@ -340,7 +338,7 @@ public abstract class BayesianRegressionTestHarness<PosteriorType extends Distri
         PosteriorType posterior = instance.learn(samples);
 
         Vector weights = posterior.getMean();
-        ScalarDistribution<Double> conditional = (ScalarDistribution<Double>)
+        UnivariateDistribution<Double> conditional = (UnivariateDistribution<Double>)
             instance.createConditionalDistribution(samples.get(1).getFirst(), weights );
         System.out.println( "Result: " + conditional );
         System.out.println( "Target: " + samples.get(1).getSecond() );
@@ -352,7 +350,7 @@ public abstract class BayesianRegressionTestHarness<PosteriorType extends Distri
     }
 
     public static void compareMethods(
-        Evaluator<? super Double, ? extends Distribution<Double>> predictive,
+        Evaluator<? super Double, ? extends ClosedFormDistribution<Double>> predictive,
         VectorFunctionLinearDiscriminant<Double> mle,
         Model target )
     {
@@ -363,14 +361,14 @@ public abstract class BayesianRegressionTestHarness<PosteriorType extends Distri
         double logTarget = 0.0;
         for( double x = 0.0; x <= 1.0; x += 0.1 )
         {
-            ProbabilityFunction<Double> y = target.evaluate(x).getProbabilityFunction();
-            Distribution<Double> ybayes = predictive.evaluate(x);
+            ClosedFormComputableDistribution<Double> y = target.evaluate(x).getProbabilityFunction();
+            ClosedFormDistribution<Double> ybayes = predictive.evaluate(x);
             Double ymle = mle.evaluate(x);
             System.out.printf( "x = %.1f", x );
             System.out.println( ", target = " + y + ", Estimate: " + ybayes + ", MLE: " + ymle);
-            logTarget = y.logEvaluate( y.getMean() );
-            logBayesian += y.logEvaluate( ybayes.getMean() );
-            logMLE += y.logEvaluate(ymle);
+            logTarget = y.getProbabilityFunction().logEvaluate( y.getMean() );
+            logBayesian += y.getProbabilityFunction().logEvaluate( ybayes.getMean() );
+            logMLE += y.getProbabilityFunction().logEvaluate(ymle);
         }
 
         System.out.println( "Log-Likelihood Results: " );
@@ -394,7 +392,7 @@ public abstract class BayesianRegressionTestHarness<PosteriorType extends Distri
         ArrayList<InputOutputPair<Double,Double>> data = createData(inputs, target,RANDOM);
         BayesianRegression<Double,Double,PosteriorType> instance =
             this.createInstance();
-        Evaluator<? super Double, ? extends Distribution<Double>> predictive =
+        Evaluator<? super Double, ? extends ClosedFormDistribution<Double>> predictive =
             instance.createPredictiveDistribution( instance.learn(data) );
         LinearRegression<Double> regression = new LinearRegression<Double>(
             instance.getFeatureMap() );
@@ -416,7 +414,7 @@ public abstract class BayesianRegressionTestHarness<PosteriorType extends Distri
         ArrayList<InputOutputPair<Double,Double>> data = createData(inputs, target,RANDOM);
         BayesianRegression<Double,Double,PosteriorType> instance =
             this.createInstance();
-        Evaluator<? super Double, ? extends Distribution<Double>> predictive =
+        Evaluator<? super Double, ? extends ClosedFormDistribution<Double>> predictive =
             instance.createPredictiveDistribution( instance.learn(data) );
         LinearRegression<Double> regression = new LinearRegression<Double>(
             instance.getFeatureMap() );
@@ -437,7 +435,7 @@ public abstract class BayesianRegressionTestHarness<PosteriorType extends Distri
         ArrayList<InputOutputPair<Double,Double>> data = createData(inputs, target,RANDOM);
         BayesianRegression<Double,Double,PosteriorType> instance =
             this.createInstance();
-        Evaluator<? super Double, ? extends Distribution<Double>> predictive =
+        Evaluator<? super Double, ? extends ClosedFormDistribution<Double>> predictive =
             instance.createPredictiveDistribution( instance.learn(data) );
         LinearRegression<Double> regression = new LinearRegression<Double>(
             instance.getFeatureMap() );
@@ -458,7 +456,7 @@ public abstract class BayesianRegressionTestHarness<PosteriorType extends Distri
         ArrayList<InputOutputPair<Double,Double>> data = createData(inputs, target,RANDOM);
         BayesianRegression<Double,Double,PosteriorType> instance =
             this.createInstance();
-        Evaluator<? super Double, ? extends Distribution<Double>> predictive =
+        Evaluator<? super Double, ? extends ClosedFormDistribution<Double>> predictive =
             instance.createPredictiveDistribution( instance.learn(data) );
         LinearRegression<Double> regression = new LinearRegression<Double>(
             instance.getFeatureMap() );

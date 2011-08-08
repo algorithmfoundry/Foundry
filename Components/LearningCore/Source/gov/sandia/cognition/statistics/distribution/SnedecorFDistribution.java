@@ -1,4 +1,4 @@
-/*
+    /*
  * File:                SnedecorFDistribution.java
  * Authors:             Kevin R. Dixon
  * Company:             Sandia National Laboratories
@@ -19,8 +19,8 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.UnivariateScalarFunction;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormScalarDistribution;
-import gov.sandia.cognition.statistics.ClosedFormScalarCumulativeDistributionFunction;
+import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
+import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -42,7 +42,7 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/F-distribution"
 )
 public class SnedecorFDistribution
-    extends AbstractClosedFormScalarDistribution<Double>
+    extends AbstractClosedFormUnivariateDistribution<Double>
 {
 
     /**
@@ -81,8 +81,8 @@ public class SnedecorFDistribution
      * Second degree of freedom
      */
     public SnedecorFDistribution(
-        double v1,
-        double v2 )
+        final double v1,
+        final double v2 )
     {
         this.setV1( v1 );
         this.setV2( v2 );
@@ -93,7 +93,7 @@ public class SnedecorFDistribution
      * @param other CumulativeDistribution to copy
      */
     public SnedecorFDistribution(
-        SnedecorFDistribution other )
+        final SnedecorFDistribution other )
     {
         this( other.getV1(), other.getV2() );
     }
@@ -120,7 +120,7 @@ public class SnedecorFDistribution
      * First degree of freedom
      */
     public void setV1(
-        double v1 )
+        final double v1 )
     {
         if( v1 <= 0.0 )
         {
@@ -145,7 +145,7 @@ public class SnedecorFDistribution
      * Second degree of freedom
      */
     public void setV2(
-        double v2 )
+        final double v2 )
     {
         if( v2 <= 0.0 )
         {
@@ -154,6 +154,7 @@ public class SnedecorFDistribution
         this.v2 = v2;
     }
 
+    @Override
     public Double getMean()
     {
         if( this.v2 > 2.0 )
@@ -166,6 +167,7 @@ public class SnedecorFDistribution
         }
     }
 
+    @Override
     public double getVariance()
     {
 
@@ -187,14 +189,16 @@ public class SnedecorFDistribution
 
     }
 
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues(
             this.getV1(), this.getV2() );
     }
 
+    @Override
     public void convertFromVector(
-        Vector parameters )
+        final Vector parameters )
     {
         if( parameters.getDimensionality() != 2 )
         {
@@ -205,9 +209,10 @@ public class SnedecorFDistribution
         this.setV2( parameters.getElement( 1 ) );
     }
 
+    @Override
     public ArrayList<Double> sample(
-        Random random,
-        int numSamples )
+        final Random random,
+        final int numSamples )
     {
         ArrayList<Double> g1 = GammaDistribution.sample(
             this.v1/2.0, 2.0/this.v1, random,numSamples);
@@ -221,16 +226,19 @@ public class SnedecorFDistribution
         return samples;
     }
 
+    @Override
     public SnedecorFDistribution.CDF getCDF()
     {
         return new SnedecorFDistribution.CDF( this );
     }
 
+    @Override
     public Double getMinSupport()
     {
         return 0.0;
     }
 
+    @Override
     public Double getMaxSupport()
     {
         return Double.POSITIVE_INFINITY;
@@ -241,7 +249,7 @@ public class SnedecorFDistribution
      */
     public static class CDF
         extends SnedecorFDistribution
-        implements ClosedFormScalarCumulativeDistributionFunction<Double>,
+        implements ClosedFormCumulativeDistributionFunction<Double>,
         UnivariateScalarFunction
     {
 
@@ -261,8 +269,8 @@ public class SnedecorFDistribution
          * Second degree of freedom
          */
         public CDF(
-            double v1,
-            double v2 )
+            final double v1,
+            final double v2 )
         {
             super( v1, v2 );
         }
@@ -272,19 +280,21 @@ public class SnedecorFDistribution
          * @param other CumulativeDistribution to copy
          */
         public CDF(
-            SnedecorFDistribution other )
+            final SnedecorFDistribution other )
         {
             super( other );
         }
 
+        @Override
         public double evaluate(
-            double input )
+            final double input )
         {
             return evaluate( input, this.getV1(), this.getV2() );
         }
 
+        @Override
         public Double evaluate(
-            Double input )
+            final Double input )
         {
             return this.evaluate( input.doubleValue() );
         }
@@ -301,9 +311,9 @@ public class SnedecorFDistribution
          * Probability of the CDF(input,v1,v2)
          */
         public static double evaluate(
-            double input,
-            double v1,
-            double v2 )
+            final double input,
+            final double v1,
+            final double v2 )
         {
             double p;
             if (input < 0.0)

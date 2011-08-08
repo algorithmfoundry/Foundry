@@ -25,9 +25,9 @@ import gov.sandia.cognition.math.ProbabilityUtil;
 import gov.sandia.cognition.statistics.CumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.DiscreteDistribution;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
-import gov.sandia.cognition.statistics.SmoothScalarDistribution;
+import gov.sandia.cognition.statistics.SmoothUnivariateDistribution;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -126,10 +126,10 @@ public class InverseTransformSampling
         {
             return ProbabilityMassFunctionUtil.inverse(cdf, p);
         }
-        else if( cdf instanceof SmoothScalarDistribution )
+        else if( cdf instanceof SmoothUnivariateDistribution )
         {
             return (InputOutputPair<NumberType, Double>) inverseNewtonsMethod(
-                (SmoothScalarDistribution) cdf, p, DEFAULT_TOLERANCE );
+                (SmoothUnivariateDistribution) cdf, p, DEFAULT_TOLERANCE );
         }
         else
         {
@@ -192,7 +192,7 @@ public class InverseTransformSampling
      * Root of the CDF.
      */
     public static InputOutputPair<Double,Double> inverseNewtonsMethod(
-        SmoothScalarDistribution distribution,
+        SmoothUnivariateDistribution distribution,
         double p,
         double tolerance )
     {
@@ -212,7 +212,7 @@ public class InverseTransformSampling
         {
             final double xmin = cdf.getMinSupport();
             final double xmax = cdf.getMaxSupport();
-            ScalarProbabilityDensityFunction pdf =
+            UnivariateProbabilityDensityFunction pdf =
                 distribution.getProbabilityFunction();
             double err = p - phat;
             double m = pdf.evaluate(xhat);

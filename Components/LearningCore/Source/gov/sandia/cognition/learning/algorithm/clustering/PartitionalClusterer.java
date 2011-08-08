@@ -380,7 +380,7 @@ public class PartitionalClusterer
 
         if (rightMembers.isEmpty())
         {
-            int leftSize = rightMembers.size();
+            int leftSize = leftMembers.size();
             int randomIndex = this.random.nextInt(leftSize);
             rightMembers.add(leftMembers.remove(randomIndex));
         }

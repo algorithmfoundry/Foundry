@@ -23,7 +23,6 @@ import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.signals.LinearDynamicalSystem;
-import gov.sandia.cognition.statistics.Distribution;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import java.util.ArrayList;
 
@@ -49,6 +48,7 @@ public class ExtendedKalmanFilterTest
     /**
      * Tests the constructors of class ExtendedKalmanFilterTest.
      */
+    @Override
     public void testConstructors()
     {
         System.out.println( "Constructors" );
@@ -96,23 +96,36 @@ public class ExtendedKalmanFilterTest
         assertNotSame( instance.getMotionModel(), clone.getMotionModel() );
     }
 
+    /**
+     * StateSumer
+     */
     public static class StateSummer
         extends AbstractStatefulEvaluator<Vector,Vector,Vector>
     {
 
+        /**
+         * dim
+         */
         int dim;
 
+        /**
+         * Constructor
+         * @param dim
+         * dim
+         */
         public StateSummer(
             int dim)
         {
             this.dim = dim;
         }
 
+        @Override
         public Vector createDefaultState()
         {
             return VectorFactory.getDefault().createVector(dim,1.0);
         }
 
+        @Override
         public Vector evaluate(
             Vector input)
         {
@@ -146,7 +159,7 @@ public class ExtendedKalmanFilterTest
     }
 
     @Override
-    public Distribution<Vector> createConditionalDistribution()
+    public MultivariateGaussian createConditionalDistribution()
     {
         Vector mean = VectorFactory.getDefault().copyValues( RANDOM.nextGaussian() );
         Matrix covariance = MatrixFactory.getDefault().createMatrix(1,1);

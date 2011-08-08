@@ -45,6 +45,6 @@ public interface DistributionParameter<ParameterType,ConditionalType extends Dis
      * Parameter to set.
      */
     public void setValue(
-        ParameterType value );
+        final ParameterType value );
     
 }

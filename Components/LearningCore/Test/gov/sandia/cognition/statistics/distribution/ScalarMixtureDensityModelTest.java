@@ -15,7 +15,7 @@
 package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.SmoothScalarDistributionTestHarness;
+import gov.sandia.cognition.statistics.SmoothUnivariateDistributionTestHarness;
 import gov.sandia.cognition.statistics.method.KolmogorovSmirnovConfidence;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +25,7 @@ import java.util.Arrays;
  * @author krdixon
  */
 public class ScalarMixtureDensityModelTest
-    extends SmoothScalarDistributionTestHarness
+    extends SmoothUnivariateDistributionTestHarness
 {
 
     /**

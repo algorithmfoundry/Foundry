@@ -159,7 +159,7 @@ public class FieldConfidenceInterval
      */
     public static <DataType> ArrayList<FieldConfidenceInterval> computeConfidenceInterval(
         Collection<DataType> data,
-        ConfidenceIntervalEvaluator<Collection<? extends Double>> confidenceIntervalEvaluator,
+        ConfidenceIntervalEvaluator<Collection<? extends Number>> confidenceIntervalEvaluator,
         double confidence )
     {
 
@@ -208,7 +208,7 @@ public class FieldConfidenceInterval
     public static <DataType> ArrayList<FieldConfidenceInterval> computeConfidenceInterval(
         Collection<DataType> data,
         ArrayList<Field> interestedFields,
-        ConfidenceIntervalEvaluator<Collection<? extends Double>> confidenceIntervalEvaluator,
+        ConfidenceIntervalEvaluator<Collection<? extends Number>> confidenceIntervalEvaluator,
         double confidence )
     {
 

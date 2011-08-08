@@ -38,7 +38,7 @@ import java.util.Set;
  * @param   <CategoryType>
  *      The type of categories to learn over.
  * @author  Justin Basilico
- * @since   3.1.2
+ * @since   3.2.0
  */
 @PublicationReference(
     author={"Yoav Freund", "Robert E.Schapire"},

@@ -14,6 +14,7 @@ package gov.sandia.cognition.learning.algorithm.perceptron;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.learning.function.categorization.DefaultKernelBinaryCategorizer;
 import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
@@ -33,8 +34,10 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
     url="http://en.wikipedia.org/wiki/Perceptron#Learning_algorithm"
 )
 public class OnlinePerceptron
-    extends AbstractOnlineLinearBinaryCategorizerLearner
+    extends AbstractLinearCombinationOnlineLearner
 {
+    /** By default the bias is updated. */
+    public static final boolean DEFAULT_UPDATE_BIAS = true;
 
     /**
      * Creates a new {@code OnlinePerceptron}.
@@ -53,50 +56,55 @@ public class OnlinePerceptron
     public OnlinePerceptron(
         final VectorFactory<?> vectorFactory)
     {
-        super(vectorFactory);
+        super(DEFAULT_UPDATE_BIAS, vectorFactory);
     }
 
     @Override
-    public LinearBinaryCategorizer createInitialLearnedObject()
-    {
-        // Start with a null weight vector and zero bias.
-        return new LinearBinaryCategorizer();
-    }
-
-    @Override
-    public void update(
+    public double computeUpdate(
         final LinearBinaryCategorizer target,
         final Vector input,
-        final boolean actual)
+        boolean label,
+        double predicted)
     {
-        Vector weights = target.getWeights();
-        if (weights == null)
-        {
-            // This is the first example, so initialize the weight vector.
-            weights = this.getVectorFactory().createVector(
-                input.getDimensionality());
-            target.setWeights(weights);
-        }
-        // else - Use the existing weights.
-
-        // Predict the output as a double (negative values are false, positive
-        // are true).
-        final double prediction = target.evaluateAsDouble(input);
-
-        // Make an update if there was an error.
-        if (actual && prediction <= 0.0)
-        {
-            // An error with the true (positive) category.
-            weights.plusEquals(input);
-            target.setBias(target.getBias() + 1.0);
-        }
-        else if (!actual && prediction >= 0.0)
-        {
-            // An error with the false (negative) category.
-            weights.minusEquals(input);
-            target.setBias(target.getBias() - 1.0);
-        }
-        // else - There was no error made, so nothing to update.
+        return computeUpdate(label, predicted);
     }
 
+    @Override
+    public <InputType> double computeUpdate(
+        final DefaultKernelBinaryCategorizer<InputType> target,
+        final InputType input,
+        final boolean actualCategory,
+        final double predicted)
+    {
+        return computeUpdate(actualCategory, predicted);
+    }
+
+    /**
+     * Computes the update weight for the given actual category and predicted
+     * value according to the Perceptron update rule.
+     *
+     * @param   actualCategory
+     *      The actual category.
+     * @param   predicted
+     *      The predicted category.
+     * @return
+     *      The update value, which is either 0.0 or 1.0.
+     */
+    public static double computeUpdate(
+        final boolean actualCategory,
+        final double predicted)
+    {
+        final double actual = actualCategory ? +1.0 : -1.0;
+        if (predicted * actual <= 0.0)
+        {
+            // An error of 1.0.
+            return 1.0;
+        }
+        else
+        {
+            // Not an error.
+            return 0.0;
+        }
+    }
+    
 }

@@ -31,7 +31,7 @@ public interface PointMassDistribution<DataType>
      * @param  value The value to add.
      */
     void add(
-        DataType value);
+        final DataType value);
 
     /**
      * Adds the given value with the specific mass to the distribution.
@@ -40,8 +40,8 @@ public interface PointMassDistribution<DataType>
      * @param  mass The mass of the value to add.
      */
     void add(
-        DataType value,
-        double mass );
+        final DataType value,
+        final double mass );
 
 // TODO: These add and remove methods are not symmetric, as their names would
 // imply. Either add should be changed to addOne or increment or remove to
@@ -53,7 +53,7 @@ public interface PointMassDistribution<DataType>
      * @param  value The value to remove.
      */
     void remove(
-        DataType value );
+        final DataType value );
 
     /**
      * Removes the given value and its mass from the distribution.
@@ -62,8 +62,8 @@ public interface PointMassDistribution<DataType>
      * @param  mass The mass of the value to remove.
      */
     void remove(
-        DataType value,
-        double mass );
+        final DataType value,
+        final double mass );
 
     /**
      * Sets the mass for a given value. The mass cannot be negative. If the
@@ -76,8 +76,8 @@ public interface PointMassDistribution<DataType>
      *      The mass to assign to the value. Cannot be negative.
      */
     void setMass(
-        DataType value,
-        double mass);
+        final DataType value,
+        final double mass);
 
     /**
      * Gets the mass associated with the given value.
@@ -86,7 +86,7 @@ public interface PointMassDistribution<DataType>
      * @return The mass associated with the input.
      */
     double getMass(
-        DataType input);
+        final DataType input);
 
     /**
      * Gets the total mass of all values in the distribution.
@@ -101,6 +101,7 @@ public interface PointMassDistribution<DataType>
     void clear();
 
     
+    @Override
     PointMassDistribution.PMF<DataType> getProbabilityFunction();
 
     /**

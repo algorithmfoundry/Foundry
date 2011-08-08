@@ -24,10 +24,12 @@ import gov.sandia.cognition.math.UnivariateScalarFunction;
  */
 public interface SmoothCumulativeDistributionFunction
     extends ClosedFormCumulativeDistributionFunction<Double>,
+    SmoothUnivariateDistribution,
     UnivariateScalarFunction,
     ClosedFormDifferentiableEvaluator<Double,Double,Double>
 {
 
-    public ScalarProbabilityDensityFunction getDerivative();
+    @Override
+    public UnivariateProbabilityDensityFunction getDerivative();
 
 }

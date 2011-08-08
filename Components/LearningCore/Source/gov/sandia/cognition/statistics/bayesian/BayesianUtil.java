@@ -41,7 +41,7 @@ public class BayesianUtil
      * @param <ObservationType>
      * Type of observations to consider
      * @param distribution
-     * Computable distributino from which to get the probability function
+     * Computable distribution from which to get the probability function
      * (a pdf or pmf) used to compute the likelihood.
      * @param observations
      * Observations to compute the log likelihood of.
@@ -49,10 +49,10 @@ public class BayesianUtil
      * Log likelihood of the i.i.d. data using the given probability function.
      */
     public static <ObservationType> double logLikelihood(
-        ComputableDistribution<ObservationType> distribution,
-        Iterable<? extends ObservationType> observations )
+        final ComputableDistribution<? super ObservationType> distribution,
+        final Iterable<? extends ObservationType> observations )
     {
-        ProbabilityFunction<ObservationType> f =
+        ProbabilityFunction<? super ObservationType> f =
             distribution.getProbabilityFunction();
         double logSum = 0.0;
         for( ObservationType observation : observations )
@@ -88,11 +88,11 @@ public class BayesianUtil
      * from the updated conditional distribution.
      */
     public static <ObservationType,ParameterType> ArrayList<? extends ObservationType> sample(
-        ClosedFormDistribution<ObservationType> conditional,
-        String parameterName,
-        Distribution<ParameterType> prior,
-        Random random,
-        int numSamples )
+        final ClosedFormDistribution<ObservationType> conditional,
+        final String parameterName,
+        final Distribution<ParameterType> prior,
+        final Random random,
+        final int numSamples )
     {
         DefaultBayesianParameter<ParameterType,ClosedFormDistribution<ObservationType>,Distribution<ParameterType>> parameter =
             new DefaultBayesianParameter<ParameterType, ClosedFormDistribution<ObservationType>, Distribution<ParameterType>>( conditional, parameterName, prior );
@@ -121,9 +121,9 @@ public class BayesianUtil
      * from the updated conditional distribution.
      */
     public static <ObservationType,ParameterType> ArrayList<ObservationType> sample(
-        BayesianParameter<ParameterType,? extends Distribution<ObservationType>,? extends Distribution<ParameterType>> parameter,
-        Random random,
-        int numSamples )
+        final BayesianParameter<ParameterType,? extends Distribution<ObservationType>,? extends Distribution<ParameterType>> parameter,
+        final Random random,
+        final int numSamples )
     {
         ArrayList<? extends ParameterType> parameters =
             parameter.getParameterPrior().sample(random, numSamples);
@@ -164,8 +164,8 @@ public class BayesianUtil
         notes="Equation 6.6"
     )
     public static <ObservationType> double deviance(
-        ComputableDistribution<ObservationType> conditional,
-        Iterable<? extends ObservationType> observations )
+        final ComputableDistribution<ObservationType> conditional,
+        final Iterable<? extends ObservationType> observations )
     {
         return -2.0 * logLikelihood(conditional, observations);
     }
@@ -207,10 +207,10 @@ public class BayesianUtil
         notes="Equation 6.9"
     )
     public static <ObservationType,ParameterType> UnivariateGaussian expectedDeviance(
-        BayesianParameter<ParameterType,? extends ComputableDistribution<ObservationType>,?> predictiveDistribution,
-        Iterable<? extends ObservationType> observations,
-        Random random,
-        int numSamples )
+        final BayesianParameter<ParameterType,? extends ComputableDistribution<ObservationType>,?> predictiveDistribution,
+        final Iterable<? extends ObservationType> observations,
+        final Random random,
+        final int numSamples )
     {
 
         ArrayList<? extends ParameterType> parameters =
@@ -236,7 +236,7 @@ public class BayesianUtil
      * of the samples.
      */
     public static UnivariateGaussian getMean(
-        Collection<? extends Double> samples)
+        final Collection<? extends Double> samples)
     {
         Pair<Double,Double> pair = UnivariateStatisticsUtil.computeMeanAndVariance(samples);
         double mean = pair.getFirst();

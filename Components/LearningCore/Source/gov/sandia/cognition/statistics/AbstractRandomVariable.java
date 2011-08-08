@@ -32,8 +32,9 @@ public abstract class AbstractRandomVariable<DataType>
     Randomized
 {    
     
+    @Override
     public DataType sample(
-        Random random )
+        final Random random )
     {
         return CollectionUtil.getFirst( this.sample( random, 1 ) );
     }

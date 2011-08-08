@@ -26,6 +26,7 @@ import gov.sandia.cognition.math.matrix.Vectorizable;
  * @since 3.0
  */
 public interface ClosedFormDistribution<DataType>
-    extends Distribution<DataType>, Vectorizable
-{    
+    extends DistributionWithMean<DataType>,
+    Vectorizable
+{
 }

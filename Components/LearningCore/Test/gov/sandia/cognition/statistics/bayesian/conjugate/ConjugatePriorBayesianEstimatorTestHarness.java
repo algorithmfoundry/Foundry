@@ -26,7 +26,7 @@ import gov.sandia.cognition.statistics.ComputableDistribution;
 import gov.sandia.cognition.statistics.CumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.Distribution;
 import gov.sandia.cognition.statistics.ProbabilityFunction;
-import gov.sandia.cognition.statistics.ScalarDistribution;
+import gov.sandia.cognition.statistics.UnivariateDistribution;
 import gov.sandia.cognition.statistics.bayesian.BayesianCredibleInterval;
 import gov.sandia.cognition.statistics.bayesian.BayesianEstimatorPredictor;
 import gov.sandia.cognition.statistics.bayesian.BayesianParameter;
@@ -273,10 +273,10 @@ public abstract class ConjugatePriorBayesianEstimatorTestHarness<ObservationType
             assertEquals( 1.0, kstest.getNullHypothesisProbability(), 0.95 );
 
             // Let's get all Monte Carlo on them
-            if( predictivePDF instanceof ScalarDistribution )
+            if( predictivePDF instanceof UnivariateDistribution )
             {
                 CumulativeDistributionFunction<Number> cdf =
-                    ((ScalarDistribution) predictivePDF).getCDF();
+                    ((UnivariateDistribution) predictivePDF).getCDF();
 
                 BayesianParameter<ParameterType,ClosedFormDistribution<ObservationType>,BeliefType> parameter =
                     estimator.createParameter( estimator.getParameter().getConditionalDistribution(), posterior);

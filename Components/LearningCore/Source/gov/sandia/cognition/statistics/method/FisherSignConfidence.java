@@ -54,7 +54,7 @@ import java.util.Iterator;
 )
 public class FisherSignConfidence
     extends AbstractCloneableSerializable
-    implements NullHypothesisEvaluator<Collection<Double>>
+    implements NullHypothesisEvaluator<Collection<? extends Number>>
 {
 
     /** 
@@ -64,9 +64,10 @@ public class FisherSignConfidence
     {
     }
 
+    @Override
     public FisherSignConfidence.Statistic evaluateNullHypothesis(
-        Collection<Double> data1,
-        Collection<Double> data2)
+        Collection<? extends Number> data1,
+        Collection<? extends Number> data2)
     {
 
         if (data1.size() != data2.size())
@@ -78,12 +79,12 @@ public class FisherSignConfidence
         int N = 0;
         int b = 0;
 
-        Iterator<Double> i1 = data1.iterator();
-        Iterator<Double> i2 = data2.iterator();
+        Iterator<? extends Number> i1 = data1.iterator();
+        Iterator<? extends Number> i2 = data2.iterator();
         while (i1.hasNext())
         {
-            double v1 = i1.next();
-            double v2 = i2.next();
+            double v1 = i1.next().doubleValue();
+            double v2 = i2.next().doubleValue();
 
             // N tells us how many samples aren't equal
             if (v1 != v2)
@@ -186,6 +187,12 @@ public class FisherSignConfidence
             int numPositiveSign)
         {
             this.numPositiveSign = numPositiveSign;
+        }
+
+        @Override
+        public double getTestStatistic()
+        {
+            return this.numPositiveSign;
         }
 
     }

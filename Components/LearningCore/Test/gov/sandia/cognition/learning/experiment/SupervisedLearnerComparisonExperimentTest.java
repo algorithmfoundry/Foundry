@@ -59,8 +59,8 @@ public class SupervisedLearnerComparisonExperimentTest
     {
         System.out.println( "Constructors" );
 
-        SupervisedLearnerComparisonExperiment<Vector,Double,Double,ConfidenceInterval> comparison =
-            new SupervisedLearnerComparisonExperiment<Vector, Double, Double, ConfidenceInterval>();
+        SupervisedLearnerComparisonExperiment<Vector,Double,Number,ConfidenceInterval> comparison =
+            new SupervisedLearnerComparisonExperiment<Vector, Double, Number, ConfidenceInterval>();
 
         assertNull( comparison.getFoldCreator() );
         assertNull( comparison.getSummarizer() );
@@ -78,7 +78,7 @@ public class SupervisedLearnerComparisonExperimentTest
         StudentTConfidence.Summary tdistribution =
             new StudentTConfidence.Summary( confidence );
         
-        comparison = new SupervisedLearnerComparisonExperiment<Vector, Double, Double, ConfidenceInterval>(
+        comparison = new SupervisedLearnerComparisonExperiment<Vector, Double, Number, ConfidenceInterval>(
                 foldCreator, rms, ttest, tdistribution );
 
         assertSame( foldCreator, comparison.getFoldCreator() );

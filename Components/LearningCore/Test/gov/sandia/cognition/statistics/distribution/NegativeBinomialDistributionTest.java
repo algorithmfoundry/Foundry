@@ -18,7 +18,7 @@ import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.collection.IntegerCollection;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistributionTestHarness;
+import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistributionTestHarness;
 
 /**
  * Unit tests for NegativeBinomialDistributionTest.
@@ -26,7 +26,7 @@ import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistributionTestH
  * @author krdixon
  */
 public class NegativeBinomialDistributionTest
-    extends ClosedFormDiscreteScalarDistributionTestHarness<Number>
+    extends ClosedFormDiscreteUnivariateDistributionTestHarness<Number>
 {
 
     /**
@@ -279,14 +279,17 @@ public class NegativeBinomialDistributionTest
         {
             System.out.println( "Good: " + e );
         }
-        
-    }
 
-//    @Override
-//    public void testCDFSample_Random_int()
-//    {
-//        RANDOM = new Random( 10 );
-//        super.testCDFSample_Random_int();
-//    }
+    }
+    
+    /**
+     * Learner
+     */
+    public void testLearner()
+    {
+        System.out.println( "Learner" );
+        
+        this.distributionEstimatorTest( new NegativeBinomialDistribution.MaximumLikelihoodEstimator() );
+    }
 
 }

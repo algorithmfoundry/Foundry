@@ -129,6 +129,7 @@ public class KolmogorovSmirnovConfidence
         },
         url="http://www.nrbook.com/a/bookcpdf.php"
     )
+    @Override
     public KolmogorovSmirnovConfidence.Statistic evaluateNullHypothesis(
         Collection<? extends Number> data1,
         Collection<? extends Number> data2)
@@ -413,6 +414,12 @@ public class KolmogorovSmirnovConfidence
                 throw new IllegalArgumentException("Ne > 0.0");
             }
             this.Ne = Ne;
+        }
+
+        @Override
+        public double getTestStatistic()
+        {
+            return this.getD();
         }
 
     }

@@ -45,6 +45,7 @@ public interface ProbabilityMassFunction<DataType>
     DiscreteDistribution<DataType>
 {
 
+    @Override
     public ProbabilityMassFunction<DataType> getProbabilityFunction();
 
     /**

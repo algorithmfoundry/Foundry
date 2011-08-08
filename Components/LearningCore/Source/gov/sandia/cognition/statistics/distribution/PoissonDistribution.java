@@ -21,9 +21,9 @@ import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormScalarDistribution;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistribution;
-import gov.sandia.cognition.statistics.ClosedFormScalarCumulativeDistributionFunction;
+import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
+import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistribution;
+import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
@@ -49,8 +49,8 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Poisson_distribution"
 )
 public class PoissonDistribution
-    extends AbstractClosedFormScalarDistribution<Number>
-    implements ClosedFormDiscreteScalarDistribution<Number>,
+    extends AbstractClosedFormUnivariateDistribution<Number>
+    implements ClosedFormDiscreteUnivariateDistribution<Number>,
     EstimableDistribution<Number,PoissonDistribution>
 {
 
@@ -80,7 +80,7 @@ public class PoissonDistribution
      * greater than zero.
      */
     public PoissonDistribution(
-        double rate )
+        final double rate )
     {
         this.setRate(rate);
     }
@@ -91,7 +91,7 @@ public class PoissonDistribution
      * PoissonDistribution to copy.
      */
     public PoissonDistribution(
-        PoissonDistribution other )
+        final PoissonDistribution other )
     {
         this( other.getRate() );
     }
@@ -104,41 +104,48 @@ public class PoissonDistribution
         return clone;
     }
 
+    @Override
     public Double getMean()
     {
         return this.getRate();
     }
 
+    @Override
     public ArrayList<Number> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
     {
         return ProbabilityMassFunctionUtil.sample(
             this.getProbabilityFunction(), random, numSamples);
     }
 
+    @Override
     public PoissonDistribution.CDF getCDF()
     {
         return new CDF( this );
     }
 
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues( this.getRate() );
     }
 
+    @Override
     public void convertFromVector(
-        Vector parameters)
+        final Vector parameters)
     {
         parameters.assertDimensionalityEquals(1);
         this.setRate( parameters.getElement(0) );
     }
 
+    @Override
     public double getVariance()
     {
         return this.getRate();
     }
 
+    @Override
     public IntegerCollection getDomain()
     {
         // The actual support is the entire set of nonnegative integers, but
@@ -153,6 +160,7 @@ public class PoissonDistribution
         return this.getDomain().size();
     }
 
+    @Override
     public PoissonDistribution.PMF getProbabilityFunction()
     {
         return new PoissonDistribution.PMF( this );
@@ -176,7 +184,7 @@ public class PoissonDistribution
      * greater than zero.
      */
     public void setRate(
-        double rate)
+        final double rate)
     {
         if( rate <= 0.0 )
         {
@@ -185,16 +193,19 @@ public class PoissonDistribution
         this.rate = rate;
     }
 
+    @Override
     public Integer getMinSupport()
     {
         return 0;
     }
 
+    @Override
     public Integer getMaxSupport()
     {
         return Integer.MAX_VALUE;
     }
 
+    @Override
     public PoissonDistribution.MaximumLikelihoodEstimator getEstimator()
     {
         return new PoissonDistribution.MaximumLikelihoodEstimator();
@@ -223,7 +234,7 @@ public class PoissonDistribution
          * greater than zero.
          */
         public PMF(
-            double rate )
+            final double rate )
         {
             super( rate );
         }
@@ -234,16 +245,18 @@ public class PoissonDistribution
          * PoissonDistribution to copy
          */
         public PMF(
-            PoissonDistribution other )
+            final PoissonDistribution other )
         {
             super( other );
         }
 
+        @Override
         public double getEntropy()
         {
             return ProbabilityMassFunctionUtil.getEntropy(this);
         }
 
+        @Override
         public Double evaluate(
             Number input)
         {
@@ -258,6 +271,7 @@ public class PoissonDistribution
             }
         }
 
+        @Override
         public double logEvaluate(
             Number input)
         {
@@ -291,7 +305,7 @@ public class PoissonDistribution
      */
     public static class CDF
         extends PoissonDistribution
-        implements ClosedFormScalarCumulativeDistributionFunction<Number>
+        implements ClosedFormCumulativeDistributionFunction<Number>
     {
 
         /**
@@ -309,7 +323,7 @@ public class PoissonDistribution
          * greater than zero.
          */
         public CDF(
-            double rate )
+            final double rate )
         {
             super( rate );
         }
@@ -320,13 +334,14 @@ public class PoissonDistribution
          * PoissonDistribution to copy
          */
         public CDF(
-            PoissonDistribution other )
+            final PoissonDistribution other )
         {
             super( other );
         }
 
+        @Override
         public Double evaluate(
-            Number input)
+            final Number input)
         {
             int k = (int) Math.floor(input.doubleValue());
             if( k < 0 )
@@ -366,6 +381,7 @@ public class PoissonDistribution
         {
         }
 
+        @Override
         public PoissonDistribution.PMF learn(
             Collection<? extends Number> data )
         {

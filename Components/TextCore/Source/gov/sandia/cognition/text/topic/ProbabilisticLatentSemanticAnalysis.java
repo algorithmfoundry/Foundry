@@ -32,6 +32,7 @@ import gov.sandia.cognition.math.matrix.VectorOutputEvaluator;
 import gov.sandia.cognition.math.matrix.VectorUtil;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
+import gov.sandia.cognition.util.ArgumentChecker;
 import gov.sandia.cognition.util.Randomized;
 import java.io.PrintStream;
 import java.text.DecimalFormat;
@@ -40,7 +41,7 @@ import java.util.Collection;
 import java.util.Random;
 
 /**
- * An implementation of the Probabilistic Latent Semntic Analysis (PLSA)
+ * An implementation of the Probabilistic Latent Semantic Analysis (PLSA)
  * algorithm.
  * 
  * @author  Justin Basilico
@@ -78,7 +79,7 @@ import java.util.Random;
     }
 )
 public class ProbabilisticLatentSemanticAnalysis
-    extends AbstractAnytimeBatchLearner<Collection<? extends Vectorizable>, ProbabilisticLatentSemanticAnalysis.Transform>
+    extends AbstractAnytimeBatchLearner<Collection<? extends Vectorizable>, ProbabilisticLatentSemanticAnalysis.Result>
     implements Randomized, VectorFactoryContainer
 {
     // TODO: Make use of sparseness.
@@ -131,7 +132,7 @@ public class ProbabilisticLatentSemanticAnalysis
     protected transient double changeOfLogLikelihood;
 
     /** The result being produced by the algorithm. */
-    protected transient Transform result;
+    protected transient Result result;
 
     /**
      * Creates a new ProbabilisticSemanticAnalysis with default parameters.
@@ -229,7 +230,7 @@ public class ProbabilisticLatentSemanticAnalysis
 
         this.logLikelihood = Double.MIN_VALUE;
         this.changeOfLogLikelihood = 0.0;
-        this.result = new Transform(this.termCount, this.latents);
+        this.result = new Result(this.termCount, this.latents);
         return true;
     }
 
@@ -319,7 +320,6 @@ public class ProbabilisticLatentSemanticAnalysis
 
                 for (LatentData latent : this.latents)
                 {
-                    final int k = latent.index;
                     pDocumentTerm +=
                           latent.pLatent
                         * latent.pDocumentGivenLatent.getElement(i)
@@ -347,7 +347,7 @@ public class ProbabilisticLatentSemanticAnalysis
         this.documentsByTerms = null;
     }
 
-    public Transform getResult()
+    public Result getResult()
     {
         return this.result;
     }
@@ -431,11 +431,7 @@ public class ProbabilisticLatentSemanticAnalysis
     public void setRequestedRank(
         final int requestedRank)
     {
-        if (requestedRank <= 0)
-        {
-            throw new IllegalArgumentException("requestedRank must be positive.");
-        }
-
+        ArgumentChecker.assertIsPositive("requestedRank", requestedRank);
         this.requestedRank = requestedRank;
     }
 
@@ -463,12 +459,7 @@ public class ProbabilisticLatentSemanticAnalysis
     public void setMinimumChange(
         final double minimumChange)
     {
-        if (minimumChange < 0.0)
-        {
-            throw new IllegalArgumentException(
-                "minimumChange must be non-negative.");
-        }
-
+        ArgumentChecker.assertIsNonNegative("minimumChange", minimumChange);
         this.minimumChange = minimumChange;
     }
 
@@ -495,10 +486,10 @@ public class ProbabilisticLatentSemanticAnalysis
     }
 
     /**
-     * The dimensionality transform created by probabilistic latent semntic
+     * The dimensionality transform created by probabilistic latent semantic
      * analysis.
      */
-    public static class Transform
+    public static class Result
         extends AbstractCloneableSerializable
         implements Evaluator<Vectorizable, Vector>,
             VectorInputEvaluator<Vectorizable, Vector>,
@@ -528,7 +519,7 @@ public class ProbabilisticLatentSemanticAnalysis
          * @param   latents
          *      The latent variable data.
          */
-        public Transform(
+        public Result(
             final int termCount,
             final LatentData[] latents)
         {

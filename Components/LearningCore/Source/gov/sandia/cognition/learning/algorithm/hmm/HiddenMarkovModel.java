@@ -18,7 +18,6 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
-import gov.sandia.cognition.math.Ring;
 import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
@@ -64,7 +63,7 @@ public class HiddenMarkovModel<ObservationType>
     /**
      * The PDFs that emit symbols from each state.
      */
-    protected Collection<? extends ProbabilityFunction<ObservationType>> emissionFunctions;
+    protected Collection<? extends ComputableDistribution<ObservationType>> emissionFunctions;
 
     /**
      * Default constructor.
@@ -101,7 +100,7 @@ public class HiddenMarkovModel<ObservationType>
     public HiddenMarkovModel(
         Vector initialProbability,
         Matrix transitionProbability,
-        Collection<? extends ProbabilityFunction<ObservationType>> emissionFunctions )
+        Collection<? extends ComputableDistribution<ObservationType>> emissionFunctions )
     {
         super( initialProbability, transitionProbability );
         final int k = this.getNumStates();
@@ -269,7 +268,7 @@ public class HiddenMarkovModel<ObservationType>
      * @return
      * Log-likelihood of the given observation sequence.
      */
-    public double computeMultipleObservationLogLikelihood(
+    protected double computeMultipleObservationLogLikelihood(
         Collection<? extends Collection<? extends ObservationType>> sequences )
     {
         double logLikelihood = 0.0;
@@ -306,7 +305,12 @@ public class HiddenMarkovModel<ObservationType>
         Iterator<Integer> stateIterator = states.iterator();
         double logLikelihood = 0.0;
         ArrayList<ProbabilityFunction<ObservationType>> fs =
-            new ArrayList<ProbabilityFunction<ObservationType>>( this.emissionFunctions );
+            new ArrayList<ProbabilityFunction<ObservationType>>( this.getNumStates() );
+        for( ComputableDistribution<ObservationType> f : this.getEmissionFunctions() )
+        {
+            fs.add( f.getProbabilityFunction() );
+        }
+        
         int lastState = -1;
         for( ObservationType observation : observations )
         {
@@ -332,12 +336,14 @@ public class HiddenMarkovModel<ObservationType>
 
     }
 
+    @Override
     public ObservationType sample(
         Random random)
     {
         return CollectionUtil.getFirst( this.sample(random, 1) );
     }
 
+    @Override
     public ArrayList<ObservationType> sample(
         Random random,
         int numSamples )
@@ -372,7 +378,7 @@ public class HiddenMarkovModel<ObservationType>
      * @return
      * The PDFs that emit symbols from each state.
      */
-    public Collection<? extends ProbabilityFunction<ObservationType>> getEmissionFunctions()
+    public Collection<? extends ComputableDistribution<ObservationType>> getEmissionFunctions()
     {
         return this.emissionFunctions;
     }
@@ -383,11 +389,12 @@ public class HiddenMarkovModel<ObservationType>
      * The PDFs that emit symbols from each state.
      */
     public void setEmissionFunctions(
-        Collection<? extends ProbabilityFunction<ObservationType>> emissionFunctions)
+        Collection<? extends ComputableDistribution<ObservationType>> emissionFunctions)
     {
         this.emissionFunctions = emissionFunctions;
     }
 
+    /*
     @SuppressWarnings("unchecked")
     public ObservationType getMean()
     {
@@ -400,7 +407,7 @@ public class HiddenMarkovModel<ObservationType>
         {
             RingAccumulator weightedAverage = new RingAccumulator();
             int i = 0;
-            for( ProbabilityFunction<ObservationType> f : this.emissionFunctions )
+            for( ComputableDistribution<ObservationType> f : this.emissionFunctions )
             {
                 Ring mean = (Ring) f.getMean();
                 weightedAverage.accumulate( mean.scale( p.getElement(i) ) );
@@ -412,7 +419,7 @@ public class HiddenMarkovModel<ObservationType>
         {
             double weightedAverage = 0.0;
             int i = 0;
-            for( ProbabilityFunction<ObservationType> f : this.emissionFunctions )
+            for( ComputableDistribution<ObservationType> f : this.emissionFunctions )
             {
                 Number mean = (Number) f.getMean();
                 weightedAverage += mean.doubleValue() * p.getElement(i);
@@ -426,6 +433,8 @@ public class HiddenMarkovModel<ObservationType>
                 "Mean not supported for type: " + observation.getClass() );
         }
     }
+     *
+     */
 
     /**
      * Computes the recursive solution to the forward probabilities of the
@@ -527,16 +536,17 @@ public class HiddenMarkovModel<ObservationType>
      * @param observation
      * Observation to consider
      * @param b
-     * Likelihood of each state generating the given observation.
+     * Likelihood of each state generating the given observation. This is where
+     * the result of the computation is stored.
      */
-    public void computeObservationLikelihoods(
+    protected void computeObservationLikelihoods(
         ObservationType observation,
         Vector b )
     {
         int i = 0;
-        for( ProbabilityFunction<ObservationType> f : this.getEmissionFunctions() )
+        for( ComputableDistribution<ObservationType> f : this.getEmissionFunctions() )
         {
-            b.setElement(i, f.evaluate(observation) );
+            b.setElement(i, f.getProbabilityFunction().evaluate(observation) );
             i++;
         }
     }
@@ -573,7 +583,7 @@ public class HiddenMarkovModel<ObservationType>
      * @return
      * Beta for the previous time step, weighted by "weight".
      */
-    public WeightedValue<Vector> computeBackwardProbabilities(
+    protected WeightedValue<Vector> computeBackwardProbabilities(
         Vector beta,
         Vector b,
         double weight )
@@ -597,7 +607,7 @@ public class HiddenMarkovModel<ObservationType>
      * @return
      * Backward probabilities.
      */
-    public ArrayList<WeightedValue<Vector>> computeBackwardProbabilities(
+    protected ArrayList<WeightedValue<Vector>> computeBackwardProbabilities(
         ArrayList<Vector> b,
         ArrayList<WeightedValue<Vector>> alphas )
     {
@@ -744,9 +754,10 @@ public class HiddenMarkovModel<ObservationType>
     {
 
         StringBuilder retval = new StringBuilder( super.toString() );
-        for( ProbabilityFunction<ObservationType> f : this.getEmissionFunctions() )
+        for( ComputableDistribution<ObservationType> f : this.getEmissionFunctions() )
         {
-            retval.append( "F: " + f );
+            retval.append( "F: " );
+            retval.append( f.toString() );
         }
 
         return retval.toString();
@@ -877,6 +888,29 @@ public class HiddenMarkovModel<ObservationType>
         }
 
         return states;
+
+    }
+
+    /**
+     * Computes the probability distribution over all states for each
+     * observation.
+     * @param observations
+     * @return
+     *      The list of state belief probabilities for each observation.
+     */
+    public ArrayList<Vector> stateBeliefs(
+        Collection<? extends ObservationType> observations )
+    {
+
+        ArrayList<Vector> bs = this.computeObservationLikelihoods(observations);
+        ArrayList<WeightedValue<Vector>> alphas =
+            this.computeForwardProbabilities(bs, true);
+        ArrayList<Vector> beliefs = new ArrayList<Vector>( alphas.size() );
+        for( WeightedValue<Vector> alpha : alphas )
+        {
+            beliefs.add( alpha.getValue() );
+        }
+        return beliefs;
 
     }
 

@@ -21,12 +21,12 @@ import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
+import gov.sandia.cognition.statistics.AbstractClosedFormSmoothUnivariateDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
 import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.InvertibleCumulativeDistributionFunction;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.method.InverseTransformSampling;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
@@ -63,7 +63,7 @@ import java.util.Random;
     }
 )
 public class StudentTDistribution
-    extends AbstractClosedFormSmoothScalarDistribution
+    extends AbstractClosedFormSmoothUnivariateDistribution
     implements EstimableDistribution<Double,StudentTDistribution>
 {
 
@@ -117,7 +117,7 @@ public class StudentTDistribution
      * datapoints - 1, DOFs must be greater than zero.
      */
     public StudentTDistribution(
-        double degreesOfFreedom )
+        final double degreesOfFreedom )
     {
         this( degreesOfFreedom, DEFAULT_MEAN, DEFAULT_PRECISION );
     }
@@ -134,9 +134,9 @@ public class StudentTDistribution
      * than zero.
      */
     public StudentTDistribution(
-        double degreesOfFreedom,
-        double mean,
-        double precision )
+        final double degreesOfFreedom,
+        final double mean,
+        final double precision )
     {
         this.setDegreesOfFreedom(degreesOfFreedom);
         this.setPrecision(precision);
@@ -149,7 +149,7 @@ public class StudentTDistribution
      * StudentTDistribution to copy
      */
     public StudentTDistribution(
-        StudentTDistribution other )
+        final StudentTDistribution other )
     {
         this( other.getDegreesOfFreedom(), other.getMean(), other.getPrecision() );
     }
@@ -178,7 +178,7 @@ public class StudentTDistribution
      * datapoints - 1, DOFs must be greater than zero.
      */
     public void setDegreesOfFreedom(
-        double degreesOfFreedom )
+        final double degreesOfFreedom )
     {
         if( degreesOfFreedom <= 0.0 )
         {
@@ -187,6 +187,7 @@ public class StudentTDistribution
         this.degreesOfFreedom = degreesOfFreedom;
     }
 
+    @Override
     public double getVariance()
     {
         
@@ -208,6 +209,7 @@ public class StudentTDistribution
      * @return
      * 1-dimensional Vector containing the degrees of freedom
      */
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues(
@@ -220,8 +222,9 @@ public class StudentTDistribution
      * @param parameters
      * 1-dimensional Vector containing the degrees of freedom
      */
+    @Override
     public void convertFromVector(
-        Vector parameters )
+        final Vector parameters )
     {
         parameters.assertDimensionalityEquals(3);
         this.setDegreesOfFreedom( parameters.getElement( 0 ) );
@@ -229,9 +232,10 @@ public class StudentTDistribution
         this.setPrecision( parameters.getElement(2) );
     }
 
+    @Override
     public ArrayList<Double> sample(
-        Random random,
-        int numSamples )
+        final Random random,
+        final int numSamples )
     {
         // This is a Chi-square with degreesOfFreedom degrees of freedom
         ArrayList<Double> Vs = ChiSquareDistribution.sample(
@@ -247,11 +251,13 @@ public class StudentTDistribution
         return samples;
     }
 
+    @Override
     public StudentTDistribution.CDF getCDF()
     {
         return new StudentTDistribution.CDF( this );
     }
 
+    @Override
     public StudentTDistribution.PDF getProbabilityFunction()
     {
         return new StudentTDistribution.PDF( this );
@@ -275,7 +281,7 @@ public class StudentTDistribution
      * than zero.
      */
     public void setPrecision(
-        double precision)
+        final double precision)
     {
         if( precision <= 0.0 )
         {
@@ -291,21 +297,24 @@ public class StudentTDistribution
      * Mean, or noncentrality parameter, of the distribution
      */
     public void setMean(
-        double mean)
+        final double mean)
     {
         this.mean = mean;
     }
 
+    @Override
     public Double getMean()
     {
         return this.mean;
     }
 
+    @Override
     public Double getMinSupport()
     {
         return Double.NEGATIVE_INFINITY;
     }
 
+    @Override
     public Double getMaxSupport()
     {
         return Double.POSITIVE_INFINITY;
@@ -317,6 +326,7 @@ public class StudentTDistribution
         return "Mean: " + this.getMean() + ", Variance: " + 1.0/this.getPrecision() + ", DOF: " + this.getDegreesOfFreedom();
     }
 
+    @Override
     public StudentTDistribution.MaximumLikelihoodEstimator getEstimator()
     {
         return new StudentTDistribution.MaximumLikelihoodEstimator();
@@ -328,7 +338,7 @@ public class StudentTDistribution
      */
     public static class PDF
         extends StudentTDistribution
-        implements ScalarProbabilityDensityFunction
+        implements UnivariateProbabilityDensityFunction
     {
 
         /**
@@ -346,7 +356,7 @@ public class StudentTDistribution
          * datapoints - 1, DOFs must be greater than zero.
          */
         public PDF(
-            double degreesOfFreedom )
+            final double degreesOfFreedom )
         {
             super( degreesOfFreedom );
         }
@@ -363,9 +373,9 @@ public class StudentTDistribution
          * than zero.
          */
         public PDF(
-            double degreesOfFreedom,
-            double mean,
-            double precision )
+            final double degreesOfFreedom,
+            final double mean,
+            final double precision )
         {
             super( degreesOfFreedom, mean, precision );
         }
@@ -376,32 +386,36 @@ public class StudentTDistribution
          * The underlying Student t-distribution
          */
         public PDF(
-            StudentTDistribution other  )
+            final StudentTDistribution other  )
         {
             super( other );
         }
 
+        @Override
         public Double evaluate(
-            Double input )
+            final Double input )
         {
             return this.evaluate( input.doubleValue() );
         }
         
+        @Override
         public double evaluate(
-            double input )
+            final double input )
         {
             return Math.exp( this.logEvaluate(input) );
         }
 
 
+        @Override
         public double logEvaluate(
             final Double input)
         {
             return this.logEvaluate((double) input);
         }
 
+        @Override
         public double logEvaluate(
-            double input)
+            final double input)
         {
             double logSum = 0.0;
             final double v2 = this.degreesOfFreedom / 2.0;
@@ -446,7 +460,7 @@ public class StudentTDistribution
          * datapoints - 1, DOFs must be greater than zero.
          */
         public CDF(
-            double degreesOfFreedom )
+            final double degreesOfFreedom )
         {
             super( degreesOfFreedom );
         }
@@ -463,9 +477,9 @@ public class StudentTDistribution
          * than zero.
          */
         public CDF(
-            double degreesOfFreedom,
-            double mean,
-            double precision )
+            final double degreesOfFreedom,
+            final double mean,
+            final double precision )
         {
             super( degreesOfFreedom, mean, precision );
         }
@@ -476,19 +490,21 @@ public class StudentTDistribution
          * The underlying Student t-distribution
          */
         public CDF(
-            StudentTDistribution other  )
+            final StudentTDistribution other  )
         {
             super( other );
         }
 
+        @Override
         public Double evaluate(
-            Double input )
+            final Double input )
         {
             return this.evaluate( input.doubleValue() );
         }
 
+        @Override
         public double evaluate(
-            double input )
+            final double input )
         {
 
             double delta = input-this.mean;
@@ -524,8 +540,9 @@ public class StudentTDistribution
          * @return
          * Value of x such that x=CDF(p)
          */
+        @Override
         public Double inverse(
-            double p )
+            final double p )
         {
             return InverseTransformSampling.inverse( this, p ).getInput();
         }
@@ -536,13 +553,15 @@ public class StudentTDistribution
             return this;
         }
 
+        @Override
         public StudentTDistribution.PDF getDerivative()
         {
             return this.getProbabilityFunction();
         }
 
+        @Override
         public Double differentiate(
-            Double input)
+            final Double input)
         {
             return this.getDerivative().evaluate(input);
         }
@@ -584,7 +603,7 @@ public class StudentTDistribution
          * Amount to add to the variance to keep it from being 0.0
          */
         public MaximumLikelihoodEstimator(
-            double defaultVariance )
+            final double defaultVariance )
         {
             this.defaultVariance = defaultVariance;
         }
@@ -597,8 +616,9 @@ public class StudentTDistribution
          * Maximum likelihood estimate of the UnivariateGaussian that generated
          * the data
          */
+        @Override
         public StudentTDistribution learn(
-            Collection<? extends Double> data )
+            final Collection<? extends Double> data )
         {
             return MaximumLikelihoodEstimator.learn( data, this.defaultVariance );
         }
@@ -614,7 +634,7 @@ public class StudentTDistribution
          * Amount to add to the variance to keep it from being 0.0
          */
         public static StudentTDistribution.PDF learn(
-            Collection<? extends Double> data,
+            final Collection<? extends Double> data,
             final double defaultVariance )
         {
             Pair<Double,Double> mle =
@@ -658,7 +678,7 @@ public class StudentTDistribution
          * Amount to add to the variance to keep it from being 0.0
          */
         public WeightedMaximumLikelihoodEstimator(
-            double defaultVariance )
+            final double defaultVariance )
         {
             this.defaultVariance = defaultVariance;
         }
@@ -672,8 +692,9 @@ public class StudentTDistribution
          * @return
          * Maximum Likelihood UnivariateGaussian that generated the data
          */
+        @Override
         public StudentTDistribution.PDF learn(
-            Collection<? extends WeightedValue<? extends Double>> data )
+            final Collection<? extends WeightedValue<? extends Double>> data )
         {
             return WeightedMaximumLikelihoodEstimator.learn(
                 data, this.defaultVariance );
@@ -691,7 +712,7 @@ public class StudentTDistribution
          * Amount to add to the variance to keep it from being 0.0
          */
         public static StudentTDistribution.PDF learn(
-            Collection<? extends WeightedValue<? extends Double>> data,
+            final Collection<? extends WeightedValue<? extends Double>> data,
             final double defaultVariance )
         {
             Pair<Double,Double> mle =

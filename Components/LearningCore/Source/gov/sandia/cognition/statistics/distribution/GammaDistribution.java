@@ -20,11 +20,11 @@ import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
-import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
+import gov.sandia.cognition.statistics.AbstractClosedFormSmoothUnivariateDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
 import gov.sandia.cognition.statistics.EstimableDistribution;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.Pair;
@@ -53,7 +53,7 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Gamma_distribution"
 )
 public class GammaDistribution
-    extends AbstractClosedFormSmoothScalarDistribution
+    extends AbstractClosedFormSmoothUnivariateDistribution
     implements EstimableDistribution<Double,GammaDistribution>
 {
 
@@ -99,8 +99,8 @@ public class GammaDistribution
      * Note that this is the INVERSE of what octave uses!!
      */
     public GammaDistribution(
-        double shape,
-        double scale )
+        final double shape,
+        final double scale )
     {
         this.setShape( shape );
         this.setScale( scale );
@@ -112,7 +112,7 @@ public class GammaDistribution
      * GammaDistribution to copy
      */
     public GammaDistribution(
-        GammaDistribution other  )
+        final GammaDistribution other  )
     {
         this( other.getShape(), other.getScale() );
     }
@@ -141,7 +141,7 @@ public class GammaDistribution
      * must be greater than zero
      */
     public void setShape(
-        double shape )
+        final double shape )
     {
         if (shape <= 0.0)
         {
@@ -170,7 +170,7 @@ public class GammaDistribution
      * Note that this is the INVERSE of what octave uses!!
      */
     public void setScale(
-        double scale )
+        final double scale )
     {
         if (scale <= 0.0)
         {
@@ -180,11 +180,13 @@ public class GammaDistribution
     }
 
 
+    @Override
     public Double getMean()
     {
         return this.getShape() * this.getScale();
     }
 
+    @Override
     public double getVariance()
     {
         return this.getShape() * this.getScale() * this.getScale();
@@ -195,6 +197,7 @@ public class GammaDistribution
      * @return
      * 2-dimensional Vector with (shape scale)
      */
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues(
@@ -206,8 +209,9 @@ public class GammaDistribution
      * @param parameters
      * 2-dimensional Vector with (shape scale)
      */
+    @Override
     public void convertFromVector(
-        Vector parameters )
+        final Vector parameters )
     {
         if (parameters.getDimensionality() != 2)
         {
@@ -238,10 +242,10 @@ public class GammaDistribution
      * Samples simulated from the Gamma distribution.
      */
     public static ArrayList<Double> sample(
-        double shape,
-        double scale,
-        Random random,
-        int numSamples )
+        final double shape,
+        final double scale,
+        final Random random,
+        final int numSamples )
     {
 
         if( shape <= 0.0 )
@@ -318,18 +322,21 @@ public class GammaDistribution
 
     }
     
+    @Override
     public ArrayList<Double> sample(
-        Random random,
-        int numSamples )
+        final Random random,
+        final int numSamples )
     {
         return sample( this.getShape(), this.getScale(), random, numSamples );
     }
 
+    @Override
     public GammaDistribution.CDF getCDF()
     {
         return new GammaDistribution.CDF( this );
     }
 
+    @Override
     public GammaDistribution.PDF getProbabilityFunction()
     {
         return new GammaDistribution.PDF( this );
@@ -341,16 +348,19 @@ public class GammaDistribution
         return "Shape = " + this.getShape() + ", Scale = " + this.getScale();
     }
 
+    @Override
     public Double getMinSupport()
     {
         return 0.0;
     }
 
+    @Override
     public Double getMaxSupport()
     {
         return Double.POSITIVE_INFINITY;
     }
 
+    @Override
     public GammaDistribution.MomentMatchingEstimator getEstimator()
     {
         return new GammaDistribution.MomentMatchingEstimator();
@@ -361,7 +371,7 @@ public class GammaDistribution
      */
     public static class PDF
         extends GammaDistribution
-        implements ScalarProbabilityDensityFunction
+        implements UnivariateProbabilityDensityFunction
     {
      
         /**
@@ -383,8 +393,8 @@ public class GammaDistribution
          * Note that this is the INVERSE of what octave uses!!
          */
         public PDF(
-            double shape,
-            double scale )
+            final double shape,
+            final double scale )
         {
             super( shape, scale );
         }
@@ -395,19 +405,21 @@ public class GammaDistribution
          * GammaDistribution to copy
          */
         public PDF(
-            GammaDistribution other  )
+            final GammaDistribution other  )
         {
             super( other );
         }
 
+        @Override
         public Double evaluate(
-            Double input )
+            final Double input )
         {
             return this.evaluate( input.doubleValue() );
         }
         
+        @Override
         public double evaluate(
-            double input )
+            final double input )
         {
             return evaluate( input, this.getShape(), this.getScale() );
         }
@@ -428,9 +440,9 @@ public class GammaDistribution
          * p(x;shape,scale)
          */
         public static double evaluate(
-            double x,
-            double shape,
-            double scale )
+            final double x,
+            final double shape,
+            final double scale )
         {
             
             double p;
@@ -446,14 +458,16 @@ public class GammaDistribution
             return p;
         }
 
+        @Override
         public double logEvaluate(
             final Double input)
         {
             return this.logEvaluate((double) input);
         }
 
+        @Override
         public double logEvaluate(
-            double input)
+            final double input)
         {
             return logEvaluate( input, this.getShape(), this.getScale() );
         }
@@ -470,9 +484,9 @@ public class GammaDistribution
          * Natural logarithm of the PDF.
          */
         public static double logEvaluate(
-            double input,
-            double shape,
-            double scale )
+            final double input,
+            final double shape,
+            final double scale )
         {
 
             if( input <= 0.0 )
@@ -525,8 +539,8 @@ public class GammaDistribution
          * Note that this is the INVERSE of what octave uses!!
          */
         public CDF(
-            double shape,
-            double scale )
+            final double shape,
+            final double scale )
         {
             super( shape, scale );
         }
@@ -537,21 +551,23 @@ public class GammaDistribution
          * GammaDistribution to copy
          */
         public CDF(
-            GammaDistribution other  )
+            final GammaDistribution other  )
         {
             super( other );
         }
         
 
+        @Override
         public Double evaluate(
-            Double input )
+            final Double input )
         {
             return this.evaluate( input.doubleValue() );
         }
 
         
+        @Override
         public double evaluate(
-            double input )
+            final double input )
         {
             return evaluate( input, this.getShape(), this.getScale() );
         }
@@ -572,9 +588,9 @@ public class GammaDistribution
          * Pr(y le x;shape,scale)
          */
         public static double evaluate(
-            double x,
-            double shape,
-            double scale )
+            final double x,
+            final double shape,
+            final double scale )
         {
             double p;
             if (x <= 0.0)
@@ -594,13 +610,15 @@ public class GammaDistribution
             return this;
         }
 
+        @Override
         public GammaDistribution.PDF getDerivative()
         {
             return this.getProbabilityFunction();
         }
 
+        @Override
         public Double differentiate(
-            Double input)
+            final Double input)
         {
             return this.getDerivative().evaluate(input);
         }
@@ -623,8 +641,9 @@ public class GammaDistribution
         {
         }
 
+        @Override
         public GammaDistribution learn(
-            Collection<? extends Double> data)
+            final Collection<? extends Double> data)
         {
             Pair<Double,Double> pair =
                 UnivariateStatisticsUtil.computeMeanAndVariance(data);
@@ -642,8 +661,8 @@ public class GammaDistribution
          * given parameters.
          */
         public static GammaDistribution learn(
-            double mean,
-            double variance )
+            final double mean,
+            final double variance )
         {
             double scale = variance / mean;
             double shape = mean*mean / variance;
@@ -668,8 +687,9 @@ public class GammaDistribution
         {
         }
 
+        @Override
         public GammaDistribution learn(
-            Collection<? extends WeightedValue<? extends Double>> data)
+            final Collection<? extends WeightedValue<? extends Double>> data)
         {
             Pair<Double,Double> pair =
                 UnivariateStatisticsUtil.computeWeightedMeanAndVariance(data);

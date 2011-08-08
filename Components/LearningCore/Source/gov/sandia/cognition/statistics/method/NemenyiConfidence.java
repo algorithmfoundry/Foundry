@@ -20,15 +20,13 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
-import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
  * The Nemenyi test is the rank-based analogue of the Tukey multiple-comparison
- * test.  It's primary use is in determining which treatments are significant
+ * test.  Its primary use is in determining which treatments are significant
  * after a Friedman's test indicates that one of the treatments is statistically
  * different.
  * @author Kevin R. Dixon
@@ -69,9 +67,13 @@ import java.util.Collection;
     }
 )
 public class NemenyiConfidence 
-    extends AbstractCloneableSerializable
-    implements NullHypothesisEvaluator<Collection<? extends Number>>
+    extends AbstractMultipleHypothesisComparison<Collection<? extends Number>, NemenyiConfidence.Statistic>
 {
+
+    /**
+     * Default instance.
+     */
+    public static final NemenyiConfidence INSTANCE = new NemenyiConfidence();
 
     /** 
      * Creates a new instance of NemenyiConfidence 
@@ -82,166 +84,100 @@ public class NemenyiConfidence
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public NemenyiConfidence.Statistic evaluateNullHypothesis(
-        Collection<? extends Number> data1,
-        Collection<? extends Number> data2)
+    public NemenyiConfidence.Statistic evaluateNullHypotheses(
+        final Collection<? extends Collection<? extends Number>> data,
+        final double uncompensatedAlpha)
     {
-        return evaluateNullHypothesis( Arrays.asList( data1, data2 ) );
-    }
-
-    /**
-     * Computes the Confidence test results for the given experiment tabluea
-     * @param data
-     * Collection of treatments, where each treatment must have the same number
-     * of subjects in each treatment
-     * @return
-     * Confidence statistic describing the confidence test results
-     */
-    public static NemenyiConfidence.Statistic evaluateNullHypothesis(
-        Collection<? extends Collection<? extends Number>> data )
-    {
-
         // There are "K" treatments
-        int K = data.size();
+        final int K = data.size();
 
         // There are "N" subjects for each treatment
         int N = CollectionUtil.getFirst(data).size();
 
-        return new NemenyiConfidence.Statistic(K, N,
-            FriedmanConfidence.computeTreatmentRankMeans(data) );
-
+        ArrayList<Double> treatmentRankMeans =
+            FriedmanConfidence.computeTreatmentRankMeans(data);
+        final double standardError = Math.sqrt( K*(K+1.0) / (6.0*N) );
+        return new NemenyiConfidence.Statistic(
+            uncompensatedAlpha, N, treatmentRankMeans, standardError );
     }
 
     /**
-     * The test statistic from Nemenyi's test.
+     * Statistic from Nemenyi's multiple comparison test
      */
     public static class Statistic
-        extends AbstractConfidenceStatistic
+        extends AbstractMultipleHypothesisComparison.Statistic
     {
 
         /**
-         * Number of treatments in the experiment
-         */
-        private int treatmentCount;
-
-        /**
-         * Number of subjects in the experiment
+         * Number of subjects in each treatment
          */
         private int subjectCount;
 
         /**
-         * Mean rank for each treatment
+         * Mean for each treatment
          */
         private ArrayList<Double> treatmentRankMeans;
 
         /**
+         * Standard error of the entire experiment
+         */
+        private double standardError;
+
+        /**
+         * Creates a new instance of StudentizedMultipleComparisonStatistic
+         * @param uncompensatedAlpha
+         * Uncompensated alpha (p-value threshold) for the multiple comparison
+         * test
+         * @param subjectCount
+         * Number of subjects in each treatment
+         * @param treatmentRankMeans
+         * Mean for each treatment
+         * @param standardError
+         * Standard error of the entire experiment
+         */
+        public Statistic(
+            final double uncompensatedAlpha,
+            final int subjectCount,
+            final ArrayList<Double> treatmentRankMeans,
+            final double standardError )
+        {
+            this.treatmentCount = treatmentRankMeans.size();
+            this.uncompensatedAlpha = uncompensatedAlpha;
+            this.subjectCount = subjectCount;
+            this.treatmentRankMeans = treatmentRankMeans;
+            this.standardError = standardError;
+            this.testStatistics = this.computeTestStatistics(
+                subjectCount, treatmentRankMeans, standardError);
+            this.nullHypothesisProbabilities = this.computeNullHypothesisProbabilities(
+                subjectCount, this.testStatistics );
+        }
+
+        /**
+         * Computes the test statistic for all treatments
+         * @param subjectCount
+         * Number of subjects in each treatment
+         * @param treatmentRankMeans
+         * Mean for each treatment
+         * @param standardError
+         * Standard error of the entire experiment
+         * @return
          * Test statistics, where the (i,j) element compares treatment "i" to
          * treatment "j", the statistic is symmetric
          */
-        private Matrix Z;
-
-        /**
-         * Null hypothesis probability that treatment "i" is statistically
-         * different than treatment "j"
-         */
-        private Matrix P;
-
-        /**
-         * Creates a new instance of Statistic
-         * @param treatmentCount
-         * Number of treatments in the experiment
-         * @param subjectCount
-         * Number of subjects in the experiment
-         * @param treatmentRankMeans
-         * Mean rank for each treatment
-         */
-        public Statistic(
-            int treatmentCount,
-            int subjectCount,
-            ArrayList<Double> treatmentRankMeans )
-        {
-            this( treatmentCount, subjectCount, treatmentRankMeans,
-                computeTestStatistics(treatmentCount, subjectCount,treatmentRankMeans) );
-        }
-
-        /**
-         * Creates a new instance of Statistic
-         * @param treatmentCount
-         * Number of treatments in the experiment
-         * @param subjectCount
-         * Number of subjects in the experiment
-         * @param treatmentRankMeans
-         * Mean rank for each treatment
-         * @param Z
-         * Test statistic for the (i,j) treatment comparison
-         */
-        public Statistic(
-            int treatmentCount,
-            int subjectCount,
-            ArrayList<Double> treatmentRankMeans,
-            Matrix Z )
-        {
-            this( treatmentCount, subjectCount, treatmentRankMeans, Z,
-                computeNullHypothesisProbability(treatmentCount, subjectCount, Z) );
-        }
-
-
-        /**
-         * Creates a new instance of Statistic
-         * @param treatmentCount
-         * Number of treatments in the experiment
-         * @param subjectCount
-         * Number of subjects in the experiment
-         * @param treatmentRankMeans
-         * Mean rank for each treatment
-         * @param Z
-         * Test statistic for the (i,j) treatment comparison
-         * @param P
-         * Null-hypothesis probability for the (i,j) treatment comparison
-         */
-        public Statistic(
-            int treatmentCount,
-            int subjectCount,
-            ArrayList<Double> treatmentRankMeans,
-            Matrix Z,
-            Matrix P)
-        {
-            super( computeMinimumHypothesisProbability(P) );
-            this.treatmentCount = treatmentCount;
-            this.subjectCount = subjectCount;
-            this.treatmentRankMeans = treatmentRankMeans;
-            this.Z = Z;
-            this.P = P;
-        }
-
-        /**
-         * Computes the test statistic for the (i,j) treatment comparison
-         * @param treatmentCount
-         * Number of treatments in the experiment
-         * @param subjectCount
-         * Number of subjects in the experiment
-         * @param treatmentRankMeans
-         * Mean rank for each treatment
-         * @return
-         * test statistic for the (i,j) treatment comparison
-         */
-        protected static Matrix computeTestStatistics(
-            int treatmentCount,
-            int subjectCount,
-            ArrayList<Double> treatmentRankMeans )
+        public Matrix computeTestStatistics(
+            final int subjectCount,
+            final ArrayList<Double> treatmentRankMeans,
+            final double standardError )
         {
             int K = treatmentRankMeans.size();
-            int N = subjectCount;
-            Matrix Z = MatrixFactory.getDefault().createMatrix(K, K);
+            Matrix Z = MatrixFactory.getDefault().createMatrix(K,K);
             for( int i = 0; i < K; i++ )
             {
+                final double yi = treatmentRankMeans.get(i);
                 for( int j = i+1; j < K; j++ )
                 {
-                    // The test statistic is symmetric
-                    double ri = treatmentRankMeans.get(i);
-                    double rj = treatmentRankMeans.get(j);
-                    double zij = Math.abs(ri-rj) / Math.sqrt( K*(K+1.0) / (6.0*N) );
+                    final double yj = treatmentRankMeans.get(j);
+                    final double zij = Math.abs(yi-yj) / standardError;
                     Z.setElement(i, j, zij);
                     Z.setElement(j, i, zij);
                 }
@@ -251,8 +187,6 @@ public class NemenyiConfidence
 
         /**
          * Computes null-hypothesis probability for the (i,j) treatment comparison
-         * @param treatmentCount
-         * Number of treatments in the experiment
          * @param subjectCount
          * Number of subjects in the experiment
          * @param Z
@@ -260,17 +194,16 @@ public class NemenyiConfidence
          * @return
          * Null-hypothesis probability for the (i,j) treatment comparison
          */
-        protected static Matrix computeNullHypothesisProbability(
-            int treatmentCount,
-            int subjectCount,
-            Matrix Z )
+        protected Matrix computeNullHypothesisProbabilities(
+            final int subjectCount,
+            final Matrix Z )
         {
-            final int K = treatmentCount;
+            final int K = Z.getNumRows();
             final int N = subjectCount;
 
             Matrix P = MatrixFactory.getDefault().createMatrix(K, K);
             StudentizedRangeDistribution.CDF cdf =
-                new StudentizedRangeDistribution.CDF( K, N );
+                new StudentizedRangeDistribution.CDF( K, K*N-1 );
             for( int i = 0; i < K; i++ )
             {
                 // A classifier is equal to itself.
@@ -280,7 +213,6 @@ public class NemenyiConfidence
                     // The difference is symmetric
                     double zij = Z.getElement(i,j);
                     double pij = 1.0-cdf.evaluate( zij*Math.sqrt(2) );
-//                    double pij = 1.0-StudentizedRangeDistribution.inverse( zij*Math.sqrt(2), K, N );
                     P.setElement(i, j, pij);
                     P.setElement(j, i, pij);
                 }
@@ -290,54 +222,18 @@ public class NemenyiConfidence
 
         }
 
-        /**
-         * Computes the minimum null-hypothesis probability
-         * @param P
-         * Null-hypothesis probability for the (i,j) treatment comparison
-         * @return
-         * Minimum null-hypothesis probability
-         */
-        public static double computeMinimumHypothesisProbability(
-            Matrix P )
-        {
-            int K = P.getNumRows();
-            double minP = 1.0;
-            for( int i = 0; i < K; i++ )
-            {
-                for( int j = i+1; j < K; j++ )
-                {
-                    double pij = P.getElement(i, j);
-                    if( minP > pij )
-                    {
-                        minP = pij;
-                    }
-                }
-            }
-            return minP;
-        }
-
         @Override
-        public NemenyiConfidence.Statistic clone()
+        public Statistic clone()
         {
             Statistic clone = (Statistic) super.clone();
             clone.treatmentRankMeans = ObjectUtil.cloneSmartElementsAsArrayList(
-                this.getTreatmentRankMeans() );
+                this.getTreatmentMeans() );
             return clone;
         }
 
         /**
-         * Getter for treatmentCount
-         * @return 
-         * Number of treatments in the experiment
-         */
-        public int getTreatmentCount()
-        {
-            return this.treatmentCount;
-        }
-
-        /**
          * Getter for subjectCount
-         * @return 
+         * @return
          * Number of subjects in the experiment
          */
         public int getSubjectCount()
@@ -346,34 +242,33 @@ public class NemenyiConfidence
         }
 
         /**
-         * Getter for treatmentRankMeans
-         * @return 
-         * Mean rank for each treatment
+         * Getter for standardError
+         * @return
+         * Standard error of the entire experiment
          */
-        public ArrayList<Double> getTreatmentRankMeans()
+        public double getStandardError()
+        {
+            return this.standardError;
+        }
+
+        /**
+         * Getter for treatmentRankMeans
+         * @return
+         * Mean for each treatment
+         */
+        public ArrayList<Double> getTreatmentMeans()
         {
             return this.treatmentRankMeans;
         }
 
-        /**
-         * Getter for Z
-         * @return 
-         * Test statistic for the (i,j) treatment comparison
-         */
-        public Matrix getZ()
+        @Override
+        public boolean acceptNullHypothesis(
+            final int i,
+            final int j)
         {
-            return this.Z;
+            return this.getNullHypothesisProbability(i, j) >= this.getUncompensatedAlpha();
         }
 
-        /**
-         * Getter for P
-         * @return
-         * Null-hypothesis probability for the (i,j) treatment comparison
-         */
-        public Matrix getP()
-        {
-            return this.P;
-        }
 
     }
 

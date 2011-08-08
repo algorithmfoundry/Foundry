@@ -18,7 +18,7 @@ import gov.sandia.cognition.learning.function.cost.KolmogorovSmirnovDivergence;
 import gov.sandia.cognition.learning.function.cost.NegativeLogLikelihood;
 import gov.sandia.cognition.learning.function.cost.ParallelNegativeLogLikelihood;
 import gov.sandia.cognition.statistics.ClosedFormComputableDistribution;
-import gov.sandia.cognition.statistics.ClosedFormScalarDistribution;
+import gov.sandia.cognition.statistics.ClosedFormUnivariateDistribution;
 import gov.sandia.cognition.statistics.distribution.GammaDistribution;
 import gov.sandia.cognition.statistics.distribution.PoissonDistribution;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
@@ -103,9 +103,9 @@ public class DistributionParameterEstimatorTest
     }
     
     public <DataType extends Number> void distributionKS(
-        ClosedFormScalarDistribution<DataType> target,
+        ClosedFormUnivariateDistribution<DataType> target,
         ArrayList<? extends DataType> targetData,
-        ClosedFormScalarDistribution<DataType> estimate )
+        ClosedFormUnivariateDistribution<DataType> estimate )
     {
 
         System.out.println( "\nK-S Distribution: " + estimate.getClass().getCanonicalName() );
@@ -114,10 +114,10 @@ public class DistributionParameterEstimatorTest
             new KolmogorovSmirnovDivergence<DataType>( targetData );
         System.out.println( "Target Cost:    " + costFunction.evaluate(target) );
 
-        DistributionParameterEstimator<DataType,ClosedFormScalarDistribution<DataType>> instance =
-            new DistributionParameterEstimator<DataType,ClosedFormScalarDistribution<DataType>>( estimate, costFunction );
+        DistributionParameterEstimator<DataType,ClosedFormUnivariateDistribution<DataType>> instance =
+            new DistributionParameterEstimator<DataType,ClosedFormUnivariateDistribution<DataType>>( estimate, costFunction );
 
-        ClosedFormScalarDistribution<DataType> result =
+        ClosedFormUnivariateDistribution<DataType> result =
             instance.learn(targetData);
 
         System.out.println( "Target: " + target.convertToVector() );

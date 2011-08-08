@@ -15,7 +15,6 @@
 
 package gov.sandia.cognition.statistics.method;
 
-import gov.sandia.cognition.statistics.method.AbstractConfidenceStatistic;
 import junit.framework.TestCase;
 
 /**
@@ -39,6 +38,12 @@ public class AbstractConfidenceStatisticTest
         public ACS clone()
         {
             return new ACS( this.getNullHypothesisProbability() );
+        }
+
+        @Override
+        public double getTestStatistic()
+        {
+            return 1.0;
         }
 
     }

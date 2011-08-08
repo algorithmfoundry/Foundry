@@ -14,18 +14,12 @@
 
 package gov.sandia.cognition.io.serialization;
 
-import gov.sandia.cognition.math.ComplexNumber;
-import gov.sandia.cognition.math.Ring;
-import gov.sandia.cognition.math.matrix.Matrix;
-import gov.sandia.cognition.math.matrix.MatrixFactory;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
 /**
- * @TODO    Document this.
+ * Unit tests for class JavaDefaultBinarySerializationHandler.
  *
  * @author  Justin Basilico
  * @since   3.0

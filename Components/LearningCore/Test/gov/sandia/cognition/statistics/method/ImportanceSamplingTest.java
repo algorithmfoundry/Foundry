@@ -15,7 +15,7 @@
 package gov.sandia.cognition.statistics.method;
 
 import gov.sandia.cognition.statistics.ProbabilityDensityFunction;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.distribution.BetaDistribution;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.util.DefaultWeightedValue;
@@ -72,7 +72,7 @@ public class ImportanceSamplingTest
         System.out.println("sample");
         ProbabilityDensityFunction<Double> importanceDistribution =
             new UnivariateGaussian.PDF( 1.0, 2.0 );
-        ScalarProbabilityDensityFunction targetDistribution =
+        UnivariateProbabilityDensityFunction targetDistribution =
             new BetaDistribution.PDF( 1.0, 2.0 );
         int numSamples = 100000;
         ArrayList<DefaultWeightedValue<Double>> result =

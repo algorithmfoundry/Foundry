@@ -14,6 +14,7 @@ package gov.sandia.cognition.learning.algorithm.perceptron;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.learning.function.categorization.DefaultKernelBinaryCategorizer;
 import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
@@ -60,8 +61,11 @@ import gov.sandia.cognition.util.ArgumentChecker;
     pages={551, 585},
     url="http://portal.acm.org/citation.cfm?id=1248566")
 public class OnlinePassiveAggressivePerceptron
-    extends AbstractOnlineLinearBinaryCategorizerLearner
+    extends AbstractLinearCombinationOnlineLearner
 {
+    
+    /** By default the Passive-Aggressive Perceptron does not use a bias. */
+    public static final boolean DEFAULT_UPDATE_BIAS = false;
 
     /**
      * Creates a new {@code OnlinePassiveAggressivePerceptron}.
@@ -81,53 +85,13 @@ public class OnlinePassiveAggressivePerceptron
     public OnlinePassiveAggressivePerceptron(
         final VectorFactory<?> vectorFactory)
     {
-        super(vectorFactory);
-    }
-
-    @Override
-    public void update(
-        final LinearBinaryCategorizer target,
-        final Vector input,
-        final boolean output)
-    {
-        Vector weights = target.getWeights();
-        if (weights == null)
-        {
-            // This is the first example, so initialize the weight vector.
-            weights = this.getVectorFactory().createVector(
-                input.getDimensionality());
-            target.setWeights(weights);
-        }
-        // else - Use the existing weights.
-
-        // Predict the output as a double (negative values are false, positive
-        // are true).
-        final double prediction = target.evaluateAsDouble(input);
-        final double actual = output ? +1.0 : -1.0;
-        final double loss = 1.0 - actual * prediction;
-
-        if (loss > 0.0)
-        {
-            // Update methods use ||x||^2.
-            final double inputNorm2Squared = input.norm2Squared();
-
-            // Compute the update value (tau).
-            final double update = this.computeUpdate(
-                input, actual, prediction, loss, inputNorm2Squared);
-
-            // Do w += y * tau * x
-            weights.plusEquals(input.scale(actual * update));
-        }
-        // else - Passive when there is no loss.
-        
+        super(DEFAULT_UPDATE_BIAS, vectorFactory);
     }
 
     /**
      * Compute the update value (tau) for the algorithm. Other variants of
      * the algorithm should override this method.
      *
-     * @param   input
-     *      The input vector.
      * @param   actual
      *      The actual label represented as a double (-1 or +1).
      * @param   predicted
@@ -141,7 +105,6 @@ public class OnlinePassiveAggressivePerceptron
      *      in degenerate cases such as a zero-vector input.
      */
     protected double computeUpdate(
-        final Vector input,
         final double actual,
         final double predicted,
         final double loss,
@@ -153,8 +116,58 @@ public class OnlinePassiveAggressivePerceptron
             return 0.0;
         }
 
-        // Compute the update value: l / ||x||^2
         return loss / inputNorm2Squared;
+    }
+
+    @Override
+    public double computeUpdate(
+        final LinearBinaryCategorizer target,
+        final Vector input,
+        final boolean actualCategory,
+        final double predicted)
+    {
+        final double actual = actualCategory ? +1.0 : -1.0;
+        final double loss = 1.0 - actual * predicted;
+
+        if (loss <= 0.0)
+        {
+            // Passive when there is no loss.
+            return 0.0;
+        }
+        else
+        {
+            // Update methods use ||x||^2.
+            final double inputNorm2Squared = input.norm2Squared();
+
+            // Compute the update value (tau).
+            return this.computeUpdate(
+                actual, predicted, loss, inputNorm2Squared);
+        }
+    }
+
+    @Override
+    public <InputType> double computeUpdate(
+        final DefaultKernelBinaryCategorizer<InputType> target,
+        final InputType input,
+        final boolean actualCategory,
+        final double predicted)
+    {
+        final double actual = actualCategory ? +1.0 : -1.0;
+        final double loss = 1.0 - actual * predicted;
+
+        if (loss <= 0.0)
+        {
+            // Passive when there is no loss.
+            return 0.0;
+        }
+        else
+        {
+            // Update methods use ||x||^2 = k(x, x).
+            final double norm = target.getKernel().evaluate(input, input);
+
+            // Compute the update value (tau).
+            return this.computeUpdate(actual, predicted, loss, norm);
+        }
     }
 
     /**
@@ -292,7 +305,7 @@ public class OnlinePassiveAggressivePerceptron
         {
             this(aggressiveness, VectorFactory.getDefault());
         }
-        
+
         /**
          * Creates a new {@code LinearSoftMargin} with the given parameters.
          *
@@ -310,7 +323,6 @@ public class OnlinePassiveAggressivePerceptron
 
         @Override
         protected double computeUpdate(
-            final Vector input,
             final double actual,
             final double predicted,
             final double loss,
@@ -377,7 +389,7 @@ public class OnlinePassiveAggressivePerceptron
         {
             this(aggressiveness, VectorFactory.getDefault());
         }
-        
+
         /**
          * Creates a new {@code QuadraticSoftMargin} with the given parameters.
          *
@@ -395,7 +407,6 @@ public class OnlinePassiveAggressivePerceptron
 
         @Override
         protected double computeUpdate(
-            final Vector input,
             final double actual,
             final double predicted,
             final double loss,
@@ -405,7 +416,7 @@ public class OnlinePassiveAggressivePerceptron
             return loss
                 / (inputNorm2Squared + 1.0 / (2.0 * this.aggressiveness));
         }
-        
+
     }
 
 }

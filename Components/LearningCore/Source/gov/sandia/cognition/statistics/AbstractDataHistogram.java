@@ -35,18 +35,21 @@ public abstract class AbstractDataHistogram<DataType>
         super();
     }
 
+    @Override
     public void add(
-        DataType value)
+        final DataType value)
     {
         this.add(value, 1);
     }
 
+    @Override
     public void remove(
-        DataType value )
+        final DataType value )
     {
         this.remove(value, 1);
     }
 
+    @Override
     public double getFraction(
         final DataType value)
     {
@@ -62,6 +65,7 @@ public abstract class AbstractDataHistogram<DataType>
         }
     }
 
+    @Override
     public void addAll(
         final Iterable<? extends DataType> values)
     {
@@ -71,6 +75,7 @@ public abstract class AbstractDataHistogram<DataType>
         }
     }
     
+    @Override
     public <OtherDataType extends DataType> void addAll(
         final DataHistogram<OtherDataType> other)
     {
@@ -86,58 +91,4 @@ public abstract class AbstractDataHistogram<DataType>
         return this.getTotalCount() == 0;
     }
     
-    /**
-     * Partial implementation of a PMF for AbstractDataHistogram
-     * @param <DataType>
-     * Type of data in the domain
-     */
-//    public static abstract class PMF<DataType>
-//        extends AbstractDataHistogram<DataType>
-//        implements DataHistogram.PMF<DataType>
-//    {
-//
-//        /**
-//         * Default constructor
-//         */
-//        public PMF()
-//        {
-//            super();
-//        }
-//
-//        @Override
-//        public AbstractDataHistogram.PMF<DataType> getProbabilityFunction()
-//        {
-//            return this;
-//        }
-//
-//        @Override
-//        public Double evaluate(
-//            DataType input)
-//        {
-//            return this.getFraction(input);
-//        }
-//
-//        @Override
-//        public double logEvaluate(
-//            DataType input)
-//        {
-//            return Math.log( this.evaluate(input) );
-//        }
-//
-//        @Override
-//        public double getEntropy()
-//        {
-//            return ProbabilityMassFunctionUtil.getEntropy(this);
-//        }
-//
-//        @Override
-//        public ArrayList<? extends DataType> sample(
-//            Random random,
-//            int numSamples)
-//        {
-//            return ProbabilityMassFunctionUtil.sample(this, random, numSamples);
-//        }
-//
-//    }
-
 }

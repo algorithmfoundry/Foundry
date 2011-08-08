@@ -16,7 +16,10 @@ package gov.sandia.cognition.statistics;
 
 import gov.sandia.cognition.math.Ring;
 import gov.sandia.cognition.math.RingAccumulator;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import junit.framework.TestCase;
 import java.util.Random;
 
@@ -119,17 +122,28 @@ public abstract class MultivariateDistributionTestHarness<RingType extends Ring<
     {
         System.out.println("getMean");
         Distribution<RingType> instance = this.createInstance();
-        RingAccumulator<RingType> f =
-            new RingAccumulator<RingType>( instance.sample(RANDOM, NUM_SAMPLES) );
-        System.out.println( "Instance: " + instance );
-        RingType sampleMean = f.getMean();
-        RingType statedMean = instance.getMean();
-        System.out.println( "Sample Mean: " + sampleMean );
-        System.out.println( "Stated Mean: " + statedMean );
-        if( !sampleMean.equals( statedMean, TOLERANCE ) )
+        try
         {
-            assertEquals( sampleMean, statedMean );
+            Method getMean = instance.getClass().getDeclaredMethod("getName");
+
+            RingAccumulator<RingType> f =
+                new RingAccumulator<RingType>( instance.sample(RANDOM, NUM_SAMPLES) );
+            System.out.println( "Instance: " + instance );
+            RingType sampleMean = f.getMean();
+            @SuppressWarnings("unchecked")
+            RingType statedMean = (RingType) getMean.invoke(instance);
+            System.out.println( "Sample Mean: " + sampleMean );
+            System.out.println( "Stated Mean: " + statedMean );
+            if( !sampleMean.equals( statedMean, TOLERANCE ) )
+            {
+                assertEquals( sampleMean, statedMean );
+            }
         }
+        catch (Exception ex)
+        {
+            System.out.println( "No getMean() method" );
+        }
+
     }
 
     /**

@@ -62,7 +62,7 @@ import java.util.LinkedList;
 )
 public class MannWhitneyUConfidence
     extends AbstractCloneableSerializable
-    implements NullHypothesisEvaluator<Collection<Double>>
+    implements NullHypothesisEvaluator<Collection<? extends Number>>
 {
 
     /** Creates a new instance of MannWhitneyUConfidence */
@@ -82,26 +82,27 @@ public class MannWhitneyUConfidence
      * Statistics from the Mann-Whitney U-test
      */
     public MannWhitneyUConfidence.Statistic evaluateNullHypothesis(
-        Collection<? extends InputOutputPair<Double, Boolean>> scoreClassPairs )
+        Collection<? extends InputOutputPair<? extends Number, Boolean>> scoreClassPairs )
     {
 
-        DefaultPair<LinkedList<Double>, LinkedList<Double>> pair =
+        DefaultPair<LinkedList<Number>, LinkedList<Number>> pair =
             DatasetUtil.splitDatasets( scoreClassPairs );
-        LinkedList<Double> data1 = pair.getFirst();
-        LinkedList<Double> data2 = pair.getSecond();
+        LinkedList<Number> data1 = pair.getFirst();
+        LinkedList<Number> data2 = pair.getSecond();
         return this.evaluateNullHypothesis( data1, data2 );
 
     }
 
+    @Override
     public MannWhitneyUConfidence.Statistic evaluateNullHypothesis(
-        Collection<Double> data1,
-        Collection<Double> data2 )
+        Collection<? extends Number> data1,
+        Collection<? extends Number> data2 )
     {
 
         int N1 = data1.size();
         int N2 = data2.size();
 
-        ArrayList<Double> allData = new ArrayList<Double>( N1 + N2 );
+        ArrayList<Number> allData = new ArrayList<Number>( N1 + N2 );
         allData.addAll( data1 );
         allData.addAll( data2 );
 
@@ -375,6 +376,12 @@ public class MannWhitneyUConfidence
             int N2 )
         {
             this.N2 = N2;
+        }
+
+        @Override
+        public double getTestStatistic()
+        {
+            return this.getZ();
         }
 
     }

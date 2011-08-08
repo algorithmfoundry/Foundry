@@ -2,6 +2,50 @@ This file contains the change log for the Cognitive Foundry.
 
 Changes since last release:
 
+Release 3.3.0 (2011-06-22):
+  * Common Core:
+    * Added LogMath and LogNumber as utilities for computation involving numbers
+      represented in log-space.
+    * Added MutableInteger and MutableLong, which are like Integer and Long but
+      with a mutable value, similar to MutableDouble.
+    * UnivariateSummaryStatistics added.
+    * Added DefaultIndentifiedValue.
+  * Learning Core:
+    * VectorNaiveBayesCategorizer: evaluateWithDiscriminant now properly
+      normalizes the discriminant, which improves results for things like AUC.
+    * PartitionalClusterer: Fixed corner-case bug.
+    * Added confidence-weighted online learners based on variance, standard
+      deviation, and AROW. They produce ConfidenceWeightedBinaryCategorizer
+      objects with either diagonal or full covariance matrices.
+    * Added balanced versions of bagging and IVoting in
+      CategoryBalancedBaggingLearner and CategoryBalancedIVotingLearner.
+    * Added online learners based on ROMMA, AROMMA, Ballseptron, Ramp-loss 
+      Passive Aggressive Perceptron, Shifting Perceptron, Forgetron,
+      Projectron, Randomized Budget Perceptron, and Stoptron.
+    * Added KernelizableBinaryCategorizerOnlineLearner interface for an online
+      linear binary categorizer that can also be used with a kernel. Also
+      provided abstract class AbstractKernelizableBinaryCategorizerOnlineLearner
+      and AbstractLinearCombinationOnlineLearner for common functionality.
+    * Moved KernelPerceptron and KernelAdatron to the new
+      learning.perceptron.kernel package.
+    * Added KernelUtil utility class for dealing with kernels and kernel
+      binary categorizers.
+    * Refactored statistics to remove getMean() from Distribution due to
+      some distributions not having a meaningful mean and confusion for what
+      the mean meant in some classes.
+    * Classes and interfaces interfaces named *Scalar* renamed to *Univariate*
+      for clarity.
+    * Added getTestStatistic() method to ConfidenceStatistic interface and
+      implemented in existing classes.
+    * Added support for multiple comparisons tests, including Bonferroni,
+      Holm, Nemenyi, Shaffer, Sidak, and Tukey-Kramer and updated
+      AnalysisOfVarianceOneWay (ANOVA) and FriedmanConfidence.
+    * Added multiple-comparisons experiment classes BlockExperimentComparison
+      and MultipleComparisonExperiment
+   * Text Core:
+     * Renamed ProbabilisticLatentSemanticAnalysis.Transform to
+       ProbabilisticLatentSemanticAnalysis.Result for consistency.
+
 Release 3.2.0 (2011-05-19):
  * Upgraded to mtj-9.9.14 and added the netlib-java-0.9.3 library, which MTJ
    now depends on.

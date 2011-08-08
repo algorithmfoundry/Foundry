@@ -19,8 +19,8 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
+import gov.sandia.cognition.statistics.AbstractClosedFormSmoothUnivariateDistribution;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import java.util.ArrayList;
 import java.util.Random;
@@ -39,7 +39,7 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Weibull_distribution"
 )
 public class WeibullDistribution 
-    extends AbstractClosedFormSmoothScalarDistribution
+    extends AbstractClosedFormSmoothUnivariateDistribution
 {
 
     /**
@@ -78,8 +78,8 @@ public class WeibullDistribution
      * Scale parameter, must be greater than 0.0
      */
     public WeibullDistribution(
-        double shape,
-        double scale)
+        final double shape,
+        final double scale)
     {
         this.shape = shape;
         this.scale = scale;
@@ -91,7 +91,7 @@ public class WeibullDistribution
      * WeibullDistribution to copy
      */
     public WeibullDistribution(
-        WeibullDistribution other )
+        final WeibullDistribution other )
     {
         this( other.getShape(), other.getScale() );
     }
@@ -118,7 +118,7 @@ public class WeibullDistribution
      * Shape parameter, must be greater than 0.0
      */
     public void setShape(
-        double shape)
+        final double shape)
     {
         if( shape <= 0.0 )
         {
@@ -144,7 +144,7 @@ public class WeibullDistribution
      * Scale parameter, must be greater than 0.0
      */
     public void setScale(
-        double scale)
+        final double scale)
     {
         if( scale <= 0.0 )
         {
@@ -154,12 +154,14 @@ public class WeibullDistribution
         this.scale = scale;
     }
 
+    @Override
     public Double getMean()
     {
         return this.scale * Math.exp( MathUtil.logGammaFunction(
             1.0 + 1.0/this.shape ) );
     }
 
+    @Override
     public double getVariance()
     {
         final double mean = this.getMean();
@@ -167,9 +169,10 @@ public class WeibullDistribution
             1.0 + 2.0/this.shape ) ) - mean*mean;
     }
 
+    @Override
     public ArrayList<Double> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
     {        
         ArrayList<Double> samples = new ArrayList<Double>( numSamples );
         final double exp = 1.0/this.shape;
@@ -181,35 +184,41 @@ public class WeibullDistribution
         return samples;
     }
 
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues(
             this.getShape(), this.getScale() );
     }
 
+    @Override
     public void convertFromVector(
-        Vector parameters)
+        final Vector parameters)
     {
         parameters.assertDimensionalityEquals(2);
         this.setShape( parameters.getElement(0) );
         this.setScale( parameters.getElement(1) );
     }
 
+    @Override
     public Double getMinSupport()
     {
         return 0.0;
     }
 
+    @Override
     public Double getMaxSupport()
     {
         return Double.POSITIVE_INFINITY;
     }
 
+    @Override
     public WeibullDistribution.PDF getProbabilityFunction()
     {
         return new WeibullDistribution.PDF( this );
     }
 
+    @Override
     public WeibullDistribution.CDF getCDF()
     {
         return new WeibullDistribution.CDF( this );
@@ -220,7 +229,7 @@ public class WeibullDistribution
      */
     public static class PDF
         extends WeibullDistribution
-        implements ScalarProbabilityDensityFunction
+        implements UnivariateProbabilityDensityFunction
     {
 
         /** 
@@ -239,8 +248,8 @@ public class WeibullDistribution
          * Scale parameter, must be greater than 0.0
          */
         public PDF(
-            double shape,
-            double scale)
+            final double shape,
+            final double scale)
         {
             super( shape, scale );
         }        
@@ -251,19 +260,21 @@ public class WeibullDistribution
          * WeibullDistribution to copy
          */
         public PDF(
-            WeibullDistribution other )
+            final WeibullDistribution other )
         {
             super( other );
         }
 
+        @Override
         public double logEvaluate(
-            Double input)
+            final Double input)
         {
             return this.logEvaluate((double) input);
         }
 
+        @Override
         public double logEvaluate(
-            double input)
+            final double input)
         {
             if( input < 0.0 )
             {
@@ -277,12 +288,14 @@ public class WeibullDistribution
             return logSum;
         }
 
+        @Override
         public Double evaluate(
             Double input)
         {
             return this.evaluate( input.doubleValue() );
         }
 
+        @Override
         public double evaluate(
             double input)
         {
@@ -321,8 +334,8 @@ public class WeibullDistribution
          * Scale parameter, must be greater than 0.0
          */
         public CDF(
-            double shape,
-            double scale)
+            final double shape,
+            final double scale)
         {
             super( shape, scale );
         }
@@ -333,24 +346,27 @@ public class WeibullDistribution
          * WeibullDistribution to copy
          */
         public CDF(
-            WeibullDistribution other )
+            final WeibullDistribution other )
         {
             super( other );
         }
 
+        @Override
         public WeibullDistribution.PDF getDerivative()
         {
             return this.getProbabilityFunction();
         }
 
+        @Override
         public Double evaluate(
-            Double input)
+            final Double input)
         {
             return this.evaluate(input.doubleValue());
         }
 
+        @Override
         public double evaluate(
-            double input)
+            final double input)
         {
             if( input < 0.0 )
             {
@@ -362,8 +378,9 @@ public class WeibullDistribution
             }
         }
 
+        @Override
         public Double differentiate(
-            Double input)
+            final Double input)
         {
             return this.getDerivative().evaluate( input );
         }

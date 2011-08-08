@@ -16,14 +16,14 @@ package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistributionTestHarness;
+import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistributionTestHarness;
 
 /**
  *
  * @author Kevin R. Dixon
  */
 public class BinomialDistributionTest
-    extends ClosedFormDiscreteScalarDistributionTestHarness<Number>
+    extends ClosedFormDiscreteUnivariateDistributionTestHarness<Number>
 {
 
     /**

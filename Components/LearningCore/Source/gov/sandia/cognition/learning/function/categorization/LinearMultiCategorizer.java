@@ -31,7 +31,7 @@ import java.util.Set;
  * @param   <CategoryType>
  *      The type of categories that the categorizer can output.
  * @author  Justin Basilico
- * @since   3.1.2
+ * @since   3.2.0
  */
 public class LinearMultiCategorizer<CategoryType>
     extends AbstractCloneableSerializable

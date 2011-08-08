@@ -20,9 +20,9 @@ import gov.sandia.cognition.math.AbstractUnivariateScalarFunction;
 import gov.sandia.cognition.math.UnivariateScalarFunction;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
+import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
-import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
+import gov.sandia.cognition.statistics.AbstractClosedFormSmoothUnivariateDistribution;
 import gov.sandia.cognition.statistics.AbstractIncrementalEstimator;
 import gov.sandia.cognition.statistics.AbstractSufficientStatistic;
 import gov.sandia.cognition.statistics.DistributionEstimator;
@@ -56,7 +56,7 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Normal_distribution"
 )
 public class UnivariateGaussian 
-    extends AbstractClosedFormSmoothScalarDistribution
+    extends AbstractClosedFormSmoothUnivariateDistribution
     implements EstimableDistribution<Double,UnivariateGaussian>
 {
 
@@ -114,8 +114,8 @@ public class UnivariateGaussian
      * Second central moment (square of standard deviation) of the distribution
      */
     public UnivariateGaussian(
-        double mean,
-        double variance )
+        final double mean,
+        final double variance )
     {
         this.setMean( mean );
         this.setVariance( variance );
@@ -126,7 +126,7 @@ public class UnivariateGaussian
      * @param other UnivariateGaussian to copy
      */
     public UnivariateGaussian(
-        UnivariateGaussian other )
+        final UnivariateGaussian other )
     {
         this( other.getMean(), other.getVariance() );
     }
@@ -154,7 +154,7 @@ public class UnivariateGaussian
      * First central moment (expectation) of the distribution
      */
     public void setMean(
-        double mean )
+        final double mean )
     {
         this.mean = mean;
     }
@@ -171,7 +171,7 @@ public class UnivariateGaussian
      * Second central moment (square of standard deviation) of the distribution
      */
     public void setVariance(
-        double variance )
+        final double variance )
     {
         ArgumentChecker.assertIsPositive("variance", variance);
         this.variance = variance;
@@ -190,8 +190,8 @@ public class UnivariateGaussian
     
     @Override
     public ArrayList<Double> sample(
-        Random random,
-        int numSamples )
+        final Random random,
+        final int numSamples )
     {
         
         ArrayList<Double> samples = new ArrayList<Double>( numSamples );
@@ -219,7 +219,7 @@ public class UnivariateGaussian
 
     @Override
     public void convertFromVector(
-        Vector parameters )
+        final Vector parameters )
     {
         if( parameters.getDimensionality() != 2 )
         {
@@ -264,7 +264,7 @@ public class UnivariateGaussian
      * Multiplied Gaussians.
      */
     public UnivariateGaussian times(
-        UnivariateGaussian other )
+        final UnivariateGaussian other )
     {
 
         double m1 = this.getMean();
@@ -288,7 +288,7 @@ public class UnivariateGaussian
      * Convolved Gaussians.
      */
     public UnivariateGaussian convolve(
-        UnivariateGaussian other )
+        final UnivariateGaussian other )
     {
         double meanHat = this.getMean() + other.getMean();
         double varianceHat = this.getVariance() + other.getVariance();
@@ -339,7 +339,7 @@ public class UnivariateGaussian
          */
         @Override
         public double evaluate(
-            double z )
+            final double z )
         {
 
             double t = 1.0 / (1.0 + 0.5 * Math.abs( z ));
@@ -397,7 +397,7 @@ public class UnivariateGaussian
              */
             @Override
             public double evaluate(
-                double y )
+                final double y )
             {
 
                 // -1 < y < 1
@@ -486,8 +486,8 @@ public class UnivariateGaussian
          * Second central moment (square of standard deviation) of the distribution
          */
         public CDF(
-            double mean,
-            double variance )
+            final double mean,
+            final double variance )
         {
             super( mean, variance );
         }
@@ -497,21 +497,21 @@ public class UnivariateGaussian
          * @param other UnivariateGaussian to copy
          */
         public CDF(
-            UnivariateGaussian other )
+            final UnivariateGaussian other )
         {
             super( other.getMean(), other.getVariance() );
         }
     
         @Override
         public Double evaluate(
-            Double input )
+            final Double input )
         {
             return evaluate( input.doubleValue() );
         }
         
         @Override
         public double evaluate(
-            double z )
+            final double z )
         {
             return evaluate( z, this.mean, this.variance );
         }
@@ -529,9 +529,9 @@ public class UnivariateGaussian
          * @param z value to compute the Gaussian cdf at
          */
         public static double evaluate(
-            double z,
-            double mean,
-            double variance )
+            final double z,
+            final double mean,
+            final double variance )
         {
 
             double retval;
@@ -575,14 +575,14 @@ public class UnivariateGaussian
 
         @Override
         public Double differentiate(
-            Double input)
+            final Double input)
         {
             return this.getDerivative().evaluate(input);
         }
 
         @Override
         public Double inverse(
-            double probability)
+            final double probability)
         {
             return Inverse.evaluate(probability, this.mean, this.variance);
         }
@@ -617,8 +617,8 @@ public class UnivariateGaussian
              * Second central moment (square of standard deviation) of the distribution
              */
             public Inverse(
-                double mean,
-                double variance )
+                final double mean,
+                final double variance )
             {
                 super( mean, variance );
             }
@@ -628,14 +628,14 @@ public class UnivariateGaussian
              * @param other UnivariateGaussian to copy
              */
             public Inverse(
-                UnivariateGaussian other )
+                final UnivariateGaussian other )
             {
                 super( other.getMean(), other.getVariance() );
             }
             
             @Override
             public Double evaluate(
-                Double input )
+                final Double input )
             {
                 return this.evaluate( input.doubleValue() );
             }
@@ -651,7 +651,7 @@ public class UnivariateGaussian
              */
             @Override
             public double evaluate(
-                double p )
+                final double p )
             {
                 return evaluate( p, this.mean, this.variance );
             }
@@ -667,9 +667,9 @@ public class UnivariateGaussian
              * @return Value of x such that x=CDF(p)
              */
             public static double evaluate(
-                double p,
-                double mean,
-                double variance )
+                final double p,
+                final double mean,
+                final double variance )
             {
                 double stddev = Math.sqrt( variance );
                 if( p <= 0.0 )
@@ -697,7 +697,7 @@ public class UnivariateGaussian
      */
     public static class PDF
         extends UnivariateGaussian
-        implements ScalarProbabilityDensityFunction
+        implements UnivariateProbabilityDensityFunction
     {
 
         /** 
@@ -718,8 +718,8 @@ public class UnivariateGaussian
          * Second central moment (square of standard deviation) of the distribution
          */
         public PDF(
-            double mean,
-            double variance )
+            final double mean,
+            final double variance )
         {
             super( mean, variance );
         }
@@ -729,21 +729,21 @@ public class UnivariateGaussian
          * @param other UnivariateGaussian to copy
          */
         public PDF(
-            UnivariateGaussian other )
+            final UnivariateGaussian other )
         {
             super( other.getMean(), other.getVariance() );
         }
         
         @Override
         public Double evaluate(
-            Double input )
+            final Double input )
         {
             return this.evaluate( input.doubleValue() );
         }
         
         @Override
         public double evaluate(
-            double input )
+            final double input )
         {
             return evaluate( input, this.getMean(), this.getVariance() );
         }
@@ -759,23 +759,23 @@ public class UnivariateGaussian
          * @return Value of the PDF at the input, p(input|mean,variance)
          */
         public static double evaluate(
-            double input,
-            double mean,
-            double variance )
+            final double input,
+            final double mean,
+            final double variance )
         {
             return Math.exp( logEvaluate(input, mean, variance) );
         }
 
         @Override
         public double logEvaluate(
-            Double input)
+            final Double input)
         {
             return logEvaluate( input, this.mean, this.variance );
         }
 
         @Override
         public double logEvaluate(
-            double input)
+            final double input)
         {
             return logEvaluate(input, this.mean, this.variance);
         }
@@ -792,9 +792,9 @@ public class UnivariateGaussian
          * Natural logarithm of the pdf.
          */
         public static double logEvaluate(
-            double input,
-            double mean,
-            double variance )
+            final double input,
+            final double mean,
+            final double variance )
         {
             final double delta = input - mean;
             final double exponent = delta*delta / (-2.0*variance);
@@ -842,7 +842,7 @@ public class UnivariateGaussian
          * Amount to add to the variance to keep it from being 0.0
          */
         public MaximumLikelihoodEstimator(
-            double defaultVariance )
+            final double defaultVariance )
         {
             super();
 
@@ -859,7 +859,7 @@ public class UnivariateGaussian
          */
         @Override
         public UnivariateGaussian.PDF learn(
-            Collection<? extends Double> data )
+            final Collection<? extends Double> data )
         {
             return MaximumLikelihoodEstimator.learn( data, this.defaultVariance );
         }
@@ -875,7 +875,7 @@ public class UnivariateGaussian
          * Amount to add to the variance to keep it from being 0.0
          */
         public static UnivariateGaussian.PDF learn(
-            Collection<? extends Number> data,
+            final Collection<? extends Number> data,
             final double defaultVariance )
         {
             Pair<Double,Double> mle =
@@ -942,7 +942,7 @@ public class UnivariateGaussian
          * Amount to add to the variance to keep it from being 0.0
          */
         public WeightedMaximumLikelihoodEstimator(
-            double defaultVariance )
+            final double defaultVariance )
         {
             this.defaultVariance = defaultVariance;
         }
@@ -958,7 +958,7 @@ public class UnivariateGaussian
          */
         @Override
         public UnivariateGaussian.PDF learn(
-            Collection<? extends WeightedValue<? extends Double>> data )
+            final Collection<? extends WeightedValue<? extends Double>> data )
         {
             return WeightedMaximumLikelihoodEstimator.learn(
                 data, this.defaultVariance );
@@ -976,7 +976,7 @@ public class UnivariateGaussian
          * Amount to add to the variance to keep it from being 0.0
          */
         public static UnivariateGaussian.PDF learn(
-            Collection<? extends WeightedValue<? extends Number>> data,
+            final Collection<? extends WeightedValue<? extends Number>> data,
             final double defaultVariance )
         {
             Pair<Double,Double> mle =

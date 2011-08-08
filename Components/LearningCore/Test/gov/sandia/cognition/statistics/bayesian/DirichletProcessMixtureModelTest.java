@@ -19,7 +19,6 @@ import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.DataHistogram;
-import gov.sandia.cognition.statistics.PointMassDistribution;
 import gov.sandia.cognition.statistics.bayesian.conjugate.MultivariateGaussianMeanBayesianEstimator;
 import gov.sandia.cognition.statistics.distribution.MapBasedPointMassDistribution;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
@@ -186,7 +185,7 @@ public class DirichletProcessMixtureModelTest
         long stop = System.currentTimeMillis();
         System.out.println( "Time taken: " + (stop-start)/1000.0);
 
-        PointMassDistribution.PMF<Double> ks = new MapBasedPointMassDistribution.PMF<Double>();
+        MapBasedPointMassDistribution.PMF<Double> ks = new MapBasedPointMassDistribution.PMF<Double>();
         DirichletProcessMixtureModel.Sample<Vector> bestSample = null;
         double maxLL = Double.NEGATIVE_INFINITY;
         int maxIndex = -1;
@@ -261,7 +260,7 @@ public class DirichletProcessMixtureModelTest
         long stop = System.currentTimeMillis();
         System.out.println( "Time taken: " + (stop-start)/1000.0);
 
-        PointMassDistribution.PMF<Double> ks = new MapBasedPointMassDistribution.PMF<Double>();
+        MapBasedPointMassDistribution.PMF<Double> ks = new MapBasedPointMassDistribution.PMF<Double>();
         DirichletProcessMixtureModel.Sample<Vector> bestSample = null;
         double maxLL = Double.NEGATIVE_INFINITY;
         int maxIndex = -1;

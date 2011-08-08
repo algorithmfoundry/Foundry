@@ -57,8 +57,8 @@ import java.util.Iterator;
 )
 public class StudentTConfidence
     extends AbstractCloneableSerializable
-    implements NullHypothesisEvaluator<Collection<? extends Double>>,
-    ConfidenceIntervalEvaluator<Collection<? extends Double>>
+    implements NullHypothesisEvaluator<Collection<? extends Number>>,
+    ConfidenceIntervalEvaluator<Collection<? extends Number>>
 {
 
     /**
@@ -66,6 +66,11 @@ public class StudentTConfidence
      */
     public static final StudentTConfidence INSTANCE =
         new StudentTConfidence();
+
+    /**
+     * Default tolerance for the standard deviation, {@value}.
+     */
+    public static final double DEFAULT_TOLERANCE = 1e-10;
 
     /** Creates a new instance of StudentTConfidence */
     public StudentTConfidence()
@@ -94,9 +99,10 @@ public class StudentTConfidence
         notes="Function tptest()",
         url="http://www.nrbook.com/a/bookcpdf.php"
     )
+    @Override
     public StudentTConfidence.Statistic evaluateNullHypothesis(
-        Collection<? extends Double> data1,
-        Collection<? extends Double> data2 )
+        Collection<? extends Number> data1,
+        Collection<? extends Number> data2 )
     {
 
         if (data1.size() != data2.size())
@@ -129,13 +135,18 @@ public class StudentTConfidence
         cov /= dof;
 
         double sd = Math.sqrt( (var1 + var2 - 2 * cov) / N );
+        if( sd < DEFAULT_TOLERANCE )
+        {
+            sd = DEFAULT_TOLERANCE;
+        }
         double t = Math.abs( (mean1 - mean2) / sd );
 
         return new StudentTConfidence.Statistic( t, dof );
     }
 
+    @Override
     public ConfidenceInterval computeConfidenceInterval(
-        Collection<? extends Double> data,
+        Collection<? extends Number> data,
         double confidence )
     {
         UnivariateGaussian g =
@@ -177,52 +188,6 @@ public class StudentTConfidence
             mean, mean - delta, mean + delta, confidence, numSamples );
 
     }
-
-
-
-    /**
-     * Computes the Student-t confidence interval given a distribution of
-     * data, number of samples, and corresponding confidence interval
-     * @param dataDistribution 
-     * UnivariateGaussian describing the distribution of the underlying data
-     * @param numSamples 
-     * Number of samples in the underlying data
-     * @param confidence 
-     * Confidence value to assume for the ConfidenceInterval
-     * @return 
-     * ConfidenceInterval capturing the range of the mean of the data
-     * at the desired level of confidence
-     */
-//    public static ConfidenceInterval computeConfidenceInterval(
-//        UnivariateGaussian dataDistribution,
-//        int numSamples,
-//        double confidence )
-//    {
-//
-//        if ((confidence <= 0.0) ||
-//            (confidence > 1.0))
-//        {
-//            throw new IllegalArgumentException(
-//                "Confidence must be on the interval (0,1]" );
-//        }
-//
-//        double alpha = 1.0 - confidence;
-//        int dof = numSamples - 1;
-//
-//        StudentTDistribution.CDF cdf = new StudentTDistribution.CDF( dof );
-//        double z = -cdf.inverse( 0.5 * alpha );
-//        double delta = z * Math.sqrt( dataDistribution.getVariance() / numSamples );
-//        double mean = dataDistribution.getMean();
-//
-//        if (delta < 0.0)
-//        {
-//            delta = 0.0;
-//        }
-//
-//        return new ConfidenceInterval(
-//            mean, mean - delta, mean + delta, confidence, numSamples );
-//
-//    }
 
     /**
      * Confidence statistics for a Student-t test
@@ -349,6 +314,12 @@ public class StudentTConfidence
             this.degreesOfFreedom = degreesOfFreedom;
         }
 
+        @Override
+        public double getTestStatistic()
+        {
+            return this.getT();
+        }
+
     }
 
     /**
@@ -357,7 +328,7 @@ public class StudentTConfidence
      */
     public static class Summary
         extends AbstractCloneableSerializable
-        implements Summarizer<Double, ConfidenceInterval>
+        implements Summarizer<Number, ConfidenceInterval>
     {
 
         /** The confidence for the created interval. */
@@ -376,8 +347,9 @@ public class StudentTConfidence
             this.setConfidence( confidence );
         }
 
+        @Override
         public ConfidenceInterval summarize(
-            final Collection<? extends Double> data )
+            final Collection<? extends Number> data )
         {
             return new StudentTConfidence().computeConfidenceInterval(
                 data, this.getConfidence() );

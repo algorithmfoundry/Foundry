@@ -15,7 +15,7 @@
 package gov.sandia.cognition.learning.experiment;
 
 import gov.sandia.cognition.learning.function.kernel.PolynomialKernel;
-import gov.sandia.cognition.learning.algorithm.perceptron.KernelPerceptron;
+import gov.sandia.cognition.learning.algorithm.perceptron.kernel.KernelPerceptron;
 import gov.sandia.cognition.learning.algorithm.perceptron.Perceptron;
 import gov.sandia.cognition.statistics.method.ConfidenceInterval;
 import gov.sandia.cognition.statistics.method.StudentTConfidence;
@@ -48,9 +48,9 @@ public class LearnerComparisonExperimentTest
     public void testConstructors()
     {
         LearnerComparisonExperiment<InputOutputPair<Vector,Boolean>, InputOutputPair<Vector,Boolean>,
-            Evaluator<? super Vector, Boolean>, Double, ConfidenceInterval>
+            Evaluator<? super Vector, Boolean>, Number, ConfidenceInterval>
             instance = new LearnerComparisonExperiment<InputOutputPair<Vector,Boolean>, InputOutputPair<Vector,Boolean>,
-                Evaluator<? super Vector,Boolean>, Double, ConfidenceInterval>();
+                Evaluator<? super Vector,Boolean>, Number, ConfidenceInterval>();
 
         assertNull(instance.getFoldCreator());
         assertNull(instance.getPerformanceEvaluator());
@@ -64,7 +64,7 @@ public class LearnerComparisonExperimentTest
         StudentTConfidence.Summary summarizer = new StudentTConfidence.Summary(0.95);
         StudentTConfidence test = new StudentTConfidence();
         instance = new LearnerComparisonExperiment<InputOutputPair<Vector,Boolean>, InputOutputPair<Vector, Boolean>,
-                Evaluator<? super Vector, Boolean>, Double, ConfidenceInterval>(
+                Evaluator<? super Vector, Boolean>, Number, ConfidenceInterval>(
             foldCreator,performance,test,summarizer);
         assertSame(foldCreator, instance.getFoldCreator());
         assertSame(performance, instance.getPerformanceEvaluator());
@@ -85,9 +85,9 @@ public class LearnerComparisonExperimentTest
         StudentTConfidence.Summary summarizer = new StudentTConfidence.Summary(0.95);
         StudentTConfidence test = new StudentTConfidence();
         LearnerComparisonExperiment<InputOutputPair<Vector,Boolean>, InputOutputPair<Vector, Boolean>,
-            Evaluator<? super Vector, Boolean>, Double, ConfidenceInterval>
+            Evaluator<? super Vector, Boolean>, Number, ConfidenceInterval>
             instance = new LearnerComparisonExperiment<InputOutputPair<Vector,Boolean>, InputOutputPair<Vector, Boolean>,
-                Evaluator<? super Vector, Boolean>, Double, ConfidenceInterval>(
+                Evaluator<? super Vector, Boolean>, Number, ConfidenceInterval>(
             foldCreator, performance, test, summarizer); 
         
         // This unit test is for the XOR problem with some (fake) noise.
@@ -213,9 +213,9 @@ public class LearnerComparisonExperimentTest
     public void testSetStatisticalTest()
     {
         LearnerComparisonExperiment<InputOutputPair<Vector,Boolean>, InputOutputPair<Vector, Boolean>,
-            Evaluator<? super Vector, Boolean>, Double, ConfidenceInterval>
+            Evaluator<? super Vector, Boolean>, Number, ConfidenceInterval>
             instance = new LearnerComparisonExperiment<InputOutputPair<Vector,Boolean>, InputOutputPair<Vector, Boolean>,
-                Evaluator<? super Vector, Boolean>, Double, ConfidenceInterval>();
+                Evaluator<? super Vector, Boolean>, Number, ConfidenceInterval>();
         
         assertNull(instance.getStatisticalTest());
         

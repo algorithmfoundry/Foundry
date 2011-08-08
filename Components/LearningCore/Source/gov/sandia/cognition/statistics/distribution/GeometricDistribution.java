@@ -21,9 +21,9 @@ import gov.sandia.cognition.math.ProbabilityUtil;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormScalarDistribution;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistribution;
-import gov.sandia.cognition.statistics.ClosedFormScalarCumulativeDistributionFunction;
+import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
+import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistribution;
+import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
@@ -47,8 +47,8 @@ import java.util.Random;
     url="http://www.mathworks.com/access/helpdesk/help/toolbox/stats/brn2ivz-58.html"
 )
 public class GeometricDistribution 
-    extends AbstractClosedFormScalarDistribution<Number>
-    implements ClosedFormDiscreteScalarDistribution<Number>,
+    extends AbstractClosedFormUnivariateDistribution<Number>
+    implements ClosedFormDiscreteUnivariateDistribution<Number>,
     EstimableDistribution<Number,GeometricDistribution>
 {
 
@@ -76,7 +76,7 @@ public class GeometricDistribution
      * Probability of a positive outcome (Bernoulli probability), [0,1]
      */
     public GeometricDistribution(
-        double p)
+        final double p)
     {
         this.setP(p);
     }
@@ -87,7 +87,7 @@ public class GeometricDistribution
      * GeometricDistribution to copy
      */
     public GeometricDistribution(
-        GeometricDistribution other )
+        final GeometricDistribution other )
     {
         this( other.getP() );
     }
@@ -114,25 +114,28 @@ public class GeometricDistribution
      * Probability of a positive outcome (Bernoulli probability), [0,1]
      */
     public void setP(
-        double p )
+        final double p )
     {
         ProbabilityUtil.assertIsProbability(p);
         this.p = p;
     }
 
+    @Override
     public Double getMean()
     {
         return (1.0-this.p)/this.p;
     }
 
+    @Override
     public double getVariance()
     {
         return (1.0-this.p) / (this.p*this.p);
     }
 
+    @Override
     public ArrayList<Integer> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
     {
         final double denom = Math.log( 1.0 - this.p );
         ArrayList<Integer> samples = new ArrayList<Integer>( numSamples );
@@ -144,11 +147,13 @@ public class GeometricDistribution
         return samples;
     }
 
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues(this.getP());
     }
 
+    @Override
     public void convertFromVector(
         Vector parameters)
     {
@@ -156,16 +161,19 @@ public class GeometricDistribution
         this.setP( parameters.getElement(0) );
     }
 
+    @Override
     public Integer getMinSupport()
     {
         return 0;
     }
 
+    @Override
     public Integer getMaxSupport()
     {
         return Integer.MAX_VALUE;
     }
 
+    @Override
     public IntegerCollection getDomain()
     {
         final double std = Math.sqrt( this.getVariance() );
@@ -179,16 +187,19 @@ public class GeometricDistribution
         return getDomain().size();
     }
 
+    @Override
     public GeometricDistribution.CDF getCDF()
     {
         return new GeometricDistribution.CDF( this );
     }
 
+    @Override
     public GeometricDistribution.PMF getProbabilityFunction()
     {
         return new GeometricDistribution.PMF( this );
     }
 
+    @Override
     public GeometricDistribution.MaximumLikelihoodEstimator getEstimator()
     {
         return new GeometricDistribution.MaximumLikelihoodEstimator();
@@ -216,7 +227,7 @@ public class GeometricDistribution
          * Probability of a positive outcome (Bernoulli probability), [0,1]
          */
         public PMF(
-            double p)
+            final double p)
         {
             super( p );
         }
@@ -227,18 +238,20 @@ public class GeometricDistribution
          * GeometricDistribution to copy
          */
         public PMF(
-            GeometricDistribution other )
+            final GeometricDistribution other )
         {
             super( other );
         }
 
+        @Override
         public double getEntropy()
         {
             return ProbabilityMassFunctionUtil.getEntropy(this);
         }
 
+        @Override
         public double logEvaluate(
-            Number input)
+            final Number input)
         {
             final int k = input.intValue();
             if( k < 0 )
@@ -248,8 +261,9 @@ public class GeometricDistribution
             return k * Math.log( 1.0-this.p ) + Math.log( this.p );
         }
 
+        @Override
         public Double evaluate(
-            Number input)
+            final Number input)
         {
             return Math.exp( this.logEvaluate(input) );
         }
@@ -267,7 +281,7 @@ public class GeometricDistribution
      */
     public static class CDF
         extends GeometricDistribution
-        implements ClosedFormScalarCumulativeDistributionFunction<Number>
+        implements ClosedFormCumulativeDistributionFunction<Number>
     {
 
         /**
@@ -284,7 +298,7 @@ public class GeometricDistribution
          * Probability of a positive outcome (Bernoulli probability), [0,1]
          */
         public CDF(
-            double p)
+            final double p)
         {
             super( p );
         }
@@ -295,13 +309,14 @@ public class GeometricDistribution
          * GeometricDistribution to copy
          */
         public CDF(
-            GeometricDistribution other )
+            final GeometricDistribution other )
         {
             super( other );
         }
 
+        @Override
         public Double evaluate(
-            Number input)
+            final Number input)
         {
             final int k = input.intValue();
             if( k < 0 )
@@ -337,8 +352,9 @@ public class GeometricDistribution
         {
         }
 
+        @Override
         public GeometricDistribution.PMF learn(
-            Collection<? extends Number> data )
+            final Collection<? extends Number> data )
         {
 
             double mean = UnivariateStatisticsUtil.computeMean(data);

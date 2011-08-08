@@ -33,8 +33,7 @@ public abstract class AbstractConfidenceStatistic
     /**
      * Probability of the null hypothesis, often called "p-value"
      */
-    private double nullHypothesisProbability;
-    
+    protected double nullHypothesisProbability;
     
     /**
      * Creates a new instance of AbstractConfidenceStatistic
@@ -52,6 +51,7 @@ public abstract class AbstractConfidenceStatistic
      * @return 
      * Probability of the null hypothesis, often called "p-value"
      */
+    @Override
     public double getNullHypothesisProbability()
     {
         return this.nullHypothesisProbability;
@@ -75,5 +75,5 @@ public abstract class AbstractConfidenceStatistic
     {
         return ObjectUtil.toString(this);
     }
-    
+
 }

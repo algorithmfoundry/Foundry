@@ -20,7 +20,7 @@ import gov.sandia.cognition.statistics.CumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.DiscreteDistribution;
 import gov.sandia.cognition.statistics.InvertibleCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
-import gov.sandia.cognition.statistics.ScalarDistribution;
+import gov.sandia.cognition.statistics.UnivariateDistribution;
 import gov.sandia.cognition.statistics.method.ConfidenceInterval;
 import gov.sandia.cognition.statistics.method.InverseTransformSampling;
 
@@ -57,10 +57,10 @@ public class BayesianCredibleInterval
      * of the underlying distribution.
      */
     public BayesianCredibleInterval(
-        double median,
-        double lowerBound,
-        double upperBound,
-        double confidence )
+        final double median,
+        final double lowerBound,
+        final double upperBound,
+        final double confidence )
     {
         super( median, lowerBound, upperBound, confidence, 1 );
     }
@@ -82,8 +82,8 @@ public class BayesianCredibleInterval
      */
     @SuppressWarnings("unchecked")
     public static <NumberType extends Number> BayesianCredibleInterval compute(
-        ScalarDistribution<NumberType> distribution,
-        double confidence )
+        final UnivariateDistribution<NumberType> distribution,
+        final double confidence )
     {
 
         CumulativeDistributionFunction<NumberType> cdf = distribution.getCDF();

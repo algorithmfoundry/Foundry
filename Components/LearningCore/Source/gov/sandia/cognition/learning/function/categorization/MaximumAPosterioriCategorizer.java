@@ -192,6 +192,12 @@ public class MaximumAPosterioriCategorizer<ObservationType,CategoryType>
         return posterior;
     }
 
+    /**
+     * Gets the mean category, if it is a number or ring.
+     *
+     * @return
+     *      The mean.
+     */
     @SuppressWarnings("unchecked")
     public ObservationType getMean()
     {

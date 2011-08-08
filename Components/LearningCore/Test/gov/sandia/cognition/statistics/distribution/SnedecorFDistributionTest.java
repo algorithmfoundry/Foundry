@@ -15,14 +15,14 @@
 package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.ClosedFormScalarDistributionTestHarness;
+import gov.sandia.cognition.statistics.ClosedFormUnivariateDistributionTestHarness;
 
 /**
  *
  * @author Kevin R. Dixon
  */
 public class SnedecorFDistributionTest
-    extends ClosedFormScalarDistributionTestHarness<Double>
+    extends ClosedFormUnivariateDistributionTestHarness<Double>
 {
 
     /**

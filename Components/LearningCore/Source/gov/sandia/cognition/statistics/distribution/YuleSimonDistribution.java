@@ -20,9 +20,9 @@ import gov.sandia.cognition.collection.IntegerCollection;
 import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormScalarDistribution;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistribution;
-import gov.sandia.cognition.statistics.ClosedFormScalarCumulativeDistributionFunction;
+import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
+import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistribution;
+import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
 import java.util.ArrayList;
@@ -45,8 +45,8 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Yule%E2%80%93Simon_distribution"
 )
 public class YuleSimonDistribution 
-    extends AbstractClosedFormScalarDistribution<Number>
-    implements ClosedFormDiscreteScalarDistribution<Number>
+    extends AbstractClosedFormUnivariateDistribution<Number>
+    implements ClosedFormDiscreteUnivariateDistribution<Number>
 {
 
     /**
@@ -73,7 +73,7 @@ public class YuleSimonDistribution
      * Shape parameter, must be greater than zero
      */
     public YuleSimonDistribution(
-        double shape)
+        final double shape)
     {
         this.setShape(shape);
     }
@@ -84,7 +84,7 @@ public class YuleSimonDistribution
      * YuleSimonDistribution to copy
      */
     public YuleSimonDistribution(
-        YuleSimonDistribution other )
+        final YuleSimonDistribution other )
     {
         this( other.getShape() );
     }
@@ -111,7 +111,7 @@ public class YuleSimonDistribution
      * Shape parameter, must be greater than zero
      */
     public void setShape(
-        double shape)
+        final double shape)
     {
         if( shape <= 0.0 )
         {
@@ -120,11 +120,13 @@ public class YuleSimonDistribution
         this.shape = shape;
     }
 
+    @Override
     public Double getMean()
     {
         return this.shape / (this.shape-1.0);
     }
 
+    @Override
     public double getVariance()
     {
         if( this.shape > 2.0 )
@@ -138,9 +140,10 @@ public class YuleSimonDistribution
         }
     }
 
+    @Override
     public ArrayList<Integer> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
     {
         ArrayList<Integer> samples = new ArrayList<Integer>( numSamples );
         final double negativeInverseScale = -1.0/this.shape;
@@ -159,11 +162,13 @@ public class YuleSimonDistribution
         return samples;
     }
 
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues( this.getShape() );
     }
 
+    @Override
     public void convertFromVector(
         Vector parameters)
     {
@@ -171,16 +176,19 @@ public class YuleSimonDistribution
         this.setShape( parameters.getElement(0) );
     }
 
+    @Override
     public Integer getMinSupport()
     {
         return 1;
     }
 
+    @Override
     public Number getMaxSupport()
     {
         return Integer.MAX_VALUE;
     }
 
+    @Override
     public IntegerCollection getDomain()
     {
         double std = Math.sqrt( this.getVariance() );
@@ -194,11 +202,13 @@ public class YuleSimonDistribution
         return this.getDomain().size();
     }
 
+    @Override
     public YuleSimonDistribution.PMF getProbabilityFunction()
     {
         return new YuleSimonDistribution.PMF( this );
     }
     
+    @Override
     public YuleSimonDistribution.CDF getCDF()
     {
         return new YuleSimonDistribution.CDF( this );
@@ -226,7 +236,7 @@ public class YuleSimonDistribution
          * Shape parameter, must be greater than zero
          */
         public PMF(
-            double shape)
+            final double shape)
         {
             super( shape );
         }
@@ -237,18 +247,20 @@ public class YuleSimonDistribution
          * YuleSimonDistribution to copy
          */
         public PMF(
-            YuleSimonDistribution other )
+            final YuleSimonDistribution other )
         {
             super( other );
         }
 
+        @Override
         public double getEntropy()
         {
             return ProbabilityMassFunctionUtil.getEntropy(this);
         }
 
+        @Override
         public double logEvaluate(
-            Number input)
+            final Number input)
         {
             final int k = input.intValue();
             if( k < 1 )
@@ -262,8 +274,9 @@ public class YuleSimonDistribution
             return logSum;
         }
 
+        @Override
         public Double evaluate(
-            Number input)
+            final Number input)
         {
             return Math.exp( this.logEvaluate(input) );
         }
@@ -281,7 +294,7 @@ public class YuleSimonDistribution
      */
     public static class CDF
         extends YuleSimonDistribution
-        implements ClosedFormScalarCumulativeDistributionFunction<Number>
+        implements ClosedFormCumulativeDistributionFunction<Number>
     {
 
         /**
@@ -298,7 +311,7 @@ public class YuleSimonDistribution
          * Shape parameter, must be greater than zero
          */
         public CDF(
-            double shape)
+            final double shape)
         {
             super( shape );
         }
@@ -309,13 +322,14 @@ public class YuleSimonDistribution
          * YuleSimonDistribution to copy
          */
         public CDF(
-            YuleSimonDistribution other )
+            final YuleSimonDistribution other )
         {
             super( other );
         }
 
+        @Override
         public Double evaluate(
-            Number input)
+            final Number input)
         {
             final int k = input.intValue();
             if( k < 1 )

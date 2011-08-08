@@ -22,7 +22,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @TODO    Document this.
+ * Unit tests for class NormalizedLogLocalTermWeighter.
  *
  * @author  Justin Basilico
  * @since   3.0
