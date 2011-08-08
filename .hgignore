@@ -1,0 +1,9 @@
+\.orig$
+\.orig\..*$
+\.chg\..*$
+\.rej$
+\.conflict\~$
+\.DS_Store$
+/Build$
+/Distribution$
+/nbproject/private$
