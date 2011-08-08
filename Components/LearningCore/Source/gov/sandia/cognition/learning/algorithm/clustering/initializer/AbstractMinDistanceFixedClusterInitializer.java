@@ -215,10 +215,17 @@ public abstract class AbstractMinDistanceFixedClusterInitializer<ClusterType ext
     }
 
     /**
-     * Select
-     * @param minDistances
-     * @param selected
+     * Select the index for the next cluster based on the given minimum
+     * distances and array indicating which clusters have already been selected.
+     *
+     * @param   minDistances
+     *      The array of minimum distances.
+     * @param   selected
+     *      The array corresponding to whether or not an item has already
+     *      been selected.
      * @return
+     *      The index of the next cluster to include. -1 means that there is
+     *      nothing left to include.
      */
     protected abstract int selectNextClusterIndex(
         final double[] minDistances,

@@ -16,6 +16,8 @@ package gov.sandia.cognition.learning.algorithm.ensemble;
 
 import gov.sandia.cognition.algorithm.IterativeAlgorithm;
 import gov.sandia.cognition.algorithm.IterativeAlgorithmListener;
+import gov.sandia.cognition.annotation.PublicationReference;
+import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.collection.FiniteCapacityBuffer;
 import gov.sandia.cognition.evaluator.Evaluator;
@@ -57,18 +59,22 @@ import java.util.Random;
  * @author  Justin Basilico
  * @since   3.0
  */
-// TODO: Find a reference for ivoting.
-// --jdbasil (2009-11-29)
+@PublicationReference(
+  author="Leo Breiman",
+  title="Pasting small votes for classification in large databases and on-line",
+  year=1999,
+  type=PublicationType.Journal,
+  publication="Machine Learning",
+  pages={85, 103},
+  url="http://www.springerlink.com/content/mnu2r28218651707/fulltext.pdf"
+)
 public class IVotingCategorizerLearner<InputType, CategoryType>
     extends AbstractAnytimeSupervisedBatchLearner<InputType, CategoryType, WeightedVotingCategorizerEnsemble<InputType, CategoryType, Evaluator<? super InputType, ? extends CategoryType>>>
     implements Randomized,
         BatchLearnerContainer<BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, CategoryType>>, ? extends Evaluator<? super InputType, ? extends CategoryType>>>
 {
-// TODO: Decide on appropriate default values.
-// --jdbasil (2009-11-29)
-
     /** The default maximum number of iterations is {@value}. */
-    public static final int DEFAULT_MAX_ITERATIONS = 500;
+    public static final int DEFAULT_MAX_ITERATIONS = 100;
 
     /** The default percent to sample {@value}. */
     public static final double DEFAULT_PERCENT_TO_SAMPLE = 0.10;

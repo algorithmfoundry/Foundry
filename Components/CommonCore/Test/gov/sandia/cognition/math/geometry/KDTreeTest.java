@@ -19,6 +19,7 @@ import gov.sandia.cognition.math.Metric;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vectorizable;
+import gov.sandia.cognition.math.matrix.mtj.Vector3;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.DefaultPair;
 import gov.sandia.cognition.util.ObjectUtil;
@@ -469,5 +470,50 @@ public class KDTreeTest
 
 
     }
+
+     public void testSelfLookup()
+     {
+         List<Vector> data = new ArrayList<Vector>();
+         data.add(new Vector3(0.0, 1.0, 2.0));
+         data.add(new Vector3(0.0, 1.1, 2.2));
+         data.add(new Vector3(0.0, -1.0, -2.0));
+         data.add(new Vector3(0.0, -1.1, -2.2));
+
+         List<DefaultPair<Vector, Vector>> pairs = new
+ ArrayList<DefaultPair<Vector, Vector>>(
+             data.size());
+         for (Vector item : data)
+         {
+             pairs.add(DefaultPair.create(item, item));
+         }
+
+         KDTree<Vector, Vector, DefaultPair<Vector, Vector>> tree =
+ KDTree.createBalanced(pairs);
+
+         int neighborCount = 3;
+         for (Vector item : data)
+         {
+             if( item.getElement(2) == -2.2 )
+             {
+                 System.out.println( "Here!!" );
+             }
+             Collection<DefaultPair<Vector, Vector>> neighbors =
+                 tree.findNearest(item, neighborCount,
+ EuclideanDistanceMetric.INSTANCE);
+
+             assertEquals(neighborCount, neighbors.size());
+
+             System.out.println("Neighbors of " + item);
+             boolean hasSelf = false;
+             for (DefaultPair<?, ?> neighbor : neighbors)
+             {
+                 System.out.println(neighbor.getSecond());
+                 hasSelf = hasSelf || neighbor.getSecond().equals(item);
+             }
+             assertTrue(hasSelf);
+         }
+     }
+
+
 
 }

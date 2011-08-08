@@ -89,7 +89,8 @@ public class BinaryBaggingLearner<InputType>
      *      The learner to use to create the categorizer on each iteration.
      */
     public BinaryBaggingLearner(
-        final SupervisedBatchLearner<InputType, Boolean, ?> learner )
+        final BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>>
+            learner)
     {
         this(learner, DEFAULT_MAX_ITERATIONS);
     }
@@ -104,7 +105,8 @@ public class BinaryBaggingLearner<InputType>
      *      number of learners to create.
      */
     public BinaryBaggingLearner(
-        final SupervisedBatchLearner<InputType, Boolean, ?> learner,
+        final BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>>
+            learner,
         final int maxIterations)
     {
         this(learner, maxIterations, new Random());
@@ -122,7 +124,8 @@ public class BinaryBaggingLearner<InputType>
      *      The random number generator to use.
      */
     public BinaryBaggingLearner(
-        final SupervisedBatchLearner<InputType, Boolean, ?> learner,
+        final BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>>
+            learner,
         final int maxIterations,
         final Random random)
     {
@@ -135,6 +138,7 @@ public class BinaryBaggingLearner<InputType>
         this.setDataList(null);
     }
 
+    @Override
     protected boolean initializeAlgorithm()
     {
         if (this.getData() == null || this.getData().size() <= 0)
@@ -158,6 +162,7 @@ public class BinaryBaggingLearner<InputType>
         return true;
     }
 
+    @Override
     protected boolean step()
     {
         // We are going to create a bag that is the same size as the data that
@@ -186,6 +191,7 @@ public class BinaryBaggingLearner<InputType>
         return true;
     }
 
+    @Override
     protected void cleanupAlgorithm()
     {
         // To clean up we remove the reference to the copy of the data 
@@ -193,6 +199,7 @@ public class BinaryBaggingLearner<InputType>
         this.setDataList(null);
     }
 
+    @Override
     public WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>> getResult()
     {
         return this.getEnsemble();

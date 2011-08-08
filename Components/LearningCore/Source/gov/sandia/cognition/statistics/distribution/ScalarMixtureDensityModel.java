@@ -508,6 +508,9 @@ public class ScalarMixtureDensityModel
      * converts ScalarMixtureDensityModel to a string,
      * displays the priorProbabilities and each individual distribution
      * distributions are displayed according to their toString methods.
+     *
+     * @return
+     *      The string representation of this object.
      */
     @Override
     public String toString()

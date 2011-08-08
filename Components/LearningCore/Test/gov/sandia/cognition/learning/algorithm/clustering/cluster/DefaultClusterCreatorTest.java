@@ -57,10 +57,12 @@ public class DefaultClusterCreatorTest
         DefaultClusterCreator<String> instance = 
             new DefaultClusterCreator<String>();
         Collection<String> members = new LinkedList<String>();
-        assertNull(instance.createCluster(members));
+        DefaultCluster<String> result = instance.createCluster(members);
+        assertTrue(result.getMembers().isEmpty());
+        assertSame(result.getMembers(), result.getMembers());
         
         members.add("a");
-        DefaultCluster<String> result = instance.createCluster(members);
+        result = instance.createCluster(members);
         assertEquals(1, result.getMembers().size());
         assertTrue(result.getMembers().contains("a"));
         

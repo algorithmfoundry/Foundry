@@ -22,9 +22,10 @@ import java.util.Collection;
  * The ClusterCreator defines the functionality of a class that can create a
  * new cluster from a given collection of members of that cluster.
  *
- * @param <ClusterType> type of Cluster<DataType> used in the learn() method
- * @param <DataType> The algorithm operates on a Collection of DataType, so 
- * DataType will be something like Vector or String
+ * @param   <ClusterType>
+ *      The type of Cluster<DataType> created by this object.
+ * @param   <DataType>
+ *      The data type from which to create a new cluster.
  * @author Justin Basilico
  * @author Kevin R. Dixon
  * @since  1.0

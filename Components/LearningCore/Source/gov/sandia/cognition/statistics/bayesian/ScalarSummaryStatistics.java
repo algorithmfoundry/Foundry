@@ -92,6 +92,32 @@ public class ScalarSummaryStatistics
      */
     private double kurtosis;
 
+    /**
+     * Creates a new set of scalar summary statistics.
+     *
+     * @param min
+     *      The minimum.
+     * @param max
+     *      The maximum.
+     * @param quintiles
+     *      The quintiles.
+     * @param confidenceLower
+     *      The lower bound of the confidence.
+     * @param confidenceUpper
+     *      The upper bound of the confidence.
+     * @param median
+     *      The median.
+     * @param numSamples
+     *      The number of samples.
+     * @param mean
+     *      The mean.
+     * @param variance
+     *      The variance.
+     * @param skewness
+     *      The skewness.
+     * @param kurtosis
+     *      The kurtosis.
+     */
     protected ScalarSummaryStatistics(
         double min,
         double max,

@@ -37,7 +37,7 @@ public class CentroidCluster<ClusterType>
     extends DefaultCluster<ClusterType>
 {
     /** The center of the cluster. */
-    private ClusterType centroid;
+    protected ClusterType centroid;
     
     /**
      * Creates a new instance of CentroidCluster.

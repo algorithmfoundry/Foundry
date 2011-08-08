@@ -55,7 +55,7 @@ public class DefaultClusterCreator<DataType>
         else if (members.size() <= 0)
         {
             // No members to create the cluster from.
-            return null;
+            return new DefaultCluster<DataType>();
         }
         else
         {

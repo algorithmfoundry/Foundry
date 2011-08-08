@@ -17,7 +17,11 @@ package gov.sandia.cognition.util;
 /**
  * Represents a key-value pair. The key is the first element in the pair and
  * the value is the second.
- * 
+ *
+ * @param   <KeyType>
+ *      The type of the key.
+ * @param   <ValueType>
+ *      The type of the value.
  * @author  Justin Basilico
  * @since   3.1
  */

@@ -21,11 +21,14 @@ import gov.sandia.cognition.math.matrix.Vectorizable;
  * An interface class for decider learners that produce a threshold function
  * on a vector element based on maximizing some gain value.
  *
+ * @param   <OutputType>
+ *      The output type of the learner.
  * @author  Justin Basilico
  * @since   3.1
  */
 public interface VectorThresholdMaximumGainLearner<OutputType>
-    extends DeciderLearner<Vectorizable, OutputType, Boolean, VectorElementThresholdCategorizer>
+    extends
+    DeciderLearner<Vectorizable, OutputType, Boolean, VectorElementThresholdCategorizer>
 {
 
     /**
@@ -49,4 +52,5 @@ public interface VectorThresholdMaximumGainLearner<OutputType>
      */
     public void setDimensionsToConsider(
         final int[] dimensionsToConsider);
+
 }

@@ -43,6 +43,9 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
     extends AbstractCloneableSerializable
     implements VectorThresholdMaximumGainLearner<OutputType>
 {
+
+    /** The array of dimensions for the learner to consider. If this is null,
+     *  then all dimensions are considered. */
     protected int[] dimensionsToConsider;
 
     /**

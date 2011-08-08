@@ -92,6 +92,8 @@ public class RegressionTreeLearner<InputType>
      * @param   leafCountThreshold 
      *          The leaf count threshold, which determines the number of 
      *          elements at which to learn a regression function.
+     * @param   maxDepth
+     *          The maximum depth to learn the tree. Must be positive.
      */
     public RegressionTreeLearner(
         final DeciderLearner<? super InputType, Double, ?, ?> deciderLearner,

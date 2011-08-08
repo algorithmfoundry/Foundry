@@ -67,7 +67,7 @@ public class LearnerValidationExperimentTest
     }
 
     /**
-     * Test of evaluate method, of class gov.sandia.cognition.learning.experiment.SupervisedLearnerExperiment.
+     * Test of evaluate method, of class SupervisedLearnerExperiment.
      */
     public void testEvaluate()
     {
@@ -129,7 +129,7 @@ public class LearnerValidationExperimentTest
     }
 
     /**
-     * Test of getFoldCreator method, of class gov.sandia.cognition.learning.experiment.SupervisedLearnerExperiment.
+     * Test of getFoldCreator method, of class SupervisedLearnerExperiment.
      */
     public void testGetFoldCreator()
     {
@@ -137,7 +137,7 @@ public class LearnerValidationExperimentTest
     }
 
     /**
-     * Test of setFoldCreator method, of class gov.sandia.cognition.learning.experiment.SupervisedLearnerExperiment.
+     * Test of setFoldCreator method, of class SupervisedLearnerExperiment.
      */
     public void testSetFoldCreator()
     {
@@ -157,7 +157,7 @@ public class LearnerValidationExperimentTest
     }
 
     /**
-     * Test of getMeasure method, of class gov.sandia.cognition.learning.experiment.SupervisedLearnerExperiment.
+     * Test of getMeasure method, of class SupervisedLearnerExperiment.
      */
     public void testGetPerformanceEvaluator()
     {
@@ -165,7 +165,7 @@ public class LearnerValidationExperimentTest
     }
 
     /**
-     * Test of setMeasure method, of class gov.sandia.cognition.learning.experiment.SupervisedLearnerExperiment.
+     * Test of setMeasure method, of class SupervisedLearnerExperiment.
      */
     public void testSetPerformanceEvaluator()
     {
@@ -185,7 +185,7 @@ public class LearnerValidationExperimentTest
     }
 
     /**
-     * Test of getSummarizer method, of class gov.sandia.cognition.learning.experiment.SupervisedLearnerExperiment.
+     * Test of getSummarizer method, of class SupervisedLearnerExperiment.
      */
     public void testGetSummarizer()
     {
@@ -193,7 +193,7 @@ public class LearnerValidationExperimentTest
     }
 
     /**
-     * Test of setSummarizer method, of class gov.sandia.cognition.learning.experiment.SupervisedLearnerExperiment.
+     * Test of setSummarizer method, of class SupervisedLearnerExperiment.
      */
     public void testSetSummarizer()
     {
@@ -213,7 +213,7 @@ public class LearnerValidationExperimentTest
     }
 
     /**
-     * Test of getNumTrials method, of class gov.sandia.cognition.learning.experiment.SupervisedLearnerExperiment.
+     * Test of getNumTrials method, of class SupervisedLearnerExperiment.
      */
     public void testGetNumTrials()
     {
@@ -221,20 +221,20 @@ public class LearnerValidationExperimentTest
             <InputOutputPair<Vector,Boolean>, InputOutputPair<Vector, Boolean>, Evaluator<Vector, Boolean>, Double, ConfidenceInterval>
             instance = new LearnerValidationExperiment
                 <InputOutputPair<Vector,Boolean>, InputOutputPair<Vector, Boolean>, Evaluator<Vector, Boolean>, Double, ConfidenceInterval>();
-        
+
         assertEquals(-1, instance.getNumTrials());
     }
 
     /**
-     * Test of getMeasurements method, of class gov.sandia.cognition.learning.experiment.SupervisedLearnerExperiment.
+     * Test of getStatistics method, of class SupervisedLearnerExperiment.
      */
-    public void testGetMeasurements()
+    public void testGetStatistics()
     {
         // Tested by evaluate.
     }
 
     /**
-     * Test of getSummary method, of class gov.sandia.cognition.learning.experiment.SupervisedLearnerExperiment.
+     * Test of getSummary method, of class SupervisedLearnerExperiment.
      */
     public void testGetSummary()
     {

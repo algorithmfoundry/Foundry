@@ -2,7 +2,31 @@ This file contains the change log for the Cognitive Foundry.
 
 Changes since last release:
 
-Release 3.1.0 (2010-02-23):
+Release 3.1.1 (2011-03-23):
+ * All projects now depend on JUnit 4.8.2 instead of 3.8.2 or 4.6.
+ * Upgraded to XStream to 1.3.1 (and its dependency xpp3_min to 1.1.4c).
+ * Common Core:
+   * KDTree: Fixed two bugs that caused the KDTree to not always return the
+     nearest points in rare cases.
+ * Learning Core:
+   * PartitionalClusterer: Added an implementation of a partitional clustering
+     algorithm.
+   * IncrementalClusterCreator: New interface for a cluster creator that can
+     incrementally update clusters. DefaultIncrementalClusterCreator is a
+     default implementation of the interface that just updates the cluster
+     memberships.
+   * VectorMeanCentroidClusterCreator: Modified to implement the new
+     IncrementalClusterCreator interface.
+   * BinaryBaggingLearner: Generalized generics in constructor.
+   * OnlineBaggingCategorizerLearner: Added an implementation of an online
+     version of the bagging algorithm for building ensembles.
+   * VotingCategorizerEnsemble: Added an unweighted voting categorization
+     ensemble as a counterpart to WeightedVotingCategorizerEnsemble.
+   * OnlinePassiveAggressivePerceptron: Added an implementation of the
+     Passive-Aggressive algorithm for binary classification. Also contains
+     PA-I (LinearSoftMargin) and PA-II (QuadraticSoftMargin) variants.
+
+Release 3.1.0 (2011-02-23):
 
  * Text: New package in this release for doing statistical text analysis and
    information retrieval. Especially useful for doing machine learning over

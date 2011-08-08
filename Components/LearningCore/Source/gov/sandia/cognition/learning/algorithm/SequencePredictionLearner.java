@@ -28,7 +28,11 @@ import java.util.Collection;
  * of prediction data using a fixed prediction horizon. If the input data
  * contains several sequences then it should be represented as a
  * multi-collection.
- * 
+ *
+ * @param   <DataType>
+ *      The data type to do sequence prediction learning over.
+ * @param   <LearnedType>
+ *      The type of object produced by this learner.
  * @author  Justin Basilico
  * @since   3.0
  */

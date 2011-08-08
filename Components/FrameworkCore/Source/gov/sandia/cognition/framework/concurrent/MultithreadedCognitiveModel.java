@@ -86,9 +86,6 @@ public class MultithreadedCognitiveModel
             this.previousModuleState = previousModuleState;
         }
  
-        /**
-         * {@inheritDoc}
-         */
         public Exception call() 
         {              
             try

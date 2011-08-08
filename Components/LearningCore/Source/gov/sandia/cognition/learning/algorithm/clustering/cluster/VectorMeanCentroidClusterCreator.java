@@ -17,6 +17,7 @@ package gov.sandia.cognition.learning.algorithm.clustering.cluster;
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -35,7 +36,7 @@ import java.util.Collection;
 )
 public class VectorMeanCentroidClusterCreator
     extends AbstractCloneableSerializable
-    implements ClusterCreator<CentroidCluster<Vector>, Vector>
+    implements IncrementalClusterCreator<CentroidCluster<Vector>, Vector>
 {
     /** An instance of this class since it has no internal data. */
     public static final VectorMeanCentroidClusterCreator INSTANCE = 
@@ -49,25 +50,27 @@ public class VectorMeanCentroidClusterCreator
         super();
     }
 
-    public CentroidCluster<Vector> createCluster(
-        Collection<Vector> members)
+    @Override
+    public CentroidCluster<Vector> createCluster()
     {
-        if ( members == null )
-        {
-            // Error: Members is null.
-            throw new NullPointerException("The members cannot be null.");
-        }
-        else if ( members.size() <= 0 )
+        return new CentroidCluster<Vector>(null, new ArrayList<Vector>());
+    }
+
+    @Override
+    public CentroidCluster<Vector> createCluster(
+        final Collection<Vector> members)
+    {
+        if (members.size() <= 0)
         {
             // No members to create the cluster from.
-            return null;
+            return new CentroidCluster<Vector>(null, members);
         }
-        
+
         // We are going to create the mean centroid of the cluster.
         Vector centroid = null;
-        for ( Vector member : members )
+        for (Vector member : members)
         {
-            if ( centroid == null )
+            if (centroid == null)
             {
                 centroid = member.clone();
             }
@@ -76,8 +79,58 @@ public class VectorMeanCentroidClusterCreator
                 centroid.plusEquals(member);
             }
         }
-        
+
         centroid.scaleEquals(1.0 / (double) members.size());
         return new CentroidCluster<Vector>(centroid, members);
     }
+
+    @Override
+    public void addClusterMember(
+        final CentroidCluster<Vector> cluster,
+        final Vector member)
+    {
+        Vector centroid = cluster.getCentroid();
+        if (centroid == null)
+        {
+            centroid = member.clone();
+            cluster.setCentroid(centroid);
+        }
+        else
+        {
+            final int oldSize = cluster.getMembers().size();
+            final int newSize = oldSize + 1;
+            final Vector delta = member.minus(centroid);
+            delta.scaleEquals(1.0 / newSize);
+            centroid.plusEquals(delta);
+        }
+        cluster.getMembers().add(member);
+    }
+
+    @Override
+    public boolean removeClusterMember(
+        final CentroidCluster<Vector> cluster,
+        final Vector member)
+    {
+        if (cluster.getMembers().remove(member))
+        {
+            final int newSize = cluster.getMembers().size();
+            Vector centroid = cluster.getCentroid();
+            if (newSize <= 0)
+            {
+                centroid.zero();
+            }
+            else
+            {
+                final Vector delta = member.minus(centroid);
+                delta.scaleEquals(1.0 / newSize);
+                centroid.minusEquals(delta);
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
 }

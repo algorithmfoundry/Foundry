@@ -248,6 +248,8 @@ public class DirichletProcessMixtureModel<ObservationType>
      * plus the as-yet-uncreated new cluster
      * @param K
      * Number of clusters
+     * @param   logConditional
+     *      The log of the conditional.
      * @return
      * Assignments from observations to clusters
      */
@@ -293,6 +295,8 @@ public class DirichletProcessMixtureModel<ObservationType>
      * Observation that we're assigning
      * @param weights
      * Place holder for the weights that this method will create
+     * @param   logConditional
+     *      The log of the conditional.
      * @return
      * Index of the cluster to assign the observation to.  This will be
      * [0,K-1] for an existing cluster and "K" for an as-yet-undecided new
@@ -824,11 +828,24 @@ public class DirichletProcessMixtureModel<ObservationType>
             this.clusters = clusters;
         }
 
+        /**
+         * Gets the posterior log-likelihood.
+         *
+         * @return
+         *      The posterior log-likelihood.
+         */
         public Double getPosteriorLogLikelihood()
         {
             return this.posteriorLogLikelihood;
         }
 
+
+        /**
+         * sets the posterior log-likelihood.
+         *
+         * @param   posteriorLogLikelihood
+         *      The posterior log-likelihood.
+         */
         public void setPosteriorLogLikelihood(
             Double posteriorLogLikelihood)
         {

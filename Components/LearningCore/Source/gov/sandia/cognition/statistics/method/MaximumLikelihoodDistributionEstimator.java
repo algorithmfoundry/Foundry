@@ -343,7 +343,16 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
 
     }
 
-
+    /**
+     * Estimates a continuous distribution.
+     *
+     * @param data
+     *      The data to estimate a distribution for.
+     * @return
+     *      The estimated distribution.
+     * @throws Exception
+     *      If there is an error in the estimation.
+     */
     public static SmoothScalarDistribution estimateContinuousDistribution(
         Collection<Double> data )
         throws Exception
@@ -355,6 +364,16 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
         return (SmoothScalarDistribution) estimator.learn(data);
     }
 
+    /**
+     * Estimates a discrete distribution.
+     *
+     * @param data
+     *      The data to estimate a distribution for.
+     * @return
+     *      The estimated distribution.
+     * @throws Exception
+     *      If there is an error in the estimation.
+     */
     @SuppressWarnings("unchecked")
     public static ClosedFormDiscreteScalarDistribution estimateDiscreteDistribution(
         Collection<? extends Number> data )
@@ -371,9 +390,22 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
 
     }
 
-    
 
-
+    /**
+     * Gets the distribution classes for the given base distribution.
+     * 
+     * @param   <DistributionType>
+     *      The type of distribution.
+     * @param baseDistribution
+     *      The class of the base distribution.
+     * @return
+     *      The list of implementations of that distribution in the statistics
+     *      distribution package.
+     * @throws ClassNotFoundException
+     * @throws IOException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
     @SuppressWarnings("unchecked")
     protected static <DistributionType extends ClosedFormComputableDistribution<?>> LinkedList<DistributionType> getDistributionClasses(
         Class<? extends DistributionType> baseDistribution )
@@ -462,83 +494,6 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
             }
         }
         return classes;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static void main( String[] args ) throws Exception
-    {
-        System.out.println( "Data" );
-
-//        File fin = new File( "/Users/krdixon/Documents/metaproc/metaproc_data/time_delta2.100.txt" );
-        File fin = new File( "/Users/krdixon/Documents/metaproc/metaproc_data/time_delta2.1000000.txt" );
-//        File fin = new File( "/Users/krdixon/Documents/metaproc/metaproc_data/time_delta2.txt" );
-        VectorReader reader = new VectorReader( new FileReader(fin) );
-        List<Vector> vectors = reader.readCollection(true);
-        ArrayList<Double> values = new ArrayList<Double>( vectors.size() );
-        for( Vector v : vectors )
-        {
-            values.add( v.getElement(0) );
-        }
-        vectors = null;
-        System.out.println( "Read " + values.size() + " values");
-        Pair<Double,Double> minmax = UnivariateStatisticsUtil.computeMinAndMax(values);
-        System.out.println( "Min: " + minmax.getFirst() + ", Max: " + minmax.getSecond() );
-        System.gc();
-        System.out.println( "Learning..." );
-
-        
-        ClosedFormComputableDistribution result = null;
-//        ClosedFormComputableDistribution<Number> result = null;
-        
-        boolean single = false;
-        if( single )
-        {
-
-            final int N = values.size();
-            final double tolerance = LineBracketInterpolatorBrent.DEFAULT_TOLERANCE / N;
-            LineBracketInterpolatorBrent brent = new LineBracketInterpolatorBrent();
-            brent.setTolerance(tolerance);
-            brent.getGoldenInterpolator().setTolerance(tolerance);
-            brent.getParabolicInterpolator().setTolerance(tolerance);
-            LineMinimizerDerivativeFree liner = new LineMinimizerDerivativeFree( brent );
-            liner.setTolerance(tolerance);
-//            FunctionMinimizerDirectionSetPowell minimizer =
-//                new FunctionMinimizerDirectionSetPowell( liner );
-
-            FunctionMinimizerNelderMead minimizer =
-                new FunctionMinimizerNelderMead();
-
-//            ExponentialDistribution distribution = new ExponentialDistribution.PDF();
-//            NegativeBinomialDistribution.PMF distribution =
-//                new NegativeBinomialDistribution.PMF( minmax.getSecond(), 1.0/minmax.getSecond() );
-//            BinomialDistribution.PMF distribution =
-//                new BinomialDistribution.PMF( minmax.getSecond().intValue(), 1.0/minmax.getSecond());
-            BetaBinomialDistribution.PMF distribution =
-                new BetaBinomialDistribution.PMF(minmax.getSecond().intValue()+1, 1.0, minmax.getSecond() );
-
-            NegativeLogLikelihood<Number> costFunction =
-                new ParallelNegativeLogLikelihood<Number>(values);
-            System.out.println( "Initial Cost: " + costFunction.evaluate(distribution) );
-            DistributionParameterEstimator<Number,ClosedFormComputableDistribution<Number>> estimator =
-                new DistributionParameterEstimator<Number,ClosedFormComputableDistribution<Number>>(
-                    distribution, costFunction, minimizer );
-//            DistributionParameterEstimator<Double,ClosedFormComputableDistribution<Double>> estimator =
-//                new DistributionParameterEstimator<Double,ClosedFormComputableDistribution<Double>>(
-//                    distribution, costFunction, minimizer );
-            result = estimator.learn(values);
-            System.out.println( "Final Cost: " + costFunction.evaluate(result) );
-            // Poisson cost = 180.58328477587722
-            // Binomial cost = 180.6050132072914
-            // Negative Binomial = 180.5615944923433
-        }
-        else
-        {
-            result = MaximumLikelihoodDistributionEstimator.estimateContinuousDistribution(values);
-//            result = MaximumLikelihoodDistributionEstimator.estimateDiscreteDistribution(values);
-        }
-
-        System.out.println( "ML Class: " + result.getClass().getCanonicalName() + ", Parameters: " + result.convertToVector() );
-
     }
     
 }

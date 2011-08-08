@@ -14,8 +14,13 @@
 
 package gov.sandia.cognition.statistics.distribution;
 
+import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.statistics.SmoothScalarDistributionTestHarness;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  *
@@ -398,6 +403,139 @@ public class UnivariateGaussianTest
         double meanHat = g1.getMean() + g2.getMean();
         assertEquals( meanHat, result.getMean(), TOLERANCE );
         assertEquals( vhat, result.getVariance(), TOLERANCE );
+
+    }
+
+    /**
+     * tests the incremental estimator
+     */
+    public void testIncrementalEstimator()
+    {
+        System.out.println( "Incremental Estimator" );
+
+        UnivariateGaussian.IncrementalEstimator estimator =
+            new UnivariateGaussian.IncrementalEstimator();
+
+        UnivariateGaussian target = new UnivariateGaussian(
+            RANDOM.nextGaussian(), RANDOM.nextDouble() );
+        ArrayList<Double> samples = target.sample(RANDOM,NUM_SAMPLES);
+
+
+        double mean = UnivariateStatisticsUtil.computeMean(samples);
+        UnivariateGaussian.SufficientStatistics ss = estimator.learn(samples);
+        assertEquals( samples.size(), ss.getCount() );
+        assertEquals( mean, ss.getMean(), TOLERANCE );
+        assertEquals( UnivariateStatisticsUtil.computeVariance(samples, mean), ss.getVariance(), TOLERANCE );
+        UnivariateGaussian result = ss.create();
+
+        UnivariateGaussian batch =
+            UnivariateGaussian.MaximumLikelihoodEstimator.learn(samples, 0.0);
+
+        System.out.println( "Target: " + target );
+        System.out.println( "Result: " + result );
+        System.out.println( "Batch : " + batch );
+
+        assertEquals( batch.getMean(), result.getMean(), TOLERANCE );
+        assertEquals( batch.getVariance(), result.getVariance(), TOLERANCE );
+
+        UnivariateGaussian.SufficientStatistics clone = ss.clone();
+        assertEquals( ss.getCount(), clone.getCount() );
+        assertEquals( ss.getMean(), clone.getMean() );
+        assertEquals( ss.getVariance(), clone.getVariance() );
+        
+        // This example is from the Wikipedia page: http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
+        // First demonstrate that for these simple values the mean is 10 and variance is 30.
+        double epsilon = 1E-10;
+        Collection<Double> xd = Arrays.asList(4.0, 7.0, 13.0, 16.0);
+        ss = estimator.createInitialLearnedObject();
+        ss = estimator.learn(xd);
+        result = ss.create();
+        assertEquals(10.0, result.getMean(), epsilon);
+        assertEquals(30.0, result.getVariance(), epsilon);
+
+        // Now shift the mean by adding 10^9 and check that the variance remains
+        // 30.
+        xd = Arrays.asList(1.0e9 + 4.0, 1e9 + 7, 1e9 + 13, 1e9 + 16);
+        ss = estimator.createInitialLearnedObject();
+        ss = estimator.learn(xd);
+        result = ss.create();
+        assertEquals(1e9 + 10.0, result.getMean(), epsilon);
+        assertEquals(30.0, result.getVariance(), epsilon);
+    }
+
+
+    /**
+     * Tests adding together sufficient statistics
+     */
+    public void testSufficientStatisticsPlus()
+    {
+        // This example is from the Wikipedia page: http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
+        // First demonstrate that for these simple values the mean is 10 and variance is 30.
+        double epsilon = 1E-10;
+        List<Double> xd = Arrays.asList(4.0, 7.0, 13.0, 16.0);
+        UnivariateGaussian.SufficientStatistics instance =
+            new UnivariateGaussian.SufficientStatistics();
+        int count = 1;
+        int i = 0;
+        while (i < xd.size())
+        {
+            UnivariateGaussian.SufficientStatistics other =
+                new UnivariateGaussian.SufficientStatistics();
+            for (int j = 0; j < count && i < xd.size(); j++)
+            {
+                other.update(xd.get(i));
+                i++;
+            }
+            instance.plusEquals(other);
+            count++;
+        }
+        assertEquals(10.0, instance.getMean(), epsilon);
+        assertEquals(30.0, instance.getVariance(), epsilon);
+
+        // Now shift the mean by adding 10^9 and check that the variance remains
+        // 30.
+        xd = Arrays.asList(1.0e9 + 4.0, 1e9 + 7, 1e9 + 13, 1e9 + 16);
+        instance.clear();
+        count = 1;
+        i = 0;
+        while (i < xd.size())
+        {
+            UnivariateGaussian.SufficientStatistics other =
+                new UnivariateGaussian.SufficientStatistics();
+            for (int j = 0; j < count && i < xd.size(); j++)
+            {
+                other.update(xd.get(i));
+                i++;
+            }
+            instance.plusEquals(other);
+            count++;
+        }
+        assertEquals(1e9 + 10.0, instance.getMean(), epsilon);
+        assertEquals(30.0, instance.getVariance(), epsilon);
+
+        UnivariateGaussian target = new UnivariateGaussian(
+            RANDOM.nextGaussian(), RANDOM.nextDouble() );
+        ArrayList<Double> samples = target.sample(RANDOM,NUM_SAMPLES);
+        instance.clear();
+        count = 1;
+        i = 0;
+        while (i < samples.size())
+        {
+            UnivariateGaussian.SufficientStatistics other =
+                new UnivariateGaussian.SufficientStatistics();
+            for (int j = 0; j < count && i < samples.size(); j++)
+            {
+                other.update(samples.get(i));
+                i++;
+            }
+            instance.plusEquals(other);
+            count++;
+        }
+
+        double mean = UnivariateStatisticsUtil.computeMean(samples);
+        double variance = UnivariateStatisticsUtil.computeVariance(samples, mean);
+        assertEquals(mean, instance.getMean(), epsilon);
+        assertEquals(variance, instance.getVariance(), epsilon);
 
     }
 

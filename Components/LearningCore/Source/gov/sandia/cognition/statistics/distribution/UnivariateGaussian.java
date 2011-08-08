@@ -23,12 +23,15 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
+import gov.sandia.cognition.statistics.AbstractIncrementalEstimator;
+import gov.sandia.cognition.statistics.AbstractSufficientStatistics;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
 import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.InvertibleCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
+import gov.sandia.cognition.util.ArgumentChecker;
 import gov.sandia.cognition.util.Pair;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
@@ -168,10 +171,7 @@ public class UnivariateGaussian
     public void setVariance(
         double variance )
     {
-        if (variance <= 0.0)
-        {
-            throw new IllegalArgumentException( "Variance must be > 0.0" );
-        }
+        ArgumentChecker.assertIsPositive("variance", variance);
         this.variance = variance;
     }
 
@@ -928,5 +928,235 @@ public class UnivariateGaussian
         }
 
     }    
-    
+
+
+    /**
+     * Captures the sufficient statistics of a UnivariateGaussian, which are
+     * the values to estimate the mean and variance.
+     */
+    @PublicationReference(
+        author="Wikipedia",
+        title="Algorithms for calculating variance",
+        year=2011,
+        type=PublicationType.WebPage,
+        url="http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance"
+    )
+    public static class SufficientStatistics
+        extends AbstractSufficientStatistics<Number, UnivariateGaussian>
+    {
+
+        /** The count of instances added to the sufficient statistics. */
+        protected long count;
+
+        /** The mean of the Gaussian. */
+        protected double mean;
+
+        /** This is the sum-squared differences */
+        protected double sumSquaredDifferences;
+
+        /**
+         * Creates a new, empty {@code SufficientStatistics}.
+         */
+        public SufficientStatistics()
+        {
+            super();
+
+            this.clear();
+        }
+
+        @Override
+        public SufficientStatistics clone()
+        {
+            return (SufficientStatistics) super.clone();
+        }
+
+        /**
+         * Resets this set of sufficient statistics to its empty state.
+         */
+        public void clear()
+        {
+            this.count = 0;
+            this.mean = 0.0;
+            this.sumSquaredDifferences = 0.0;
+        }
+
+        @Override
+        public UnivariateGaussian create()
+        {
+            final UnivariateGaussian result = new UnivariateGaussian();
+            this.create(result);
+            return result;
+        }
+        
+        @Override
+        public void create(
+            final UnivariateGaussian distribution)
+        {
+            distribution.setMean(this.getMean());
+            distribution.setVariance(this.getVariance());
+        }
+
+        @Override
+        public void update(
+            final Number value)
+        {
+            this.update(value.doubleValue());
+        }
+        
+        /**
+         * Adds a value to the sufficient statistics for the Gaussian.
+         *
+         * @param   value
+         *      The value to add.
+         */
+        public void update(
+            final double value)
+        {
+            // We've added another value.
+            this.count++;
+
+            // Compute the difference between the value and the current mean.
+            final double delta = value - this.mean;
+
+            // Update the mean based on the difference between the value
+            // and the mean along with the new count.
+            this.mean += delta / this.count;
+
+            // Update the squared differences from the mean, using the new
+            // mean in the process.
+            this.sumSquaredDifferences += delta * (value - this.mean);
+        }
+
+        
+//
+// TODO: This is not an unreasonable API, but I REALLY do not like the use
+//        of "plus" and "plusEquals"... -- krdixon, 2011-03-15
+//
+        /**
+         * Adds this set of sufficient statistics to another and returns the
+         * combined sufficient statistics.
+         *
+         * @param   other
+         *      The other set of sufficient statistics.
+         * @return
+         *      A combined set of sufficient statistics. The result is the
+         *      same as if all of the elements added to this and other were
+         *      added to one sufficient statistic.
+         */
+        public SufficientStatistics plus(
+            final SufficientStatistics other)
+        {
+            final SufficientStatistics copy = this.clone();
+            copy.plusEquals(other);
+            return copy;
+        }
+
+        /**
+         * Adds another sufficient statistic to this one. Makes this one
+         * as if all the items added to the other sufficient statistics were
+         * added to this one.
+         *
+         * @param   other
+         *      The other set of sufficient statistics.
+         */
+        public void plusEquals(
+            final SufficientStatistics other)
+        {
+            final double delta = other.mean - this.mean;
+            final long newCount = this.count + other.count;
+            final double newMean = this.mean + delta * other.count / newCount;
+            final double newSumSquaredDifferences =
+                this.sumSquaredDifferences + other.sumSquaredDifferences
+                + delta * delta * this.count * other.count / newCount;
+
+            this.count = newCount;
+            this.sumSquaredDifferences = newSumSquaredDifferences;
+            this.mean = newMean;
+        }
+
+        /**
+         * Gets the number of items in the sufficient statistics.
+         *
+         * @return
+         *      The number of items.
+         */
+        public long getCount()
+        {
+            return this.count;
+        }
+
+        /**
+         * Gets the mean of the Gaussian.
+         *
+         * @return
+         *      The mean.
+         */
+        public double getMean()
+        {
+            return this.mean;
+        }
+
+        /**
+         * Gets the variance of the Gaussian.
+         *
+         * @return
+         *      The variance.
+         */
+        public double getVariance()
+        {
+            if (this.count <= 1)
+            {
+                return 0.0;
+            }
+            else
+            {
+                return this.sumSquaredDifferences / (this.count - 1);
+            }
+        }
+
+        /**
+         * Gets the sum of squared differences from the mean. Used to compute
+         * the variance.
+         *
+         * @return
+         *      The sum of squared differences from the mean.
+         */
+        public double getSumSquaredDifferences()
+        {
+            return this.sumSquaredDifferences;
+        }
+
+    }
+
+    /**
+     * Incremental estimator for a UnivariateGaussian
+     */
+    public static class IncrementalEstimator
+        extends AbstractIncrementalEstimator<Number, UnivariateGaussian, UnivariateGaussian.SufficientStatistics>
+    {
+
+        /**
+         * Default Constructor
+         */
+        public IncrementalEstimator()
+        {
+            super();
+        }
+
+        @Override
+        public UnivariateGaussian.SufficientStatistics createInitialLearnedObject()
+        {
+            return new UnivariateGaussian.SufficientStatistics();
+        }
+
+        @Override
+        public void update(
+            final SufficientStatistics target,
+            final Iterable<? extends Number> data)
+        {
+            target.update(data);
+        }
+
+    }
+
 }

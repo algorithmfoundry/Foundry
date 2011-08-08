@@ -485,9 +485,10 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
             // If there's still space, then recurse to the further tree.
             if( further != null )
             {
-                if( !neighborhood.isFull() )
+//                if( !neighborhood.isFull() )
                 {
-                    further.findNearest(key, num, neighborhood, metric);
+                    further.findNearest(key, k, neighborhood, metric);
+//                    further.findNearest(key, num, neighborhood, metric);
                 }
             }
 
