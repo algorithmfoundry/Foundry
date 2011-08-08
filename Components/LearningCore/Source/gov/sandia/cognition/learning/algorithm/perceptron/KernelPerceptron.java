@@ -19,13 +19,12 @@ import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.learning.algorithm.AbstractAnytimeSupervisedBatchLearner;
-import gov.sandia.cognition.learning.function.categorization.KernelBinaryCategorizer;
 import gov.sandia.cognition.learning.function.kernel.Kernel;
 import gov.sandia.cognition.learning.data.InputOutputPair;
+import gov.sandia.cognition.learning.function.categorization.DefaultKernelBinaryCategorizer;
 import gov.sandia.cognition.util.DefaultNamedValue;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.NamedValue;
-import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -67,7 +66,7 @@ import java.util.LinkedHashMap;
     url="http://www.cs.ucsd.edu/~yfreund/papers/LargeMarginsUsingPerceptron.pdf"
 )
 public class KernelPerceptron<InputType>
-    extends AbstractAnytimeSupervisedBatchLearner<InputType, Boolean, KernelBinaryCategorizer<InputType>>
+    extends AbstractAnytimeSupervisedBatchLearner<InputType, Boolean, DefaultKernelBinaryCategorizer<InputType>>
     implements MeasurablePerformanceAlgorithm
 {
 
@@ -93,7 +92,7 @@ public class KernelPerceptron<InputType>
     private double marginNegative;
 
     /** The result categorizer. */
-    private KernelBinaryCategorizer<InputType> result;
+    private DefaultKernelBinaryCategorizer<InputType> result;
 
     /** The number of errors on the most recent iteration. */
     private int errorCount;
@@ -188,7 +187,7 @@ public class KernelPerceptron<InputType>
         // Set up the learning variables.
         this.setErrorCount(validCount);
         this.setSupportsMap(new LinkedHashMap<InputOutputPair<? extends InputType, ? extends Boolean>, DefaultWeightedValue<InputType>>());
-        this.setResult(new KernelBinaryCategorizer<InputType>(
+        this.setResult(new DefaultKernelBinaryCategorizer<InputType>(
             this.getKernel(), this.getSupportsMap().values(), 0.0));
 
         return true;
@@ -282,8 +281,8 @@ public class KernelPerceptron<InputType>
             // Make the result object have a more efficient backing collection
             // at the end.
             this.getResult().setExamples(
-                new ArrayList<WeightedValue<InputType>>(
-                this.getSupportsMap().values()));
+                new ArrayList<DefaultWeightedValue<InputType>>(
+                    this.getSupportsMap().values()));
 
             this.setSupportsMap(null);
         }
@@ -364,7 +363,7 @@ public class KernelPerceptron<InputType>
         this.marginNegative = marginNegative;
     }
 
-    public KernelBinaryCategorizer<InputType> getResult()
+    public DefaultKernelBinaryCategorizer<InputType> getResult()
     {
         return this.result;
     }
@@ -375,7 +374,7 @@ public class KernelPerceptron<InputType>
      * @param  result The object currently being result.
      */
     protected void setResult(
-        final KernelBinaryCategorizer<InputType> result)
+        final DefaultKernelBinaryCategorizer<InputType> result)
     {
         this.result = result;
     }

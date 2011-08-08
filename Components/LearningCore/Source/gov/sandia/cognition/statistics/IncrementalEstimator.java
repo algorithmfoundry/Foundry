@@ -14,11 +14,10 @@
 
 package gov.sandia.cognition.statistics;
 
-import gov.sandia.cognition.learning.algorithm.BatchLearner;
-import gov.sandia.cognition.learning.algorithm.IncrementalLearner;
+import gov.sandia.cognition.learning.algorithm.BatchAndIncrementalLearner;
 
 /**
- * An estimator of a Distribution that uses SufficientStatistics to arrive
+ * An estimator of a Distribution that uses SufficientStatistic to arrive
  * at its result.
  * 
  * @param   <DataType>
@@ -30,9 +29,8 @@ import gov.sandia.cognition.learning.algorithm.IncrementalLearner;
  * @author  Kevin R. Dixon
  * @since   3.1.1
  */
-public interface IncrementalEstimator<DataType, DistributionType extends Distribution<? extends DataType>, SufficientStatisticsType extends SufficientStatistics<DataType, DistributionType>>
-    extends IncrementalLearner<DataType, SufficientStatisticsType>,
-        BatchLearner<Iterable<? extends DataType>, SufficientStatisticsType>
+public interface IncrementalEstimator<DataType, DistributionType extends Distribution<? extends DataType>, SufficientStatisticsType extends SufficientStatistic<? super DataType, ? extends DistributionType>>
+    extends BatchAndIncrementalLearner<DataType, SufficientStatisticsType>
 {
 }
 

@@ -90,7 +90,7 @@ public class SequentialMinimalOptimizationTest
         instance.setMaxPenalty(100.0);
 instance.setKernelCacheSize(0);
 
-        final KernelBinaryCategorizer<Vector> result = instance.learn(data);
+        final KernelBinaryCategorizer<Vector, ?> result = instance.learn(data);
         assertSame(result, instance.getResult());
 
         for (InputOutputPair<Vector, Boolean> example : data)

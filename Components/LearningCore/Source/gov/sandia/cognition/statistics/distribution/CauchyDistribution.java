@@ -257,9 +257,15 @@ public class CauchyDistribution
         }
 
         public double logEvaluate(
-            Double input)
+            final Double input)
         {
-            return Math.log(this.evaluate(input.doubleValue()));
+            return this.logEvaluate((double) input);
+        }
+
+        public double logEvaluate(
+            double input)
+        {
+            return Math.log(this.evaluate(input));
         }
 
         public Double evaluate(

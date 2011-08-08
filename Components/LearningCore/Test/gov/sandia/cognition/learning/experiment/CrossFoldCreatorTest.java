@@ -31,7 +31,7 @@ public class CrossFoldCreatorTest
     extends TestCase
 {
 
-    Random random = new Random(1);
+    Random random = new Random(211);
 
     public CrossFoldCreatorTest(
         String testName)
@@ -50,7 +50,11 @@ public class CrossFoldCreatorTest
         assertEquals(CrossFoldCreator.DEFAULT_NUM_FOLDS, instance.getNumFolds());
         assertNotNull(instance.getRandom());
         
-        int numFolds = CrossFoldCreator.DEFAULT_NUM_FOLDS * 10;
+        int numFolds = CrossFoldCreator.DEFAULT_NUM_FOLDS * (1 + random.nextInt(10));
+        instance = new CrossFoldCreator<Double>(numFolds);
+        assertEquals(numFolds, instance.getNumFolds());
+        assertNotNull(instance.getRandom());
+
         instance = new CrossFoldCreator<Double>(numFolds, random);
         assertEquals(numFolds, instance.getNumFolds());
         assertSame(random, instance.getRandom());

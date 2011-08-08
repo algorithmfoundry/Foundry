@@ -432,9 +432,15 @@ public class BetaDistribution
             return p;
 
         }
+        
+        public double logEvaluate(
+            final Double input)
+        {
+            return this.logEvaluate((double) input);
+        }
 
         public double logEvaluate(
-            Double input)
+            double input)
         {
             return logEvaluate(input, this.getAlpha(), this.getBeta() );
         }

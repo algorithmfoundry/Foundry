@@ -52,6 +52,20 @@ public class DefaultConfusionMatrix<CategoryType>
         this.confusions = new LinkedHashMap<CategoryType, Map<CategoryType, Entry>>();
     }
 
+    /**
+     * Creates a copy of a given confusion matrix.
+     *
+     * @param   other
+     *      The other confusion matrix to copy.
+     */
+    public DefaultConfusionMatrix(
+        final ConfusionMatrix<? extends CategoryType> other)
+    {
+        this();
+
+        this.addAll(other);
+    }
+
     @Override
     public DefaultConfusionMatrix<CategoryType> clone()
     {

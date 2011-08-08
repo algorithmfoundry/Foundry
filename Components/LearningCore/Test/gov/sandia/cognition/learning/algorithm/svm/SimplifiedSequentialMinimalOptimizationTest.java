@@ -129,7 +129,7 @@ public class SimplifiedSequentialMinimalOptimizationTest
         instance.setMaxPenalty(100.0);
 
 
-        final KernelBinaryCategorizer<Vector> result = instance.learn(data);
+        final KernelBinaryCategorizer<Vector, ?> result = instance.learn(data);
         assertSame(result, instance.getResult());
 
         System.out.println("Result " + result);

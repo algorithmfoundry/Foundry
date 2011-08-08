@@ -393,8 +393,15 @@ public class StudentTDistribution
             return Math.exp( this.logEvaluate(input) );
         }
 
+
         public double logEvaluate(
-            Double input)
+            final Double input)
+        {
+            return this.logEvaluate((double) input);
+        }
+
+        public double logEvaluate(
+            double input)
         {
             double logSum = 0.0;
             final double v2 = this.degreesOfFreedom / 2.0;

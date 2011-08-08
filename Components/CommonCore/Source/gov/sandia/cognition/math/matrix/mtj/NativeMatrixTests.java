@@ -15,8 +15,8 @@
 
 package gov.sandia.cognition.math.matrix.mtj;
 
-import no.uib.cipr.matrix.nni.BLAS;
-import no.uib.cipr.matrix.nni.LAPACK;
+import org.netlib.blas.BLAS;
+import org.netlib.lapack.LAPACK;
 
 /**
  * Tests to see if native versions of LAPACK and BLAS are loaded
@@ -36,20 +36,7 @@ public class NativeMatrixTests
      */
     public static boolean isNativeLAPACK()
     {
-        boolean retval;
-        
-        try
-        {
-            LAPACK.init();
-            retval = true;
-        }
-        catch (Throwable e)
-        {
-            retval = false;
-        }
-        
-        return retval;
-        
+        return LAPACK.getInstance().getClass().getName().contains("Native");
     }
     
     /**
@@ -59,21 +46,12 @@ public class NativeMatrixTests
      */
     public static boolean isNativeBLAS()
     {
-        boolean retval;
-        
-        try
-        {
-            BLAS.init();
-            retval = true;
-        }
-        catch (Throwable e)
-        {
-            retval = false;
-        }
-        
-        return retval;
-        
+        return BLAS.getInstance().getClass().getName().contains("Native");
     }
     
-    
+    public static void main(String... a)
+    {
+        System.out.println(BLAS.getInstance().getClass().getName());
+        System.out.println(LAPACK.getInstance().getClass().getName());
+    }
 }

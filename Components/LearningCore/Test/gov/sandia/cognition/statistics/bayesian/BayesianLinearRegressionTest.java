@@ -22,7 +22,7 @@ import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
  * @author krdixon
  */
 public class BayesianLinearRegressionTest
-    extends BayesianRegressionTestHarness
+    extends BayesianRegressionTestHarness<MultivariateGaussian>
 {
 
     /**
@@ -51,6 +51,7 @@ public class BayesianLinearRegressionTest
         assertEquals( BayesianLinearRegression.DEFAULT_OUTPUT_VARIANCE, instance.getOutputVariance() );
     }
 
+    @Override
     public BayesianLinearRegression<Double> createInstance()
     {
         BayesianLinearRegression<Double> instance =
@@ -116,4 +117,19 @@ public class BayesianLinearRegressionTest
 
     }
 
+    /**
+     * Batch and Incremental Comparison
+     */
+    public void testIncrementalAndBatch()
+    {
+        
+        BayesianLinearRegression<Double> instance = this.createInstance();
+
+        BayesianLinearRegression.IncrementalEstimator<Double> incremental =
+            new BayesianLinearRegression.IncrementalEstimator<Double>(
+                instance.getFeatureMap(), instance.getOutputVariance(), instance.getWeightPrior() );
+
+        super.testIncrementalAndBatch(incremental);
+    }
+    
 }

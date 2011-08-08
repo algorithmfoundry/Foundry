@@ -447,7 +447,13 @@ public class GammaDistribution
         }
 
         public double logEvaluate(
-            Double input)
+            final Double input)
+        {
+            return this.logEvaluate((double) input);
+        }
+
+        public double logEvaluate(
+            double input)
         {
             return logEvaluate( input, this.getShape(), this.getScale() );
         }

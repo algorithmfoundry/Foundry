@@ -173,6 +173,12 @@ public class GeometricDistribution
         return new IntegerCollection( this.getMinSupport(), max);
     }
 
+    @Override
+    public int getDomainSize()
+    {
+        return getDomain().size();
+    }
+
     public GeometricDistribution.CDF getCDF()
     {
         return new GeometricDistribution.CDF( this );

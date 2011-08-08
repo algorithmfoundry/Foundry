@@ -24,7 +24,7 @@ import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
 import gov.sandia.cognition.statistics.AbstractIncrementalEstimator;
-import gov.sandia.cognition.statistics.AbstractSufficientStatistics;
+import gov.sandia.cognition.statistics.AbstractSufficientStatistic;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
 import gov.sandia.cognition.statistics.EstimableDistribution;
@@ -142,6 +142,7 @@ public class UnivariateGaussian
      * @return
      * First central moment (expectation) of the distribution
      */
+    @Override
     public Double getMean()
     {
         return this.mean;
@@ -158,6 +159,7 @@ public class UnivariateGaussian
         this.mean = mean;
     }
 
+    @Override
     public double getVariance()
     {
         return this.variance;
@@ -186,6 +188,7 @@ public class UnivariateGaussian
         return "Mean: " + this.getMean() + " Variance: " + this.getVariance();
     }    
     
+    @Override
     public ArrayList<Double> sample(
         Random random,
         int numSamples )
@@ -207,12 +210,14 @@ public class UnivariateGaussian
         return samples;
     }
 
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues(
             this.getMean(), this.getVariance() );
     }
 
+    @Override
     public void convertFromVector(
         Vector parameters )
     {
@@ -225,21 +230,25 @@ public class UnivariateGaussian
         this.setVariance( parameters.getElement( 1 ) );
     }
 
+    @Override
     public UnivariateGaussian.CDF getCDF()
     {
         return new UnivariateGaussian.CDF( this );
     }
 
+    @Override
     public UnivariateGaussian.PDF getProbabilityFunction()
     {
         return new UnivariateGaussian.PDF( this );
     }
 
+    @Override
     public Double getMinSupport()
     {
         return Double.NEGATIVE_INFINITY;
     }
 
+    @Override
     public Double getMaxSupport()
     {
         return Double.POSITIVE_INFINITY;
@@ -286,6 +295,7 @@ public class UnivariateGaussian
         return new UnivariateGaussian( meanHat, varianceHat );
     }
 
+    @Override
     public UnivariateGaussian.MaximumLikelihoodEstimator getEstimator()
     {
         return new UnivariateGaussian.MaximumLikelihoodEstimator();
@@ -327,6 +337,7 @@ public class UnivariateGaussian
          * @param z value on the interval (-infinity,infinity)
          * @return Normalized Gaussian Error Function value of z
          */
+        @Override
         public double evaluate(
             double z )
         {
@@ -384,6 +395,7 @@ public class UnivariateGaussian
              * @return
              * Returns the value "x" such that y = erf(x)
              */
+            @Override
             public double evaluate(
                 double y )
             {
@@ -490,12 +502,14 @@ public class UnivariateGaussian
             super( other.getMean(), other.getVariance() );
         }
     
+        @Override
         public Double evaluate(
             Double input )
         {
             return evaluate( input.doubleValue() );
         }
         
+        @Override
         public double evaluate(
             double z )
         {
@@ -553,17 +567,20 @@ public class UnivariateGaussian
             return this;
         }
 
+        @Override
         public UnivariateGaussian.PDF getDerivative()
         {
             return this.getProbabilityFunction();
         }
 
+        @Override
         public Double differentiate(
             Double input)
         {
             return this.getDerivative().evaluate(input);
         }
 
+        @Override
         public Double inverse(
             double probability)
         {
@@ -616,6 +633,7 @@ public class UnivariateGaussian
                 super( other.getMean(), other.getVariance() );
             }
             
+            @Override
             public Double evaluate(
                 Double input )
             {
@@ -631,6 +649,7 @@ public class UnivariateGaussian
              * @param p Value at which to solve for x such that x=CDF(p)
              * @return Value of x such that x=CDF(p)
              */
+            @Override
             public double evaluate(
                 double p )
             {
@@ -715,12 +734,14 @@ public class UnivariateGaussian
             super( other.getMean(), other.getVariance() );
         }
         
+        @Override
         public Double evaluate(
             Double input )
         {
             return this.evaluate( input.doubleValue() );
         }
         
+        @Override
         public double evaluate(
             double input )
         {
@@ -745,10 +766,18 @@ public class UnivariateGaussian
             return Math.exp( logEvaluate(input, mean, variance) );
         }
 
+        @Override
         public double logEvaluate(
             Double input)
         {
             return logEvaluate( input, this.mean, this.variance );
+        }
+
+        @Override
+        public double logEvaluate(
+            double input)
+        {
+            return logEvaluate(input, this.mean, this.variance);
         }
 
         /**
@@ -815,7 +844,9 @@ public class UnivariateGaussian
         public MaximumLikelihoodEstimator(
             double defaultVariance )
         {
-            this.defaultVariance = defaultVariance;
+            super();
+
+            this.setDefaultVariance(defaultVariance);
         }
 
         /**
@@ -826,6 +857,7 @@ public class UnivariateGaussian
          * Maximum likelihood estimate of the UnivariateGaussian that generated
          * the data
          */
+        @Override
         public UnivariateGaussian.PDF learn(
             Collection<? extends Double> data )
         {
@@ -852,6 +884,33 @@ public class UnivariateGaussian
             double variance = mle.getSecond();
             variance += defaultVariance;
             return new UnivariateGaussian.PDF( mean, variance );
+        }
+
+        /**
+         * Gets the default variance, which is the amount added to the variance.
+         * If this is greater than zero, it avoids creating zero variance.
+         *
+         * @return
+         *      The default variance. Cannot be negative.
+         */
+        public double getDefaultVariance()
+        {
+            return this.defaultVariance;
+        }
+
+        /**
+         * Sets the default variance, which is the amount added to the variance.
+         * If this is greater than zero, it avoids creating zero variance.
+         *
+         * @param   defaultVariance
+         *      The default variance. Cannot be negative.
+         */
+        public void setDefaultVariance(
+            final double defaultVariance)
+        {
+            ArgumentChecker.assertIsNonNegative(
+                "defaultVariance", defaultVariance);
+            this.defaultVariance = defaultVariance;
         }
 
     }
@@ -897,6 +956,7 @@ public class UnivariateGaussian
          * @return
          * Maximum Likelihood UnivariateGaussian that generated the data
          */
+        @Override
         public UnivariateGaussian.PDF learn(
             Collection<? extends WeightedValue<? extends Double>> data )
         {
@@ -941,12 +1001,9 @@ public class UnivariateGaussian
         type=PublicationType.WebPage,
         url="http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance"
     )
-    public static class SufficientStatistics
-        extends AbstractSufficientStatistics<Number, UnivariateGaussian>
+    public static class SufficientStatistic
+        extends AbstractSufficientStatistic<Double, UnivariateGaussian>
     {
-
-        /** The count of instances added to the sufficient statistics. */
-        protected long count;
 
         /** The mean of the Gaussian. */
         protected double mean;
@@ -955,19 +1012,39 @@ public class UnivariateGaussian
         protected double sumSquaredDifferences;
 
         /**
-         * Creates a new, empty {@code SufficientStatistics}.
+         * Creates a new, empty {@code SufficientStatistic}.
          */
-        public SufficientStatistics()
+        public SufficientStatistic()
+        {
+            this( 0.0 );
+        }
+
+        /**
+         * Creates a new {@code SufficientStatistic} with the given value
+         * to initialize the variance. This is the initial value for the
+         * sum of squared differences. As the number of elements becomes
+         * larger, the impact of the default variance will decrease.
+         *
+         * @param   defaultVariance
+         *      The default variance to use. Must be greater than or equal
+         *      to zero.
+         */
+        public SufficientStatistic(
+            final double defaultVariance)
         {
             super();
 
+            ArgumentChecker.assertIsNonNegative(
+                "defaultVariance", defaultVariance);
+
             this.clear();
+            this.sumSquaredDifferences = defaultVariance;
         }
 
         @Override
-        public SufficientStatistics clone()
+        public SufficientStatistic clone()
         {
-            return (SufficientStatistics) super.clone();
+            return (SufficientStatistic) super.clone();
         }
 
         /**
@@ -981,9 +1058,9 @@ public class UnivariateGaussian
         }
 
         @Override
-        public UnivariateGaussian create()
+        public UnivariateGaussian.PDF create()
         {
-            final UnivariateGaussian result = new UnivariateGaussian();
+            final UnivariateGaussian.PDF result = new UnivariateGaussian.PDF();
             this.create(result);
             return result;
         }
@@ -998,7 +1075,7 @@ public class UnivariateGaussian
 
         @Override
         public void update(
-            final Number value)
+            final Double value)
         {
             this.update(value.doubleValue());
         }
@@ -1043,10 +1120,10 @@ public class UnivariateGaussian
          *      same as if all of the elements added to this and other were
          *      added to one sufficient statistic.
          */
-        public SufficientStatistics plus(
-            final SufficientStatistics other)
+        public SufficientStatistic plus(
+            final SufficientStatistic other)
         {
-            final SufficientStatistics copy = this.clone();
+            final SufficientStatistic copy = this.clone();
             copy.plusEquals(other);
             return copy;
         }
@@ -1060,7 +1137,7 @@ public class UnivariateGaussian
          *      The other set of sufficient statistics.
          */
         public void plusEquals(
-            final SufficientStatistics other)
+            final SufficientStatistic other)
         {
             final double delta = other.mean - this.mean;
             final long newCount = this.count + other.count;
@@ -1072,17 +1149,6 @@ public class UnivariateGaussian
             this.count = newCount;
             this.sumSquaredDifferences = newSumSquaredDifferences;
             this.mean = newMean;
-        }
-
-        /**
-         * Gets the number of items in the sufficient statistics.
-         *
-         * @return
-         *      The number of items.
-         */
-        public long getCount()
-        {
-            return this.count;
         }
 
         /**
@@ -1106,7 +1172,8 @@ public class UnivariateGaussian
         {
             if (this.count <= 1)
             {
-                return 0.0;
+                // This allows the default variance to be used.
+                return this.sumSquaredDifferences;
             }
             else
             {
@@ -1129,34 +1196,75 @@ public class UnivariateGaussian
     }
 
     /**
-     * Incremental estimator for a UnivariateGaussian
+     * Implements an incremental estimator for the sufficient statistics for
+     * a UnivariateGaussian.
      */
     public static class IncrementalEstimator
-        extends AbstractIncrementalEstimator<Number, UnivariateGaussian, UnivariateGaussian.SufficientStatistics>
+        extends AbstractIncrementalEstimator<Double, UnivariateGaussian, UnivariateGaussian.SufficientStatistic>
     {
 
+        /** The default value for the default variance is {@value}. */
+        public static final double DEFAULT_DEFAULT_VARIANCE = MaximumLikelihoodEstimator.DEFAULT_VARIANCE;
+
+        /** Amount to add to the variance to keep it from being 0.0. */
+        protected double defaultVariance;
+
         /**
-         * Default Constructor
+         * Creates a new {@code IncrementalEstimator}.
          */
         public IncrementalEstimator()
         {
+            this(DEFAULT_DEFAULT_VARIANCE);
+        }
+
+        /**
+         * Creates a new {@code IncrementalEstimator} with the given default
+         * variance.
+         *
+         * @param   defaultVariance
+         *      The default variance. Cannot be negative.
+         */
+        public IncrementalEstimator(
+            final double defaultVariance)
+        {
             super();
-        }
 
+            this.setDefaultVariance(defaultVariance);
+        }
+        
         @Override
-        public UnivariateGaussian.SufficientStatistics createInitialLearnedObject()
+        public UnivariateGaussian.SufficientStatistic createInitialLearnedObject()
         {
-            return new UnivariateGaussian.SufficientStatistics();
+            return new UnivariateGaussian.SufficientStatistic(
+                this.getDefaultVariance());
         }
 
-        @Override
-        public void update(
-            final SufficientStatistics target,
-            final Iterable<? extends Number> data)
+        /**
+         * Gets the default variance, which is the amount added to the variance.
+         * If this is greater than zero, it avoids creating zero variance.
+         *
+         * @return
+         *      The default variance. Cannot be negative.
+         */
+        public double getDefaultVariance()
         {
-            target.update(data);
+            return this.defaultVariance;
         }
 
+        /**
+         * Sets the default variance, which is the amount added to the variance.
+         * If this is greater than zero, it avoids creating zero variance.
+         *
+         * @param   defaultVariance
+         *      The default variance. Cannot be negative.
+         */
+        public void setDefaultVariance(
+            final double defaultVariance)
+        {
+            ArgumentChecker.assertIsNonNegative(
+                "defaultVariance", defaultVariance);
+            this.defaultVariance = defaultVariance;
+        }
     }
 
 }

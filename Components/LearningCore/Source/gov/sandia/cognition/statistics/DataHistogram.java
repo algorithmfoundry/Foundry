@@ -126,15 +126,6 @@ public interface DataHistogram<DataType>
         final DataType value);
 
     /**
-     * Gets the size of the domain.
-     *
-     * @return
-     *      The size of the domain.
-     */
-    public int getDomainSize();
-    // TODO: Should this be pushed up into DiscreteDistribution?
-
-    /**
      * Finds the maximum count over all values.
      *
      * @return

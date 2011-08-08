@@ -17,7 +17,6 @@ import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.math.matrix.mtj.Vector2;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
 import gov.sandia.cognition.statistics.DataHistogram;
-import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import java.util.ArrayList;
@@ -53,14 +52,14 @@ public class VectorNaiveBayesCategorizerTest
      */
     public void testConstructors()
     {
-        VectorNaiveBayesCategorizer<String> instance = new VectorNaiveBayesCategorizer<String>();
+        VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF> instance = new VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF>();
         assertTrue(instance.getPriors().getTotalCount() == 0);
         assertTrue(instance.getConditionals().isEmpty());
 
         DataHistogram<String> priors = new MapBasedDataHistogram<String>();
-        Map<String, List<ScalarProbabilityDensityFunction>> conditionals =
-            new LinkedHashMap<String, List<ScalarProbabilityDensityFunction>>();
-        instance = new VectorNaiveBayesCategorizer<String>(priors, conditionals);
+        Map<String, List<UnivariateGaussian.PDF>> conditionals =
+            new LinkedHashMap<String, List<UnivariateGaussian.PDF>>();
+        instance = new VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF>(priors, conditionals);
         assertSame(priors, instance.getPriors());
         assertSame(conditionals, instance.getConditionals());
     }
@@ -70,8 +69,8 @@ public class VectorNaiveBayesCategorizerTest
      */
     public void testClone()
     {
-        VectorNaiveBayesCategorizer<String> instance = new VectorNaiveBayesCategorizer<String>();
-        VectorNaiveBayesCategorizer<String> clone = instance.clone();
+        VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF> instance = new VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF>();
+        VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF> clone = instance.clone();
         assertNotSame(instance.getPriors(), clone.getPriors());
         assertNotSame(instance.getConditionals(), clone.getConditionals());
     }
@@ -82,17 +81,17 @@ public class VectorNaiveBayesCategorizerTest
     public void testEvaluate()
     {
         Vector2 input = new Vector2(1, 2);
-        VectorNaiveBayesCategorizer<String> instance = new VectorNaiveBayesCategorizer<String>();
+        VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF> instance = new VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF>();
         assertNull(instance.evaluate(input));
 
         instance.getPriors().add("a", 3);
-        instance.getConditionals().put("a", new ArrayList<ScalarProbabilityDensityFunction>());
+        instance.getConditionals().put("a", new ArrayList<UnivariateGaussian.PDF>());
         instance.getConditionals().get("a").add(new UnivariateGaussian.PDF(3.0, 10.0));
         instance.getConditionals().get("a").add(new UnivariateGaussian.PDF(5.0, 1.0));
         assertEquals("a", instance.evaluate(input));
 
         instance.getPriors().add("b", 2);
-        instance.getConditionals().put("b", new ArrayList<ScalarProbabilityDensityFunction>());
+        instance.getConditionals().put("b", new ArrayList<UnivariateGaussian.PDF>());
         instance.getConditionals().get("b").add(new UnivariateGaussian.PDF(0.0, 1.0));
         instance.getConditionals().get("b").add(new UnivariateGaussian.PDF(1.0, 1.0));
         assertEquals("b", instance.evaluate(input));
@@ -104,16 +103,16 @@ public class VectorNaiveBayesCategorizerTest
      */
     public void testGetCategories()
     {
-        VectorNaiveBayesCategorizer<String> instance = new VectorNaiveBayesCategorizer<String>();
+        VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF> instance = new VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF>();
         assertTrue(instance.getCategories().isEmpty());
 
         instance.getPriors().add("a", 1);
-        instance.getConditionals().put("a", new ArrayList<ScalarProbabilityDensityFunction>());
+        instance.getConditionals().put("a", new ArrayList<UnivariateGaussian.PDF>());
         assertEquals(1, instance.getCategories().size());
         assertTrue(instance.getCategories().contains("a"));
 
         instance.getPriors().add("b", 1);
-        instance.getConditionals().put("b", new ArrayList<ScalarProbabilityDensityFunction>());
+        instance.getConditionals().put("b", new ArrayList<UnivariateGaussian.PDF>());
         assertEquals(2, instance.getCategories().size());
         assertTrue(instance.getCategories().contains("a"));
         assertTrue(instance.getCategories().contains("b"));
@@ -124,11 +123,11 @@ public class VectorNaiveBayesCategorizerTest
      */
     public void testGetInputDimensionality()
     {
-        VectorNaiveBayesCategorizer<String> instance = new VectorNaiveBayesCategorizer<String>();
+        VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF> instance = new VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF>();
         assertEquals(0, instance.getInputDimensionality());
 
         instance.getPriors().add("a", 1);
-        instance.getConditionals().put("a", new ArrayList<ScalarProbabilityDensityFunction>());
+        instance.getConditionals().put("a", new ArrayList<UnivariateGaussian.PDF>());
         assertEquals(0, instance.getInputDimensionality());
 
         instance.getConditionals().get("a").add(new UnivariateGaussian.PDF());
@@ -151,7 +150,7 @@ public class VectorNaiveBayesCategorizerTest
      */
     public void testSetPriors()
     {
-        VectorNaiveBayesCategorizer<String> instance = new VectorNaiveBayesCategorizer<String>();
+        VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF> instance = new VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF>();
         assertTrue(instance.getPriors().getTotalCount() == 0);
 
         DataHistogram<String> priors = new MapBasedDataHistogram<String>();
@@ -180,11 +179,11 @@ public class VectorNaiveBayesCategorizerTest
      */
     public void testSetConditionals()
     {
-        VectorNaiveBayesCategorizer<String> instance = new VectorNaiveBayesCategorizer<String>();
+        VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF> instance = new VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF>();
         assertTrue(instance.getConditionals().isEmpty());
 
-        Map<String, List<ScalarProbabilityDensityFunction>> conditionals =
-            new LinkedHashMap<String, List<ScalarProbabilityDensityFunction>>();
+        Map<String, List<UnivariateGaussian.PDF>> conditionals =
+            new LinkedHashMap<String, List<UnivariateGaussian.PDF>>();
         instance.setConditionals(conditionals);
         assertSame(conditionals, instance.getConditionals());
 
@@ -192,7 +191,7 @@ public class VectorNaiveBayesCategorizerTest
         instance.setConditionals(conditionals);
         assertSame(conditionals, instance.getConditionals());
 
-        conditionals = new LinkedHashMap<String, List<ScalarProbabilityDensityFunction>>();
+        conditionals = new LinkedHashMap<String, List<UnivariateGaussian.PDF>>();
         instance.setConditionals(conditionals);
         assertSame(conditionals, instance.getConditionals());
     }
@@ -202,8 +201,9 @@ public class VectorNaiveBayesCategorizerTest
      */
     public void testLearner()
     {
-        VectorNaiveBayesCategorizer.Learner<String> learner =
-            new VectorNaiveBayesCategorizer.Learner<String>();
+        VectorNaiveBayesCategorizer.Learner<String, UnivariateGaussian.PDF> learner =
+            new VectorNaiveBayesCategorizer.Learner<String, UnivariateGaussian.PDF>(
+                new UnivariateGaussian.MaximumLikelihoodEstimator());
 
         ArrayList<InputOutputPair<Vector3, String>> data =
             new ArrayList<InputOutputPair<Vector3, String>>();
@@ -214,7 +214,7 @@ public class VectorNaiveBayesCategorizerTest
         data.add(DefaultInputOutputPair.create(new Vector3(-5.0, 1.0, 2.0), "a"));
         data.add(DefaultInputOutputPair.create(new Vector3(-7.0, 1.0, 3.0), "a"));
 
-        VectorNaiveBayesCategorizer<String> instance = learner.learn(data);
+        VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF> instance = learner.learn(data);
         assertEquals(2, instance.getCategories().size());
         assertTrue(instance.getCategories().contains("a"));
         assertTrue(instance.getCategories().contains("b"));

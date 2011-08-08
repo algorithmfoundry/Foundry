@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -398,6 +399,88 @@ public class CollectionUtilTest
         {
             System.out.println( "Good: " + e );
         }
+
+    }
+
+
+    /**
+     * Tests ObjectUtil.removeElement
+     */
+    public void testRemoveElement()
+    {
+        System.out.println( "removeElement" );
+
+        List<Double> i1 = new ArrayList<Double>();
+        i1.add(RANDOM.nextGaussian());
+        i1.add(RANDOM.nextGaussian());
+        i1.add(RANDOM.nextGaussian());
+
+        List<Double> i1Copy = new ArrayList<Double>(i1);
+
+        try
+        {
+            CollectionUtil.removeElement(i1, -1);
+            fail( "Index must be >= 0");
+        }
+        catch (Exception e)
+        {
+            System.out.println( "Good: " + e );
+        }
+
+        try
+        {
+            CollectionUtil.removeElement(i1, i1.size());
+            fail( "Index must be < size");
+        }
+        catch (Exception e)
+        {
+            System.out.println( "Good: " + e );
+        }
+
+        assertSame( i1Copy.get(0), CollectionUtil.removeElement(i1, 0));
+        assertEquals(2, CollectionUtil.size(i1));
+        assertSame( i1Copy.get(1), CollectionUtil.removeElement(i1, 0));
+        assertEquals(1, CollectionUtil.size(i1));
+        assertSame( i1Copy.get(2), CollectionUtil.removeElement(i1, 0));
+        assertEquals(0, CollectionUtil.size(i1));
+
+        HashSet<Integer> i2 = new HashSet<Integer>();
+        for (int i = 0; i < 10; i++)
+        {
+            i2.add(i);
+        }
+
+        assertEquals(10, CollectionUtil.size(i2));
+        assertEquals( new Integer(5), CollectionUtil.removeElement(i2, 5 ));
+        assertEquals(9, CollectionUtil.size(i2));
+        assertEquals( new Integer(1), CollectionUtil.removeElement(i2, 1 ));
+        assertEquals(8, CollectionUtil.size(i2));
+        assertEquals( new Integer(0), CollectionUtil.removeElement(i2, 0 ));
+        assertEquals(7, CollectionUtil.size(i2));
+        assertEquals( new Integer(2), CollectionUtil.removeElement(i2, 0 ));
+        assertEquals(6, CollectionUtil.size(i2));
+
+        try
+        {
+            CollectionUtil.removeElement(i2, -1);
+            fail( "Index must be >= 0");
+        }
+        catch (Exception e)
+        {
+            System.out.println( "Good: " + e );
+        }
+        assertEquals(6, CollectionUtil.size(i2));
+
+        try
+        {
+            CollectionUtil.removeElement(i2, CollectionUtil.size(i2) );
+            fail( "Index must be < size" );
+        }
+        catch (Exception e)
+        {
+            System.out.println( "Good: " + e );
+        }
+        assertEquals(6, CollectionUtil.size(i2));
 
     }
 

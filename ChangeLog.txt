@@ -2,6 +2,76 @@ This file contains the change log for the Cognitive Foundry.
 
 Changes since last release:
 
+Release 3.2.0 (2011-05-19):
+ * Upgraded to mtj-9.9.14 and added the netlib-java-0.9.3 library, which MTJ
+   now depends on.
+ * Common Core:
+   * ParallelUtil: Added executeInParallel(tasks, algorithm)
+   * CollectionUtil: Added removeElement.
+   * Added MutableDouble class, which is like Double but with a mutable value.
+     It also implements Ring and Vectorizable.
+   * UnivariateStatisticsUtil: Improved stability of computeMean with large
+     values.
+   * VectorReader: Changed to use a Collection of tokens instead of requiring
+     an ArrayList.
+   * AbstractSingularValueDecomposition: Fixed a bug for certain types of
+     rectangular matrices.
+   * DiagonalMatrixMTJ: Made inverse faster.
+   * ArgumentChecker: Added assertIsInRangeExclusive and fixed a formatting
+     issue with some exception messages.
+   * Added Identified interface.
+ * Learning Core:
+   * Added BatchAndIncrementalLearner interface, which is for algorithms that
+     can be used in batch and incremental modes. Note that it defines that the
+     BatchLearner interface uses a Collection of data for consistency with
+     existing batch (non-incremental) algorithms. However, it does also include
+     another learn method that takes an Iterable.
+     AbstractBatchAndIncrementalLearner now implements it.
+   * Added SupervisedIncrementalLearner interface, supervised version,
+     SupervisedBatchAndIncrementalLearner, and abstract class
+     AbstractSupervisedBatchAndIncrementalLearner. Many incremental learning
+     algorithms now implement these interfaces and extend this abstract class.
+   * VectorNaiveBayesCategorizer: Now has generic for the distribution type
+     representing each feature, including OnlingBaggingCategorizerLearner,
+     AbstractOnlineLinearBinaryCategorizerLearner,
+     OnlinePassiveAggressivePerceptron, OnlinePerceptron, OnlineVotedPerceptron,
+     and Winnow.
+   * BaggingCategorizerLearner: Added a protected fillBag method, which
+     can be overridden to implement a different sampling approach.
+   * Added BatchMultiPerceptron, which is an implementation of a multi-class
+     Perceptron that keeps one Perceptron per class.
+   * Added MultiCategoryAdaBoost, which is an implementation of the AdaBoost.M1
+     algorithm.
+   * DecisionTree: Added findTerminalNode methods.
+   * CrossFoldCreator: Added constructor that takes just a number of folds.
+   * KernelBinaryCategorizer is now an interface with a default implementation
+     in DefaultKernelBinaryCategorizer. KernelPerceptron, KernelAdatron,
+     SequentialMinimalOptimization, and SuccessiveOverrelaxation now all
+     use the new interface or default class.
+   * Added LinearMultiCategorizer class, which keeps a LinearBinaryCategorizer
+     for each class and
+   * Removed GeneralizedScalarRadialBasisKernel class.
+   * GaussianContextRecognizer: Now requires MixtureOfGaussians.PDF.
+   * DefaultConfusionMatrix: Added copy constructor.
+   * DiscreteDistribution: Added getDomainSize and implemented in subclasses.
+   * DiscreteSamplingUtil: Added sampleWithReplacementInto method.
+   * ProbabilityMassFunctionUtil: Added sampleMultiple and sampleSingle.
+   * ScalarProbabilityDensityFunction: Added logEvaluate method and implemented
+     in subclasses.
+   * BayesianLinearRegression: Added incremental learner.
+   * BayesianRobustLinearRegression: Added incremental learner.
+   * Refactored LinearMixtureModel, MixtureOfGaussians, and
+     ScalarMixtureDensityModel to be more consistent with other Foundry
+     statistics classes.
+   * MultivariateGaussian: Added incremental estimator.
+   * Added MultivariateMixtureDensityModel class.
+   * UnivaraiteGaussian: Added incremental estimator.
+   * Added FriedmanConfidence, NemenyiConfidence, and TukeyRangeConfidence,
+     which implement methods for computing confidence intervals.
+ * Text Core:
+   * LatentSemanticAnalysis: Added better handling of low-rank matrices.
+
+
 Release 3.1.1 (2011-03-23):
  * All projects now depend on JUnit 4.8.2 instead of 3.8.2 or 4.6.
  * Upgraded to XStream to 1.3.1 (and its dependency xpp3_min to 1.1.4c).

@@ -363,7 +363,13 @@ public class InverseGammaDistribution
         }
 
         public double logEvaluate(
-            Double input)
+            final Double input)
+        {
+            return this.logEvaluate((double) input);
+        }
+
+        public double logEvaluate(
+            double input)
         {
             if( input > 0.0 )
             {

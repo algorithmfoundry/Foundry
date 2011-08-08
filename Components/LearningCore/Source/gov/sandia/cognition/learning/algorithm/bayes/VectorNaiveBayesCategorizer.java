@@ -44,10 +44,13 @@ import java.util.Set;
  * @param   <CategoryType>
  *      The output category type for the categorizer. Must implement equals and
  *      hash code.
+ * @param   <DistributionType>
+ *      The type of the distributions used to compute the conditionals for each
+ *      dimension.
  * @author  Justin Basilico
  * @since   3.1
  */
-public class VectorNaiveBayesCategorizer<CategoryType>
+public class VectorNaiveBayesCategorizer<CategoryType, DistributionType extends ScalarProbabilityDensityFunction>
     extends AbstractCloneableSerializable
     implements Categorizer<Vectorizable, CategoryType>,
         VectorInputEvaluator<Vectorizable, CategoryType>,
@@ -59,7 +62,7 @@ public class VectorNaiveBayesCategorizer<CategoryType>
 
     /** The mapping of category to the conditional distribution for the category
      *  with one probability density function for each dimension. */
-    protected Map<CategoryType, List<ScalarProbabilityDensityFunction>> conditionals;
+    protected Map<CategoryType, List<DistributionType>> conditionals;
 
     /**
      * Creates a new {@code VectorNaiveBayesCategorizer} with an empty prior
@@ -68,7 +71,7 @@ public class VectorNaiveBayesCategorizer<CategoryType>
     public VectorNaiveBayesCategorizer()
     {
         this(new MapBasedDataHistogram<CategoryType>(),
-            new LinkedHashMap<CategoryType, List<ScalarProbabilityDensityFunction>>());
+            new LinkedHashMap<CategoryType, List<DistributionType>>());
     }
 
     /**
@@ -82,7 +85,7 @@ public class VectorNaiveBayesCategorizer<CategoryType>
      */
     public VectorNaiveBayesCategorizer(
         final DataHistogram<CategoryType> priors,
-        final Map<CategoryType, List<ScalarProbabilityDensityFunction>> conditionals)
+        final Map<CategoryType, List<DistributionType>> conditionals)
     {
         super();
 
@@ -91,15 +94,15 @@ public class VectorNaiveBayesCategorizer<CategoryType>
     }
 
     @Override
-    public VectorNaiveBayesCategorizer<CategoryType> clone()
+    public VectorNaiveBayesCategorizer<CategoryType, DistributionType> clone()
     {
         @SuppressWarnings("unchecked")
-        final VectorNaiveBayesCategorizer<CategoryType> clone =
-            (VectorNaiveBayesCategorizer<CategoryType>) super.clone();
+        final VectorNaiveBayesCategorizer<CategoryType, DistributionType> clone =
+            (VectorNaiveBayesCategorizer<CategoryType, DistributionType>) super.clone();
 
         clone.priors = ObjectUtil.cloneSafe(this.priors);
         clone.conditionals =
-            new LinkedHashMap<CategoryType, List<ScalarProbabilityDensityFunction>>(
+            new LinkedHashMap<CategoryType, List<DistributionType>>(
             this.conditionals.size());
         for (CategoryType category : this.conditionals.keySet())
         {
@@ -128,22 +131,24 @@ public class VectorNaiveBayesCategorizer<CategoryType>
         // This means we only have to compute the numerator of the class
         // probability formula, since the denominator is the same for every
         // class.
-        double maxPosterior = Double.NEGATIVE_INFINITY;
+        double maxLogPosterior = Double.NEGATIVE_INFINITY;
         CategoryType maxCategory = null;
         for (CategoryType category : this.getCategories())
         {
             // Compute the posterior probability for the category.
-            final double posterior = this.computePosterior(vector, category);
+            final double logPosterior = this.computeLogPosterior(
+                vector, category);
 
             // See if the new posterior is the best found so far.
-            if (maxCategory == null || posterior > maxPosterior)
+            if (maxCategory == null || logPosterior > maxLogPosterior)
             {
-                maxPosterior = posterior;
+                maxLogPosterior = logPosterior;
                 maxCategory = category;
             }
         }
 
-        return DefaultWeightedValueDiscriminant.create(maxCategory, maxPosterior);
+        return DefaultWeightedValueDiscriminant.create(
+            maxCategory, maxLogPosterior);
     }
 
     /**
@@ -162,25 +167,44 @@ public class VectorNaiveBayesCategorizer<CategoryType>
         final Vector input,
         final CategoryType category)
     {
+        return Math.exp(this.computeLogPosterior(input, category));
+    }
+
+    /**
+     * Computes the log-posterior probability that the input belongs to the
+     * given category.
+     *
+     * @param   input
+     *      The input vector.
+     * @param   category
+     *      The category to compute the posterior for.
+     * @return
+     *      The log-posterior probability.
+     */
+    public double computeLogPosterior(
+        final Vector input,
+        final CategoryType category)
+    {
         // Get the prior for the class.
         final double priorProbability = this.priors.getFraction(category);
 
         // Now compute the posterior by looking at the probability density
         // function for each dimension. We loop until
-        double posterior = priorProbability;
-        final List<ScalarProbabilityDensityFunction> probabilityFunctions =
+        double logPosterior = Math.log(priorProbability);
+        final List<DistributionType> probabilityFunctions =
             this.conditionals.get(category);
         final int size = probabilityFunctions.size();
-        for (int i = 0; i < size && posterior > 0.0; i++)
+        for (int i = 0; i < size; i++)
         {
             // Get the value for the element.
             final double value = input.getElement(i);
+            final double x = probabilityFunctions.get(i).logEvaluate(value);
 
             // Update the posterior.
-            posterior *= probabilityFunctions.get(i).evaluate(value);
+            logPosterior += x;
         }
-        
-        return posterior;
+
+        return logPosterior;
     }
 
     @Override
@@ -194,7 +218,7 @@ public class VectorNaiveBayesCategorizer<CategoryType>
     {
         // The dimensionality is the size of the first list (which should be
         // the same as the size of all the others).
-        final List<ScalarProbabilityDensityFunction> first =
+        final List<DistributionType> first =
             CollectionUtil.getFirst(this.conditionals.values());
 
         return first == null ? 0 : first.size();
@@ -231,7 +255,7 @@ public class VectorNaiveBayesCategorizer<CategoryType>
      * @return
      *      The conditional distributions for each category.
      */
-    public Map<CategoryType, List<ScalarProbabilityDensityFunction>> getConditionals()
+    public Map<CategoryType, List<DistributionType>> getConditionals()
     {
         return this.conditionals;
     }
@@ -245,7 +269,7 @@ public class VectorNaiveBayesCategorizer<CategoryType>
      *      The conditional distributions for each category.
      */
     public void setConditionals(
-        final Map<CategoryType, List<ScalarProbabilityDensityFunction>> conditionals)
+        final Map<CategoryType, List<DistributionType>> conditionals)
     {
         this.conditionals = conditionals;
     }
@@ -256,22 +280,23 @@ public class VectorNaiveBayesCategorizer<CategoryType>
      * @param   <CategoryType>
      *      The output category type for the categorizer. Must implement equals and
      *      hash code.
+     * @param   <DistributionType>
+     *      The type of distribution that the learner produces.
      */
-    public static class Learner<CategoryType>
+    public static class Learner<CategoryType, DistributionType extends ScalarProbabilityDensityFunction>
         extends AbstractCloneableSerializable
-        implements SupervisedBatchLearner<Vectorizable, CategoryType, VectorNaiveBayesCategorizer<CategoryType>>
+        implements SupervisedBatchLearner<Vectorizable, CategoryType, VectorNaiveBayesCategorizer<CategoryType, DistributionType>>
     {
 
         /** The learner for the distribution of each dimension of each category. */
-        protected DistributionEstimator<? super Double, ? extends ScalarProbabilityDensityFunction> distributionEstimator;
+        protected DistributionEstimator<? super Double, ? extends DistributionType> distributionEstimator;
 
         /**
-         * Creates a new {@code BatchLearner} with a univariate Gaussian
-         * distribution maximum likelihood estimator.
+         * Creates a new {@code BatchLearner} with a null estimator.
          */
         public Learner()
         {
-            this(new UnivariateGaussian.MaximumLikelihoodEstimator());
+            this(null);
         }
 
         /**
@@ -283,7 +308,7 @@ public class VectorNaiveBayesCategorizer<CategoryType>
          *      category.
          */
         public Learner(
-            final DistributionEstimator<? super Double, ? extends ScalarProbabilityDensityFunction> distributionEstimator)
+            final DistributionEstimator<? super Double, ? extends DistributionType> distributionEstimator)
         {
             super();
 
@@ -291,7 +316,7 @@ public class VectorNaiveBayesCategorizer<CategoryType>
         }
 
         @Override
-        public VectorNaiveBayesCategorizer<CategoryType> learn(
+        public VectorNaiveBayesCategorizer<CategoryType, DistributionType> learn(
             final Collection<? extends InputOutputPair<? extends Vectorizable, CategoryType>> data)
         {
             // Split the data by category.
@@ -300,8 +325,8 @@ public class VectorNaiveBayesCategorizer<CategoryType>
                 DatasetUtil.splitOnOutput(data);
 
             // Create the categorizer to store the result.
-            final VectorNaiveBayesCategorizer<CategoryType> result =
-                new VectorNaiveBayesCategorizer<CategoryType>();
+            final VectorNaiveBayesCategorizer<CategoryType, DistributionType> result =
+                new VectorNaiveBayesCategorizer<CategoryType, DistributionType>();
 
             final ArrayList<Double> values = new ArrayList<Double>(data.size());
 
@@ -315,8 +340,8 @@ public class VectorNaiveBayesCategorizer<CategoryType>
 
                 // Go through all the dimensions and create the conditional
                 // distribution for it.
-                final List<ScalarProbabilityDensityFunction> conditionals =
-                    new ArrayList<ScalarProbabilityDensityFunction>(
+                final List<DistributionType> conditionals =
+                    new ArrayList<DistributionType>(
                         dimensionality);
                 for (int i = 0; i < dimensionality; i++)
                 {
@@ -349,7 +374,7 @@ public class VectorNaiveBayesCategorizer<CategoryType>
          *      The estimator for the distribution of each dimension of each
          *      category.
          */
-        public DistributionEstimator<? super Double, ? extends ScalarProbabilityDensityFunction> getDistributionEstimator()
+        public DistributionEstimator<? super Double, ? extends DistributionType> getDistributionEstimator()
         {
             return this.distributionEstimator;
         }
@@ -363,7 +388,7 @@ public class VectorNaiveBayesCategorizer<CategoryType>
          *      category.
          */
         public void setDistributionEstimator(
-            final DistributionEstimator<? super Double, ? extends ScalarProbabilityDensityFunction> distributionEstimator)
+            final DistributionEstimator<? super Double, ? extends DistributionType> distributionEstimator)
         {
             this.distributionEstimator = distributionEstimator;
         }
@@ -380,7 +405,7 @@ public class VectorNaiveBayesCategorizer<CategoryType>
      */
     public static class BatchGaussianLearner<CategoryType>
         extends AbstractCloneableSerializable
-        implements SupervisedBatchLearner<Vectorizable, CategoryType, VectorNaiveBayesCategorizer<CategoryType>>
+        implements SupervisedBatchLearner<Vectorizable, CategoryType, VectorNaiveBayesCategorizer<CategoryType, UnivariateGaussian.PDF>>
     {
 
         /**
@@ -392,7 +417,7 @@ public class VectorNaiveBayesCategorizer<CategoryType>
         }
 
         @Override
-        public VectorNaiveBayesCategorizer<CategoryType> learn(
+        public VectorNaiveBayesCategorizer<CategoryType, UnivariateGaussian.PDF> learn(
             final Collection<? extends InputOutputPair<? extends Vectorizable, CategoryType>> data)
         {
             // Split the data by category.
@@ -401,8 +426,8 @@ public class VectorNaiveBayesCategorizer<CategoryType>
                 DatasetUtil.splitOnOutput(data);
 
             // Create the categorizer to store the result.
-            final VectorNaiveBayesCategorizer<CategoryType> result =
-                new VectorNaiveBayesCategorizer<CategoryType>();
+            final VectorNaiveBayesCategorizer<CategoryType, UnivariateGaussian.PDF> result =
+                new VectorNaiveBayesCategorizer<CategoryType, UnivariateGaussian.PDF>();
 
             // Go through the categories.
             for (CategoryType category : examplesPerCategory.keySet())
@@ -435,9 +460,9 @@ public class VectorNaiveBayesCategorizer<CategoryType>
                 final int count = examples.size();
                 final long varianceDenominator =
                     count > 1 ? (count - 1) : 1;
-                final List<ScalarProbabilityDensityFunction> conditionals =
-                    new ArrayList<ScalarProbabilityDensityFunction>(
-                    dimensionality);
+                final List<UnivariateGaussian.PDF> conditionals =
+                    new ArrayList<UnivariateGaussian.PDF>(dimensionality);
+                
                 for (int i = 0; i < dimensionality; i++)
                 {
                     // Figure out the mean and variance.

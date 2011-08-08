@@ -19,6 +19,7 @@ import gov.sandia.cognition.annotation.PublicationReferences;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
 import gov.sandia.cognition.statistics.Distribution;
+import java.util.Collection;
 
 /**
  * A type of estimation procedure based on Bayes's rule, which allows us
@@ -65,6 +66,6 @@ import gov.sandia.cognition.statistics.Distribution;
 )
 public interface BayesianEstimator<ObservationType, ParameterType,
         PosteriorType extends Distribution<? extends ParameterType>>
-    extends BatchLearner<Iterable<? extends ObservationType>,PosteriorType>
+    extends BatchLearner<Collection<? extends ObservationType>,PosteriorType>
 {
 }

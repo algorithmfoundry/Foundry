@@ -219,6 +219,12 @@ public class NegativeBinomialDistribution
         return new IntegerCollection(0, max);
     }
 
+    @Override
+    public int getDomainSize()
+    {
+        return this.getDomain().size();
+    }
+
     public NegativeBinomialDistribution.PMF getProbabilityFunction()
     {
         return new NegativeBinomialDistribution.PMF( this );

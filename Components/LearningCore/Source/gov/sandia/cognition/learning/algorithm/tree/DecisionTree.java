@@ -108,6 +108,70 @@ public class DecisionTree<InputType, OutputType>
     }
 
     /**
+     * Finds the terminal node for the given input. The terminal node is the
+     * node in the tree that the input will use to produce an output. It is
+     * usually the case that it is a leaf node, but it is not required, since
+     * it may happen that the decision function finds a node that has no
+     * child for that input. In this case, this is the node returned.
+     *
+     * @param   input
+     *      The input to find the terminal node for.
+     * @return
+     *      The terminal node for the input, starting from the root node.
+     */
+    public DecisionTreeNode<InputType, OutputType> findTerminalNode(
+        final InputType input)
+    {
+        return this.findTerminalNode(input, this.getRootNode());
+    }
+
+    /**
+     * Finds the terminal node for the given input, starting from the given
+     * node. The terminal node is the node in the tree that the input will use
+     * to produce an output. It is usually the case that it is a leaf node, but
+     * it is not required, since it may happen that the decision function finds
+     * a node that has no child for that input. In this case, this is the node
+     * returned.
+     *
+     * @param   input
+     *      The input to find the terminal node for.
+     * @param   node
+     *      The node to search from.
+     * @return
+     *      The terminal node for the input, starting from the root node.
+     */
+    public DecisionTreeNode<InputType, OutputType> findTerminalNode(
+        final InputType input,
+        final DecisionTreeNode<InputType, OutputType> node)
+    {
+        if (node == null)
+        {
+            // Can't traverse a null node.
+            return null;
+        }
+        else if (node.isLeaf())
+        {
+            // This is a leaf node so get the output of the node.
+            return node;
+        }
+
+        // Get the proper child node for the input.
+        final DecisionTreeNode<InputType, OutputType> child =
+            node.chooseChild(input);
+
+        if (child == null)
+        {
+            // There was no child node so use this node as a leaf.
+            return node;
+        }
+        else
+        {
+            // Search from the child node to find the result.
+            return this.findTerminalNode(input, child);
+        }
+    }
+
+    /**
      * Gets the root node of the decision tree.
      * 
      * @return The root node of the decision tree.

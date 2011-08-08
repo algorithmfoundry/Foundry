@@ -25,8 +25,8 @@ import gov.sandia.cognition.learning.function.kernel.Kernel;
 import gov.sandia.cognition.util.DefaultNamedValue;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.NamedValue;
-import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 
@@ -57,7 +57,7 @@ import java.util.LinkedHashMap;
     url="ftp://ftp.cs.wisc.edu/math-prog/tech-reports/98-18.ps"
 )
 public class SuccessiveOverrelaxation<InputType>
-    extends AbstractAnytimeSupervisedBatchLearner<InputType, Boolean, KernelBinaryCategorizer<InputType>>
+    extends AbstractAnytimeSupervisedBatchLearner<InputType, Boolean, KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>>>
     implements MeasurablePerformanceAlgorithm
 {
 
@@ -90,7 +90,7 @@ public class SuccessiveOverrelaxation<InputType>
     protected double minChange;
 
     /** The result categorizer. */
-    protected KernelBinaryCategorizer<InputType> result;
+    protected KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>> result;
 
     /** The total change on the most recent pass. */
     protected double totalChange;
@@ -208,8 +208,10 @@ public class SuccessiveOverrelaxation<InputType>
         // support vectors data structure as the basis for categorization. We
         // will then manipulate those support vectors during the learning 
         // process.
-        this.setResult(new KernelBinaryCategorizer<InputType>(
-            this.getKernel(), this.getSupportsMap().values(), 0.0));
+        final Collection<DefaultWeightedValue<InputType>> supports =
+            Collections.unmodifiableCollection((Collection<? extends DefaultWeightedValue<InputType>>) this.getSupportsMap().values());
+        this.setResult(new KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>>(
+            this.getKernel(), supports, 0.0));
 
         return true;
     }
@@ -355,8 +357,8 @@ public class SuccessiveOverrelaxation<InputType>
         {
             // Make the result object have a more efficient backing collection
             // at the end.
-            ArrayList<WeightedValue<InputType>> supports =
-                new ArrayList<WeightedValue<InputType>>(
+            ArrayList<DefaultWeightedValue<InputType>> supports =
+                new ArrayList<DefaultWeightedValue<InputType>>(
                     this.supportsMap.size());
             for (Entry entry : this.supportsMap.values())
             {
@@ -477,7 +479,7 @@ public class SuccessiveOverrelaxation<InputType>
         this.minChange = minChange;
     }
 
-    public KernelBinaryCategorizer<InputType> getResult()
+    public KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>> getResult()
     {
         return this.result;
     }
@@ -488,7 +490,7 @@ public class SuccessiveOverrelaxation<InputType>
      * @param  result The object currently being result.
      */
     protected void setResult(
-        final KernelBinaryCategorizer<InputType> result)
+        final KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>> result)
     {
         this.result = result;
     }

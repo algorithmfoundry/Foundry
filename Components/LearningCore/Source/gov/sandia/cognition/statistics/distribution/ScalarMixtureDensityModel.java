@@ -1,15 +1,15 @@
 /*
- * File:                ScalarMixtureModel.java
- * Authors:             jdmorr
+ * File:                ScalarMixtureDensityModel.java
+ * Authors:             Kevin R. Dixon
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
- *
- * Copyright August 7, 2006, Sandia Corporation.  Under the terms of Contract
- * DE-AC04-94AL85000, there is a non-exclusive license for use of this work by
- * or on behalf of the U.S. Government. Export of this program may require a
- * license from the United States Government. See CopyrightHistory.txt for
- * complete details.
- *
+ * 
+ * Copyright Mar 23, 2011, Sandia Corporation.
+ * Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+ * license for use of this work by or on behalf of the U.S. Government.
+ * Export of this program may require a license from the United States
+ * Government. See CopyrightHistory.txt for complete details.
+ * 
  */
 
 package gov.sandia.cognition.statistics.distribution;
@@ -21,26 +21,19 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.learning.algorithm.AbstractAnytimeBatchLearner;
-import gov.sandia.cognition.learning.algorithm.BatchLearner;
-import gov.sandia.cognition.learning.function.kernel.GeneralizedScalarRadialBasisKernel;
-import gov.sandia.cognition.learning.function.kernel.Kernel;
-import gov.sandia.cognition.learning.function.kernel.KernelContainer;
-import gov.sandia.cognition.math.matrix.Matrix;
-import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
-import gov.sandia.cognition.statistics.ScalarDistribution;
+import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
 import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.SmoothScalarDistribution;
+import gov.sandia.cognition.util.ArgumentChecker;
 import gov.sandia.cognition.util.DefaultNamedValue;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.NamedValue;
 import gov.sandia.cognition.util.ObjectUtil;
 import gov.sandia.cognition.util.Randomized;
-import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -54,7 +47,7 @@ import java.util.Random;
  * sum to 1.0.  To sample from a SMDM is to first select which distribution using
  * the prior probabilities, and then to sample from that distribution to return
  * a sample.
- *
+ * <BR><BR>
  * Each distribution must have a mean and variance defined.  A mean and variance
  * for the SMDM can be computed.  Given an input value, a weighted Z value can
  * be computed for the SMDM distribution.
@@ -90,185 +83,204 @@ import java.util.Random;
     url = "http://en.wikipedia.org/wiki/Mixture_density"
 )
 public class ScalarMixtureDensityModel
-    extends AbstractClosedFormSmoothScalarDistribution
+    extends LinearMixtureModel<Double, SmoothScalarDistribution>
+    implements SmoothScalarDistribution
 {
 
-    /**
-     * default set of distributions
-     */
-    protected final static Collection<? extends SmoothScalarDistribution>
-            DEFAULT_DISTRIBUTIONS =
-            Arrays.asList(new UnivariateGaussian(0.0,1.0),
-                          new UnivariateGaussian(5.0,1.0));
-
-
-    /**
-     * List of the distributions.
-     */
-    protected ArrayList<? extends SmoothScalarDistribution> distributions = null;
-
-    /**
-     * probability for each of the distributions
-     */
-    protected Vector priorProbabilities = null ;
-
-    /**
-     * Default constructor.
-     * Builds two UnivariateGaussian, means 0 and 5 with variance 1.0
-     * priorProbabilities is 0.5 and 0.5 for each gaussian.
+    /** 
+     * Creates a new instance of ScalarMixtureDensityModel
      */
     public ScalarMixtureDensityModel()
     {
-        this( DEFAULT_DISTRIBUTIONS );
+        this( new UnivariateGaussian() );
     }
 
     /**
      * Creates a new instance of ScalarMixtureDensityModel
      * @param distributions
-     * List of the distributions.
+     * Distributions that comprise the SMDM with equal prior weight
      */
     public ScalarMixtureDensityModel(
-        Collection<? extends SmoothScalarDistribution> distributions)
+        SmoothScalarDistribution ... distributions )
     {
-        this(new ArrayList<SmoothScalarDistribution>(distributions), null );
+        this( Arrays.asList(distributions) );
     }
 
-
     /**
-     * Creates a new instance of ScalarMixtureDensityModel.
-     * <BR><BR>
+     * Creates a new instance of ScalarMixtureDensityModel
      * @param distributions
-     * List of the distributions.
-     * @param priorProbabilities
-     * probability associated with each distribution; note if this is null
-     * then the prior probabilities are computed as 1/n for each of n
-     * distributions.
+     * Distributions that comprise the SMDM with equal prior weight
      */
     public ScalarMixtureDensityModel(
-        ArrayList<? extends SmoothScalarDistribution> distributions,
-        Vector priorProbabilities)
+        Collection<? extends SmoothScalarDistribution> distributions )
     {
-        int n = distributions.size();
+        this( distributions, null );
+    }
 
-        if ( n <= 0 )
-        {
-            throw new IllegalArgumentException(
-                "dimensionality problem in input args");
-        }
-
-        if ( priorProbabilities == null )
-        {
-            priorProbabilities = VectorFactory.getDefault().createVector(
-                    n, 1.0/n);
-        }
-
-        if ( priorProbabilities.getDimensionality() != n )
-        {
-            throw new IllegalArgumentException(
-                "probabilities size different from distributions");
-        }
-
-        if ( Math.abs(priorProbabilities.sum()-1.0) >1.e-4 )
-        {
-            throw new RuntimeException("probabilities do not sum to 1.0");
-        }
-
-        this.setDistributions(distributions);
-        this.setPriorProbabilities(priorProbabilities);
+    /**
+     * Creates a new instance of ScalarMixtureDensityModel
+     * @param distributions
+     * Distributions that comprise the SMDM
+     * @param priorWeights
+     * Weights proportionate by which the distributions are sampled
+     */
+    public ScalarMixtureDensityModel(
+        Collection<? extends SmoothScalarDistribution> distributions,
+        double[] priorWeights)
+    {
+        super( distributions, priorWeights );
     }
 
     /**
      * Copy constructor
-     * @param mixtureModel
-     * ScalarMixtureDensityModel to copy
+     * @param other
+     * SMDM to copy
      */
     public ScalarMixtureDensityModel(
-        ScalarMixtureDensityModel mixtureModel)
+        ScalarMixtureDensityModel other )
     {
-        ScalarMixtureDensityModel clonedModel = mixtureModel.clone();
-        this.distributions = clonedModel.distributions;
-        this.priorProbabilities = clonedModel.priorProbabilities;
+        this( ObjectUtil.cloneSmartElementsAsArrayList(other.getDistributions()),
+            ObjectUtil.deepCopy(other.getPriorWeights()) );
     }
 
-
-    /**
-     * this clones an SMDM creating a new set of both prior probabilities and
-     * distributions that exactly match the original parameter-wise.
-     * @return a ScalarMixtureDensityModel
-     */
     @Override
     public ScalarMixtureDensityModel clone()
     {
         ScalarMixtureDensityModel clone =
             (ScalarMixtureDensityModel) super.clone();
 
-        clone.setDistributions(
-            ObjectUtil.cloneSmartElementsAsArrayList(this.distributions));
-
-        clone.setPriorProbabilities(
-            ObjectUtil.cloneSafe(this.priorProbabilities));
-
+        clone.setDistributions( ObjectUtil.cloneSmartElementsAsArrayList(
+            this.getDistributions() ) );
+        clone.setPriorWeights( ObjectUtil.cloneSmart( this.getPriorWeights() ) );
         return clone;
     }
 
-    /**
-     * Computes the likelihoods of the underlying RandomVariables in this
-     *
-     * @param input Input to consider
-     * @return Vector of likelihoods for the underlying RandomVariables
-     */
-    public Vector computeRandomVariableLikelihoods(
-        Double input)
+    @Override
+    public Vector convertToVector()
     {
-
-        int M = this.getNumDistributions();
-        Vector likelihoods = VectorFactory.getDefault().createVector(M);
-
-        for (int i = 0; i < M; i++)
+        int dim = this.getDistributionCount();
+        ArrayList<Vector> parameters = new ArrayList<Vector>( this.getDistributionCount() );
+        for( SmoothScalarDistribution d : this.distributions )
         {
-            // remember that distributions are scalar PDFs
-            likelihoods.setElement(i,
-                this.getDistributions().get(i).getProbabilityFunction().evaluate(input));
+            Vector p = d.convertToVector();
+            dim += p.getDimensionality();
+            parameters.add( p );
         }
 
-        return likelihoods;
+        Vector p = VectorFactory.getDefault().createVector(dim);
+        int index = 0;
+        for( int i = 0; i < this.getDistributionCount(); i++ )
+        {
+            p.setElement(index, this.priorWeights[i] );
+            index++;
+        }
+
+        for( Vector parameter : parameters )
+        {
+            for( int i = 0; i < parameter.getDimensionality(); i++ )
+            {
+                p.setElement(index, parameter.getElement(i) );
+                index++;
+            }
+        }
+        return p;
     }
 
+    @Override
+    public void convertFromVector(
+        Vector parameters)
+    {
+        int dim = this.getDistributionCount();
+        ArrayList<Vector> ps =
+            new ArrayList<Vector>( this.getDistributionCount() );
+        for( SmoothScalarDistribution d : this.distributions )
+        {
+            Vector p = d.convertToVector();
+            dim += p.getDimensionality();
+            ps.add( p );
+        }
+
+        parameters.assertDimensionalityEquals(dim);
+
+        int index = 0;
+        for( int i = 0; i < this.getDistributionCount(); i++ )
+        {
+            this.priorWeights[i] = parameters.getElement(index);
+            index++;
+        }
+
+        int d = 0;
+        for( Vector p : ps )
+        {
+            for( int i = 0; i < p.getDimensionality(); i++ )
+            {
+                p.setElement(i, parameters.getElement(index) );
+                index++;
+            }
+            this.distributions.get(d).convertFromVector(p);
+            d++;
+        }
+
+    }
+
+    @Override
+    public Double getMinSupport()
+    {
+        double minMin = Double.POSITIVE_INFINITY;
+        for( SmoothScalarDistribution d : this.getDistributions() )
+        {
+            final double min = d.getMinSupport();
+            if( minMin > min )
+            {
+                minMin = min;
+
+                // Nope, you can't get any more negative than negative infinity
+                if( minMin == Double.NEGATIVE_INFINITY )
+                {
+                    break;
+                }
+            }
+        }
+        return minMin;
+    }
+
+    @Override
+    public Double getMaxSupport()
+    {
+        double maxMax = Double.NEGATIVE_INFINITY;
+        for( SmoothScalarDistribution d : this.getDistributions() )
+        {
+            final double max = d.getMaxSupport();
+            if( maxMax < max )
+            {
+                maxMax = max;
+
+                // Nope, you can't get any more positive than positive infinity
+                if( maxMax == Double.POSITIVE_INFINITY )
+                {
+                    break;
+                }
+            }
+        }
+        return maxMax;
+    }
+
+    @Override
     public Double getMean()
     {
-        return getMeanVector().dotProduct(this.getPriorProbabilities());
-    }
+        double sum = 0.0;
+        int i = 0;
+        final double priorSum = this.getPriorWeightSum();
 
-    /**
-     * getMeanVector returns a vector of the mean of each random variable
-     * in the mixture.
-     *
-     * Use getMean() to get the weighted mean of the mixture.
-     *
-     * @return
-     * a vector of the mean of each random variable in the mixture.
-     */
-    public Vector getMeanVector()
-    {
-        int N = this.getNumDistributions();
-        Vector pp = VectorFactory.getDefault().createVector(N, 0.0);
-        ArrayList<? extends SmoothScalarDistribution> randomVars =
-            this.getDistributions();
-        for (int i = 0; i < N; i++)
+        for( SmoothScalarDistribution d : this.getDistributions() )
         {
-            pp.setElement(i, randomVars.get(i).getMean().doubleValue());
+            final double prior = this.getPriorWeights()[i];
+            sum += prior * d.getMean();
+            i++;
         }
-
-        return pp;
+        return sum / priorSum;
     }
 
-    /**
-     * computes the variance of a mixture density.
-     * see Publication reference for algorithm.
-     * 
-     * @return
-     * variance of a mixture density.
-     */
     @PublicationReference(
         author = "Wikipedia",
         title = "Mixture Model",
@@ -276,441 +288,50 @@ public class ScalarMixtureDensityModel
         year = 2009,
         url = "http://en.wikipedia.org/wiki/Mixture_density"
     )
-    public Double computeVariance()
-    {
-        Double result = 0.0;
-        Double mean = this.getMean();
-
-        priorProbabilities.assertDimensionalityEquals(this.distributions.size());
-
-        int i = 0;
-        for (ScalarDistribution<Double> pdf : this.distributions)
-        {
-            result += this.priorProbabilities.getElement(i) *
-                pdf.getVariance() *
-                Math.pow((pdf.getMean() - mean + 1), 2.0);
-            i++;
-        }
-
-        return result;
-    }
-
-
-    /**
-     * computes and returns the square of the weighted Z value.
-     * The square is of interest because the sum of a square of
-     * normally distributed values yields a Chi-Squared distribution
-     *
-     * @param input
-     * @return the square of weighted Z
-     */
-    public Double computeWeightedZsquared(
-        Double input)
-    {
-        Double result = computeWeightedZ(input);
-
-        return result*result;
-    }
-
-    /**
-     * computes the weighted Z over all distributions
-     * each distribution Z is computed as abs(input-mean)/stdDev
-     * each is weighted by priorProbability
-     *
-     * @param input
-     * @return the weighted Z of the input value
-     */
-    public Double computeWeightedZ(
-        Double input)
-    {
-        Double result = 0.0;
-
-        int i =0;
-        for( SmoothScalarDistribution d : this.getDistributions() )
-        {
-            result += this.priorProbabilities.getElement(i) *
-                    (input-d.getMean())/Math.sqrt(d.getVariance());
-            
-            i++;
-        }
-        return result;
-    }
-
-    /**
-     * returns an ArrayList of numDraws samples from the
-     * ScalarMixtureDensityModel distribution
-     * <BR>
-     * it randomly selects one of the distributions according to the
-     * priorProbabilities, then it draws a sample from that distribution.
-     * <BR>
-     * both steps are repeated if numDraws is greater than 1
-     *
-     * @param random random number generator
-     * @param numDraws number of samples to return
-     * @return
-     * ArrayList of numDraws samples from the ScalarMixtureDensityModel
-     * distribution.
-     */
-    public ArrayList<Double> sample(
-        Random random,
-        int numDraws)
-    {
-        if ( this.getNumDistributions() <= 0 )
-        {
-            throw new IllegalArgumentException(
-                    "Cannot sample from ScalarMixtureDensityModel with no" +
-                    " distributions!");
-        }
-        
-        ArrayList<Double> randomVectors =
-            new ArrayList<Double>(numDraws);
-
-        for (int n = 0; n < numDraws; n++)
-        {
-            // Make a single draw from the RandomVariable indicated by
-            // the prior probability
-            double prior = random.nextDouble();
-            int index = 0;
-            for (int i = 0; i < this.getNumDistributions(); i++)
-            {
-                prior -= this.getPriorProbabilities().getElement(i);
-                if (prior <= 0.0)
-                {
-                    index = i;
-                    break;
-                }
-            }
-            randomVectors.add(this.getDistributions().get(index).sample(random));
-        }
-
-        return randomVectors;
-
-    }
-
-    /**
-     * Getter for distributions
-     * @return the distributions
-     */
-    public ArrayList<? extends SmoothScalarDistribution> getDistributions()
-    {
-        return this.distributions;
-    }
-
-    /**
-     * Setter for distributions
-     * @param distributions the distributions to set
-     */
-    public void setDistributions(
-        ArrayList<? extends SmoothScalarDistribution> distributions)
-    {
-        this.distributions = distributions;
-    }
-
-    /**
-     * Getter for priorProbabilities
-     * @return the priorProbabilities
-     */
-    public Vector getPriorProbabilities()
-    {
-        return this.priorProbabilities;
-    }
-
-    /**
-     * Setter for priorProbabilities
-     * @param priorProbabilities the priorProbabilities to set
-     */
-    public void setPriorProbabilities(
-        Vector priorProbabilities)
-    {
-        if (Math.abs(priorProbabilities.sum() - 1.0) > 1.e-4)
-        {
-            throw new IllegalArgumentException(
-                "priorProbabilities must sum to 1.0 (" + priorProbabilities.sum() + ")");
-        }
-
-        this.priorProbabilities = priorProbabilities;
-    }
-
-    /**
-     * Gets the number of distribution
-     * @return the number of distributions in the mixture
-     */
-    public int getNumDistributions()
-    {
-        int n ;
-        if ( this.distributions == null )
-        {
-            n = 0;
-        }
-        else
-        {
-            n = this.distributions.size();
-        }
-
-        return n;
-    }
-
-    /**
-     * returns the variance of the distribution
-     * @return variance
-     * the variance of the distribution.
-     */
+    @Override
     public double getVariance()
     {
-        return this.computeVariance().doubleValue();
+        final double mean = this.getMean();
+        final double mean2 = mean*mean;
+
+        double priorWeightSum = 0.0;
+        for( int k = 0; k < priorWeights.length; k++ )
+        {
+            priorWeightSum += this.priorWeights[k];
+        }
+        if( priorWeightSum <= 0.0 )
+        {
+            priorWeightSum = 1.0;
+        }
+
+        
+        double result = 0.0;
+        int i = 0;
+        for( SmoothScalarDistribution distribution : this.getDistributions() )
+        {
+            final double mi = distribution.getMean();
+            final double prior = this.priorWeights[i] / priorWeightSum;
+            result += prior*(mi*mi + distribution.getVariance()) - mean2;
+            i++;
+        }
+
+        return result;
     }
 
-    /**
-     * converts distribution parameters into a vector
-     * in this case, parameters are priorProbabilities
-     * @return priorProbabilities as vector
-     */
-    public Vector convertToVector()
-    {
-        return this.getPriorProbabilities().clone();
-    }
-
-    /**
-     * sets priorProbabilities according to incoming vector
-     * note that vector must sum to 1.0
-     *
-     * @param parameters (priorProbabilities)
-     */
-    public void convertFromVector(
-        Vector parameters)
-    {
-        parameters.assertDimensionalityEquals(
-            this.priorProbabilities.getDimensionality());
-
-        Vector pnorm = parameters.scale( 1.0/parameters.norm1() );
-        setPriorProbabilities(pnorm);
-    }
-
-    /**
-     * returns the CDF of ScalarMixtureDensityModel
-     * @return the CDF
-     */
-    public ScalarMixtureDensityModel.CDF getCDF()
-    {
-        return new ScalarMixtureDensityModel.CDF(this);
-    }
-
-    /**
-     * Gets the PDF.
-     * @return returns PDF of ScalarMixtureDensityModel
-     */
+    @Override
     public ScalarMixtureDensityModel.PDF getProbabilityFunction()
     {
-        return new ScalarMixtureDensityModel.PDF(this);
+        return new ScalarMixtureDensityModel.PDF( this );
     }
 
-    /**
-     * converts ScalarMixtureDensityModel to a string,
-     * displays the priorProbabilities and each individual distribution
-     * distributions are displayed according to their toString methods.
-     *
-     * @return
-     *      The string representation of this object.
-     */
     @Override
-    public String toString()
+    public ScalarMixtureDensityModel.CDF getCDF()
     {
-        String results;
-
-        results = "priorProbabilities: " + this.priorProbabilities + "\n";
-
-        results += "Distributions:\n";
-        for (SmoothScalarDistribution d : getDistributions())
-        {
-            results += "\t" + d + "\n";
-        }
-        return results;
+        return new ScalarMixtureDensityModel.CDF( this );
     }
 
     /**
-     * builds a MixtureDensityModel from two gaussians whose parameters are
-     * passed in.
-     * @param mean  array of means of the gaussians
-     * @param var   array of variances of the gaussians
-     * @param priorProbabilities
-     * @return a ScalarMixtureDensityModel build of these gaussians
-     */
-    public static ScalarMixtureDensityModel buildSMDMfromGaussians(
-        double mean[],
-        double var[],
-        double priorProbabilities[])
-    {
-
-        if( (mean.length != var.length) ||
-            (mean.length != priorProbabilities.length ))
-        {
-            throw new IllegalArgumentException(
-                "Mismatch in argument lengths.");
-        }
-        int numberDistributions = mean.length;
-
-        // build a mixture density model via construction
-        ArrayList<SmoothScalarDistribution> distributionList =
-            new ArrayList<SmoothScalarDistribution>(numberDistributions);
-        for (int i = 0; i < numberDistributions; i++)
-        {
-            distributionList.add(new UnivariateGaussian(mean[i], var[i]));
-        }
-
-        ScalarMixtureDensityModel smdm = new ScalarMixtureDensityModel(
-            distributionList);
-        Vector pp = VectorFactory.getDefault().copyArray(priorProbabilities);
-
-        smdm.setPriorProbabilities(pp);
-
-        return smdm;
-    }
-
-    /**
-     * builds a ScalarMixtureDensityModel from a Gaussian and a Laplace
-     * distribution.
-     * 
-     * @param gaussian
-     * UnivariateGaussian to use.
-     * @param laplace
-     * LaplaceDistribution to use.
-     * @param priorProbabilities
-     * Prior probabilities to assign to the gaussian and laplace.
-     * @return
-     * ScalarMixtureDensityModel represented by the parameters.
-     */
-    public static ScalarMixtureDensityModel buildSMDMfromGaussianAndLaplace(
-        UnivariateGaussian gaussian,
-        LaplaceDistribution laplace,
-        double priorProbabilities[])
-    {
-        ArrayList<SmoothScalarDistribution> distributionList =
-            new ArrayList<SmoothScalarDistribution>(2);
-        distributionList.add(gaussian);
-        distributionList.add(laplace);
-        Vector pp = VectorFactory.getDefault().copyArray(priorProbabilities);
-        return new ScalarMixtureDensityModel( distributionList, pp );
-    }
-
-    public Double getMinSupport()
-    {
-        return Double.NEGATIVE_INFINITY;
-    }
-
-    public Double getMaxSupport()
-    {
-        return Double.POSITIVE_INFINITY;
-    }
-
-    /**
-     * cumulative density function for the mixture density
-     */
-    public static class CDF
-        extends ScalarMixtureDensityModel
-        implements SmoothCumulativeDistributionFunction
-    {
-
-        /**
-         * Default constructor.
-         */
-        public CDF()
-        {
-            super();
-        }
-
-        /**
-         * Creates a new instance of CDF.
-         * @param distributions
-         * List of the distributions.
-         */
-        public CDF(
-            Collection<? extends SmoothScalarDistribution> distributions)
-        {
-            super(distributions);
-        }
-
-        /**
-         * Creates a new instance of CDF.
-         * @param distributions
-         * List of the distributions.
-         * @param priorProbabilities
-         * probability associated with each distribution.
-         */
-        public CDF(
-            ArrayList<? extends SmoothScalarDistribution> distributions,
-            Vector priorProbabilities)
-        {
-            super(distributions, priorProbabilities);
-        }
-
-        /**
-         * Copy constructor.
-         * @param mixtureModel
-         * ScalarMixtureDensityModel to copy.
-         */
-        public CDF(
-            ScalarMixtureDensityModel mixtureModel)
-        {
-            super(mixtureModel);
-        }
-
-        /**
-         * getCDFvector returns a vector of CDF values for input
-         * (one for each distribution)
-         *
-         * @param input
-         * Value about which to get the CDF values for each of the components.
-         * @return
-         * vector of CDF values for input (one for each distribution).
-         */
-        public Vector getCDFvector(
-            Double input)
-        {
-            int N = getNumDistributions();
-            Vector results = VectorFactory.getDefault().createVector(N);
-
-            for (int i = 0; i < N; i++)
-            {
-                results.setElement(i,
-                    getDistributions().get(i).getCDF().evaluate(input));
-            }
-
-            return results;
-        }
-
-        public Double evaluate(
-            Double input)
-        {
-            return this.evaluate(input.doubleValue());
-        }
-
-        public double evaluate(
-            double input)
-        {
-            return getCDFvector(input).dotProduct(getPriorProbabilities());
-        }
-
-        @Override
-        public ScalarMixtureDensityModel.CDF getCDF()
-        {
-            return this;
-        }
-
-        public ScalarMixtureDensityModel.PDF getDerivative()
-        {
-            return this.getProbabilityFunction();
-        }
-
-        public Double differentiate(
-            Double input)
-        {
-            return this.getDerivative().evaluate(input);
-        }
-
-    }
-
-    /**
-     * PDF of the mixture density distribution
+     * PDF of the SMDM
      */
     public static class PDF
         extends ScalarMixtureDensityModel
@@ -718,7 +339,7 @@ public class ScalarMixtureDensityModel
     {
 
         /**
-         * Default constructor.
+         * Creates a new instance of ScalarMixtureDensityModel
          */
         public PDF()
         {
@@ -726,60 +347,82 @@ public class ScalarMixtureDensityModel
         }
 
         /**
-         * Creates a new instance of PDF.
+         * Creates a new instance of ScalarMixtureDensityModel
          * @param distributions
-         * List of the distributions.
+         * Distributions that comprise the SMDM with equal prior weight
          */
         public PDF(
-            Collection<? extends SmoothScalarDistribution> distributions)
+            SmoothScalarDistribution ... distributions )
         {
-            super(distributions);
+            super( distributions );
         }
 
         /**
-         * Creates a new instance of PDF.
+         * Creates a new instance of ScalarMixtureDensityModel
          * @param distributions
-         * List of the distributions.
-         * @param priorProbabilities
-         * probability associated with each distribution.
+         * Distributions that comprise the SMDM with equal prior weight
          */
         public PDF(
-            ArrayList<? extends SmoothScalarDistribution> distributions,
-            Vector priorProbabilities)
+            Collection<? extends SmoothScalarDistribution> distributions )
         {
-            super(distributions, priorProbabilities);
+            super( distributions );
         }
 
         /**
-         * Copy constructor.
-         * @param mixtureModel
-         * SMDM to copy.
+         * Creates a new instance of ScalarMixtureDensityModel
+         * @param distributions
+         * Distributions that comprise the SMDM
+         * @param priorWeights
+         * Weights proportionate by which the distributions are sampled
          */
         public PDF(
-            ScalarMixtureDensityModel mixtureModel)
+            Collection<? extends SmoothScalarDistribution> distributions,
+            double[] priorWeights)
         {
-            super(mixtureModel);
+            super( distributions, priorWeights );
         }
 
-        public Double evaluate(
-            Double input)
+        /**
+         * Copy constructor
+         * @param other
+         * SMDM to copy
+         */
+        public PDF(
+            ScalarMixtureDensityModel other )
         {
-            return this.evaluate(input.doubleValue());
+            super( other );
         }
 
-        public double evaluate(
-            double input)
-        {
-            // get the likelihoods of input for each distribution
-            Vector likelihoods = this.computeRandomVariableLikelihoods(input);
-
-            return likelihoods.dotProduct(getPriorProbabilities());
-        }
-
+        @Override
         public double logEvaluate(
             Double input)
         {
-            return Math.log( this.evaluate(input) );
+            return this.logEvaluate(input.doubleValue());
+        }
+
+        @Override
+        public Double evaluate(
+            Double input)
+        {
+            return this.evaluate( input.doubleValue() );
+        }
+
+        @Override
+        public double evaluate(
+            double input)
+        {
+            final double weightSum = this.getPriorWeightSum();
+            double sum = 0.0;
+            int i = 0;
+            for( SmoothScalarDistribution d : this.distributions )
+            {
+                ScalarProbabilityDensityFunction pdf =
+                    d.getProbabilityFunction();
+                final double prior = this.priorWeights[i];
+                sum += prior * pdf.evaluate(input);
+                i++;
+            }
+            return sum / weightSum;
         }
 
         @Override
@@ -788,93 +431,153 @@ public class ScalarMixtureDensityModel
             return this;
         }
 
+        @Override
+        public double logEvaluate(
+            double input)
+        {
+            return Math.log( this.evaluate(input) );
+        }
+
     }
 
     /**
-     * a SoftLearner that can learn a ScalarMixtureDensityModel from data.
-     * <BR><BR>
-     * the basic approach is to use all data to learn each distribution, but
-     * weight that data according to its distance from an anchor point assigned
-     * to the distribution.  The anchor point is randomly assigned in the
-     * learning initialization routine.
-     * <BR><BR>
-     * A SMDM learner is made up of a series of learners, one per distribution
-     * in the SMDM.  The weighting associated with each data point varies
-     * for each distribution according to an anchor point assigned to that
-     * distribution.
-     *
+     * CDFof the SMDM
      */
-    public static class SoftLearner
-        extends AbstractAnytimeBatchLearner<Collection<? extends Double>, ScalarMixtureDensityModel>
-        implements MeasurablePerformanceAlgorithm,
-        Randomized,
-        DistributionEstimator<Double,ScalarMixtureDensityModel>,
-        KernelContainer<Double>
+    public static class CDF
+        extends ScalarMixtureDensityModel
+        implements SmoothCumulativeDistributionFunction
     {
+
         /**
-         * Flag to print out debugging information.
+         * Creates a new instance of ScalarMixtureDensityModel
          */
-        protected static boolean DEBUG = false;
+        public CDF()
+        {
+            super();
+        }
+
+        /**
+         * Creates a new instance of ScalarMixtureDensityModel
+         * @param distributions
+         * Distributions that comprise the SMDM with equal prior weight
+         */
+        public CDF(
+            SmoothScalarDistribution ... distributions )
+        {
+            super( distributions );
+        }
+
+        /**
+         * Creates a new instance of ScalarMixtureDensityModel
+         * @param distributions
+         * Distributions that comprise the SMDM with equal prior weight
+         */
+        public CDF(
+            Collection<? extends SmoothScalarDistribution> distributions )
+        {
+            super( distributions );
+        }
+
+        /**
+         * Creates a new instance of ScalarMixtureDensityModel
+         * @param distributions
+         * Distributions that comprise the SMDM
+         * @param priorWeights
+         * Weights proportionate by which the distributions are sampled
+         */
+        public CDF(
+            Collection<? extends SmoothScalarDistribution> distributions,
+            double[] priorWeights)
+        {
+            super( distributions, priorWeights );
+        }
+
+        /**
+         * Copy constructor
+         * @param other
+         * SMDM to copy
+         */
+        public CDF(
+            ScalarMixtureDensityModel other )
+        {
+            super( other );
+        }
+
+        @Override
+        public ScalarMixtureDensityModel.PDF getDerivative()
+        {
+            return this.getProbabilityFunction();
+        }
+
+        @Override
+        public Double evaluate(
+            Double input)
+        {
+            return this.evaluate( input.doubleValue() );
+        }
+
+        @Override
+        public double evaluate(
+            double input)
+        {
+            final double weightSum = this.getPriorWeightSum();
+            double sum = 0.0;
+            int i = 0;
+            for( SmoothScalarDistribution d : this.distributions )
+            {
+                SmoothCumulativeDistributionFunction cdf = d.getCDF();
+                final double prior = this.priorWeights[i];
+                sum += prior * cdf.evaluate(input);
+                i++;
+            }
+            return sum / weightSum;
+        }
+
+        @Override
+        public Double differentiate(
+            Double input)
+        {
+            return this.getDerivative().evaluate(input.doubleValue());
+        }
+
+        @Override
+        public ScalarMixtureDensityModel.CDF getCDF()
+        {
+            return this;
+        }
+
+    }
+
+
+    /**
+     * An EM learner that estimates a mixture model from data
+     */
+    public static class EMLearner
+        extends AbstractAnytimeBatchLearner<Collection<? extends Double>, ScalarMixtureDensityModel>
+        implements Randomized,
+        DistributionEstimator<Double,ScalarMixtureDensityModel>,
+        MeasurablePerformanceAlgorithm
+    {
+
+        /**
+         * Name of the performance measurement, {@value}.
+         */
+        public static final String PERFORMANCE_NAME = "Assignment Change";
 
         /**
          * Default max iterations, {@value}.
          */
-        protected final static int DEFAULT_MAX_ITERATIONS = 1000;
+        public static final int DEFAULT_MAX_ITERATIONS = 100;
 
         /**
-         * Default kernel, GeneralizedScalarRadialBasisKernel.
+         * Default tolerance, {@value}.
          */
-        protected final static GeneralizedScalarRadialBasisKernel DEFAULT_KERNEL =
-            new GeneralizedScalarRadialBasisKernel(1.0, 1.0);
-
+        public static final double DEFAULT_TOLERANCE = 1e-5;
 
         /**
-         * Number of data points.
+         * Collection of learners used to create each component.
          */
-        protected int numDataPoints;
-
-        /**
-         * Number of distributions.
-         */
-        protected int numDistributions = 2;
-
-        /**
-         * Tolerance for convergence.
-         */
-        protected double convergeTolerance = 1.e-6;
-
-        /**
-         * Weighted data for the learners.
-         */
-        protected ArrayList<? extends WeightedValue<? extends Double>> wdata;
-
-        /**
-         * Weighting matrix.
-         */
-        protected Matrix m = null;
-
-        /** The performance of the algorithm. Calculated at the end of each iteration. */
-        protected double performance;
-
-        /**
-         * the old performance data used in computePerformance
-         */
-        protected PerformanceData oldPerformanceData;
-
-        /**
-         * the latest performance data used in computePerformance
-         */
-        protected PerformanceData performanceData;
-
-        /**
-         * Distributions in the mixture.
-         */
-        protected ArrayList<SmoothScalarDistribution> distributionList;
-
-        /**
-         * Prior probabilities of the various distributions.
-         */
-        protected Vector priorProbabilities;
+        private Collection<? extends DistributionWeightedEstimator<Double,? extends SmoothScalarDistribution>> learners;
 
         /**
          * Random number generator.
@@ -882,770 +585,301 @@ public class ScalarMixtureDensityModel
         protected Random random;
 
         /**
-         * kernel function that takes two Doubles and computes a double
-         * used to compute the weight on a point from an anchor point.
+         * Tolerance before stopping, must be greater than or equal to 0
          */
-        protected Kernel<Double> kernel;
+        private double tolerance;
 
         /**
-         * Collection of learners used to create each component.
+         * Weighted data used to reestimate the PDFs
          */
-        Collection<BatchLearner<Collection<? extends WeightedValue<? extends Double>>, ? extends SmoothScalarDistribution>> learners;
+        private transient ArrayList<DefaultWeightedValue<Double>> weightedData;
 
         /**
-         * Default constructor.
+         * Assignments get each data point onto each of the "k" PDFs.
          */
-        public SoftLearner()
+        private transient ArrayList<double[]> assignments;
+
+        /**
+         * Currently estimated set of distributions from the data
+         */
+        private transient ArrayList<ScalarProbabilityDensityFunction> distributions;
+
+        /**
+         * Priors associated with the current estimates from the data
+         */
+        private transient double[] distributionPrior;
+
+        /**
+         * Amount that the assignments change between iterations
+         */
+        private transient double assignmentChanged;
+
+        /**
+         * Default constructor
+         * @param random
+         * Random number generator
+         */
+        public EMLearner(
+            Random random )
         {
-            this(DEFAULT_MAX_ITERATIONS);
+            this( 2, new UnivariateGaussian.WeightedMaximumLikelihoodEstimator(1.0), random );
         }
 
         /**
-         * Creates a new instance of SoftLearner.
+         * Creates a new instance of EMLearner
+         * @param numClusters
+         * Number of components to estimate
+         * @param learner
+         * Learner used for each component
+         * @param random
+         * Random number generator
+         */
+        public EMLearner(
+            int numClusters,
+            DistributionWeightedEstimator<Double,? extends SmoothScalarDistribution> learner,
+            Random random )
+        {
+
+            super( DEFAULT_MAX_ITERATIONS );
+            this.setTolerance(DEFAULT_TOLERANCE );
+            this.setRandom( random );
+
+            ArrayList<DistributionWeightedEstimator<Double, ? extends SmoothScalarDistribution>> ll =
+                new ArrayList<DistributionWeightedEstimator<Double, ? extends SmoothScalarDistribution>>( numClusters );
+            for( int k = 0; k < numClusters; k++ )
+            {
+                ll.add(learner);
+            }
+            this.setLearners(ll);
+
+        }
+
+        /**
+         * Creates a new instance of EMLearner
          * @param learners
-         * Collection of learners used to create each component.
+         * Learner used for each component
+         * @param random
+         * Random number generator
          */
-        public SoftLearner(
-            Collection<BatchLearner<Collection<? extends WeightedValue<? extends Double>>, ? extends SmoothScalarDistribution>> learners)
+        public EMLearner(
+            Random random,
+            DistributionWeightedEstimator<Double,? extends SmoothScalarDistribution> ... learners )
         {
-            this(DEFAULT_MAX_ITERATIONS);
-            setLearners(learners);
+
+            super( DEFAULT_MAX_ITERATIONS );
+
+            this.setTolerance( DEFAULT_TOLERANCE );
+            this.setRandom(random);
+            this.setLearners( Arrays.asList(learners) );
         }
 
-        /**
-         * Creates a new instance of SoftLearner.
-         * @param maxIterations
-         * Maximum number of iterations before stopping.
-         */
-        public SoftLearner(
-            int maxIterations)
-        {
-            super(maxIterations);
-            setRandom(new Random());
-            setKernel(DEFAULT_KERNEL);
-        }
-
-        /**
-         * Sets the learners: one for each distribution.
-         * Note that each learner must provide a Distribution which has a
-         * getProbabilityFunction method!
-         *
-         * @param learners
-         * Collection of learners used to create each component.
-         */
-        protected void setLearners(
-            Collection<BatchLearner<Collection<? extends WeightedValue<? extends Double>>, ? extends SmoothScalarDistribution>> learners)
-        {
-            this.learners = learners;
-            this.numDistributions = learners.size();
-            this.distributionList =
-                new ArrayList<SmoothScalarDistribution>(this.numDistributions);
-        }
-
-        /**
-         * builds a ScalarMixtureDensityModel consisting of n Gaussians.
-         * @param n number of Gaussians to base model on.
-         * @return
-         * SoftLearner with UnivariateGaussians.
-         */
-        public static ScalarMixtureDensityModel.SoftLearner buildSMDMmultiGaussianLearner(
-            int n)
-        {
-            ArrayList<BatchLearner<Collection<? extends WeightedValue<? extends Double>>, ? extends SmoothScalarDistribution>> learners =
-                new ArrayList<BatchLearner<Collection<? extends WeightedValue<? extends Double>>, ? extends SmoothScalarDistribution>>(n);
-
-            for (int i = 0; i < n; i++)
-            {
-                learners.add(
-                    new UnivariateGaussian.WeightedMaximumLikelihoodEstimator(0));
-            }
-
-            ScalarMixtureDensityModel.SoftLearner SMDMlearner =
-                new ScalarMixtureDensityModel.SoftLearner(learners);
-
-
-            return SMDMlearner;
-        }
-
-        /**
-         * builds a ScalarMixtureDensityModel with two distribution learners:
-         * one gaussian and one laplace.
-         *
-         * @return ScalarMixtureDensityModel with two distributions:
-         *         1 gaussian, 1 laplace.
-         */
-        public static ScalarMixtureDensityModel.SoftLearner buildSmdmGaussianLaplaceLearner()
-        {
-            ArrayList<BatchLearner<Collection<? extends WeightedValue<? extends Double>>, ? extends SmoothScalarDistribution>> learners =
-                new ArrayList<BatchLearner<Collection<? extends WeightedValue<? extends Double>>, ? extends SmoothScalarDistribution>>(2);
-
-            learners.add(new UnivariateGaussian.WeightedMaximumLikelihoodEstimator(0));
-            learners.add(
-                new LaplaceDistribution.WeightedMaximumLikelihoodEstimator());
-
-            ScalarMixtureDensityModel.SoftLearner smdmLearner =
-                new ScalarMixtureDensityModel.SoftLearner();
-
-            smdmLearner.setLearners(learners);
-
-            return smdmLearner;
-        }
-
-        /**
-         * selects numberLearners anchor points from the data
-         * this is used during initialization to provide an anchor
-         * for each distribution which is used with a scaling kernel
-         * to compute initial weights.
-         * <BR><BR>
-         *  1) select k anchor points, where k is number of learners
-         * each point MUST BE unique -- so this is sampling
-         *          w/o replacement
-         * <BR>
-         * 2) compute the weight vector for each point according to
-         *      a kernel function centered at this point
-         * <BR>
-         * 3) note that this set of weights will not have the convex
-         *      property that later updates based on distributions will.
-         *
-         * @param numberLearners the number of learners (or distributions)
-         * @return an array of anchor point values
-         */
-        protected Double[] getAnchorPoints(
-            int numberLearners )
-        {
-            Double[] anchors = new Double[numberLearners];
-
-            Integer[] anchorIndexes = new Integer[numberLearners];
-
-
-            // selecting unique anchor points cannot be done if
-            // there are more learners than datapoints.
-            if ( numberLearners > data.size() )
-            {
-                throw new IllegalArgumentException(
-                        "More learners than data points");
-
-            }
-
-            // use simple, brute-force algorithm since we expect WAY more
-            // data points than distributions.  So we'll randomly pick an index
-            // and then just check to make sure that index has not already been
-            // picked.
-            //
-            // the index should be in range of 0 to n-1, where n is # of datapoints
-            int i = 0;
-            boolean notdone = true;
-            boolean redo = false;
-            if (DEBUG)
-            {
-                System.out.print("anchor indexes = ");
-            }
-            while (notdone)
-            {
-                anchorIndexes[i] = this.random.nextInt(data.size());
-
-                // check for duplicate indexes so far...
-                for (int k = 0; k < i; k++)
-                {
-                    if (anchorIndexes[i] == anchorIndexes[k])
-                    {
-                        redo = true;  // found a duplicate index!
-                        break;
-                    }
-                }
-
-                // if redo is true, then we generated a duplicate index for
-                // slot i.  So re-do it!
-                if (redo)
-                {
-                    redo = false;
-                    continue;
-                }
-
-                if (DEBUG)
-                {
-                    System.out.print(" " + anchorIndexes[i]);
-                }
-
-                i++;
-                if (i >= numberLearners)
-                {
-                    notdone = false;
-                }
-
-            }
-            if (DEBUG)
-            {
-                System.out.println();
-            }
-
-
-
-            if (DEBUG)
-            {
-                System.out.print("anchor pts = ");
-            }
-            for (i = 0; i < numberLearners; i++)
-            {
-                anchors[i] = CollectionUtil.getElement(data, anchorIndexes[i]);
-                if (DEBUG)
-                {
-                    System.out.println(" " + anchors[i]);
-                }
-            }
-            if (DEBUG)
-            {
-                System.out.println();
-            }
-
-            return anchors;
-        }
-
-
-        /**
-         * computeWeightsFromAnchors computes the weight matrix (m) from
-         * anchor points assigned to each distribution (learner).  This is
-         * only called once during initialization since we don't yet have
-         * any distribution parameters defined.
-         *
-         * @param anchors  array of doubles, n long that are the anchor
-         *                    points associated with each distribution.
-         * @param data     n-dimensional array of doubles representing the
-         *                    scalar data points.
-         * @return         a matrix with the weights in it
-         *                    # data pts columns, # distributions rows
-         */
-        protected Matrix computeWeightsfromAnchors(
-            Double[] anchors,
-            Collection<? extends Double> data )
-        {
-            Matrix weightMatrix;
-
-            int numDist = anchors.length;
-            int numPts = data.size();
-
-            weightMatrix = MatrixFactory.getDefault().createMatrix(
-                numDist,
-                numPts);
-
-            int c = 0;
-            for (Double v : data)
-            {
-                for (int r = 0; r < numDist; r++)
-                {
-                    weightMatrix.setElement(r, c, this.kernel.evaluate(anchors[r], v));
-                }
-                c++;
-            }
-
-            // normalize each column's sum to 1
-            for(c=0; c<weightMatrix.getNumColumns(); c++ )
-            {
-                Vector col = weightMatrix.getColumn(c);
-                weightMatrix.setColumn(c, col.scale(1.0 / col.sum()));
-            }
-
-            int i;
-            if (DEBUG)
-            {
-                System.out.println("weights");
-                for (i = 0; i < numDist; i++)
-                {
-                    System.out.println("\twts " + i + " = " + weightMatrix.getRow(i));
-                }
-            }
-
-            return weightMatrix;
-        }
-
-
-        /**
-         * this computes the weight matrix (m) from the distribution PDFs
-         * the weight matrix is # distributions (rows) x # datapoints (cols).
-         * <BR><BR>
-         * each element starts as the PDF value of the data point multiplied by
-         * the probability of that distribution
-         * <BR><BR>
-         * then the matrix elements are scaled so that each col sums to 1.0
-         *
-         * @param distributionList ArrayList of SmoothScalarDistributions
-         *        A SmoothScalarDistribution has a getProbabilityFunction() method
-         * @param priorProbabilities vector of probabilities for each distribution
-         *        this vector should sum to 1.0
-         * @param data collection of Double values representing the data
-         *        that the mixture density is trying to model
-         * @return  a matrix of weight values
-         */
-        protected Matrix computeWeightsFromPDFs(
-                ArrayList<SmoothScalarDistribution> distributionList,
-                Vector priorProbabilities,
-                Collection<? extends Double> data )
-        {
-            Matrix weightMatrix;
-
-            int numDist = distributionList.size();
-            int numPts = data.size();
-
-            weightMatrix = MatrixFactory.getDefault().createMatrix(
-                numDist,
-                numPts);
-
-            int c = 0;
-            for (Double v : data)
-            {
-                int r = 0;
-                for (SmoothScalarDistribution dist : distributionList)
-                {
-                    weightMatrix.setElement(r, c, dist.getProbabilityFunction().evaluate(v) *
-                        priorProbabilities.getElement(r));
-                    r++;
-                }
-                c++;
-            }
-
-            // make each col vector sum to one
-            for (c = 0; c < numPts; c++)
-            {
-                Vector col = weightMatrix.getColumn(c);
-                weightMatrix.setColumn(c, col.scale(1.0 / col.sum()));
-            }
-
-
-            return weightMatrix;
-        }
-
-
-        /**
-         * initializeAlgorithm initializes both the distributionList and the
-         * priorProbabilities from the data.
-         *
-         * @return true if it initialized properly, false if not
-         */
         @Override
         protected boolean initializeAlgorithm()
         {
-            int numberLearners = this.learners.size();
-            this.numDistributions = numberLearners;
-            this.numDataPoints = this.data.size();
-            this.performance = 0.0;
+            final int N = this.data.size();
+            final int K = this.learners.size();
 
-            Double [] anchors = getAnchorPoints(numberLearners);
-
-            
-            // ok, so now we have an anchor point for each learner
-            // (no guarantee it is a particularly good anchor point
-            // for that learner)
-            //
-            // now we need to generate a weight vector based on
-            // that anchor point for each distribution
-            // (or compute the 'm' matrix)
-            this.m = computeWeightsfromAnchors(anchors, this.data);
-
-            this.priorProbabilities = VectorFactory.getDefault().createVector(
-                numberLearners, 1.0 / numberLearners);
-
-            updateDistributionsAndProbabilities();
-
-            if (DEBUG)
+            // Assign the clusters "near" random data points.
+            double[] x = new double[ K ];
+            for( int k = 0; k < K; k++ )
             {
-                System.out.println("initializeAlgorithm: ");
-                System.out.println("priorProbabilities: " + this.priorProbabilities );
-                for (SmoothScalarDistribution d : this.distributionList)
-                {
-                    System.out.println("\tdistribution is " + d);
-                }
+                int index = this.random.nextInt( N );
+                x[k] = CollectionUtil.getElement(this.data,index) + this.random.nextGaussian();
             }
 
-            this.performanceData = new PerformanceData(
-                    this.distributionList,
-                    this.priorProbabilities);
-            
-            // note that this will be updated before the
-            // first comparison is computed
-            oldPerformanceData = new PerformanceData();
+            this.weightedData = new ArrayList<DefaultWeightedValue<Double>>( N );
+            this.assignments = new ArrayList<double[]>( N );
+            this.distributionPrior = new double[K];
+            this.assignmentChanged = N;
+            for( Double value : this.data )
+            {
+                // Assign the values random weights to the learners initially
+                this.weightedData.add( new DefaultWeightedValue<Double>(
+                    value, 0.0 ) );
+
+                double[] assignment = new double[ K ];
+                double sum = 0.0;
+                for( int k = 0; k < K; k++ )
+                {
+                    double delta = value - x[k];
+                    final double ak = Math.exp( -Math.abs(delta) );
+                    assignment[k] = ak;
+                    sum += ak;
+                }
+                if( sum <= 0.0 )
+                {
+                    sum = 1.0;
+                }
+                for( int k = 0; k < K; k++ )
+                {
+                    assignment[k] /= sum;
+                    this.distributionPrior[k] += assignment[k];
+                }
+
+                this.assignments.add( assignment );
+
+            }
+
+            // This is the initial distribution estimates
+            this.distributions = new ArrayList<ScalarProbabilityDensityFunction>( K );
+            int k = 0;
+            for( DistributionWeightedEstimator<Double,? extends SmoothScalarDistribution> learner : this.learners )
+            {
+                for( int n = 0; n < N; n++ )
+                {
+                    this.weightedData.get(n).setWeight( this.assignments.get(n)[k] );
+                }
+                this.distributions.add(
+                    learner.learn( this.weightedData ).getProbabilityFunction() );
+                k++;
+            }
 
             return true;
         }
 
 
-        /**
-         *   this method updates the distributionList and priorProbabilities
-         *   class variables on the basis of data and the content of the
-         *   weight matrix, m.
-         * <BR><BR>
-         *   if the # of data points is N and the number of distributions is M
-         * <BR><BR>
-         *   then distributionList has M distributions,
-         *   data has N points,
-         *   m is M x N, where each column sums to 1.0,
-         *   wdata is N points.
-         *
-         */
-        protected void updateDistributionsAndProbabilities()
-        {
-            this.distributionList.clear();
-            int i =0;
-            for( BatchLearner<Collection<? extends WeightedValue<? extends Double>>, ? extends SmoothScalarDistribution> learner : this.learners )
-            {
-                this.wdata = convertToWeightedData(this.m.getRow(i), this.data);
-                this.distributionList.add( learner.learn(this.wdata));
-                this.priorProbabilities.setElement(i,
-                        this.m.getRow(i).sum() / this.numDataPoints);
-                ++i;
-            }
-        }
-
-        /**
-         * computes a single step of the learning algorithm.
-         * <BR><BR>
-         * It updates the distributionList and priorProbabilities variables
-         * these are used by getResult to construct and return a
-         * ScalarMixtureDensityModel
-         * <BR><BR>
-         * first, the weight matrix is computed from the current distributions
-         * and probabilities then the distributions and probabilities are
-         * updated based on the new weight matrix and the original data.
-         *
-         * @return true to continue to learn, false to stop learning
-         */
         @Override
         protected boolean step()
         {
-            oldPerformanceData.updateData(performanceData);
 
-            this.m = computeWeightsFromPDFs(
-                    this.distributionList,
-                    this.priorProbabilities,
-                    this.data);
+            final int N = this.data.size();
+            final int K = this.learners.size();
 
-            updateDistributionsAndProbabilities();
+            // Reset the counters
+            this.assignmentChanged = 0.0;
+            Arrays.fill( this.distributionPrior, 0.0 );
 
-            performanceData.updateData(
-                    this.distributionList,
-                    this.priorProbabilities);
-
-            // Compute the performance.
-            this.performance =
-                this.performanceData.computePerformanceMetric(oldPerformanceData);
-
-            // determine whether termination condition is met
-            final boolean continueLearning =
-                (this.performance > this.convergeTolerance);
-
-            if (DEBUG)
+            // Go through and set the assignments... the "E" step
+            double[] anold = new double[ K ];
+            for( int n = 0; n < N; n++ )
             {
-                System.out.println("step #" + this.getIteration() + "\n" + this.getResult() );
-                System.out.println("\tperformance=" + this.performance);
+                final double xn = this.weightedData.get(n).getValue();
+                double[] an = this.assignments.get(n);
+                System.arraycopy(an, 0, anold, 0, K);
+                int k = 0;
+                double sum = 0.0;
+                for( ScalarProbabilityDensityFunction pdf : this.distributions )
+                {
+                    final double ank = pdf.evaluate(xn);
+                    an[k] = ank;
+                    sum += ank;
+                    k++;
+                }
+                if( sum <= 0.0 )
+                {
+                    sum = 1.0;
+                }
+
+                for( k = 0; k < K; k++ )
+                {
+                    final double ank = an[k] / sum;
+                    an[k] = ank;
+                    double delta = Math.abs(ank - anold[k]);
+                    this.distributionPrior[k] += ank;
+                    this.assignmentChanged += delta;
+                }
+
             }
 
-            return continueLearning;
+            if( this.assignmentChanged <= this.getTolerance() )
+            {
+                return false;
+            }
+
+            // Now update the distributions... the "M" step
+            int k = 0;
+            for( DistributionWeightedEstimator<Double,? extends SmoothScalarDistribution> learner : this.learners )
+            {
+                for( int n = 0; n < N; n++ )
+                {
+                    this.weightedData.get(n).setWeight(this.assignments.get(n)[k]);
+                }
+                SmoothScalarDistribution distribution = learner.learn( this.weightedData );
+                this.distributions.set( k, distribution.getProbabilityFunction() );
+                k++;
+            }
+
+            return true;
+
         }
 
         @Override
         protected void cleanupAlgorithm()
         {
+            this.weightedData = null;
+            this.assignments = null;
+            this.data = null;
         }
 
-        /**
-         * computes the learning algorithm performance.
-         * <BR><BR>
-         * this value that begins at 1.0 and decreases toward 0
-         * right now it monitors the contents of the m matrix which consists
-         * of relative weights of data vs. distribution
-         * <BR><BR>
-         * when this matrix stops changing, then the distributions and
-         * probabilities will also stop changing.
-         * <BR><BR>
-         * the norm of the matrix difference divided by the norm of the matrix
-         * is used to assess the change in the matrix
-         *
-         * @return  a double performance value to trends to 0 as the algorithm
-         *          converges
-         */
-        public NamedValue<? extends Number> getPerformance()
-        {
-            if (this.performanceData == null)
-            {
-                return null;
-            }
-            else
-            {
-//            if ( this.old_m != null )
-//            {
-//                this.old_m.minusEquals(this.m);
-//                result = this.old_m.normFrobenius() / this.m.normFrobenius();
-//            }
-
-                return new DefaultNamedValue<Double>(
-                    "Normalized weight change", this.performance);
-            }
-        }
-
+        @Override
         public ScalarMixtureDensityModel getResult()
         {
             return new ScalarMixtureDensityModel(
-                this.distributionList,
-                this.priorProbabilities);
+                this.distributions, this.distributionPrior );
         }
 
-        /*
-         * utility functions
-         * 
-         */
-
-        /**
-         * converts a Collection of numbers to an ArrayList of weightedValues
-         * @param weights Vector of weight values
-         * @param data Collection of numbers
-         * @return returns an ArrayList of WeightedValues
-         */
-        protected ArrayList<DefaultWeightedValue<Double>> convertToWeightedData(
-            Vector weights,
-            Collection<? extends Number> data)
+        @Override
+        public NamedValue<Double> getPerformance()
         {
-            int n = data.size();
-
-            if( n != weights.getDimensionality() )
-            {
-                throw new IllegalArgumentException(
-                    "Number of data must equal the number of weights.");
-            }
-
-            ArrayList<DefaultWeightedValue<Double>> weightedData =
-                new ArrayList<DefaultWeightedValue<Double>>(n);
-
-            int i = 0;
-            for (Number num : data)
-            {
-                Double v = num.doubleValue();
-                weightedData.add(new DefaultWeightedValue<Double>(v,
-                    weights.getElement(i)));
-
-                i++;
-            }
-            return weightedData;
+            return new DefaultNamedValue<Double>(
+                PERFORMANCE_NAME, this.assignmentChanged );
         }
 
-
+        @Override
         public Random getRandom()
         {
             return this.random;
         }
 
+        @Override
         public void setRandom(
             Random random)
         {
             this.random = random;
         }
 
-        public Kernel<Double> getKernel()
+        /**
+         * Getter for learners
+         * @return
+         * Collection of learners used to create each component.
+         */
+        public Collection<? extends DistributionWeightedEstimator<Double, ? extends SmoothScalarDistribution>> getLearners()
         {
-            return this.kernel;
+            return this.learners;
         }
 
         /**
-         * Setter for kernel.
-         * @param kernel the Kernel to set
+         * Setter for learners
+         * @param learners
+         * Collection of learners used to create each component.
          */
-        public void setKernel(
-            Kernel<Double> kernel)
+        public void setLearners(
+            Collection<? extends DistributionWeightedEstimator<Double, ? extends SmoothScalarDistribution>> learners)
         {
-            this.kernel = kernel;
+            this.learners = learners;
         }
 
         /**
-         * expose setData method from BatchAnytimeLearner.
-         * @param data
-         * Collection of Double for SoftLearner
+         * Getter for tolerance
+         * @return
+         * Tolerance before stopping, must be greater than or equal to 0
          */
-        @Override
-        protected void setData(
-            Collection<? extends Double> data )
+        public double getTolerance()
         {
-            super.setData(data);
-
-        }
-
-    }
-
-    /**
-     * performanceInfo is a class designed to capture important
-     * performance information to be used to compute the
-     * performance metric.
-     */
-    protected static class PerformanceData
-    {
-        /**
-         * Vector of mean values of the distributions.
-         */
-        protected Vector means=null;
-
-        /**
-         * Vector of variance value of the distributions.
-         */
-        protected Vector variances=null;
-
-        /**
-         * Vector prior probabilities of the distributions.
-         */
-        protected Vector priorProbabilities=null;
-
-        /**
-         * flag indicating whether the performance data is valid
-         * to compute a metric with.  Set by updateData.
-         */
-        protected boolean validForMetricComputation = false;
-
-        /**
-         * performanceInfo constructor.
-         *
-         * @param dists list of SmoothScalarDistributions
-         * @param pp vector of priorProbabilities
-         */
-        public  PerformanceData(
-                ArrayList<SmoothScalarDistribution> dists,
-                Vector pp )
-        {
-            updateData(dists,pp);
+            return tolerance;
         }
 
         /**
-         * default constructor
+         * Setter for tolerance
+         * @param tolerance
+         * Tolerance before stopping, must be greater than or equal to 0
          */
-        public PerformanceData() {};
-
-        /**
-         * whether valid for metric computation or not.  Is checked when
-         * computePerformanceMetric is called.  Is set in updateData() which
-         * is also called in a non-default constructor.
-         *
-         * @return true if ok to compute, false otherwise
-         */
-        public boolean isValid()
+        public void setTolerance(
+            double tolerance)
         {
-            return this.validForMetricComputation;
+            ArgumentChecker.assertIsNonNegative("tolerance", tolerance);
+            this.tolerance = tolerance;
         }
-
-        /**
-         * Computes a performance metric based on the data elements stored.
-         * Compares this element's data to the oldData passed in.
-         *
-         * If they are identical, the performance metric should be 0.0
-         * Closer to zero is closer to convergence for the learning
-         * algorithm.
-         *
-         * @param oldData
-         * @return a measure of convergence (0.0 being converged)
-         */
-        public double computePerformanceMetric(  PerformanceData oldData )
-        {
-            if ( !( this.isValid() && oldData.isValid())  )
-            {
-                throw new IllegalArgumentException(
-                        "performance data is invalid");
-            }
-
-            double meanChg = this.getMeans().euclideanDistance(oldData.getMeans()) /
-                    this.getMeans().norm2();
-
-            double varianceChg = this.getVariances().euclideanDistance(
-                    oldData.getVariances()) / this.getVariances().norm2();
-
-            double probChg = this.getPriorProbabilities().euclideanDistance(
-                oldData.getPriorProbabilities()) / this.getPriorProbabilities().norm2() ;
-
-            return Math.max(probChg, Math.max( varianceChg, meanChg));
-        }
-
-        /**
-         * @return the means
-         */
-        public Vector getMeans()
-        {
-            return means;
-        }
-
-
-        /**
-         * updateData saves the parameter values in arguments in this object.
-         *
-         * @param dists SmoothScalarDistribution list
-         * @param pp  vector of probabilities
-         */
-        public void updateData(
-            ArrayList<SmoothScalarDistribution> dists,
-            Vector pp )
-        {
-           /**
-             * n is the number of distributions.
-             */
-            int n = dists.size();
-
-            if ( n != pp.getDimensionality() )
-            {
-                throw new IllegalArgumentException(
-                 "Mismatch in prior probability and distributions dimensions");
-            }
-
-            this.means = VectorFactory.getDefault().createVector(n);
-            this.variances = VectorFactory.getDefault().createVector(n);
-            this.priorProbabilities = pp.clone();
-
-            for(int i = 0; i<n; i++ )
-            {
-                means.setElement(i,dists.get(i).getMean());
-                variances.setElement(i, dists.get(i).getVariance());
-            }
-
-            // now check validity and set the flag
-            boolean result = true ;
-
-            result &= (means!=null);
-            result &= (variances!=null);
-            result &= (priorProbabilities!=null);
-            result &= (means.getDimensionality() == variances.getDimensionality());
-            result &= (means.getDimensionality() == priorProbabilities.getDimensionality() );
-
-            validForMetricComputation = result;
-        }
-
-        /**
-         * @return the variances
-         */
-        public Vector getVariances()
-        {
-            return variances;
-        }
-
-         /**
-         * @return the priorProbabilities
-         */
-        public Vector getPriorProbabilities()
-        {
-            return priorProbabilities;
-        }
-
-        /**
-         * update performance data from another performance data object.
-         * (like the old one...)
-         * 
-         * @param performanceData
-         * Performance data
-         */
-        public void updateData(PerformanceData performanceData)
-        {
-            if ( !performanceData.isValid() )
-            {
-                throw new IllegalArgumentException(
-                        "cannot updateData from invalid data");
-            }
-
-            this.means = performanceData.getMeans().clone();
-            this.variances = performanceData.getVariances().clone();
-            this.priorProbabilities = performanceData.getPriorProbabilities().clone();
-            this.validForMetricComputation = true;
-        }
-
 
     }
 

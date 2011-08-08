@@ -2,7 +2,7 @@
  * File:                LinearMixtureModel.java
  * Authors:             Kevin R. Dixon
  * Company:             Sandia National Laboratories
- * Project:             Cognitive Framework Lite
+ * Project:             Cognitive Foundry
  *
  * Copyright November 3, 2006, Sandia Corporation.  Under the terms of Contract
  * DE-AC04-94AL85000, there is a non-exclusive license for use of this work by
@@ -10,19 +10,19 @@
  * license from the United States Government. See CopyrightHistory.txt for
  * complete details.
  *
- *
  */
 
 package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.statistics.AbstractDistribution;
 import gov.sandia.cognition.statistics.Distribution;
+import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 
@@ -35,7 +35,7 @@ import java.util.Random;
  *
  * @param <DataType> 
  *      Type of data in this mixture model
- * @param <InternalDistributionType>
+ * @param <DistributionType>
  *      The type of the internal distributions inside the mixture.
  * @author Kevin R. Dixon
  * @since  1.0
@@ -48,195 +48,193 @@ import java.util.Random;
     year=2009,
     url="http://en.wikipedia.org/wiki/Mixture_model"
 )
-public abstract class LinearMixtureModel<DataType, InternalDistributionType extends Distribution<DataType>>
+public abstract class LinearMixtureModel<DataType, DistributionType extends Distribution<DataType>>
     extends AbstractDistribution<DataType>
 {
     
     /**
-     * Underlying collection of MultivariateGaussian that compute the relative
-     * likelihoods of a particular input
+     * Underlying distributions from which we sample
      */
-    private ArrayList<? extends InternalDistributionType> randomVariables;
-    
+    protected ArrayList<? extends DistributionType> distributions;
+
     /**
-     * The prior probability distribution of the MultivariateGaussians, must
-     * have 1-norm ~1.0 and dimensionality equal to the number of 
-     * RandomVariables
+     * Weights proportionate by which the distributions are sampled
      */
-    private Vector priorProbabilities;
-    
+    protected double[] priorWeights;
+
     /**
      * Creates a new instance of LinearMixtureModel
-     * @param randomVariables 
-     * Underlying collection of MultivariateGaussian that compute the relative
-     * likelihoods of a particular input
+     * @param distributions
+     * Underlying distributions from which we sample
      */
     public LinearMixtureModel(
-        Collection<? extends InternalDistributionType> randomVariables )
+        Collection<? extends DistributionType> distributions )
     {
-        this( new ArrayList<InternalDistributionType>( randomVariables ),
-            VectorFactory.getDefault().createVector( randomVariables.size() ) );
+        this( distributions, null );
     }
-    
+
     /**
      * Creates a new instance of LinearMixtureModel
-     * @param randomVariables 
-     * Underlying collection of MultivariateGaussian that compute the relative
-     * likelihoods of a particular input
-     * @param priorProbabilities 
-     * The prior probability distribution of the MultivariateGaussians must
-     * have dimensionality equal to the number of RandomVariables.  If this
-     * parameter doesn't have a 1-norm == 1.0, then this method will normalize
-     * the distribution so that its 1-norm == 1.0.  If the prior distribution
-     * is uniform 0.0, then this method will assume uniform with 1-norm
-     * == 1.0.
+     * @param distributions
+     * Underlying distributions from which we sample
+     * @param priorWeights
+     * Weights proportionate by which the distributions are sampled
      */
     public LinearMixtureModel(
-        ArrayList<? extends InternalDistributionType> randomVariables,
-        Vector priorProbabilities )
+        Collection<? extends DistributionType> distributions,
+        double[] priorWeights)
     {
-        
-        if( randomVariables.size() != priorProbabilities.getDimensionality() )
+
+        if( priorWeights == null )
+        {
+            priorWeights = new double[distributions.size()];
+            Arrays.fill(priorWeights, 1.0);
+        }
+
+        if( distributions.size() != priorWeights.length )
         {
             throw new IllegalArgumentException(
-                "Number of RandomVariables must equal number of prior probabilities!" );
+                "Distribution count must equal number of priors" );
         }
-        
-        int M = randomVariables.size();
-        this.setRandomVariables( randomVariables );        
-        
-        double norm1 = priorProbabilities.norm1();
-        if( priorProbabilities.norm1() == 0.0 )
+        for( int i = 0; i < priorWeights.length; i++ )
         {
-            for( int i = 0; i < M; i++ )
+            if( priorWeights[i] < 0.0 )
             {
-                priorProbabilities.setElement( i, 1.0/M );
+                throw new IllegalArgumentException( "weights must be >= 0.0!" );
             }
         }
-        else if( norm1 != 1.0 )
-        {
-            priorProbabilities.scaleEquals( 1.0 / norm1 );
-        }
-        
-        this.setPriorProbabilities( priorProbabilities );
 
-        
+        this.setDistributions(CollectionUtil.asArrayList(distributions));
+        this.setPriorWeights(priorWeights);
     }
 
     @Override
-    public LinearMixtureModel<DataType, InternalDistributionType> clone()
+    @SuppressWarnings("unchecked")
+    public LinearMixtureModel<DataType,DistributionType> clone()
     {
-        @SuppressWarnings("unchecked")
-        LinearMixtureModel<DataType, InternalDistributionType> clone =
-            (LinearMixtureModel<DataType, InternalDistributionType>) super.clone();
-        clone.setRandomVariables( ObjectUtil.cloneSmartElementsAsArrayList(
-            this.getRandomVariables() ) );
-        clone.setPriorProbabilities(
-            ObjectUtil.cloneSafe( this.getPriorProbabilities() ) );
+        LinearMixtureModel<DataType,DistributionType> clone = 
+            (LinearMixtureModel<DataType, DistributionType>) super.clone();
+        clone.setDistributions( ObjectUtil.cloneSmartElementsAsArrayList(
+            this.getDistributions() ) );
+        clone.setPriorWeights( ObjectUtil.cloneSmart( this.getPriorWeights() ) );
         return clone;
-        
-    }
-    
-    /**
-     * Returns the number of random variables in the LinearMixtureModel
-     * @return number of random variables in the LinearMixtureModel
-     */
-    public int getNumRandomVariables()
-    {
-        return this.getRandomVariables().size();
-    }
-    
-    /**
-     * Getter for randomVariables
-     * @return 
-     * Underlying collection of MultivariateGaussian that compute the relative
-     * likelihoods of a particular input
-     */
-    public ArrayList<? extends InternalDistributionType> getRandomVariables()
-    {
-        return this.randomVariables;
     }
 
-    /**
-     * Setter for randomVariables
-     * @param randomVariables 
-     * Underlying collection of MultivariateGaussian that compute the relative
-     * likelihoods of a particular input
-     */
-    protected void setRandomVariables(
-        ArrayList<? extends InternalDistributionType> randomVariables)
-    {
-        this.randomVariables = randomVariables;
-    }
-
-    /**
-     * Getter for priorProbabilities
-     * @return 
-     * The prior probability distribution of the MultivariateGaussians, must
-     * have 1-norm ~1.0 and dimensionality equal to the number of 
-     * RandomVariables
-     */
-    public Vector getPriorProbabilities()
-    {
-        return this.priorProbabilities;
-    }
-
-    /**
-     * Setter for priorProbabilities
-     * @param priorProbabilities 
-     * The prior probability distribution of the MultivariateGaussians, must
-     * have 1-norm ~1.0 and dimensionality equal to the number of 
-     * RandomVariables
-     */
-    public void setPriorProbabilities(
-        Vector priorProbabilities)
-    {
-        this.priorProbabilities = priorProbabilities;
-    }
-
-    public ArrayList<DataType> sample(
-        Random random,
-        int numDraws)
-    {
-        ArrayList<DataType> randomVectors =
-            new ArrayList<DataType>( numDraws );
-        for( int n = 0; n < numDraws; n++ )
-        {
-            // Make a single draw from the RandomVariable indicated by
-            // the prior probability
-            double prior = random.nextDouble();
-            int index = 0;
-            for( int i = 0; i < this.getNumRandomVariables(); i++ )
-            {
-                prior -= this.getPriorProbabilities().getElement( i );
-                if( prior <= 0.0 )
-                {
-                    index = i;
-                    break;
-                }
-            }
-            randomVectors.add( this.getRandomVariables().get( index ).sample( random ) );            
-        }
-        
-        return randomVectors;
-        
-    }
-
-    public abstract DataType getMean();
-    
     @Override
     public String toString()
     {
-        StringBuilder retval = new StringBuilder();
-        retval.append("LinearMixtureModel has " + this.getNumRandomVariables() + " RandomVariables:\n");
-        for( int i = 0; i < this.getNumRandomVariables(); i++ )
+        StringBuilder retval = new StringBuilder(1000);
+        retval.append("LinearMixtureModel has " + this.getDistributionCount() + " distributions:\n");
+        int k = 0;
+        for( DistributionType distribution : this.getDistributions() )
         {
-            Distribution rv = this.getRandomVariables().get(i);
-            retval.append("RV " + i + ": Prior Probability = " + this.getPriorProbabilities().getElement(i));
-            retval.append("\n");
-            retval.append("\t" + rv);
+            retval.append( " " + k + ": Prior: " + this.getPriorWeights()[k] + ", Distribution: " + distribution + "\n" );
+            k++;
         }
         return retval.toString();
     }
+
+    /**
+     * Getter for distributions
+     * @return
+     * Underlying distributions from which we sample
+     */
+    public ArrayList<? extends DistributionType> getDistributions()
+    {
+        return this.distributions;
+    }
+
+    /**
+     * Setter for distributions
+     * @param distributions
+     * Underlying distributions from which we sample
+     */
+    public void setDistributions(
+        ArrayList<? extends DistributionType> distributions)
+    {
+        this.distributions = distributions;
+    }
     
+    /**
+     * Gets the number of distributions in the model
+     * @return
+     * Number of distributions in the model
+     */
+    public int getDistributionCount()
+    {
+        return this.distributions.size();
+    }
+
+    @Override
+    public DataType sample(
+        Random random)
+    {
+        DistributionType d = ProbabilityMassFunctionUtil.sampleSingle(
+            this.getPriorWeights(), this.getDistributions(), random);
+        return d.sample(random);
+    }
+
+    @Override
+    public ArrayList<DataType> sample(
+        Random random,
+        int numSamples)
+    {
+
+        final int N = this.getDistributionCount();
+        double[] cumulativeWeights = new double[ N ];
+        double sum = 0.0;
+        for( int n = 0; n < N; n++ )
+        {
+            sum += this.getPriorWeights()[n];
+            cumulativeWeights[n] = sum;
+        }
+
+        ArrayList<DistributionType> whichDistributions =
+            ProbabilityMassFunctionUtil.sampleMultiple(
+                cumulativeWeights, sum, this.getDistributions(), random, numSamples);
+        ArrayList<DataType> samples = new ArrayList<DataType>( numSamples );
+        for( DistributionType d : whichDistributions )
+        {
+            samples.add( d.sample(random) );
+        }
+        return samples;
+    }
+
+    /**
+     * Getter for priorWeights
+     * @return
+     * Weights proportionate by which the distributions are sampled
+     */
+    public double[] getPriorWeights()
+    {
+        return this.priorWeights;
+    }
+
+    /**
+     * Getter for priorWeights
+     * @param priorWeights
+     * Weights proportionate by which the distributions are sampled
+     */
+    public void setPriorWeights(
+        double[] priorWeights)
+    {
+        this.priorWeights = priorWeights;
+    }
+
+    /**
+     * Computes the sum of the prior weights
+     * @return
+     * Sum of the prior weights
+     */
+    public double getPriorWeightSum()
+    {
+        double sum = 0.0;
+        final int K = this.getPriorWeights().length;
+        for( int k = 0; k < K; k++ )
+        {
+            sum += this.getPriorWeights()[k];
+        }
+        return (sum <= 0.0) ? 1.0 : sum;
+    }
+
 }

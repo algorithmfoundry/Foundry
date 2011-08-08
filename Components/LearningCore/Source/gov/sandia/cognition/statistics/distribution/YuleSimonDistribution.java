@@ -188,6 +188,12 @@ public class YuleSimonDistribution
         return new IntegerCollection( this.getMinSupport(), max );
     }
 
+    @Override
+    public int getDomainSize()
+    {
+        return this.getDomain().size();
+    }
+
     public YuleSimonDistribution.PMF getProbabilityFunction()
     {
         return new YuleSimonDistribution.PMF( this );

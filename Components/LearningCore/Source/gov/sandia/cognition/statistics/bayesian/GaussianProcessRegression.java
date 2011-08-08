@@ -30,6 +30,7 @@ import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Gaussian Process Regression, is also known as Kriging, is a nonparametric
@@ -116,7 +117,7 @@ public class GaussianProcessRegression<InputType>
     }
 
     public MultivariateGaussian learn(
-        Iterable<? extends InputOutputPair<? extends InputType, Double>> data)
+        Collection<? extends InputOutputPair<? extends InputType, Double>> data)
     {
 
         ArrayList<? extends InputOutputPair<? extends InputType,Double>> dataArray =

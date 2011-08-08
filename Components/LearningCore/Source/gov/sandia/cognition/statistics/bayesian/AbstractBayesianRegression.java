@@ -53,7 +53,7 @@ public abstract class AbstractBayesianRegression<InputType,OutputType,PosteriorT
     }
 
     @Override
-    public AbstractBayesianRegression clone()
+    public AbstractBayesianRegression<InputType,OutputType,PosteriorType> clone()
     {
         @SuppressWarnings("unchecked")
         AbstractBayesianRegression<InputType,OutputType,PosteriorType> clone =
@@ -62,11 +62,13 @@ public abstract class AbstractBayesianRegression<InputType,OutputType,PosteriorT
         return clone;
     }
 
+    @Override
     public Evaluator<? super InputType, Vector> getFeatureMap()
     {
         return this.featureMap;
     }
 
+    @Override
     public void setFeatureMap(
         Evaluator<? super InputType, Vector> featureMap)
     {

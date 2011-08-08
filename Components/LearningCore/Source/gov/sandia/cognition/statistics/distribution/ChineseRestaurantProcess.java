@@ -284,6 +284,12 @@ public class ChineseRestaurantProcess
         return new DefaultMultiCollection<Vector>( domain );
     }
 
+    @Override
+    public int getDomainSize()
+    {
+        return this.getDomain().size();
+    }
+
     public ChineseRestaurantProcess.PMF getProbabilityFunction()
     {
         return new ChineseRestaurantProcess.PMF( this );

@@ -48,7 +48,12 @@ public class GaussianContextRecognizerTest extends TestCase
         ArrayList<MultivariateGaussian.PDF> gaussians =
             new ArrayList<MultivariateGaussian.PDF>(K);
         double r = 1.0;
-        Vector prior = VectorFactory.getDefault().createUniformRandom(K, 0, 1.0, random);
+        double[] prior = new double[ K ];
+        for( int k = 0; k < K; k++ )
+        {
+            prior[k] = random.nextDouble();
+        }
+//        Vector prior = VectorFactory.getDefault().createUniformRandom(K, 0, 1.0, random);
         for (int k = 0; k < K; k++)
         {
             Matrix covSqrt = MatrixFactory.getDefault().createUniformRandom(M, M, -r, r, random);
@@ -57,7 +62,7 @@ public class GaussianContextRecognizerTest extends TestCase
             gaussians.add(new MultivariateGaussian.PDF(mean, covariance));
         }
         return new GaussianContextRecognizer(
-            new MixtureOfGaussians(gaussians, prior));
+            new MixtureOfGaussians.PDF(gaussians, prior));
     }
 
     /**
@@ -70,7 +75,7 @@ public class GaussianContextRecognizerTest extends TestCase
         GaussianContextRecognizer instance = this.createInstance();
 
         GaussianContextRecognizer clone = instance.clone();
-        assertEquals(instance.getGaussianMixture().getRandomVariables(), clone.getGaussianMixture().getRandomVariables());
+        assertEquals(instance.getGaussianMixture().getDistributions(), clone.getGaussianMixture().getDistributions());
         assertNotSame(instance.getGaussianMixture(), clone.getGaussianMixture());
 
     }
@@ -83,7 +88,7 @@ public class GaussianContextRecognizerTest extends TestCase
         System.out.println("evaluate");
 
         GaussianContextRecognizer instance = this.createInstance();
-        MixtureOfGaussians mog = instance.getGaussianMixture().clone();
+        MixtureOfGaussians.PDF mog = instance.getGaussianMixture().clone();
         int M = mog.getDimensionality();
         double r = 1.0;
 
@@ -91,7 +96,8 @@ public class GaussianContextRecognizerTest extends TestCase
         {
             Vector input = VectorFactory.getDefault().createUniformRandom(M, -r, r, random);
 
-            assertEquals(mog.computeRandomVariableProbabilities(input), instance.evaluate(input));
+            assertEquals( VectorFactory.getDefault().copyArray(
+                mog.computeRandomVariableProbabilities(input)), instance.evaluate(input));
         }
 
     }
@@ -126,7 +132,7 @@ public class GaussianContextRecognizerTest extends TestCase
         instance.consumeClusters(clusters);
         for (int k = 0; k < K; k++)
         {
-            assertEquals(instance.getGaussianMixture().getRandomVariables().get(k), clusters.get(k).getGaussian());
+            assertEquals(instance.getGaussianMixture().getDistributions().get(k), clusters.get(k).getGaussian());
         }
 
     }
@@ -139,7 +145,7 @@ public class GaussianContextRecognizerTest extends TestCase
         System.out.println("getGaussianMixture");
 
         GaussianContextRecognizer instance = this.createInstance();
-        MixtureOfGaussians mog = instance.getGaussianMixture();
+        MixtureOfGaussians.PDF mog = instance.getGaussianMixture();
         assertNotNull(mog);
     }
 
@@ -151,7 +157,7 @@ public class GaussianContextRecognizerTest extends TestCase
         System.out.println("setGaussianMixture");
 
         GaussianContextRecognizer instance = this.createInstance();
-        MixtureOfGaussians mog = instance.getGaussianMixture();
+        MixtureOfGaussians.PDF mog = instance.getGaussianMixture();
         assertNotNull(mog);
 
         instance.setGaussianMixture(null);

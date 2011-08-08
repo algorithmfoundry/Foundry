@@ -197,7 +197,7 @@ public abstract class ScalarDistributionTestHarness<NumberType extends Number>
     public void testDistributionGetMean()
     {
         System.out.println( "Distribution.getMean" );
-        Distribution<? extends Number> instance = this.createInstance();
+        ScalarDistribution<NumberType> instance = this.createInstance();
 
         // Ask the distribution for its mean
         Number mean = instance.getMean();

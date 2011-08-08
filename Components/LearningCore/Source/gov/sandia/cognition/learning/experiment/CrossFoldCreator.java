@@ -54,7 +54,18 @@ public class CrossFoldCreator<DataType>
      */
     public CrossFoldCreator()
     {
-        this(DEFAULT_NUM_FOLDS, new Random());
+        this(DEFAULT_NUM_FOLDS);
+    }
+    
+    /**
+     * Creates a new CrossFoldCreator.
+     *
+     * @param  numFolds The number of folds to create.
+     */
+    public CrossFoldCreator(
+        final int numFolds)
+    {
+        this(numFolds, new Random());
     }
     
     /**

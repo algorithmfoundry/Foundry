@@ -143,6 +143,16 @@ public abstract class ClosedFormDiscreteScalarDistributionTestHarness<DataType e
     }
 
     /**
+     * getDomainSize
+     */
+    public void testGetDomainSize()
+    {
+        System.out.println( "getDomainSize()" );
+        ClosedFormDiscreteScalarDistribution<DataType> instance = this.createInstance();
+        assertEquals( instance.getDomain().size(), instance.getDomainSize() );
+    }
+
+    /**
      * PMF.getDistributionFunction
      */
     public void testPMFGetDistributionFunction()

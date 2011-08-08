@@ -12,9 +12,9 @@
 
 package gov.sandia.cognition.learning.algorithm.perceptron;
 
-import gov.sandia.cognition.learning.algorithm.AbstractBatchAndIncrementalLearner;
-import gov.sandia.cognition.learning.data.InputOutputPair;
+import gov.sandia.cognition.learning.algorithm.AbstractSupervisedBatchAndIncrementalLearner;
 import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
+import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.VectorFactoryContainer;
 import gov.sandia.cognition.math.matrix.Vectorizable;
@@ -29,7 +29,7 @@ import gov.sandia.cognition.math.matrix.Vectorizable;
  * @since   3.1.1
  */
 public abstract class AbstractOnlineLinearBinaryCategorizerLearner
-    extends AbstractBatchAndIncrementalLearner<InputOutputPair<? extends Vectorizable, Boolean>, LinearBinaryCategorizer>
+    extends AbstractSupervisedBatchAndIncrementalLearner<Vectorizable, Boolean, LinearBinaryCategorizer>
     implements VectorFactoryContainer
 {
 
@@ -65,6 +65,35 @@ public abstract class AbstractOnlineLinearBinaryCategorizerLearner
     {
         return new LinearBinaryCategorizer();
     }
+
+    @Override
+    public void update(
+        final LinearBinaryCategorizer target,
+        final Vectorizable input,
+        final Boolean output)
+    {
+        if (input != null && output != null)
+        {
+            this.update(target, input.convertToVector(), (boolean) output);
+        }
+    }
+
+    /**
+     * The {@code update} method updates an object of {@code ResultType} using
+     * the given a new supervised input-output pair, using some form of
+     * "learning" algorithm.
+     *
+     * @param   target
+     *      The object to update.
+     * @param   input
+     *      The supervised input vector to learn from.
+     * @param   output
+     *      The supervised output label to learn from.
+     */
+    public abstract void update(
+        final LinearBinaryCategorizer target,
+        final Vector input,
+        final boolean output);
 
     /**
      * Gets the VectorFactory used to create the weight vector.

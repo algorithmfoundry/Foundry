@@ -28,11 +28,14 @@ import java.util.Collection;
  * This type of classifier represents what is learned by a standard Support 
  * Vector Machine or the Kernel Perceptron.
  *
- * @param  <InputType> The input type for the categorizer.
+ * @param   <InputType>
+ *      The input type for the categorizer.
+ * @param   <EntryType>
+ *      The type of weighted value entry in the categorizer's list of examples.
  * @author Justin Basilico
  * @since  2.0
  */
-public class KernelBinaryCategorizer<InputType>
+public class KernelBinaryCategorizer<InputType, EntryType extends WeightedValue<? extends InputType>>
     extends AbstractDiscriminantBinaryCategorizer<InputType>
     implements KernelContainer<InputType>,
         ThresholdBinaryCategorizer<InputType>
@@ -44,7 +47,7 @@ public class KernelBinaryCategorizer<InputType>
     protected Kernel<? super InputType> kernel;
 
     /** The list of weighted examples that are used for categorization. */
-    protected Collection<? extends WeightedValue<? extends InputType>> examples;
+    protected Collection<EntryType> examples;
     
     /** The bias term. */
     protected double bias;
@@ -65,7 +68,7 @@ public class KernelBinaryCategorizer<InputType>
     public KernelBinaryCategorizer(
         final Kernel<? super InputType> kernel)
     {
-        this(kernel, new ArrayList<WeightedValue<InputType>>(), DEFAULT_BIAS);
+        this(kernel, new ArrayList<EntryType>(), DEFAULT_BIAS);
     }
         
     /**
@@ -78,7 +81,7 @@ public class KernelBinaryCategorizer<InputType>
      */
     public KernelBinaryCategorizer(
         final Kernel<? super InputType> kernel,
-        final Collection<? extends WeightedValue<? extends InputType>> examples,
+        final Collection<EntryType> examples,
         final double bias)
     {
         super();
@@ -94,13 +97,11 @@ public class KernelBinaryCategorizer<InputType>
      * @param  other The KernelBinaryCategorizer to copy.
      */
     public KernelBinaryCategorizer(
-        final KernelBinaryCategorizer<InputType> other)
+        final KernelBinaryCategorizer<InputType, ? extends EntryType> other)
     {
-        this( ObjectUtil.cloneSafe(other.getKernel()),
-            (other.getExamples() == null) ? null : new ArrayList<WeightedValue<? extends InputType>>( other.getExamples()),
+        this(ObjectUtil.cloneSafe(other.getKernel()),
+            (other.getExamples() == null) ? null : new ArrayList<EntryType>(other.getExamples()),
             other.getBias() );
-
-        this.setThreshold(other.getThreshold());
     }
     
     /**
@@ -120,8 +121,7 @@ public class KernelBinaryCategorizer<InputType>
         double sum = this.bias;
 
         // Loop over all the examples.
-        for (WeightedValue<? extends InputType> example
-            : this.examples)
+        for (EntryType example : this.examples)
         {
             final double weight = example.getWeight();
 
@@ -171,8 +171,7 @@ public class KernelBinaryCategorizer<InputType>
      *
      * @return The list of weighted examples.
      */
-    public Collection<? extends WeightedValue<? extends InputType>> 
-        getExamples()
+    public Collection<EntryType> getExamples()
     {
         return this.examples;
     }
@@ -183,7 +182,7 @@ public class KernelBinaryCategorizer<InputType>
      * @param  examples The list of weighted examples.
      */
     public void setExamples(
-        final Collection<? extends WeightedValue<? extends InputType>> examples)
+        final Collection<EntryType> examples)
     {
         this.examples = examples;
     }

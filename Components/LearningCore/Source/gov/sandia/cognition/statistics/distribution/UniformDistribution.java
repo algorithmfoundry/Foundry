@@ -424,7 +424,13 @@ public class UniformDistribution
         }
 
         public double logEvaluate(
-            Double input)
+            final Double input)
+        {
+            return this.logEvaluate((double) input);
+        }
+        
+        public double logEvaluate(
+            double input)
         {
             return Math.log( this.evaluate(input) );
         }

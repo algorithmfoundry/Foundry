@@ -15,6 +15,7 @@
 package gov.sandia.cognition.learning.algorithm;
 
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
+import java.util.Collection;
 
 /**
  * An abstract class that has both batch learning ability as well as online
@@ -32,8 +33,7 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
  */
 public abstract class AbstractBatchAndIncrementalLearner<DataType, ResultType>
     extends AbstractCloneableSerializable
-    implements BatchLearner<Iterable<? extends DataType>, ResultType>,
-        IncrementalLearner<DataType, ResultType>
+    implements BatchAndIncrementalLearner<DataType, ResultType>
 {
 
     /** 
@@ -54,7 +54,13 @@ public abstract class AbstractBatchAndIncrementalLearner<DataType, ResultType>
     }
 
     public ResultType learn(
-        final Iterable<? extends DataType> data )
+        final Collection<? extends DataType> data)
+    {
+        return this.learn((Iterable<? extends DataType>) data);
+    }
+
+    public ResultType learn(
+        final Iterable<? extends DataType> data)
     {
         // Create the initial learned object.
         final ResultType result = this.createInitialLearnedObject();

@@ -16,12 +16,12 @@ package gov.sandia.cognition.statistics.method;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.statistics.distribution.SnedecorFDistribution;
-import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
-import java.util.ArrayList;
+import gov.sandia.cognition.util.Pair;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Analysis of Variance single-factor null-hypothesis testing procedure,
@@ -67,7 +67,7 @@ import java.util.LinkedList;
 )
 public class AnalysisOfVarianceOneWay
     extends AbstractCloneableSerializable
-    implements NullHypothesisEvaluator<Collection<Double>>
+    implements NullHypothesisEvaluator<Collection<? extends Number>>
 {
     
     /**
@@ -97,7 +97,7 @@ public class AnalysisOfVarianceOneWay
         notes="Chapter 13.3"
     )
     static public AnalysisOfVarianceOneWay.Statistic evaluateNullHypothesis(
-        Collection<Collection<Double>> data )
+        Collection<? extends Collection<? extends Number>> data )
     {
         
         // I apologize for this clunky notation... it comes from a social
@@ -113,24 +113,21 @@ public class AnalysisOfVarianceOneWay
         double Sxx = 0.0;
         double SSwithin = 0.0;
         double SSbetween = 0.0;
-        LinkedList<UnivariateGaussian> gaussians = 
-            new LinkedList<UnivariateGaussian>();
-        UnivariateGaussian.MaximumLikelihoodEstimator mle = 
-            new UnivariateGaussian.MaximumLikelihoodEstimator();
-        for( Collection<Double> treatment : data )
+        for( Collection<? extends Number> treatment : data )
         {
             int n = treatment.size();
-            UnivariateGaussian g = mle.learn( treatment );
-            double SS = g.getVariance() * (n-1);
+            Pair<Double,Double> result =
+                UnivariateStatisticsUtil.computeMeanAndVariance(treatment);
+            double SS = result.getSecond() * (n-1);
             SSwithin += SS;
             
-            double T = g.getMean() * n;
+            double T = result.getFirst() * n;
             SSbetween += ((T*T) / n);
             
-            gaussians.add( g );
             N += n;
-            for( Double x : treatment )
+            for( Number value : treatment )
             {
+                final double x = value.doubleValue();
                 G += x;
                 Sxx += x*x;
             }
@@ -159,15 +156,13 @@ public class AnalysisOfVarianceOneWay
      * @param data2 Second treatment
      * @return ANOVA Confidence statistics
      */
+    @SuppressWarnings("unchecked")
     public AnalysisOfVarianceOneWay.Statistic evaluateNullHypothesis(
-        Collection<Double> data1,
-        Collection<Double> data2)
+        Collection<? extends Number> data1,
+        Collection<? extends Number> data2)
     {
-        ArrayList<Collection<Double>> data =
-            new ArrayList<Collection<Double>>(2);
-        data.add( data1 );
-        data.add( data2 );
-        return AnalysisOfVarianceOneWay.evaluateNullHypothesis( data );
+        return AnalysisOfVarianceOneWay.evaluateNullHypothesis(
+            Arrays.asList( data1, data2 ) );
     }
     
     

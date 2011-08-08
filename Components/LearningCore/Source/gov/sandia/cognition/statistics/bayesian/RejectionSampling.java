@@ -29,6 +29,7 @@ import gov.sandia.cognition.util.CloneableSerializable;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -90,7 +91,7 @@ public class RejectionSampling<ObservationType,ParameterType>
     }
 
     public DataHistogram<ParameterType> learn(
-        Iterable<? extends ObservationType> data)
+        Collection<? extends ObservationType> data)
     {
         DataHistogram<ParameterType> retval =
             new MapBasedDataHistogram<ParameterType>( this.getNumSamples() );

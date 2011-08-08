@@ -58,7 +58,7 @@ public class WeightedBinaryEnsembleTest
         ArrayList<WeightedValue<BinaryCategorizer<Vector>>> members =
             new  ArrayList<WeightedValue<BinaryCategorizer<Vector>>>  ();
         members.add(new DefaultWeightedValue<BinaryCategorizer<Vector>>(
-            new KernelBinaryCategorizer<Vector>(new PolynomialKernel(2)),
+            new KernelBinaryCategorizer<Vector, WeightedValue<Vector>>(new PolynomialKernel(2)),
             Math.random()));
 
         instance = new WeightedBinaryEnsemble<Vector, BinaryCategorizer<Vector>>(
@@ -73,8 +73,8 @@ public class WeightedBinaryEnsembleTest
     {
         WeightedBinaryEnsemble<Vector, BinaryCategorizer<Vector>> instance =
             new WeightedBinaryEnsemble<Vector, BinaryCategorizer<Vector>>();
-        KernelBinaryCategorizer<Vector> member =
-            new KernelBinaryCategorizer<Vector>(new PolynomialKernel(2));
+        KernelBinaryCategorizer<Vector, WeightedValue<Vector>> member =
+            new KernelBinaryCategorizer<Vector, WeightedValue<Vector>>(new PolynomialKernel(2));
         instance.add(member);
         assertEquals(1, instance.getMembers().size());
         assertSame(member, instance.getMembers().get(0).getValue());
@@ -82,7 +82,7 @@ public class WeightedBinaryEnsembleTest
             instance.getMembers().get(0).getWeight());
 
         member =
-            new KernelBinaryCategorizer<Vector>(new PolynomialKernel(4));
+            new KernelBinaryCategorizer<Vector, WeightedValue<Vector>>(new PolynomialKernel(4));
         double weight = Math.random();
         instance.add(member, weight);
         assertEquals(2, instance.getMembers().size());
@@ -186,7 +186,7 @@ public class WeightedBinaryEnsembleTest
         ArrayList<WeightedValue<BinaryCategorizer<Vector>>> members =
             new ArrayList<WeightedValue<BinaryCategorizer<Vector>>>();
         members.add(new DefaultWeightedValue<BinaryCategorizer<Vector>>(
-            new KernelBinaryCategorizer<Vector>(new PolynomialKernel(2)),
+            new KernelBinaryCategorizer<Vector, WeightedValue<Vector>>(new PolynomialKernel(2)),
             Math.random()));
         instance.setMembers(members);
         assertSame(members, instance.getMembers());

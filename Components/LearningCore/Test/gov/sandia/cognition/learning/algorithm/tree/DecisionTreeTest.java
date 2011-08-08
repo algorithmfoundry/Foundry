@@ -121,6 +121,42 @@ public class DecisionTreeTest
     }
 
     /**
+     * Test of findTerminalNode method, of class DecisionTree.
+     */
+    public void testFindTerminalNode()
+    {
+        DecisionTree<Vectorizable, String> instance =
+            new DecisionTree<Vectorizable, String>();
+
+        Vector3 random = new Vector3(Math.random(), Math.random(), Math.random());
+        assertNull(instance.findTerminalNode(random, null));
+
+        CategorizationTreeNode<Vectorizable, String, Boolean> rootNode =
+            new CategorizationTreeNode<Vectorizable, String, Boolean>(
+                null, "root");
+        instance.setRootNode(rootNode);
+        assertSame(rootNode, instance.findTerminalNode(random, rootNode));
+
+        rootNode.setDecider(new VectorElementThresholdCategorizer(1, 10.0));
+        assertSame(rootNode, instance.findTerminalNode(random, rootNode));
+
+        CategorizationTreeNode<Vectorizable, String, Boolean> child1 =
+            new CategorizationTreeNode<Vectorizable, String, Boolean>(rootNode,
+                "child1");
+
+        rootNode.addChild(false, child1);
+        assertSame(child1, instance.findTerminalNode(new Vector3(0.0, 9.0, 0.0), rootNode));
+        assertSame(rootNode, instance.findTerminalNode(new Vector3(0.0, 11.0, 0.0), rootNode));
+
+        CategorizationTreeNode<Vectorizable, String, Boolean> child2 =
+            new CategorizationTreeNode<Vectorizable, String, Boolean>(rootNode,
+                "child2");
+        rootNode.addChild(true, child2);
+        assertSame(child1, instance.findTerminalNode(new Vector3(0.0, 9.0, 0.0), rootNode));
+        assertSame(child2, instance.findTerminalNode(new Vector3(0.0, 11.0, 0.0), rootNode));
+    }
+
+    /**
      * Test of getRootNode method, of class gov.sandia.cognition.learning.algorithm.tree.DecisionTree.
      */
     public void testGetRootNode()

@@ -375,6 +375,20 @@ public class DiagonalMatrixMTJ
         
     }
 
+    @Override
+    public Matrix inverse()
+    {
+        if (!this.isSquare())
+        {
+            throw new UnsupportedOperationException(
+                "Can only invert square matrices.");
+        }
+        else
+        {
+            return this.pseudoInverse();
+        }
+    }
+
     public Vector getColumn(
         int columnIndex )
     {

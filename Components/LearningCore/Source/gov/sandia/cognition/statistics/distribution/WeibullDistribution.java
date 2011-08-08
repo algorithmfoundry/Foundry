@@ -259,16 +259,21 @@ public class WeibullDistribution
         public double logEvaluate(
             Double input)
         {
-            final double x = input.doubleValue();
-            if( x < 0.0 )
+            return this.logEvaluate((double) input);
+        }
+
+        public double logEvaluate(
+            double input)
+        {
+            if( input < 0.0 )
             {
                 return Math.log(0.0);
             }
 
             double logSum = 0.0;
             logSum += Math.log(this.shape/this.scale);
-            logSum += (this.shape-1.0) * Math.log(x/this.scale);
-            logSum -= Math.pow( x/this.scale, this.shape );
+            logSum += (this.shape-1.0) * Math.log(input/this.scale);
+            logSum -= Math.pow( input/this.scale, this.shape );
             return logSum;
         }
 

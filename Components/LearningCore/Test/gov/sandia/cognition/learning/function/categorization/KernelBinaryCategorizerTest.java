@@ -49,14 +49,14 @@ public class KernelBinaryCategorizerTest
     
     public void testConstructors()
     {
-        KernelBinaryCategorizer<Vector> instance = 
-            new KernelBinaryCategorizer<Vector>();
+        KernelBinaryCategorizer<Vector, WeightedValue<Vector3>> instance =
+            new KernelBinaryCategorizer<Vector, WeightedValue<Vector3>>();
         assertNull(instance.getKernel());
         assertTrue(instance.getExamples().isEmpty());
         assertEquals(KernelBinaryCategorizer.DEFAULT_BIAS, instance.getBias());
         
         LinearKernel kernel = LinearKernel.getInstance();
-        instance = new KernelBinaryCategorizer<Vector>(kernel);
+        instance = new KernelBinaryCategorizer<Vector, WeightedValue<Vector3>>(kernel);
         assertSame(kernel, instance.getKernel());
         assertTrue(instance.getExamples().isEmpty());
         assertEquals(KernelBinaryCategorizer.DEFAULT_BIAS, instance.getBias());
@@ -66,13 +66,13 @@ public class KernelBinaryCategorizerTest
         examples.add(
             new DefaultWeightedValue<Vector3>(new Vector3(RANDOM.nextGaussian(), RANDOM.nextGaussian(), RANDOM.nextGaussian())) );
         double bias = RANDOM.nextGaussian();
-        instance = new KernelBinaryCategorizer<Vector>(kernel, examples, bias);
+        instance = new KernelBinaryCategorizer<Vector, WeightedValue<Vector3>>(kernel, examples, bias);
         assertSame(kernel, instance.getKernel());
         assertSame(examples, instance.getExamples());
         assertEquals(bias, instance.getBias());
         
-        KernelBinaryCategorizer<Vector> copy = 
-            new KernelBinaryCategorizer<Vector>(instance);
+        KernelBinaryCategorizer<Vector, WeightedValue<Vector3>> copy =
+            new KernelBinaryCategorizer<Vector, WeightedValue<Vector3>>(instance);
         assertNotSame(kernel, copy.getKernel());
         assertEquals(1, copy.getExamples().size());
         assertNotSame(examples, copy.getExamples());
@@ -92,8 +92,8 @@ public class KernelBinaryCategorizerTest
         examples.add(new DefaultWeightedValue<Vector3>(new Vector3(0.0, 0.0, 1.0),-2.0));
         double bias = 4.0;
         
-        KernelBinaryCategorizer<Vector> instance = 
-            new KernelBinaryCategorizer<Vector>(kernel, examples, bias);
+        KernelBinaryCategorizer<Vector, WeightedValue<Vector3>> instance =
+            new KernelBinaryCategorizer<Vector, WeightedValue<Vector3>>(kernel, examples, bias);
         
         Vector input = new Vector3(1.0, 1.0, 1.0);
         Boolean output = true;
@@ -149,8 +149,8 @@ public class KernelBinaryCategorizerTest
         examples.add(new DefaultWeightedValue<Vector3>(new Vector3(0.0, 0.0, 1.0),-2.0));
         double bias = 4.0;
         
-        KernelBinaryCategorizer<Vector> instance = 
-            new KernelBinaryCategorizer<Vector>(kernel, examples, bias);
+        KernelBinaryCategorizer<Vector, WeightedValue<Vector3>> instance =
+            new KernelBinaryCategorizer<Vector, WeightedValue<Vector3>>(kernel, examples, bias);
         
         Vector input = new Vector3(1.0, 1.0, 1.0);
         double output = 3.0;
@@ -206,8 +206,8 @@ public class KernelBinaryCategorizerTest
      */
     public void testSetExamples()
     {
-        KernelBinaryCategorizer<Vector> instance = 
-            new KernelBinaryCategorizer<Vector>();
+        KernelBinaryCategorizer<Vector, WeightedValue<Vector3>> instance =
+            new KernelBinaryCategorizer<Vector, WeightedValue<Vector3>>();
         assertTrue(instance.getExamples().isEmpty());
         
         ArrayList<WeightedValue<Vector3>> examples = 
@@ -235,8 +235,8 @@ public class KernelBinaryCategorizerTest
      */
     public void testSetBias()
     {
-        KernelBinaryCategorizer<Vector> instance = 
-            new KernelBinaryCategorizer<Vector>();
+        KernelBinaryCategorizer<Vector, WeightedValue<Vector3>> instance =
+            new KernelBinaryCategorizer<Vector, WeightedValue<Vector3>>();
         assertEquals(0.0, KernelBinaryCategorizer.DEFAULT_BIAS);
         
         double bias = RANDOM.nextGaussian();
@@ -245,9 +245,9 @@ public class KernelBinaryCategorizerTest
     }
 
     @Override
-    public KernelBinaryCategorizer<Vector> createInstance()
+    public KernelBinaryCategorizer<Vector, WeightedValue<Vector>> createInstance()
     {
-        return new KernelBinaryCategorizer<Vector>( new LinearKernel() );
+        return new KernelBinaryCategorizer<Vector, WeightedValue<Vector>>( new LinearKernel() );
     }
 
     @Override

@@ -166,9 +166,9 @@ public class MatrixTimeTest
 
     }
 
-    public static void testLapackBlas() throws Exception
+    public static void testBlas() throws Exception
     {
-        Class c = Class.forName("no.uib.cipr.matrix.Interface");
+        Class c = Class.forName("org.netlib.blas.BLAS");
         Field[] fields = c.getDeclaredFields();
         for (Field f : fields)
         {
@@ -181,6 +181,21 @@ public class MatrixTimeTest
 
     }
 
+
+    public static void testLapack() throws Exception
+    {
+        Class c = Class.forName("org.netlib.lapack.LAPACK");
+        Field[] fields = c.getDeclaredFields();
+        for (Field f : fields)
+        {
+            f.setAccessible(true);
+            Object o = f.get(null);
+            System.out.println("Field: " + f);
+            System.out.println("Object: " + o.getClass().getName());
+        }
+
+
+    }
     public void testDeterminantTime()
     {
         System.out.println("DeterminantTime");

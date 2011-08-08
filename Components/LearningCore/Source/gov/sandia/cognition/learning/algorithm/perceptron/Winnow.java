@@ -14,12 +14,9 @@ package gov.sandia.cognition.learning.algorithm.perceptron;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.learning.algorithm.AbstractBatchAndIncrementalLearner;
-import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
-import gov.sandia.cognition.math.matrix.Vectorizable;
 
 /**
  * An implementation of the Winnow incremental learning algorithm. It uses a
@@ -41,7 +38,7 @@ import gov.sandia.cognition.math.matrix.Vectorizable;
     publication="Machine Learning",
     pages={285, 318})
 public class Winnow
-    extends AbstractBatchAndIncrementalLearner<InputOutputPair<? extends Vectorizable, Boolean>, LinearBinaryCategorizer>
+    extends AbstractOnlineLinearBinaryCategorizerLearner
 {
 
     /** The default value of the weight update is {@value}. */
@@ -117,19 +114,16 @@ public class Winnow
     @Override
     public void update(
         final LinearBinaryCategorizer target,
-        final InputOutputPair<? extends Vectorizable, Boolean> example)
+        final Vector input,
+        final boolean actual)
     {
-        // Get the information about the example.
-        final Vector input = example.getInput().convertToVector();
-        final boolean actual = example.getOutput();
-
         Vector weights = target.getWeights();
         if (weights == null)
         {
             // This is the first example, so initialize the weight vector to
             // be all ones.
             final int dimensionality = input.getDimensionality();
-            weights = input.clone();
+            weights = this.getVectorFactory().copyVector(input);
             for (int i = 0; i < dimensionality; i++)
             {
                 weights.setElement(i, 1.0);

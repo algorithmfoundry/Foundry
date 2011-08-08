@@ -20,6 +20,8 @@ import gov.sandia.cognition.io.ReaderTokenizer;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -122,40 +124,36 @@ public class VectorReader
         
         return retval;
     }
-    
+
     /**
      * Parses a {@code Vector} from the given list of element tokens.
      * 
-     * @param   tokens The array list of element tokens.
+     * @param   tokens The collection of element tokens.
      * @return  A new {@code Vector} created from the given tokens.
      */
     public static Vector parseVector(
-        ArrayList<String> tokens)
+        final Collection<String> tokens)
     {
-        if ( tokens == null )
+        if (tokens == null)
         {
             return null;
         }
-        
-        int dimensionality = tokens.size();
-        
-        if ( dimensionality <= 0 )
+
+        final int dimensionality = tokens.size();
+        if (dimensionality <= 0)
         {
             return null;
-        }
-        
-        ArrayList<Double> values = new ArrayList<Double>(dimensionality);
-        for ( String token : tokens )
-        {
-            values.add(Double.valueOf(token));
         }
 
         Vector vector = VectorFactory.getDefault().createVector(dimensionality);
-        for ( int i = 0; i < dimensionality; i++ )
+        int i = 0;
+        for (String token : tokens)
         {
-            vector.setElement(i, values.get(i));
+            final double value = Double.valueOf(token);
+            vector.setElement(i, value);
+            i++;
         }
-        
+
         return vector;
     }
     

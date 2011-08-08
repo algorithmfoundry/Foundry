@@ -63,8 +63,6 @@ public class LearnerValidationExperiment
     extends AbstractValidationFoldExperiment<InputDataType, FoldDataType>
     implements PerformanceEvaluator<BatchLearner
             <? super Collection<? extends FoldDataType>, ? extends LearnedType>, Collection<? extends InputDataType>, SummaryType>
-// TODO: I think this should implement the performance evaluator interface.
-// --jdbasil (2010-01-07)
 {   
     /** The evaluator to use to compute the performance of the learned object on
      *  each fold. */

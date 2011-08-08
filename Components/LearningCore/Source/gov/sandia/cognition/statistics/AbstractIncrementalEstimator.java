@@ -28,7 +28,7 @@ import gov.sandia.cognition.learning.algorithm.AbstractBatchAndIncrementalLearne
  * @author  Kevin R. Dixon
  * @since   3.1.1
  */
-public abstract class AbstractIncrementalEstimator<DataType, DistributionType extends Distribution<? extends DataType>, SufficientStatisticsType extends SufficientStatistics<DataType,DistributionType>>
+public abstract class AbstractIncrementalEstimator<DataType, DistributionType extends Distribution<? extends DataType>, SufficientStatisticsType extends SufficientStatistic<DataType,DistributionType>>
     extends AbstractBatchAndIncrementalLearner<DataType, SufficientStatisticsType>
     implements IncrementalEstimator<DataType, DistributionType, SufficientStatisticsType>
 {

@@ -233,4 +233,33 @@ public class ArgumentCheckerTest
         }
     }
 
+    /**
+     * Test of assertIsInRangeExclusive method, of class ArgumentChecker.
+     */
+    public void testAssertIsInRangeExclusive()
+    {
+        String argument = "x";
+        ArgumentChecker.assertIsInRangeExclusive(argument, 1.2, 1.1, 3.4);
+        ArgumentChecker.assertIsInRangeExclusive(argument, 2.1, 1.1, 3.4);
+        ArgumentChecker.assertIsInRangeExclusive(argument, 3.1, 1.1, 3.4);
+
+        double[] badValues = { -0.1, 0.0, 1.0, 1.1, 3.4, 3.5, 10.0 };
+        for (double badValue : badValues)
+            {
+            boolean exceptionThrown = false;
+            try
+            {
+                ArgumentChecker.assertIsInRangeExclusive(argument, badValue, 1.1, 3.4);
+            }
+            catch (IllegalArgumentException e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                 assertTrue(exceptionThrown);
+            }
+        }
+    }
+
 }

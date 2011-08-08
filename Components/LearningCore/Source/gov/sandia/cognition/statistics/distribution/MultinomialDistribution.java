@@ -256,6 +256,12 @@ public class MultinomialDistribution
             this.getParameters().getDimensionality(), this.getNumTrials() );
     }
 
+    @Override
+    public int getDomainSize()
+    {
+        return this.getDomain().size();
+    }
+
     public MultinomialDistribution.PMF getProbabilityFunction()
     {
         return new PMF( this );

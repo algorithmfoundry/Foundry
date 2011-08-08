@@ -47,7 +47,7 @@ import java.util.Random;
     publication="Advances in Kernel Methods",
     url="http://research.microsoft.com/pubs/68391/smo-book.pdf")
 public class SequentialMinimalOptimization<InputType>
-    extends AbstractAnytimeSupervisedBatchLearner<InputType, Boolean, KernelBinaryCategorizer<InputType>>
+    extends AbstractAnytimeSupervisedBatchLearner<InputType, Boolean, KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>>>
     implements KernelContainer<InputType>, Randomized
 {
     // TODO: Add a better explanation of the SMO algorithm in the class
@@ -95,7 +95,7 @@ public class SequentialMinimalOptimization<InputType>
     private Kernel<? super InputType> kernel;
 
     /** The result categorizer. */
-    private transient KernelBinaryCategorizer<InputType> result;
+    private transient KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>> result;
 
     /** The training data as an array list. */
     private transient ArrayList<InputOutputPair<? extends InputType, Boolean>>
@@ -288,7 +288,7 @@ public class SequentialMinimalOptimization<InputType>
         // Platt:
         //   initialize alpha array to all zero
         //   initialize threshold to zero
-        this.result = new KernelBinaryCategorizer<InputType>(
+        this.result = new KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>>(
             this.kernel, this.supportsMap.values(), 0.0);
         return true;
     }
@@ -983,7 +983,7 @@ public class SequentialMinimalOptimization<InputType>
     }
 
     @Override
-    public KernelBinaryCategorizer<InputType> getResult()
+    public KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>> getResult()
     {
         return this.result;
     }

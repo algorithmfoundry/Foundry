@@ -58,7 +58,7 @@ public class ArgumentChecker
         if (value <= 0)
         {
             throw new IllegalArgumentException(argument + " must be positive "
-                + " (was " + value + ").");
+                + "(was " + value + ").");
         }
     }
 
@@ -78,7 +78,7 @@ public class ArgumentChecker
         if (value <= 0.0)
         {
             throw new IllegalArgumentException(argument + " must be positive "
-                + " (was " + value + ").");
+                + "(was " + value + ").");
         }
     }
 
@@ -98,7 +98,7 @@ public class ArgumentChecker
         if (value < 0)
         {
             throw new IllegalArgumentException(argument + " cannot be negative "
-                + " (was " + value + ").");
+                + "(was " + value + ").");
         }
     }
 
@@ -118,7 +118,7 @@ public class ArgumentChecker
         if (value < 0.0)
         {
             throw new IllegalArgumentException(argument + " cannot be negative "
-                + " (was " + value + ").");
+                + "(was " + value + ").");
         }
     }
 
@@ -134,7 +134,7 @@ public class ArgumentChecker
      * @param   lowerBound
      *      The lower bound of the value (inclusive).
      * @param   upperBound
-     *      The upper bound of the value (exclusive).
+     *      The upper bound of the value (inclusive).
      */
     public static void assertIsInRangeInclusive(
         final String argument,
@@ -143,6 +143,33 @@ public class ArgumentChecker
         final double upperBound)
     {
         if (value < lowerBound || value > upperBound)
+        {
+            throw new IllegalArgumentException(
+                "" + argument + " must be between "
+                + lowerBound + " and " + upperBound + " (was " + value + ").");
+        }
+    }
+
+    /**
+     * Asserts that the given argument is in the given range, exclusive.
+     * If the assertion is violated, an IllegalArgumentException is thrown.
+     *
+     * @param   argument
+     *      The name of the argument.
+     * @param   value
+     *      The value of the argument.
+     * @param   lowerBound
+     *      The lower bound of the value (exclusive).
+     * @param   upperBound
+     *      The upper bound of the value (exclusive).
+     */
+    public static void assertIsInRangeExclusive(
+        final String argument,
+        final double value,
+        final double lowerBound,
+        final double upperBound)
+    {
+        if (value <= lowerBound || value >= upperBound)
         {
             throw new IllegalArgumentException(
                 "" + argument + " must be between "

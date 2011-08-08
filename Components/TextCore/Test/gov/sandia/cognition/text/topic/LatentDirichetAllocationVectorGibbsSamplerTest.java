@@ -91,7 +91,7 @@ public class LatentDirichetAllocationVectorGibbsSamplerTest
     public void testLearn()
         throws Exception
     {
-        final VectorFactory factory = VectorFactory.getSparseDefault();
+        final VectorFactory<?> factory = VectorFactory.getSparseDefault();
         final ArrayList<Vector> data = new ArrayList<Vector>();
         
         data.add(factory.copyValues(0, 0, 4, 2, 5, 6, 0, 3, 0));

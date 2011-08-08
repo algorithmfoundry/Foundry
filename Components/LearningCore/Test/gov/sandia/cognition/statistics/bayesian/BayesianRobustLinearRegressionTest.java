@@ -126,4 +126,20 @@ public class BayesianRobustLinearRegressionTest
         return instance;
     }
 
+    /**
+     * Batch and Incremental Comparison
+     */
+    public void testIncrementalAndBatch()
+    {
+
+        BayesianRobustLinearRegression<Double> instance = this.createInstance();
+
+        BayesianRobustLinearRegression.IncrementalEstimator<Double> incremental =
+            new BayesianRobustLinearRegression.IncrementalEstimator<Double>(
+                instance.getFeatureMap(), instance.getOutputVariance(), instance.getWeightPrior() );
+
+        super.testIncrementalAndBatch(incremental);
+    }
+
+
 }

@@ -157,7 +157,7 @@ public abstract class AbstractSingularValueDecomposition
     public int effectiveRank(
         double effectiveZero )
     {
-        int n, N = this.getS().getNumRows();
+        int n, N = Math.min(this.getS().getNumRows(), this.getS().getNumColumns());
         for (n = 0; n < N; n++)
         {
             if (this.getS().getElement( n, n ) <= effectiveZero)

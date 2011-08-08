@@ -262,6 +262,12 @@ public class BetaBinomialDistribution
         return new IntegerCollection(0, (int) Math.ceil(this.n) );
     }
 
+    @Override
+    public int getDomainSize()
+    {
+        return ((int) Math.ceil(this.n)) + 1;
+    }
+
     public BetaBinomialDistribution.PMF getProbabilityFunction()
     {
         return new BetaBinomialDistribution.PMF( this );

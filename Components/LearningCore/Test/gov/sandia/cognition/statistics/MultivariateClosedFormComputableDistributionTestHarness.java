@@ -128,9 +128,9 @@ public abstract class MultivariateClosedFormComputableDistributionTestHarness<Ri
     /**
      * Distribution.getDistributionFunction
      */
-    public void testDistributionGetDistributionFunction()
+    public void testDistributionGetProbabilityFunction()
     {
-        System.out.println( "Distribution.getDistributionFunction" );
+        System.out.println( "Distribution.getProbabilityFunction" );
         ClosedFormComputableDistribution<RingType> instance =
             this.createInstance();
         ProbabilityFunction<RingType> pdf = instance.getProbabilityFunction();

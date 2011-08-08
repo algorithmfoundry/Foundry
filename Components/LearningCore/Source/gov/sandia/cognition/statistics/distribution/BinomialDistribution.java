@@ -207,6 +207,12 @@ public class BinomialDistribution
         return new IntegerCollection( 0, this.getN() );
     }
 
+    @Override
+    public int getDomainSize()
+    {
+        return this.getN() + 1;
+    }
+
     public BinomialDistribution.CDF getCDF()
     {
         return new BinomialDistribution.CDF( this );

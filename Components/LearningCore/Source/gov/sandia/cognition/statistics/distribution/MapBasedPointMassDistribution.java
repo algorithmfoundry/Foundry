@@ -467,6 +467,12 @@ public class MapBasedPointMassDistribution<DataType>
         return this.dataMap.keySet();
     }
 
+    @Override
+    public int getDomainSize()
+    {
+        return this.getDomain().size();
+    }
+
     public MapBasedPointMassDistribution.PMF<DataType> getProbabilityFunction()
     {
         return new MapBasedPointMassDistribution.PMF<DataType>(this);

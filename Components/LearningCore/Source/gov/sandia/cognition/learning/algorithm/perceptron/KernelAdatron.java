@@ -22,10 +22,10 @@ import gov.sandia.cognition.learning.algorithm.AbstractAnytimeSupervisedBatchLea
 import gov.sandia.cognition.learning.function.categorization.KernelBinaryCategorizer;
 import gov.sandia.cognition.learning.function.kernel.Kernel;
 import gov.sandia.cognition.learning.data.InputOutputPair;
+import gov.sandia.cognition.learning.function.categorization.DefaultKernelBinaryCategorizer;
 import gov.sandia.cognition.util.DefaultNamedValue;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.NamedValue;
-import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -61,7 +61,7 @@ import java.util.LinkedHashMap;
     pages={188,196}
 )
 public class KernelAdatron<InputType>
-    extends AbstractAnytimeSupervisedBatchLearner<InputType, Boolean, KernelBinaryCategorizer<InputType>>
+    extends AbstractAnytimeSupervisedBatchLearner<InputType, Boolean, KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>>>
     implements MeasurablePerformanceAlgorithm
 {
 
@@ -72,7 +72,7 @@ public class KernelAdatron<InputType>
     private Kernel<? super InputType> kernel;
 
     /** The result categorizer. */
-    private KernelBinaryCategorizer<InputType> result;
+    private KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>> result;
 
     /** The number of errors on the most recent iteration. */
     private int errorCount;
@@ -147,7 +147,7 @@ public class KernelAdatron<InputType>
         // Set up the learning variables.
         this.setErrorCount(validCount);
         this.setSupportsMap(new LinkedHashMap<InputOutputPair<? extends InputType, Boolean>, DefaultWeightedValue<InputType>>());
-        this.setLearned(new KernelBinaryCategorizer<InputType>(
+        this.setLearned(new DefaultKernelBinaryCategorizer<InputType>(
             this.getKernel(), this.getSupportsMap().values(), 0.0));
 
         return true;
@@ -234,8 +234,8 @@ public class KernelAdatron<InputType>
             // Make the result object have a more efficient backing collection
             // at the end.
             this.getResult().setExamples(
-                new ArrayList<WeightedValue<InputType>>(
-                this.getSupportsMap().values()));
+                new ArrayList<DefaultWeightedValue<InputType>>(
+                    this.getSupportsMap().values()));
 
             this.setSupportsMap(null);
         }
@@ -262,7 +262,7 @@ public class KernelAdatron<InputType>
         this.kernel = kernel;
     }
 
-    public KernelBinaryCategorizer<InputType> getResult()
+    public KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>> getResult()
     {
         return this.result;
     }
@@ -273,7 +273,7 @@ public class KernelAdatron<InputType>
      * @param  result The object currently being result.
      */
     protected void setLearned(
-        final KernelBinaryCategorizer<InputType> result)
+        final KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>> result)
     {
         this.result = result;
     }

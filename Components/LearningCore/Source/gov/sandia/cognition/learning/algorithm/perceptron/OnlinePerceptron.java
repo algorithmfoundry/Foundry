@@ -14,19 +14,16 @@ package gov.sandia.cognition.learning.algorithm.perceptron;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.learning.algorithm.AbstractBatchAndIncrementalLearner;
-import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.math.matrix.VectorFactoryContainer;
-import gov.sandia.cognition.math.matrix.Vectorizable;
 
 /**
  * An online version of the classic Perceptron algorithm.
  * 
  * @author  Justin Basilico
  * @since   3.1
+ * @see     Perceptron
  */
 @PublicationReference(
     author="Wikipedia",
@@ -36,12 +33,8 @@ import gov.sandia.cognition.math.matrix.Vectorizable;
     url="http://en.wikipedia.org/wiki/Perceptron#Learning_algorithm"
 )
 public class OnlinePerceptron
-    extends AbstractBatchAndIncrementalLearner<InputOutputPair<? extends Vectorizable, Boolean>, LinearBinaryCategorizer>
-    implements VectorFactoryContainer
+    extends AbstractOnlineLinearBinaryCategorizerLearner
 {
-
-    /** The factory to create weight vectors. */
-    protected VectorFactory<?> vectorFactory;
 
     /**
      * Creates a new {@code OnlinePerceptron}.
@@ -60,9 +53,7 @@ public class OnlinePerceptron
     public OnlinePerceptron(
         final VectorFactory<?> vectorFactory)
     {
-        super();
-
-        this.setVectorFactory(vectorFactory);
+        super(vectorFactory);
     }
 
     @Override
@@ -75,12 +66,9 @@ public class OnlinePerceptron
     @Override
     public void update(
         final LinearBinaryCategorizer target,
-        final InputOutputPair<? extends Vectorizable, Boolean> example)
+        final Vector input,
+        final boolean actual)
     {
-        // Get the information about the example.
-        final Vector input = example.getInput().convertToVector();
-        final boolean actual = example.getOutput();
-
         Vector weights = target.getWeights();
         if (weights == null)
         {
@@ -109,27 +97,6 @@ public class OnlinePerceptron
             target.setBias(target.getBias() - 1.0);
         }
         // else - There was no error made, so nothing to update.
-    }
-
-    /**
-     * Gets the VectorFactory used to create the weight vector.
-     *
-     * @return The VectorFactory used to create the weight vector.
-     */
-    public VectorFactory<?> getVectorFactory()
-    {
-        return this.vectorFactory;
-    }
-
-    /**
-     * Sets the VectorFactory used to create the weight vector.
-     *
-     * @param  vectorFactory The VectorFactory used to create the weight vector.
-     */
-    public void setVectorFactory(
-        final VectorFactory<?> vectorFactory)
-    {
-        this.vectorFactory = vectorFactory;
     }
 
 }

@@ -197,6 +197,12 @@ public class ExponentialDistribution
         return new ExponentialDistribution.MaximumLikelihoodEstimator();
     }
 
+    @Override
+    public String toString()
+    {
+        return "Rate: " + this.getRate();
+    }
+
     /**
      * PDF of the ExponentialDistribution.
      */
@@ -255,7 +261,13 @@ public class ExponentialDistribution
         }
 
         public double logEvaluate(
-            Double input)
+            final Double input)
+        {
+            return this.logEvaluate((double) input);
+        }
+
+        public double logEvaluate(
+            double input)
         {
             if( input < 0.0 )
             {

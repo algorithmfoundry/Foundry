@@ -258,6 +258,12 @@ public class MultivariatePolyaDistribution
     }
 
     @Override
+    public int getDomainSize()
+    {
+        return this.getDomain().size();
+    }
+
+    @Override
     public String toString()
     {
         return "N = " + this.getNumTrials() + ", Parameters = " + this.getParameters();

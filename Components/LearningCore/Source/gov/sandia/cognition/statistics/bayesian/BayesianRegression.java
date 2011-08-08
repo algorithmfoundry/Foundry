@@ -66,6 +66,7 @@ import gov.sandia.cognition.statistics.Distribution;
 )
 public interface BayesianRegression<InputType,OutputType,PosteriorType extends Distribution<? extends Vector>>
     extends BayesianEstimator<InputOutputPair<? extends InputType, OutputType>, Vector, PosteriorType>
+//    IncrementalLearner<InputOutputPair<? extends InputType, OutputType>, PosteriorType>
 {
 
     /**

@@ -422,7 +422,7 @@ public class UnivariateGaussianTest
 
 
         double mean = UnivariateStatisticsUtil.computeMean(samples);
-        UnivariateGaussian.SufficientStatistics ss = estimator.learn(samples);
+        UnivariateGaussian.SufficientStatistic ss = estimator.learn(samples);
         assertEquals( samples.size(), ss.getCount() );
         assertEquals( mean, ss.getMean(), TOLERANCE );
         assertEquals( UnivariateStatisticsUtil.computeVariance(samples, mean), ss.getVariance(), TOLERANCE );
@@ -438,7 +438,7 @@ public class UnivariateGaussianTest
         assertEquals( batch.getMean(), result.getMean(), TOLERANCE );
         assertEquals( batch.getVariance(), result.getVariance(), TOLERANCE );
 
-        UnivariateGaussian.SufficientStatistics clone = ss.clone();
+        UnivariateGaussian.SufficientStatistic clone = ss.clone();
         assertEquals( ss.getCount(), clone.getCount() );
         assertEquals( ss.getMean(), clone.getMean() );
         assertEquals( ss.getVariance(), clone.getVariance() );
@@ -446,6 +446,7 @@ public class UnivariateGaussianTest
         // This example is from the Wikipedia page: http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
         // First demonstrate that for these simple values the mean is 10 and variance is 30.
         double epsilon = 1E-10;
+        estimator.setDefaultVariance(epsilon);
         Collection<Double> xd = Arrays.asList(4.0, 7.0, 13.0, 16.0);
         ss = estimator.createInitialLearnedObject();
         ss = estimator.learn(xd);
@@ -473,14 +474,14 @@ public class UnivariateGaussianTest
         // First demonstrate that for these simple values the mean is 10 and variance is 30.
         double epsilon = 1E-10;
         List<Double> xd = Arrays.asList(4.0, 7.0, 13.0, 16.0);
-        UnivariateGaussian.SufficientStatistics instance =
-            new UnivariateGaussian.SufficientStatistics();
+        UnivariateGaussian.SufficientStatistic instance =
+            new UnivariateGaussian.SufficientStatistic();
         int count = 1;
         int i = 0;
         while (i < xd.size())
         {
-            UnivariateGaussian.SufficientStatistics other =
-                new UnivariateGaussian.SufficientStatistics();
+            UnivariateGaussian.SufficientStatistic other =
+                new UnivariateGaussian.SufficientStatistic();
             for (int j = 0; j < count && i < xd.size(); j++)
             {
                 other.update(xd.get(i));
@@ -500,8 +501,8 @@ public class UnivariateGaussianTest
         i = 0;
         while (i < xd.size())
         {
-            UnivariateGaussian.SufficientStatistics other =
-                new UnivariateGaussian.SufficientStatistics();
+            UnivariateGaussian.SufficientStatistic other =
+                new UnivariateGaussian.SufficientStatistic();
             for (int j = 0; j < count && i < xd.size(); j++)
             {
                 other.update(xd.get(i));
@@ -521,8 +522,8 @@ public class UnivariateGaussianTest
         i = 0;
         while (i < samples.size())
         {
-            UnivariateGaussian.SufficientStatistics other =
-                new UnivariateGaussian.SufficientStatistics();
+            UnivariateGaussian.SufficientStatistic other =
+                new UnivariateGaussian.SufficientStatistic();
             for (int j = 0; j < count && i < samples.size(); j++)
             {
                 other.update(samples.get(i));

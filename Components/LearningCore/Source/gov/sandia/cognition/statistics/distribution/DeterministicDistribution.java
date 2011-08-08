@@ -164,6 +164,12 @@ public class DeterministicDistribution
         return Arrays.asList( this.getPoint() );
     }
 
+    @Override
+    public int getDomainSize()
+    {
+        return 1;
+    }
+
     public DeterministicDistribution.PMF getProbabilityFunction()
     {
         return new DeterministicDistribution.PMF( this );

@@ -574,11 +574,18 @@ abstract public class VectorTestHarness
         int M = v1.getDimensionality();
         Vector v2 = this.createRandom(M, -RANGE, RANGE);
 
+        System.out.println("v1: " + v1);
+        System.out.println("v2: " + v2);
         Vector v3 = v1.clone();
         v3.dotTimesEquals(v2);
 
+        System.out.println("v1: " + v1);
+        System.out.println("v2: " + v2);
+        System.out.println("v3: " + v3);
+
         for (int i = 0; i < M; i++)
         {
+            System.out.println("i: " + i + "v1: " + v1.getElement(i) + " v2: " + v2.getElement(i) + " v3: " + v3.getElement(i));
             assertEquals(v3.getElement(i), v1.getElement(i) * v2.getElement(i));
         }
 

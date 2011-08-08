@@ -15,6 +15,7 @@
 package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.annotation.CodeReview;
+import gov.sandia.cognition.math.MultivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 import gov.sandia.cognition.math.matrix.Matrix;
@@ -487,6 +488,44 @@ public class MultivariateGaussianTest
         Matrix C = MatrixFactory.getDefault().createMatrix(d, d);
         C.convertFromVector(Chat);
         assertEquals( g.getCovariance(), C );
+    }
+
+    /**
+     * tests the incremental estimator
+     */
+    public void testIncrementalEstimator()
+    {
+        System.out.println( "Incremental Estimator" );
+
+        MultivariateGaussian.IncrementalEstimator estimator =
+            new MultivariateGaussian.IncrementalEstimator();
+
+        MultivariateGaussian target = new MultivariateGaussian( 3 );
+        ArrayList<Vector> samples = target.sample(RANDOM,NUM_SAMPLES);
+
+
+        Vector mean = MultivariateStatisticsUtil.computeMean(samples);
+        MultivariateGaussian.SufficientStatistic ss = estimator.learn(samples);
+        assertEquals( samples.size(), ss.getCount() );
+        assertTrue( mean.equals( ss.getMean(), TOLERANCE ) );
+        assertTrue( MultivariateStatisticsUtil.computeVariance(samples, mean).equals( ss.getCovariance(), TOLERANCE ) );
+        MultivariateGaussian result = ss.create();
+
+        MultivariateGaussian batch =
+            MultivariateGaussian.MaximumLikelihoodEstimator.learn(samples, 0.0);
+
+        System.out.println( "Target: " + target );
+        System.out.println( "Result: " + result );
+        System.out.println( "Batch : " + batch );
+
+        assertTrue( batch.getMean().equals( result.getMean(), TOLERANCE ) );
+        assertTrue( batch.getCovariance().equals( result.getCovariance(), TOLERANCE ) );
+
+        MultivariateGaussian.SufficientStatistic clone = ss.clone();
+        assertEquals( ss.getCount(), clone.getCount() );
+        assertEquals( ss.getMean(), clone.getMean() );
+        assertEquals( ss.getCovariance(), clone.getCovariance() );
+
     }
 
 }

@@ -43,23 +43,28 @@ public class UnivariateStatisticsUtil
      * @return
      * Arithmetic mean of the given dataset
      */
-    static public double computeMean(
-        Collection<? extends Number> data )
+    @PublicationReference(
+        title="Algorithms for calculating variance",
+        type=PublicationType.WebPage,
+        year=2010,
+        author="Wikipedia",
+        url="http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance")
+    public static double computeMean(
+        Iterable<? extends Number> data)
     {
-
-        double sum = UnivariateStatisticsUtil.computeSum( data );
-        double mean;
-        if (data.size() > 0)
+        // Note: This is more compilcated than a straight-forward algorithm
+        // that just computes the sum and sum-of-squares to get around
+        // numerical precision issues.
+        int n = 0;
+        double mean = 0.0;
+        for (Number v : data)
         {
-            mean = sum / data.size();
+            final double x = v.doubleValue();
+            final double delta = x - mean;
+            n += 1;
+            mean += delta / n;
         }
-        else
-        {
-            mean = 0.0;
-        }
-
         return mean;
-
     }
 
     /**
@@ -72,40 +77,45 @@ public class UnivariateStatisticsUtil
      * @return
      *      Arithmetic mean of the given dataset.
      */
-    static public double computeWeightedMean(
-        Collection<? extends WeightedValue<? extends Number>> data )
+    @PublicationReference(
+        title="Algorithms for calculating variance",
+        type=PublicationType.WebPage,
+        year=2010,
+        author="Wikipedia",
+        url="http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance")
+    public static double computeWeightedMean(
+        Iterable<? extends WeightedValue<? extends Number>> data )
     {
 
-        double sum = 0.0;
+        // Note: This is more compilcated than a straight-forward algorithm
+        // that just computes the sum and sum-of-squares to get around
+        // numerical precision issues.
+        double mean = 0.0;
         double weightSum = 0.0;
-        for( WeightedValue<? extends Number> x : data )
+        for ( WeightedValue<? extends Number> v : data)
         {
-            double weight = x.getWeight();
-            if( weight != 0.0 )
+            final double x = v.getValue().doubleValue();
+            double weight = v.getWeight();
+
+            if (weight != 0.0)
             {
                 if (weight < 0.0)
                 {
+                    // Use the absolute value of weights.
                     weight = -weight;
                 }
-                
-                final double value = x.getValue().doubleValue();
-                final double wv = weight * value;
-                sum += wv;
-                weightSum += weight;
+
+                final double newWeightSum = weightSum + weight;
+                final double delta = x - mean;
+
+                final double update = delta * weight / newWeightSum;
+                mean += update;
+                weightSum = newWeightSum;
             }
         }
 
-        if( weightSum == 0.0 )
-        {
-            return 0.0;
-        }
-        else
-        {
-            return sum/weightSum;
-        }
-
+        return mean;
     }
-
 
     /**
      * Computes the unbiased variance (second central moment,
@@ -121,8 +131,7 @@ public class UnivariateStatisticsUtil
     static public double computeVariance(
         Collection<? extends Number> data )
     {
-        Pair<Double,Double> pair = computeMeanAndVariance(data);
-        return pair.getSecond();
+        return computeMeanAndVariance(data).getSecond();
     }
 
     /**
@@ -245,8 +254,9 @@ public class UnivariateStatisticsUtil
     }
 
     /**
-     * Computes the (normalized) correlation coefficient between two
-     * equal-sized datasets
+     * Computes the correlation coefficient in a single pass.  However, this
+     * algorithm can become numerically unstable but is about twice as fast
+     * as the non-single-pass method.
      * @param data1
      * First dataset to consider, must have same size as data2
      * @param data2
@@ -254,6 +264,13 @@ public class UnivariateStatisticsUtil
      * @return
      * Normalized correlation coefficient, [-1,+1]
      */
+    @PublicationReference(
+        author="Wikipedia",
+        title="Pearson product-moment correlation coefficient",
+        type=PublicationType.WebPage,
+        year=2011,
+        url="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient"
+    )
     static public double computeCorrelation(
         Collection<? extends Number> data1,
         Collection<? extends Number> data2 )
@@ -266,41 +283,46 @@ public class UnivariateStatisticsUtil
         }
 
         int num = data1.size();
-
-        double mean1 = UnivariateStatisticsUtil.computeMean( data1 );
-        double mean2 = UnivariateStatisticsUtil.computeMean( data2 );
-
-
+        if( num <= 0 )
+        {
+            return 1.0;
+        }
         Iterator<? extends Number> i1 = data1.iterator();
         Iterator<? extends Number> i2 = data2.iterator();
-        double sse1 = 0.0;
-        double sse2 = 0.0;
-        double cov = 0.0;
-        for (int n = 0; n < num; n++)
+        double sum1 = 0.0;
+        double sum2 = 0.0;
+        double sum11 = 0.0;
+        double sum22 = 0.0;
+        double sum12 = 0.0;
+
+        for( int n = 0; n < num; n++ )
         {
-            double value1 = i1.next().doubleValue();
-            double value2 = i2.next().doubleValue();
+            final double value1 = i1.next().doubleValue();
+            final double value2 = i2.next().doubleValue();
 
-            double delta1 = value1 - mean1;
-            double delta2 = value2 - mean2;
+            sum1 += value1;
+            sum2 += value2;
 
-            sse1 += delta1 * delta1;
-            sse2 += delta2 * delta2;
-
-            cov += delta1 * delta2;
+            sum11 += value1*value1;
+            sum22 += value2*value2;
+            sum12 += value1*value2;
         }
 
-        double denom = Math.sqrt( sse1 * sse2 );
+        double top = num * (sum12 - ((sum1/num)*sum2));
+        double b1 = Math.sqrt( num * (sum11 - (sum1/num)*sum1) );
+        double b2 = Math.sqrt( num * (sum22 - (sum2/num)*sum2) );
+        double bottom = b1*b2;
+
         double retval;
-        if( denom <= 0.0 )
+        if( bottom <= 0.0 )
         {
             retval = 1.0;
         }
         else
         {
-            retval = cov / Math.sqrt( sse1 * sse2 );
+            retval = top/bottom;
         }
-        
+
         return retval;
 
     }
@@ -769,6 +791,5 @@ public class UnivariateStatisticsUtil
         
         return DefaultPair.create(mean, variance);
     }
-
 
 }

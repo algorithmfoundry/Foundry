@@ -18,6 +18,7 @@ import gov.sandia.cognition.learning.algorithm.AbstractAnytimeBatchLearner;
 import gov.sandia.cognition.statistics.DataHistogram;
 import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
 import gov.sandia.cognition.util.ObjectUtil;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -30,7 +31,7 @@ import java.util.Random;
  * Type of parameters to infer.
  */
 public abstract class AbstractMarkovChainMonteCarlo<ObservationType,ParameterType>
-    extends AbstractAnytimeBatchLearner<Iterable<? extends ObservationType>,DataHistogram<ParameterType>>
+    extends AbstractAnytimeBatchLearner<Collection<? extends ObservationType>,DataHistogram<ParameterType>>
     implements MarkovChainMonteCarlo<ObservationType,ParameterType>
 {
 

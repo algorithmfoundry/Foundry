@@ -14,7 +14,7 @@
 
 package gov.sandia.cognition.text.topic;
 
-import gov.sandia.cognition.text.topic.LatentSemanticAnalysis;
+import gov.sandia.cognition.math.matrix.mtj.Vector1;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.matrix.Matrix;
@@ -135,7 +135,7 @@ public class LatentSemanticAnalysisTest
             {+0.7014, +0.6858, -0.4230, -0.0492, -0.8100, +0.1048, -0.3995, -0.0224, -0.20880},
             {+0.0334, +1.2446, +0.5405, +0.0492, +0.8850, -0.5109, -0.2465, +0.1400, -0.08280},
             {+0.1336, +1.5748, +0.5170, +0.0000, -0.1050, +0.1441, +0.1360, -0.3808, +0.08280},
-            {+0.1002, +1.1430, +0.3290, -0.0164, -0.4500, +0.3668, +0.2890, +0.3808, +0.06480},
+            {+0.1002, +1.1430, +0.3290, -0.0164, -0.4500, +0.3668, +0.2890, +0.3808, +0.06480}
         };
 
 
@@ -219,6 +219,188 @@ public class LatentSemanticAnalysisTest
             assertTrue(actual.equals(expected, EPSILON)
                 || actual.equals(expected.negative(), EPSILON));
         }
+
+        // Add a zero document vector and learn.
+        documents.add(VectorFactory.getDefault().createVector(12));
+        documents.add(VectorFactory.getDefault().createVector(12));
+
+        rank = dimensionality;
+        instance.setRequestedRank(rank);
+        result = instance.learn(documents);
+        rank = 9;
+        assertEquals(rank, result.getRank());
+        assertEquals(dimensionality, result.getInputDimensionality());
+        assertEquals(rank, result.getOutputDimensionality());
+
+        for (int i = 0; i < expectedSingularValues.length; i++)
+        {
+            assertEquals(expectedSingularValues[i],
+                result.getSingularValues().getElement(i, i), EPSILON);
+        }
+
+        expectedTermBasis = expectedFullTermBasis.getSubMatrix(
+            0, dimensionality - 1, 0, result.getRank() - 1);
+        expectedTransform = expectedFullTransform.getSubMatrix(
+            0, dimensionality - 1, 0, result.getRank() - 1);
+        for (int i = 0; i < result.getRank(); i++)
+        {
+            Vector expected = expectedTermBasis.getColumn(i);
+            Vector actual = result.getTermBasis().getColumn(i);
+            assertTrue(actual.equals(expected, EPSILON)
+                || actual.equals(expected.negative(), EPSILON));
+
+            expected = expectedTransform.getColumn(i);
+            actual = expectedTransform.getColumn(i);
+            assertTrue(actual.equals(expected, EPSILON)
+                || actual.equals(expected.negative(), EPSILON));
+        }
+
+        // Create a second dataset with a zero column.
+        ArrayList<Vector> documents2 = new ArrayList<Vector>();
+        for (Vector document : documents)
+        {
+            documents2.add(document.stack(new Vector1()));
+        }
+
+        // Learn from the documents with zeros.
+        dimensionality++;
+        rank = dimensionality;
+        instance.setRequestedRank(rank);
+        result = instance.learn(documents2);
+        rank = 9;
+        assertEquals(rank, result.getRank());
+        assertEquals(dimensionality, result.getInputDimensionality());
+        assertEquals(rank, result.getOutputDimensionality());
+
+        for (int i = 0; i < expectedSingularValues.length; i++)
+        {
+            assertEquals(expectedSingularValues[i],
+                result.getSingularValues().getElement(i, i), EPSILON);
+        }
+
+        expectedTermBasis = expectedFullTermBasis.getSubMatrix(
+            0, dimensionality - 2, 0, result.getRank() - 1);
+        expectedTransform = expectedFullTransform.getSubMatrix(
+            0, dimensionality - 2, 0, result.getRank() - 1);
+        for (int i = 0; i < result.getRank(); i++)
+        {
+            Vector expected = expectedTermBasis.getColumn(i).stack(new Vector1());
+            Vector actual = result.getTermBasis().getColumn(i);
+            assertTrue(actual.equals(expected, EPSILON)
+                || actual.equals(expected.negative(), EPSILON));
+
+            expected = expectedTransform.getColumn(i);
+            actual = expectedTransform.getColumn(i);
+            assertTrue(actual.equals(expected, EPSILON)
+                || actual.equals(expected.negative(), EPSILON));
+        }
+
+        // Try a small rank and learn.
+        rank = 2;
+        instance.setRequestedRank(rank);
+        result = instance.learn(documents2);
+        assertEquals(rank, result.getRank());
+        assertEquals(dimensionality, result.getInputDimensionality());
+        assertEquals(rank, result.getOutputDimensionality());
+
+
+        for (int i = 0; i < result.getRank(); i++)
+        {
+            assertEquals(expectedSingularValues[i],
+                result.getSingularValues().getElement(i, i), EPSILON);
+        }
+
+        expectedTermBasis = expectedFullTermBasis.getSubMatrix(
+            0, dimensionality - 2, 0, result.getRank() - 1);
+        expectedTransform = expectedFullTransform.getSubMatrix(
+            0, dimensionality - 2, 0, result.getRank() - 1);
+        for (int i = 0; i < rank; i++)
+        {
+            Vector expected = expectedTermBasis.getColumn(i).stack(new Vector1());
+            Vector actual = result.getTermBasis().getColumn(i);
+            assertTrue(actual.equals(expected, EPSILON)
+                || actual.equals(expected.negative(), EPSILON));
+
+            expected = expectedTransform.getColumn(i);
+            actual = expectedTransform.getColumn(i);
+            assertTrue(actual.equals(expected, EPSILON)
+                || actual.equals(expected.negative(), EPSILON));
+        }
+
+        // Try a large rank and learn.
+        rank = 200;
+        instance.setRequestedRank(rank);
+        result = instance.learn(documents2);
+        rank = 9;
+        assertEquals(rank, result.getRank());
+        assertEquals(dimensionality, result.getInputDimensionality());
+        assertEquals(rank, result.getOutputDimensionality());
+
+        for (int i = 0; i < expectedSingularValues.length; i++)
+        {
+            assertEquals(expectedSingularValues[i],
+                result.getSingularValues().getElement(i, i), EPSILON);
+        }
+
+        expectedTermBasis = expectedFullTermBasis.getSubMatrix(
+            0, dimensionality - 2, 0, result.getRank() - 1);
+        expectedTransform = expectedFullTransform.getSubMatrix(
+            0, dimensionality - 2, 0, result.getRank() - 1);
+        for (int i = 0; i < result.getRank(); i++)
+        {
+            Vector expected = expectedTermBasis.getColumn(i).stack(new Vector1());
+            Vector actual = result.getTermBasis().getColumn(i);
+            assertTrue(actual.equals(expected, EPSILON)
+                || actual.equals(expected.negative(), EPSILON));
+
+            expected = expectedTransform.getColumn(i);
+            actual = expectedTransform.getColumn(i);
+            assertTrue(actual.equals(expected, EPSILON)
+                || actual.equals(expected.negative(), EPSILON));
+        }
+
+        // Add a whole lot of zeros and learn.
+        documents2.clear();
+        for (Vector document : documents)
+        {
+            documents2.add(VectorFactory.getSparseDefault().copyVector(
+                document).stack(VectorFactory.getSparseDefault().createVector(
+                    100)));
+        }
+        // Try a large rank and learn.
+        dimensionality += 99;
+        rank = 200;
+        instance.setRequestedRank(rank);
+        result = instance.learn(documents2);
+        rank = 9;
+        assertEquals(rank, result.getRank());
+        assertEquals(dimensionality, result.getInputDimensionality());
+        assertEquals(rank, result.getOutputDimensionality());
+
+        for (int i = 0; i < expectedSingularValues.length; i++)
+        {
+            assertEquals(expectedSingularValues[i],
+                result.getSingularValues().getElement(i, i), EPSILON);
+        }
+
+        expectedTermBasis = expectedFullTermBasis.getSubMatrix(
+            0, dimensionality - 101, 0, result.getRank() - 1);
+        expectedTransform = expectedFullTransform.getSubMatrix(
+            0, dimensionality - 101, 0, result.getRank() - 1);
+        for (int i = 0; i < result.getRank(); i++)
+        {
+            Vector expected = expectedTermBasis.getColumn(i).stack(VectorFactory.getSparseDefault().createVector(
+                100));
+            Vector actual = result.getTermBasis().getColumn(i);
+            assertTrue(actual.equals(expected, EPSILON)
+                || actual.equals(expected.negative(), EPSILON));
+
+            expected = expectedTransform.getColumn(i);
+            actual = expectedTransform.getColumn(i);
+            assertTrue(actual.equals(expected, EPSILON)
+                || actual.equals(expected.negative(), EPSILON));
+        }
+
     }
 
 

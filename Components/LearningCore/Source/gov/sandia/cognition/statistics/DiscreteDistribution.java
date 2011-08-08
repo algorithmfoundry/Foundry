@@ -34,6 +34,14 @@ public interface DiscreteDistribution<DataType>
      */
     public Collection<? extends DataType> getDomain();
 
+    /**
+     * Gets the size of the domain.
+     *
+     * @return
+     *      The size of the domain.
+     */
+    public int getDomainSize();
+
     public ProbabilityMassFunction<DataType> getProbabilityFunction();
 
 }

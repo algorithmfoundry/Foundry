@@ -15,11 +15,13 @@
 package gov.sandia.cognition.math.matrix;
 
 import gov.sandia.cognition.io.ReaderTokenizer;
+import gov.sandia.cognition.math.matrix.mtj.Vector2;
 
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -181,6 +183,7 @@ public class VectorReaderTest
 
         assertNull( VectorReader.parseVector(null) );
         assertNull( VectorReader.parseVector( new ArrayList<String>() ) );
+        assertEquals(new Vector2(3.2, -6.8), VectorReader.parseVector(Arrays.asList("3.2", "-6.8")));
 
     }
 

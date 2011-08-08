@@ -132,20 +132,21 @@ public class LatentSemanticAnalysis
         Matrix singularValues = svd.getS();
         Matrix termBasis = svd.getU();
 
+        // Figure out the rank of the result. The SVD may have zero entries
+        // so we may not be able to get the full requested rank.
+        final int rank = Math.min(this.getRequestedRank(), 
+            svd.effectiveRank(0.0));
+
         // Figure out if we need to downselect the number of rows and columns.
         // This happens if
-        final boolean filterRows =
-            this.getRequestedRank() < singularValues.getNumRows();
-        final boolean filterColumns =
-            this.getRequestedRank() < singularValues.getNumColumns();
+        final boolean filterRows = rank < singularValues.getNumRows();
+        final boolean filterColumns = rank < singularValues.getNumColumns();
 
         if (filterRows || filterColumns)
         {
             // Change the diagonal to be the proper size.
-            final int newRows =
-                Math.min(singularValues.getNumRows(), this.getRequestedRank());
-            final int newCols =
-                Math.min(singularValues.getNumRows(), this.getRequestedRank());
+            final int newRows = Math.min(singularValues.getNumRows(), rank);
+            final int newCols = Math.min(singularValues.getNumColumns(), rank);
             singularValues = singularValues.getSubMatrix(
                 0, newRows - 1,
                 0, newCols - 1);
@@ -156,7 +157,7 @@ public class LatentSemanticAnalysis
             // Change the term basis to only include the proper rank of values.
             termBasis = termBasis.getSubMatrix(
                 0, dimensionality - 1,
-                0, this.getRequestedRank() - 1);
+                0, rank - 1);
         }
 
         // Create learned result.

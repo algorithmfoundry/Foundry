@@ -1,5 +1,5 @@
 /*
- * File:                SufficientStatistics.java
+ * File:                SufficientStatistic.java
  * Authors:             Kevin R. Dixon
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
@@ -36,10 +36,17 @@ import gov.sandia.cognition.util.CloneableSerializable;
     year=2011,
     url="http://en.wikipedia.org/wiki/Sufficient_statistic"
 )
-public interface SufficientStatistics<DataType, DistributionType extends Distribution<? extends DataType>>
+public interface SufficientStatistic<DataType, DistributionType>// extends Distribution<? extends DataType>>
     extends Factory<DistributionType>,
         CloneableSerializable
 {
+
+    /**
+     * Gets the count
+     * @return
+     * Number of data points used to create this SufficientStatistic
+     */
+    public long getCount();
 
     /**
      * Modifies the given distribution with the parameters indicated by the

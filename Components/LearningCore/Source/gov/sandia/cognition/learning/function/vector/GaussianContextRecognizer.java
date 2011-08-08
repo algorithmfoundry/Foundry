@@ -53,12 +53,12 @@ public class GaussianContextRecognizer
     /**
      * Underlying MixtureOfGaussians that computes context probabilities
      */
-    private MixtureOfGaussians gaussianMixture;
+    private MixtureOfGaussians.PDF gaussianMixture;
 
     /** Creates a new instance of GaussianContextRecognizer */
     public GaussianContextRecognizer()
     {
-        this( (MixtureOfGaussians) null );
+        this( (MixtureOfGaussians.PDF) null );
     }
 
     /**
@@ -67,7 +67,7 @@ public class GaussianContextRecognizer
      * Underlying MixtureOfGaussians that computes context probabilities
      */
     public GaussianContextRecognizer(
-        MixtureOfGaussians gaussianMixture )
+        MixtureOfGaussians.PDF gaussianMixture )
     {
         this.setGaussianMixture( gaussianMixture );
     }
@@ -102,10 +102,12 @@ public class GaussianContextRecognizer
         return clone;
     }
 
+    @Override
     public Vector evaluate(
         Vector input )
     {
-        return this.getGaussianMixture().computeRandomVariableProbabilities( input );
+        return VectorFactory.getDefault().copyArray(
+            this.getGaussianMixture().computeRandomVariableProbabilities( input ) );
     }
 
     /**
@@ -117,17 +119,17 @@ public class GaussianContextRecognizer
     {
         ArrayList<MultivariateGaussian.PDF> gaussians =
             new ArrayList<MultivariateGaussian.PDF>( clusters.size() );
-        Vector prior = VectorFactory.getDefault().createVector( clusters.size() );
+        double[] prior = new double[ clusters.size() ];
         int index = 0;
         for (GaussianCluster cluster : clusters)
         {
             gaussians.add( new MultivariateGaussian.PDF( cluster.getGaussian() ) );
-            prior.setElement( index, cluster.getMembers().size() );
+            prior[index] = cluster.getMembers().size();
             index++;
         }
 
         this.setGaussianMixture(
-            new MixtureOfGaussians( gaussians, prior ) );
+            new MixtureOfGaussians.PDF( gaussians, prior ) );
 
     }
 
@@ -136,7 +138,7 @@ public class GaussianContextRecognizer
      * @return 
      * Underlying MixtureOfGaussians that computes context probabilities
      */
-    public MixtureOfGaussians getGaussianMixture()
+    public MixtureOfGaussians.PDF getGaussianMixture()
     {
         return this.gaussianMixture;
     }
@@ -147,19 +149,21 @@ public class GaussianContextRecognizer
      * Underlying MixtureOfGaussians that computes context probabilities
      */
     public void setGaussianMixture(
-        MixtureOfGaussians gaussianMixture )
+        MixtureOfGaussians.PDF gaussianMixture )
     {
         this.gaussianMixture = gaussianMixture;
     }
 
+    @Override
     public int getInputDimensionality()
     {
         return this.getGaussianMixture().getDimensionality();
     }
 
+    @Override
     public int getOutputDimensionality()
     {
-        return this.getGaussianMixture().getNumRandomVariables();
+        return this.getGaussianMixture().getDistributionCount();
     }
 
     /**
@@ -205,6 +209,7 @@ public class GaussianContextRecognizer
 
         // SteeringWheelAngle(LW), BrakeForce(MBRE_ESP), AcceleratorPedalPct(PW), DistronicAccelerationRelative(DTR_ObjIntrstDist), DistronicDistance(DTR_ObjIntrstDist), DistronicPositionRelative(DTR_ObjIntrstPosn), DisctronicImpactTime, DistronicSpeedRelative(DTR_ObjIntrstRelSpd), GPSElevation(GPS_HEIGHT), Gear(GPS_SOG), LateralAccelerationDerived, WheelSpeedDerived
 
+        @Override
         public GaussianContextRecognizer learn(
             Collection<? extends Vector> data )
         {
@@ -212,6 +217,7 @@ public class GaussianContextRecognizer
             return this.getResult();
         }
 
+        @Override
         public GaussianContextRecognizer getResult()
         {
             if( (this.getAlgorithm() == null) ||
@@ -225,6 +231,7 @@ public class GaussianContextRecognizer
             }
         }
 
+        @Override
         public NamedValue<? extends Number> getPerformance()
         {
 
@@ -238,11 +245,13 @@ public class GaussianContextRecognizer
             }
         }
 
+        @Override
         public boolean getKeepGoing()
         {
             return this.getAlgorithm().getKeepGoing();
         }
 
+        @Override
         public Collection<? extends Vector> getData()
         {
             return this.getAlgorithm().getData();

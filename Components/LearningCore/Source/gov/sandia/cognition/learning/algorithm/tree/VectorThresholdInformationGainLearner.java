@@ -14,24 +14,27 @@
 
 package gov.sandia.cognition.learning.algorithm.tree;
 
-import gov.sandia.cognition.collection.CollectionUtil;
-import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.learning.function.categorization.VectorElementThresholdCategorizer;
-import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
-import gov.sandia.cognition.util.AbstractCloneableSerializable;
-import gov.sandia.cognition.util.DefaultPair;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 
 /**
  * The {@code VectorThresholdInformationGainLearner} computes the best 
  * threshold over a dataset of vectors using information gain to determine the 
  * optimal index and threshold. This is an implementation of what is used in
  * the C4.5 decision tree algorithm.
+ *
+ * Information gain for a given split (sets X and Y) for two categories (a and b):
+ *     ig(X, Y) = entropy(X + Y)
+ *              – (|X| / (|X| + |Y|)) entropy(X)
+ *              – (|Y| / (|X| + |Y|)) entropy(Y)
+ * with
+ *
+ *     entropy(Z) = - (Za / |Z|) log2(Za / |Z|) – (Zb / |Z|) log2(Zb / |Z|)
+ *
+ * where
+ *     Za = number of a's in Z, and
+ *     Zb = number of b's in Z.
+ * In the multi-class case, the entropy is defined as the sum over all of the
+ * categories (c) of -Zc / |Z| log2(Zc / |Z|).
  *
  * @param  <OutputType> The output type of the data.
  * @author Justin Basilico

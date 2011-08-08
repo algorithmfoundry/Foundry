@@ -15,6 +15,8 @@ package gov.sandia.cognition.statistics;
 
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import junit.framework.TestCase;
@@ -239,6 +241,61 @@ public class DiscreteSamplingUtilTest
         
         result = DiscreteSamplingUtil.sampleWithReplacement(random, data, 0);
         assertEquals(0, result.size());
+    }
+
+
+    /**
+     * Test of sampleWithReplacementInto method, of class DiscreteSamplingUtil.
+     */
+    public void testSampleWithReplacementInto()
+    {
+        List<String> data = new ArrayList<String>();
+        data.add("a");
+        data.add("b");
+        data.add("c");
+
+        Collection<Object> result = new LinkedList<Object>();
+
+        result.clear();
+        DiscreteSamplingUtil.sampleWithReplacementInto(random, data, 1, result);
+        assertEquals(1, result.size());
+        assertTrue(result.contains("a") || result.contains("b") || result.contains("c"));
+
+        result.clear();
+        DiscreteSamplingUtil.sampleWithReplacementInto(random, data, 2, result);
+        assertEquals(2, result.size());
+        assertTrue(result.contains("a") || result.contains("b") || result.contains("c"));
+
+
+        result.clear();
+        DiscreteSamplingUtil.sampleWithReplacementInto(random, data, 3, result);
+        assertEquals(3, result.size());
+        assertTrue(result.contains("a") || result.contains("b") || result.contains("c"));
+
+
+        result.clear();
+        DiscreteSamplingUtil.sampleWithReplacementInto(random, data, 4, result);
+        assertEquals(4, result.size());
+        assertTrue(result.contains("a") || result.contains("b") || result.contains("c"));
+
+        result.clear();
+        DiscreteSamplingUtil.sampleWithReplacementInto(random, data, 100, result);
+        assertEquals(100, result.size());
+        assertTrue(result.contains("a") && result.contains("b") && result.contains("c"));
+
+        result.clear();
+        DiscreteSamplingUtil.sampleWithReplacementInto(random, data, 0, result);
+        assertEquals(0, result.size());
+
+        // This tests that it doesn't remove stuff.
+        result.clear();
+        result.add("d");
+        result.add("e");
+        DiscreteSamplingUtil.sampleWithReplacementInto(random, data, 1, result);
+        assertEquals(3, result.size());
+        assertTrue(result.contains("d"));
+        assertTrue(result.contains("e"));
+        assertTrue(result.contains("a") || result.contains("b") || result.contains("c"));
     }
 
     /**

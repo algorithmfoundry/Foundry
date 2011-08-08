@@ -18,6 +18,7 @@ import gov.sandia.cognition.math.Permutation;
 import gov.sandia.cognition.math.matrix.Vector;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -294,14 +295,39 @@ public class DiscreteSamplingUtil
         final List<? extends DataType> data,
         final int sampleSize)
     {
-        final int dataSize = data.size();
         final ArrayList<DataType> result = new ArrayList<DataType>(sampleSize);
+        sampleWithReplacementInto(random, data, sampleSize, result);
+        return result;
+    }
+
+    /**
+     * Samples a a given number of items from a list with replacement and puts
+     * the samples into the given collection.
+     *
+     * @param   <DataType>
+     *      The type of data in the list.
+     * @param   random
+     *      The random number generator.
+     * @param   data
+     *      The list to sample from.
+     * @param   sampleSize
+     *      The sample size. Must be positive.
+     * @param   result
+     *      The resulting collection to sample into. All sampled elements will
+     *      be added to this collection..
+     */
+    public static <DataType> void sampleWithReplacementInto(
+        final Random random,
+        final List<? extends DataType> data,
+        final int sampleSize,
+        final Collection<? super DataType> result)
+    {
+        final int dataSize = data.size();
         for (int i = 0; i < sampleSize; i++)
         {
             final int randomIndex = random.nextInt(dataSize);
             result.add(data.get(randomIndex));
         }
-        return result;
     }
 
     /**

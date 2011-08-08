@@ -335,7 +335,13 @@ public class LogNormalDistribution
         }
 
         public double logEvaluate(
-            Double input)
+            final Double input)
+        {
+            return this.logEvaluate((double) input);
+        }
+
+        public double logEvaluate(
+            double input)
         {
             return logEvaluate(input, this.getLogNormalMean(), this.getLogNormalVariance());
         }

@@ -129,9 +129,9 @@ public class DatasetUtil
                 double x = pair.getInput().getElement(i);
                 double y = pair.getOutput().getElement(i);
                 InputOutputPair<Double, Double> rowPair;
-                if (pair instanceof WeightedInputOutputPair)
+                if (pair instanceof WeightedInputOutputPair<?, ?>)
                 {
-                    double weight = ((WeightedInputOutputPair) pair).getWeight();
+                    double weight = ((WeightedInputOutputPair<?, ?>) pair).getWeight();
                     rowPair = new DefaultWeightedInputOutputPair<Double, Double>(
                         x, y, weight);
                 }
@@ -732,9 +732,9 @@ public class DatasetUtil
     public static double getWeight(
         final InputOutputPair<?, ?> pair)
     {
-        if (pair instanceof WeightedInputOutputPair)
+        if (pair instanceof WeightedInputOutputPair<?, ?>)
         {
-            return ((WeightedInputOutputPair) pair).getWeight();
+            return ((WeightedInputOutputPair<?, ?>) pair).getWeight();
         }
         else
         {
@@ -756,9 +756,9 @@ public class DatasetUtil
     public static double getWeight(
         final TargetEstimatePair<?, ?> pair)
     {
-        if (pair instanceof WeightedTargetEstimatePair)
+        if (pair instanceof WeightedTargetEstimatePair<?, ?>)
         {
-            return ((WeightedTargetEstimatePair) pair).getWeight();
+            return ((WeightedTargetEstimatePair<?, ?>) pair).getWeight();
         }
         else
         {

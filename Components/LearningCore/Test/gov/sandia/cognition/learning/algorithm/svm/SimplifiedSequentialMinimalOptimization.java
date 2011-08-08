@@ -40,7 +40,7 @@ import java.util.Random;
     type=PublicationType.WebPage,
     url="http://www.stanford.edu/class/cs229/materials/smo.pdf")
 public class SimplifiedSequentialMinimalOptimization<InputType>
-    extends AbstractAnytimeSupervisedBatchLearner<InputType, Boolean, KernelBinaryCategorizer<InputType>>
+    extends AbstractAnytimeSupervisedBatchLearner<InputType, Boolean, KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>>>
     implements KernelContainer<InputType>, Randomized
 {
     public static final int DEFAULT_MAX_ITERATIONS = 1000;
@@ -71,7 +71,7 @@ public class SimplifiedSequentialMinimalOptimization<InputType>
     private Random random;
 
     /** The result categorizer. */
-    private transient KernelBinaryCategorizer<InputType> result;
+    private transient KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>> result;
 
     private transient ArrayList<InputOutputPair<? extends InputType, Boolean>> dataList;
 
@@ -158,7 +158,7 @@ public class SimplifiedSequentialMinimalOptimization<InputType>
 
         // initialize alpha array to all zero
         // initialize threshold to zero
-        this.result = new KernelBinaryCategorizer<InputType>(
+        this.result = new KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>>(
             this.kernel, this.supportsMap.values(), 0.0);
         return true;
     }
@@ -462,7 +462,7 @@ System.out.println("Bias: " + result.getBias());
         this.result.setBias(b);
     }
 
-    public KernelBinaryCategorizer<InputType> getResult()
+    public KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>> getResult()
     {
         return this.result;
     }

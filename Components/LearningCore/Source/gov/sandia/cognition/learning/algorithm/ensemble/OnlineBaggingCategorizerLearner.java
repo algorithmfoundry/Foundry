@@ -15,8 +15,9 @@ package gov.sandia.cognition.learning.algorithm.ensemble;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.evaluator.Evaluator;
-import gov.sandia.cognition.learning.algorithm.AbstractBatchAndIncrementalLearner;
+import gov.sandia.cognition.learning.algorithm.AbstractSupervisedBatchAndIncrementalLearner;
 import gov.sandia.cognition.learning.algorithm.IncrementalLearner;
+import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.statistics.distribution.PoissonDistribution;
 import gov.sandia.cognition.util.ArgumentChecker;
@@ -49,7 +50,7 @@ import java.util.Random;
     pages={105, 112},
     url="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.32.8889")
 public class OnlineBaggingCategorizerLearner<InputType, CategoryType, MemberType extends Evaluator<? super InputType, ? extends CategoryType>>
-    extends AbstractBatchAndIncrementalLearner<InputOutputPair<? extends InputType, CategoryType>, VotingCategorizerEnsemble<InputType, CategoryType, MemberType>>
+    extends AbstractSupervisedBatchAndIncrementalLearner<InputType, CategoryType, VotingCategorizerEnsemble<InputType, CategoryType, MemberType>>
     implements Randomized
 {
 
@@ -138,6 +139,15 @@ public class OnlineBaggingCategorizerLearner<InputType, CategoryType, MemberType
         // Create the ensemble.
         return new VotingCategorizerEnsemble<InputType, CategoryType, MemberType>(
                 new LinkedHashSet<CategoryType>(), members);
+    }
+
+    @Override
+    public void update(
+        final VotingCategorizerEnsemble<InputType, CategoryType, MemberType> target,
+        final InputType input,
+        final CategoryType category)
+    {
+        this.update(target, DefaultInputOutputPair.create(input, category));
     }
 
     @Override

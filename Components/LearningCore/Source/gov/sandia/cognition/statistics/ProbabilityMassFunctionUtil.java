@@ -24,6 +24,7 @@ import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -152,12 +153,42 @@ public class ProbabilityMassFunctionUtil
             cumulativeProbabilities[index] = psum;
         }
 
+        return sampleMultiple(cumulativeProbabilities, psum, domain, random, numSamples);
+    }
+
+    /**
+     * Samples multiple elements from the domain proportionately to the
+     * cumulative weights in the given weight array using a fast
+     * binary search algorithm
+     * @param <DataType>
+     * Type of data to be sampled
+     * @param cumulativeWeights
+     * Cumulative weights to sample from
+     * @param weightSum
+     * Maximum value of the cumulative weights
+     * @param domain
+     * Domain from which to sample
+     * @param random
+     * Random number generator
+     * @param numSamples
+     * Number of samples to draw from the distribution
+     * @return
+     * Samples draw proportionately from the cumulative weights
+     */
+    public static <DataType> ArrayList<DataType> sampleMultiple(
+        double[] cumulativeWeights,
+        double weightSum,
+        List<? extends DataType> domain,
+        Random random,
+        int numSamples )
+    {
+
         int index;
         ArrayList<DataType> samples = new ArrayList<DataType>( numSamples );
         for( int n = 0; n < numSamples; n++ )
         {
-            double p = random.nextDouble();
-            index = Arrays.binarySearch( cumulativeProbabilities, p );
+            double p = weightSum*random.nextDouble();
+            index = Arrays.binarySearch( cumulativeWeights, p );
             if( index < 0 )
             {
                 int insertionPoint = -index - 1;
@@ -165,8 +196,48 @@ public class ProbabilityMassFunctionUtil
             }
             samples.add( domain.get(index) );
         }
-        
         return samples;
+        
+    }
+
+    /**
+     * Samples a single element from the domain proportionately to the given
+     * weights
+     * @param <DataType>
+     * Type of data to be sampled
+     * @param weights
+     * Weights from which we will sample proportionately
+     * @param domain
+     * Domain from which to return the result
+     * @param random
+     * Random number generator
+     * @return
+     * A single sample from the domain proportionately from the weights
+     */
+    public static <DataType> DataType sampleSingle(
+        double[] weights,
+        Collection<? extends DataType> domain,
+        Random random )
+    {
+
+        double sum = 0.0;
+        final int N = weights.length;
+        for( int n = 0; n < N; n++ )
+        {
+            sum += weights[n];
+        }
+
+        double s = sum * random.nextDouble();
+        int n = 0;
+        for( DataType value : domain )
+        {
+            s -= weights[n];
+            if( s <= 0.0 )
+            {
+                return value;
+            }
+        }
+        return null;
         
     }
 

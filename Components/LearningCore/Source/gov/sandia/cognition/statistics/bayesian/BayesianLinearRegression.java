@@ -17,18 +17,21 @@ package gov.sandia.cognition.statistics.bayesian;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationReferences;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.evaluator.Evaluator;
+import gov.sandia.cognition.learning.algorithm.IncrementalLearner;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
+import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.statistics.AbstractSufficientStatistic;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
+import java.util.Collection;
 
 /**
  * Computes a Bayesian linear estimator for a given feature function
@@ -83,13 +86,13 @@ public class BayesianLinearRegression<InputType>
      * Assumed known variance of the outputs (measurements),
      * must be greater than zero.
      */
-    private double outputVariance;
+    protected double outputVariance;
 
     /**
      * Prior distribution of the weights, typically a zero-mean,
      * diagonal-variance distribution.
      */
-    private MultivariateGaussian weightPrior;
+    protected MultivariateGaussian weightPrior;
 
     /** 
      * Creates a new instance of BayesianLinearRegression 
@@ -136,50 +139,46 @@ public class BayesianLinearRegression<InputType>
         return clone;
     }
 
-    public MultivariateGaussian learn(
-        Iterable<? extends InputOutputPair<? extends InputType, Double>> data)
+    @Override
+    public MultivariateGaussian.PDF learn(
+        Collection<? extends InputOutputPair<? extends InputType, Double>> data)
     {
-        
-        int featureDim;
-        final int N = CollectionUtil.size(data);
-        Vector y = VectorFactory.getDefault().createVector( N );
+        MultivariateGaussian prior = this.getWeightPrior();
 
-        Matrix X = null;
-        int n = 0;
+        RingAccumulator<Matrix> Cin = new RingAccumulator<Matrix>();
+        Matrix Ci = prior.getCovarianceInverse().clone();
+        Cin.accumulate( Ci );
+        RingAccumulator<Vector> zn = new RingAccumulator<Vector>();
+        Vector z = Ci.times( prior.getMean() );
+        zn.accumulate( z );
+
         for (InputOutputPair<? extends InputType, Double> pair : data)
         {
-            final double weight = DatasetUtil.getWeight(pair);
-
-            Vector x = this.getFeatureMap().evaluate(pair.getInput());
-            if( X == null )
+            Vector x1 = this.featureMap.evaluate(pair.getInput());
+            Vector x2 = x1.clone();
+            final double beta = DatasetUtil.getWeight(pair) / this.outputVariance;
+            if( beta != 1.0 )
             {
-                featureDim = x.getDimensionality();
-                X = MatrixFactory.getDefault().createMatrix(featureDim, N);
+                x2.scaleEquals(beta);
             }
-            double output = pair.getOutput();
+            Cin.accumulate( x1.outerProduct(x2) );
 
-            if( weight != 1.0 )
+            final double y = pair.getOutput();
+            if( y != 1.0 )
             {
-                output *= weight;
-                x.scaleEquals(weight);
+                x2.scaleEquals(y);
             }
-
-            X.setColumn( n, x );
-            y.setElement( n, output );
-            n++;
+            zn.accumulate( x2 );
         }
 
-        Vector m0 = this.getWeightPrior().getMean();
-        Matrix C0i = this.getWeightPrior().getCovarianceInverse();
+        Ci = Cin.getSum();
+        Matrix C = Ci.inverse();
+        z = zn.getSum();
+        Vector mean = C.times( z );
 
-        // Bishop's Equations 3.49 - 3.51
-        Matrix C = C0i.plus( X.times( X.transpose() ).scale( 1.0/this.getOutputVariance() ) ).inverse();
-        Vector mean = C.times( C0i.times( m0 ).plus(
-            X.times( y ).scale( 1.0/this.getOutputVariance() ) ) );
-
-        return new MultivariateGaussian( mean, C );
-
+        return new MultivariateGaussian.PDF( mean, C );
     }
+
 
     /**
      * Creates the distribution from which the outputs are generated, given
@@ -191,6 +190,7 @@ public class BayesianLinearRegression<InputType>
      * @return
      * Conditional distribution from which outputs are generated.
      */
+    @Override
     public UnivariateGaussian createConditionalDistribution(
         InputType input,
         Vector weights )
@@ -257,6 +257,7 @@ public class BayesianLinearRegression<InputType>
      * @return
      * Predictive distribution of outputs given the posterior.
      */
+    @Override
     public BayesianLinearRegression<InputType>.PredictiveDistribution createPredictiveDistribution(
         MultivariateGaussian posterior )
     {
@@ -294,6 +295,7 @@ public class BayesianLinearRegression<InputType>
             this.posterior = posterior;
         }
 
+        @Override
         public UnivariateGaussian.PDF evaluate(
             InputType input)
         {
@@ -305,5 +307,239 @@ public class BayesianLinearRegression<InputType>
         }
 
     }
-    
+
+    /**
+     * Incremental estimator for BayesianLinearRegression
+     * @param <InputType>
+     */
+    public static class IncrementalEstimator<InputType>
+        extends BayesianLinearRegression<InputType>
+        implements IncrementalLearner<InputOutputPair<? extends InputType,Double>, IncrementalEstimator<InputType>.SufficientStatistic>
+    {
+
+        /**
+         * Creates a new instance of IncrementalEstimator
+         * @param dimensionality
+         * Sets up the parameters (except featureMap) for the given dimensionality
+         * of objects in feature space.
+         */
+        public IncrementalEstimator(
+            int dimensionality )
+        {
+            super( dimensionality );
+        }
+
+        /**
+         * Creates a new instance of IncrementalEstimator with the given
+         * dimensionality and feature map.
+         *
+         * @param dimensionality
+         * Sets up the parameters (except featureMap) for the given dimensionality
+         * of objects in feature space.
+         * @param featureMap
+         * Function that maps the input space onto a Vector.
+         */
+        public IncrementalEstimator(
+            int dimensionality,
+            Evaluator<? super InputType, Vector> featureMap)
+        {
+            this(dimensionality);
+
+            this.setFeatureMap(featureMap);
+        }
+        /**
+         * Creates a new instance of IncrementalEstimator
+         * @param featureMap
+         * Function that maps the input space onto a Vector.
+         * @param outputVariance
+         * Assumed known variance of the outputs (measurements),
+         * must be greater than zero.
+         * @param weightPrior
+         * Prior distribution of the weights, typically a zero-mean,
+         * diagonal-variance distribution.
+         */
+        public IncrementalEstimator(
+            Evaluator<? super InputType, Vector> featureMap,
+            double outputVariance,
+            MultivariateGaussian weightPrior)
+        {
+            super( featureMap, outputVariance, weightPrior);
+        }
+
+        @Override
+        public IncrementalEstimator<InputType>.SufficientStatistic createInitialLearnedObject()
+        {
+            return new SufficientStatistic(this.getWeightPrior());
+        }
+
+        @Override
+        public MultivariateGaussian.PDF learn(
+            Collection<? extends InputOutputPair<? extends InputType, Double>> data)
+        {
+            IncrementalEstimator<InputType>.SufficientStatistic target =
+                this.createInitialLearnedObject();
+            this.update(target, data);
+            return target.create();
+        }
+
+        @Override
+        public void update(
+            IncrementalEstimator<InputType>.SufficientStatistic target,
+            InputOutputPair<? extends InputType, Double> data)
+        {
+            target.update(data);
+        }
+
+        @Override
+        public void update(
+            SufficientStatistic target,
+            Iterable<? extends InputOutputPair<? extends InputType, Double>> data)
+        {
+            target.update(data);
+        }
+
+        /**
+         * SufficientStatistic for incremental Bayesian linear regression
+         */
+        public class SufficientStatistic
+            extends AbstractSufficientStatistic<InputOutputPair<? extends InputType, Double>, MultivariateGaussian>
+        {
+
+            /**
+             * "z" statistic, proportional to the mean
+             */
+            private Vector z;
+
+            /**
+             * Covariance inverse, sometimes called "precision"
+             */
+            private Matrix covarianceInverse;
+
+            /**
+             * Creates a new instance of SufficientStatistic
+             * @param prior
+             * Prior on the weights
+             */
+            public SufficientStatistic(
+                MultivariateGaussian prior )
+            {
+                super();
+
+                if( prior != null )
+                {
+                    this.covarianceInverse = prior.getCovarianceInverse().clone();
+                    this.z = this.covarianceInverse.times( prior.getMean() );
+                    this.count = 1;
+                }
+                else
+                {
+                    this.covarianceInverse = null;
+                    this.z = null;
+                    this.count = 0;
+                }
+            }
+
+            @Override
+            public void update(
+                InputOutputPair<? extends InputType, Double> value)
+            {
+                this.count++;
+                Vector v = featureMap.evaluate(value.getInput());
+
+                Vector x1 = v;
+                Vector x2 = v.clone();
+                final double y = value.getOutput();
+                final double beta = DatasetUtil.getWeight(value) / outputVariance;
+                if( beta != 1.0 )
+                {
+                    x2.scaleEquals(beta);
+                }
+
+                if( this.covarianceInverse == null )
+                {
+                    this.covarianceInverse = x1.outerProduct(x2);
+                }
+                else
+                {
+                    this.covarianceInverse.plusEquals( x1.outerProduct(x2) );
+                }
+
+                if( y != 1.0 )
+                {
+                    x2.scaleEquals( y );
+                }
+
+                if( this.z == null )
+                {
+                    this.z = x2;
+                }
+                else
+                {
+                    this.z.plusEquals( x2 );
+                }
+            }
+
+            @Override
+            public MultivariateGaussian.PDF create()
+            {
+                MultivariateGaussian.PDF g =
+                    new MultivariateGaussian.PDF(this.getDimensionality());
+                this.create(g);
+                return g;
+            }
+
+            @Override
+            public void create(
+                MultivariateGaussian distribution)
+            {
+                distribution.setMean(this.getMean());
+                distribution.setCovarianceInverse(this.getCovarianceInverse());
+            }
+
+            /**
+             * Getter for covarianceInverse
+             * @return
+             * Covariance inverse, sometimes called "precision"
+             */
+            public Matrix getCovarianceInverse()
+            {
+                return this.covarianceInverse;
+            }
+
+            /**
+             * Getter for z
+             * @return
+             * "z" statistic, proportional to the mean
+             */
+            public Vector getZ()
+            {
+                return this.z;
+            }
+            
+            /**
+             * Computes the mean of the Gaussian, but involves a matrix
+             * inversion and multiplication, so it's expensive.
+             * @return
+             * Mean of the Gaussian.
+             */
+            public Vector getMean()
+            {
+                return this.covarianceInverse.inverse().times( this.z );
+            }
+
+            /**
+             * Gets the dimensionality of the underlying Gaussian
+             * @return
+             * Dimensionality of the underlying Gaussian
+             */
+            public int getDimensionality()
+            {
+                return this.getZ().getDimensionality();
+            }
+
+        }
+
+
+    }
+
 }

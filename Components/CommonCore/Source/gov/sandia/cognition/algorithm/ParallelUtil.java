@@ -227,6 +227,29 @@ public class ParallelUtil
     }
 
     /**
+     * Executes the given Callable tasks in parallel using a given thread
+     * pool
+     * @param <ResultType> Type of results returned by the Callable tasks.
+     * @param tasks
+     * Callable tasks to be split across multiple cores
+     * @param algorithm
+     * Uses the embedded thread pool in the ParallelAlgorithm
+     * @return
+     * Collection of results from the Callables
+     * @throws java.lang.InterruptedException
+     * If interrupted
+     * @throws java.util.concurrent.ExecutionException
+     * If the Callable task can't execute its method
+     */
+    public static <ResultType> ArrayList<ResultType> executeInParallel(
+        Collection<? extends Callable<ResultType>> tasks,
+        ParallelAlgorithm algorithm )
+        throws InterruptedException, ExecutionException
+    {
+        return executeInParallel( tasks, algorithm.getThreadPool() );
+    }
+
+    /**
      * Executes the given Callable tasks sequentially in series.
      * @param <ResultType> Type of results returned by the Callable tasks.
      * @param tasks

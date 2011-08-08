@@ -14,9 +14,8 @@ package gov.sandia.cognition.learning.algorithm.perceptron;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.learning.algorithm.AbstractBatchAndIncrementalLearner;
+import gov.sandia.cognition.learning.algorithm.AbstractSupervisedBatchAndIncrementalLearner;
 import gov.sandia.cognition.learning.algorithm.ensemble.WeightedBinaryEnsemble;
-import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
@@ -44,7 +43,7 @@ import gov.sandia.cognition.util.DefaultWeightedValue;
     pages={277, 296},
     url="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.48.8200")
 public class OnlineVotedPerceptron
-    extends AbstractBatchAndIncrementalLearner<InputOutputPair<? extends Vectorizable, Boolean>, WeightedBinaryEnsemble<Vectorizable, LinearBinaryCategorizer>>
+    extends AbstractSupervisedBatchAndIncrementalLearner<Vectorizable, Boolean, WeightedBinaryEnsemble<Vectorizable, LinearBinaryCategorizer>>
     implements VectorFactoryContainer
 {
 
@@ -82,12 +81,32 @@ public class OnlineVotedPerceptron
     @Override
     public void update(
         final WeightedBinaryEnsemble<Vectorizable, LinearBinaryCategorizer> target,
-        final InputOutputPair<? extends Vectorizable, Boolean> example)
+        final Vectorizable input,
+        final Boolean output)
     {
-        // Get the information about the example.
-        final Vector input = example.getInput().convertToVector();
-        final boolean actual = example.getOutput();
-
+        if (input != null && output != null)
+        {
+            this.update(target, input.convertToVector(), (boolean) output);
+        }
+    }
+    
+    /**
+     * The {@code update} method updates an object of {@code ResultType} using
+     * the given a new supervised input-output pair, using some form of
+     * "learning" algorithm.
+     *
+     * @param   target
+     *      The object to update.
+     * @param   input
+     *      The supervised input vector to learn from.
+     * @param   actual
+     *      The supervised output label to learn from.
+     */
+    public void update(
+        final WeightedBinaryEnsemble<Vectorizable, LinearBinaryCategorizer> target,
+        final Vector input,
+        final boolean actual)
+    {
         // Predict the output as a double (negative values are false, positive
         // are true).
         final double prediction = target.evaluateAsDouble(input);

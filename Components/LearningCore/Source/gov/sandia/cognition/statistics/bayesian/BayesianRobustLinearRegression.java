@@ -17,14 +17,16 @@ package gov.sandia.cognition.statistics.bayesian;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationReferences;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.evaluator.Evaluator;
+import gov.sandia.cognition.learning.algorithm.IncrementalLearner;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
+import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.statistics.AbstractSufficientStatistic;
 import gov.sandia.cognition.statistics.distribution.InverseGammaDistribution;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussianInverseGammaDistribution;
@@ -32,6 +34,7 @@ import gov.sandia.cognition.statistics.distribution.StudentTDistribution;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
+import java.util.Collection;
 
 /**
  * Computes a Bayesian linear estimator for a given feature function given
@@ -104,7 +107,7 @@ public class BayesianRobustLinearRegression<InputType>
     }
 
     /**
-     * Creates a new instance of BayesianLinearRegression
+     * Creates a new instance of BayesianRobustLinearRegression
      * @param featureMap
      * Function that maps the input space onto a Vector.
      * @param outputVariance
@@ -124,7 +127,7 @@ public class BayesianRobustLinearRegression<InputType>
     }
 
     @Override
-    public BayesianRobustLinearRegression clone()
+    public BayesianRobustLinearRegression<InputType> clone()
     {
         @SuppressWarnings("unchecked")
         BayesianRobustLinearRegression<InputType> clone =
@@ -157,56 +160,54 @@ public class BayesianRobustLinearRegression<InputType>
         this.weightPrior = weightPrior;
     }
 
+    @Override
     public MultivariateGaussianInverseGammaDistribution learn(
-        Iterable<? extends InputOutputPair<? extends InputType, Double>> data)
+        Collection<? extends InputOutputPair<? extends InputType, Double>> data)
     {
+        MultivariateGaussian g = this.weightPrior;
+        RingAccumulator<Matrix> Cin = new RingAccumulator<Matrix>();
+        Matrix Ci = g.getCovarianceInverse();
+        Cin.accumulate( Ci );
+        RingAccumulator<Vector> zn = new RingAccumulator<Vector>();
+        Vector z = Ci.times( g.getMean() );
+        zn.accumulate( z );
 
-        int featureDim;
-        final int N = CollectionUtil.size(data);
-        Vector y = VectorFactory.getDefault().createVector( N );
-
-        Matrix X = null;
-        int n = 0;
+        InverseGammaDistribution ig = this.outputVariance;
+        double an = ig.getShape();
+        double bn = ig.getScale();
+        double sy2 = 0.0;
         for (InputOutputPair<? extends InputType, Double> pair : data)
         {
-            final double weight = DatasetUtil.getWeight(pair);
-
-            Vector x = this.getFeatureMap().evaluate(pair.getInput());
-            if( X == null )
+            Vector x1 = this.featureMap.evaluate(pair.getInput());
+            Vector x2 = x1.clone();
+            final double beta = DatasetUtil.getWeight(pair);
+            if( beta != 1.0 )
             {
-                featureDim = x.getDimensionality();
-                X = MatrixFactory.getDefault().createMatrix(featureDim, N);
+                x2.scaleEquals(beta);
             }
-            double output = pair.getOutput();
+            Cin.accumulate( x1.outerProduct(x2) );
 
-            if( weight != 1.0 )
+            final double y = pair.getOutput();
+            if( y != 1.0 )
             {
-                output *= weight;
-                x.scaleEquals(weight);
+                x2.scaleEquals(y);
             }
+            zn.accumulate( x2 );
 
-            X.setColumn( n, x );
-            y.setElement( n, output );
-            n++;
+            sy2 += y*y;
+            an += 0.5;
         }
 
-        Vector m0 = this.weightPrior.getMean();
-        Matrix C0i = this.weightPrior.getCovarianceInverse();
-
-        // Bishop's Equations 3.49 - 3.51
-        Matrix Cni = C0i.plus( X.times( X.transpose() ) );
-        Matrix Cn = Cni.inverse();
-        Vector mn = Cn.times( C0i.times( m0 ).plus( X.times( y ) ) );
-
-        double a0 = this.outputVariance.getShape();
-        double b0 = this.outputVariance.getScale();
-        double an = a0 + N/2.0;
-        double bn = b0 + 0.5*(y.dotProduct(y) - mn.times( Cni ).dotProduct(mn));
+        Ci = Cin.getSum();
+        Matrix C = Ci.inverse();
+        z = zn.getSum();
+        Vector mean = C.times( z );
+        bn += 0.5*(sy2 - mean.times( Ci ).dotProduct(mean));
 
         return new MultivariateGaussianInverseGammaDistribution(
-            new MultivariateGaussian( mn, Cn ),
-            new InverseGammaDistribution( an, bn ));
-        
+            new MultivariateGaussian( mean, C ),
+            new InverseGammaDistribution( an, bn ) );
+
     }
 
     /**
@@ -240,6 +241,7 @@ public class BayesianRobustLinearRegression<InputType>
      * @return
      * Conditional distribution from which outputs are generated.
      */
+    @Override
     public UnivariateGaussian createConditionalDistribution(
         InputType input,
         Vector weights )
@@ -249,6 +251,7 @@ public class BayesianRobustLinearRegression<InputType>
         return new UnivariateGaussian( mean, variance );
     }
 
+    @Override
     public BayesianRobustLinearRegression<InputType>.PredictiveDistribution createPredictiveDistribution(
         MultivariateGaussianInverseGammaDistribution posterior)
     {
@@ -280,6 +283,7 @@ public class BayesianRobustLinearRegression<InputType>
             this.posterior = posterior;
         }
 
+        @Override
         public StudentTDistribution evaluate(
             InputType input)
         {
@@ -291,6 +295,291 @@ public class BayesianRobustLinearRegression<InputType>
             double precision = anbn / (1.0 + v);
             return new StudentTDistribution( dofs, mean, precision );
         }
+
+    }
+
+    /**
+     * Incremental estimator for BayesianRobustLinearRegression
+     * @param <InputType>
+     */
+    public static class IncrementalEstimator<InputType>
+        extends BayesianRobustLinearRegression<InputType>
+        implements IncrementalLearner<InputOutputPair<? extends InputType,Double>, IncrementalEstimator<InputType>.SufficientStatistic>
+    {
+
+        /**
+         * Creates a new instance of IncrementalEstimator
+         * @param dimensionality
+         * Sets up the parameters (except featureMap) for the given dimensionality
+         * of objects in feature space.
+         */
+        public IncrementalEstimator(
+            int dimensionality )
+        {
+            super( dimensionality );
+        }
+
+        /**
+         * Creates a new instance of IncrementalEstimator with the given
+         * dimensionality and feature map.
+         *
+         * @param dimensionality
+         * Sets up the parameters (except featureMap) for the given dimensionality
+         * of objects in feature space.
+         * @param featureMap
+         * Function that maps the input space onto a Vector.
+         */
+        public IncrementalEstimator(
+            int dimensionality,
+            Evaluator<? super InputType, Vector> featureMap)
+        {
+            this(dimensionality);
+
+            this.setFeatureMap(featureMap);
+        }
+
+        /**
+         * Creates a new instance of IncrementalEstimator
+         * @param featureMap
+         * Function that maps the input space onto a Vector.
+         * @param outputVariance
+         * Distribution of the output (measurement) variance
+         * @param weightPrior
+         * Prior distribution of the weights, typically a zero-mean,
+         * diagonal-variance distribution.
+         */
+        public IncrementalEstimator(
+            Evaluator<? super InputType, Vector> featureMap,
+            InverseGammaDistribution outputVariance,
+            MultivariateGaussian weightPrior )
+        {
+            super( featureMap, outputVariance, weightPrior);
+        }
+
+        @Override
+        public IncrementalEstimator<InputType>.SufficientStatistic createInitialLearnedObject()
+        {
+            return new SufficientStatistic(
+                new MultivariateGaussianInverseGammaDistribution(
+                    this.getWeightPrior(), this.getOutputVariance() ));
+        }
+
+        @Override
+        public MultivariateGaussianInverseGammaDistribution learn(
+            Collection<? extends InputOutputPair<? extends InputType, Double>> data)
+        {
+            IncrementalEstimator<InputType>.SufficientStatistic target = this.createInitialLearnedObject();
+            this.update(target, data);
+            return target.create();
+        }
+
+        @Override
+        public void update(
+            IncrementalEstimator<InputType>.SufficientStatistic target,
+            InputOutputPair<? extends InputType, Double> data)
+        {
+            target.update(data);
+        }
+
+        @Override
+        public void update(
+            SufficientStatistic target,
+            Iterable<? extends InputOutputPair<? extends InputType, Double>> data)
+        {
+            target.update(data);
+        }
+
+        /**
+         * SufficientStatistic for incremental Bayesian linear regression
+         */
+        public class SufficientStatistic
+            extends AbstractSufficientStatistic<InputOutputPair<? extends InputType, Double>, MultivariateGaussianInverseGammaDistribution>
+        {
+
+            /**
+             * Sum of the output squared
+             */
+            private double outputSumSquared;
+
+            /**
+             * "z" statistic, proportional to the mean
+             */
+            private Vector z;
+
+            /**
+             * Covariance inverse, sometimes called "precision"
+             */
+            private Matrix covarianceInverse;
+
+            /**
+             * Creates a new instance of SufficientStatistic
+             * @param prior
+             * Prior on the weights
+             */
+            public SufficientStatistic(
+                MultivariateGaussianInverseGammaDistribution prior )
+            {
+                super();
+
+                if( prior != null )
+                {
+                    Vector mean = prior.getMean();
+                    this.covarianceInverse =
+                        prior.getGaussian().getCovarianceInverse().clone();
+                    this.z = this.covarianceInverse.times( mean );
+
+                    double a0 = prior.getInverseGamma().getShape();
+                    double b0 = prior.getInverseGamma().getScale();
+                    this.count = (long) Math.ceil(2.0*a0);
+                    this.outputSumSquared = 2.0*b0 + mean.dotProduct(this.z);
+                }
+                else
+                {
+                    this.covarianceInverse = null;
+                    this.z = null;
+                    this.count = 0;
+                    this.outputSumSquared = 0.0;
+                }
+            }
+
+            @Override
+            public void update(
+                InputOutputPair<? extends InputType, Double> value)
+            {
+                this.count++;
+                Vector v = featureMap.evaluate(value.getInput());
+
+                Vector x1 = v;
+                Vector x2 = v.clone();
+                final double y = value.getOutput();
+                final double beta = DatasetUtil.getWeight(value);
+                if( beta != 1.0 )
+                {
+                    x2.scaleEquals(beta);
+                }
+
+                if( this.covarianceInverse == null )
+                {
+                    this.covarianceInverse = x1.outerProduct(x2);
+                }
+                else
+                {
+                    this.covarianceInverse.plusEquals( x1.outerProduct(x2) );
+                }
+
+                if( y != 1.0 )
+                {
+                    x2.scaleEquals( y );
+                }
+
+                if( this.z == null )
+                {
+                    this.z = x2;
+                }
+                else
+                {
+                    this.z.plusEquals( x2 );
+                }
+
+                this.outputSumSquared += y*y;
+            }
+
+            @Override
+            public MultivariateGaussianInverseGammaDistribution create()
+            {
+                MultivariateGaussianInverseGammaDistribution g =
+                    new MultivariateGaussianInverseGammaDistribution( this.getDimensionality() );
+                this.create(g);
+                return g;
+            }
+
+            @Override
+            public void create(
+                MultivariateGaussianInverseGammaDistribution distribution)
+            {
+                distribution.getGaussian().setMean(this.getMean());
+                distribution.getGaussian().setCovarianceInverse(this.getCovarianceInverse());
+
+                distribution.getInverseGamma().setShape(this.getShape());
+                distribution.getInverseGamma().setScale(this.getScale());
+            }
+
+            /**
+             * Getter for covarianceInverse
+             * @return
+             * Covariance inverse, sometimes called "precision"
+             */
+            public Matrix getCovarianceInverse()
+            {
+                return this.covarianceInverse;
+            }
+
+            /**
+             * Getter for z
+             * @return
+             * "z" statistic, proportional to the mean
+             */
+            public Vector getZ()
+            {
+                return this.z;
+            }
+
+            /**
+             * Computes the mean of the Gaussian, but involves a matrix
+             * inversion and multiplication, so it's expensive.
+             * @return
+             * Mean of the Gaussian.
+             */
+            public Vector getMean()
+            {
+                return this.covarianceInverse.inverse().times( this.z );
+            }
+
+            /**
+             * Gets the dimensionality of the underlying Gaussian
+             * @return
+             * Dimensionality of the underlying Gaussian
+             */
+            public int getDimensionality()
+            {
+                return this.getZ().getDimensionality();
+            }
+
+            /**
+             * Getter for outputSumSquared
+             * @return
+             * Sum of the output squared
+             */
+            public double getOutputSumSquared()
+            {
+                return this.outputSumSquared;
+            }
+
+            /**
+             * Computes the shape component for the inverse-gamma distribution
+             * @return
+             * Shape component for the inverse-gamma distribution
+             */
+            public double getShape()
+            {
+                return this.getCount()/2.0;
+            }
+
+            /**
+             * Computes the scale component for the inverse-gamma distribution
+             * @return
+             * Scale component for the inverse-gamma distribution
+             */
+            public double getScale()
+            {
+                Vector mean = this.getMean();
+                Matrix Ci = this.covarianceInverse;
+
+                return 0.5 * (this.outputSumSquared - mean.times(Ci).dotProduct(mean));
+            }
+
+        }
+
 
     }
 

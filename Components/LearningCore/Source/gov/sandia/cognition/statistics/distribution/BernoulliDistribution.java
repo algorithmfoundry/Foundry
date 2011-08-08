@@ -154,6 +154,12 @@ public class BernoulliDistribution
         return Arrays.asList( 0, 1 );
     }
 
+    @Override
+    public int getDomainSize()
+    {
+        return 2;
+    }
+
     /**
      * Getter for p
      * @return

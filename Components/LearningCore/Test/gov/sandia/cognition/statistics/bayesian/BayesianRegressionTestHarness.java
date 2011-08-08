@@ -15,6 +15,7 @@
 package gov.sandia.cognition.statistics.bayesian;
 
 import gov.sandia.cognition.evaluator.Evaluator;
+import gov.sandia.cognition.learning.algorithm.IncrementalLearner;
 import gov.sandia.cognition.learning.algorithm.regression.LinearRegression;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
@@ -24,9 +25,14 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.Distribution;
 import gov.sandia.cognition.statistics.ProbabilityFunction;
 import gov.sandia.cognition.statistics.ScalarDistribution;
+import gov.sandia.cognition.statistics.SufficientStatistic;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
+import gov.sandia.cognition.statistics.method.AnalysisOfVarianceOneWay;
+import gov.sandia.cognition.statistics.method.ChiSquareConfidence;
 import gov.sandia.cognition.statistics.method.ConfidenceInterval;
 import gov.sandia.cognition.statistics.method.GaussianConfidence;
+import gov.sandia.cognition.statistics.method.KolmogorovSmirnovConfidence;
+import gov.sandia.cognition.statistics.method.StudentTConfidence;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.ArrayList;
 import junit.framework.TestCase;
@@ -102,6 +108,7 @@ public abstract class BayesianRegressionTestHarness<PosteriorType extends Distri
             this.variance = variance;
         }
 
+        @Override
         public UnivariateGaussian evaluate(
             Double input)
         {
@@ -162,6 +169,7 @@ public abstract class BayesianRegressionTestHarness<PosteriorType extends Distri
             this.num = num;
         }
 
+        @Override
         public Vector evaluate(
             Number input)
         {
@@ -320,28 +328,27 @@ public abstract class BayesianRegressionTestHarness<PosteriorType extends Distri
         ArrayList<Double> inputs = createInputs(RANDOM);
         Evaluator<? super Double,? extends ScalarDistribution<Double>> target = this.createModel();
         ArrayList<InputOutputPair<Double,Double>> samples =
-            this.createData(inputs, target, RANDOM);
+            createData(inputs, target, RANDOM);
 
-        System.out.println( "Targets:" );
-        for( InputOutputPair<Double,Double> sample : samples )
-        {
-            System.out.println( "x = " + sample.getInput() + ", y = " + sample.getOutput() );
-        }
+//        System.out.println( "Targets:" );
+//        for( InputOutputPair<Double,Double> sample : samples )
+//        {
+//            System.out.println( "x = " + sample.getInput() + ", y = " + sample.getOutput() );
+//        }
 
         BayesianRegression<Double,Double,PosteriorType> instance = this.createInstance();
         PosteriorType posterior = instance.learn(samples);
 
         Vector weights = posterior.getMean();
         ScalarDistribution<Double> conditional = (ScalarDistribution<Double>)
-            instance.createConditionalDistribution(samples.get(0).getFirst(), weights );
+            instance.createConditionalDistribution(samples.get(1).getFirst(), weights );
         System.out.println( "Result: " + conditional );
-        System.out.println( "Target: " + samples.get(0).getSecond() );
+        System.out.println( "Target: " + samples.get(1).getSecond() );
 
         ConfidenceInterval interval = GaussianConfidence.computeConfidenceInterval(
             conditional, 1, 0.95);
         System.out.println( "Interval: " + interval );
-        assertTrue( interval.withinInterval(samples.get(0).getSecond()) );
-
+        assertTrue( interval.withinInterval(samples.get(1).getSecond()) );
     }
 
     public static void compareMethods(
@@ -359,7 +366,8 @@ public abstract class BayesianRegressionTestHarness<PosteriorType extends Distri
             ProbabilityFunction<Double> y = target.evaluate(x).getProbabilityFunction();
             Distribution<Double> ybayes = predictive.evaluate(x);
             Double ymle = mle.evaluate(x);
-            System.out.println( "x = " + x + ", target = " + y + ", Estimate: " + ybayes + ", MLE: " + ymle);
+            System.out.printf( "x = %.1f", x );
+            System.out.println( ", target = " + y + ", Estimate: " + ybayes + ", MLE: " + ymle);
             logTarget = y.logEvaluate( y.getMean() );
             logBayesian += y.logEvaluate( ybayes.getMean() );
             logMLE += y.logEvaluate(ymle);
@@ -459,5 +467,50 @@ public abstract class BayesianRegressionTestHarness<PosteriorType extends Distri
         compareMethods(predictive, mle, target);
     }
 
+
+    public <SufficientStatisticType extends SufficientStatistic<InputOutputPair<? extends Double, Double>,PosteriorType>> void testIncrementalAndBatch(
+        IncrementalLearner<InputOutputPair<? extends Double,Double>,SufficientStatisticType> incremental )
+//        IncrementalLearner<InputOutputPair<? extends Double,Double>,SufficientStatistic<InputOutputPair<? extends Double, Double>, PosteriorType>> incremental )
+    {
+        System.out.println( "Incremental And Batch" );
+        ArrayList<Double> inputs = createInputs(RANDOM);
+        NUM_SAMPLES = 100;
+        Model target = new Model(1.0);
+        ArrayList<InputOutputPair<Double,Double>> data = createData(inputs, target,RANDOM);
+        BayesianRegression<Double,Double,PosteriorType> instance =
+            this.createInstance();
+
+        Evaluator<? super Double, ? extends Distribution<Double>> batch =
+            instance.createPredictiveDistribution( instance.learn(data) );
+
+        SufficientStatisticType posterior = incremental.createInitialLearnedObject();
+        for( InputOutputPair<Double,Double> pair : data )
+        {
+            incremental.update(posterior, pair);
+        }
+
+        Evaluator<? super Double, ? extends Distribution<Double>> incrementalPredictive =
+            instance.createPredictiveDistribution( posterior.create() );
+
+
+        // Now run some K-S tests to see if they're almost the same
+        for( InputOutputPair<Double,Double> pair : data )
+        {
+            Distribution<Double> b = batch.evaluate(pair.getInput());
+            ArrayList<? extends Double> sb = b.sample(RANDOM,NUM_SAMPLES);
+            Distribution<Double> i = incrementalPredictive.evaluate(pair.getInput());
+            System.out.println( "Batch:  " + b );
+            System.out.println( "Incre:  " + i );
+            System.out.println( "Target: " + target.evaluate(pair.getInput()) );
+            ArrayList<? extends Double> si = i.sample(RANDOM, NUM_SAMPLES);
+            KolmogorovSmirnovConfidence.Statistic kstest =
+                KolmogorovSmirnovConfidence.INSTANCE.evaluateNullHypothesis(sb,si);
+            System.out.println( "K-S test: " + kstest );
+            assertEquals( 1.0, kstest.getNullHypothesisProbability(), 0.99 );
+
+        }
+
+
+    }
 
 }

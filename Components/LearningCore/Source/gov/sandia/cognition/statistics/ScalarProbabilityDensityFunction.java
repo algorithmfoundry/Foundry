@@ -30,4 +30,18 @@ public interface ScalarProbabilityDensityFunction
 
     public ScalarProbabilityDensityFunction getProbabilityFunction();
 
+    /**
+     * Evaluate the natural logarithm of the distribution function.
+     * This is sometimes more efficient than evaluating the distribution
+     * function itself, and when evaluating the product of many independent
+     * or exchangeable samples.
+     *
+     * @param input
+     *      The input value.
+     * @return
+     *      The natural logarithm of the distribution function.
+     */
+    public double logEvaluate(
+        final double input);
+
 }

@@ -147,6 +147,12 @@ public class PoissonDistribution
         return new IntegerCollection(0, (int) Math.round(this.getRate()*10)+5 );
     }
 
+    @Override
+    public int getDomainSize()
+    {
+        return this.getDomain().size();
+    }
+
     public PoissonDistribution.PMF getProbabilityFunction()
     {
         return new PoissonDistribution.PMF( this );

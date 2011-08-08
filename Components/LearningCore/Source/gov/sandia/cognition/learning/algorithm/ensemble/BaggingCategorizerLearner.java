@@ -190,15 +190,8 @@ public class BaggingCategorizerLearner<InputType, CategoryType>
             this.dataInBag[i] = 0;
         }
 
-        // Create the bag by sampling with replacement.
-        for (int i = 0; i < sampleCount; i++)
-        {
-            final int index = this.getRandom().nextInt(dataSize);
-            final InputOutputPair<? extends InputType, CategoryType> example =
-                this.dataList.get(index);
-            this.bag.add(example);
-            this.dataInBag[index] += 1;
-        }
+        // Fill the bag.
+        this.fillBag(sampleCount);
 
         // Learn the categorizer on the new bag of data.
         final Evaluator<? super InputType,? extends CategoryType> learned =
@@ -210,6 +203,28 @@ public class BaggingCategorizerLearner<InputType, CategoryType>
         // We keep going until we've created the requested number of members,
         // which is checked by the super-class.
         return true;
+    }
+
+    /**
+     * Fills the internal bag field by sampling the given number of samples.
+     *
+     * @param   sampleCount
+     *      The number to sample.
+     */
+    protected void fillBag(
+        final int sampleCount)
+    {
+        final int dataSize = this.dataList.size();
+
+        // Create the bag by sampling with replacement.
+        for (int i = 0; i < sampleCount; i++)
+        {
+            final int index = this.getRandom().nextInt(dataSize);
+            final InputOutputPair<? extends InputType, CategoryType> example =
+                this.dataList.get(index);
+            this.bag.add(example);
+            this.dataInBag[index] += 1;
+        }
     }
 
     protected void cleanupAlgorithm()
@@ -311,4 +326,16 @@ public class BaggingCategorizerLearner<InputType, CategoryType>
         this.ensemble = ensemble;
     }
 
+    /**
+     * Gets the most recently created bag.
+     *
+     * @return
+     *      The most recently created bag.
+     */
+    public ArrayList<InputOutputPair<? extends InputType, CategoryType>> getBag()
+    {
+        return this.bag;
+    }
+
 }
+

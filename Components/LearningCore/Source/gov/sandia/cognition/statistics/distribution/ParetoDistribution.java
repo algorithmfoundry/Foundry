@@ -432,7 +432,13 @@ public class ParetoDistribution
         }
 
         public double logEvaluate(
-            Double input)
+            final Double input)
+        {
+            return this.logEvaluate((double) input);
+        }
+
+        public double logEvaluate(
+            double input)
         {
 //            if( input > this.scale )
             if( (input+this.shift) > this.scale )

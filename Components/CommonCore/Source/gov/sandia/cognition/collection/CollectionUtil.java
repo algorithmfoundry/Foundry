@@ -451,7 +451,7 @@ public class CollectionUtil
         final Iterable<DataType> iterable,
         int index)
     {
-        if (iterable instanceof List)
+        if (iterable instanceof List<?>)
         {
            return ((List<DataType>) iterable).get(index);
         }
@@ -474,9 +474,68 @@ public class CollectionUtil
             }
 
             // Bad index.
-            throw new IndexOutOfBoundsException("index >= iterable size!");
+            throw new IndexOutOfBoundsException("index >= iterable size");
         }
         
+    }
+
+    /**
+     * Removes and returns the indexed value into the {@code Iterable}. It
+     * first checks to see if the {@code Iterable} is a {@code List}, and if so
+     * calls the remove method. Otherwise, it walks the {@code Iterable} to
+     * get to the element and remove it. This only works on {@code Iterable}s
+     * that are {@code List}s or whose {@code Iterator} implements the optional
+     * {@code remove} method.
+     *
+     * @param <DataType>
+     *      The type of data.
+     * @param iterable
+     *      The iterable to remove the value from.
+     * @param index
+     *      The 0-based index to remove from the iterable.
+     * @return
+     *      The value removed from the given index in the iterable.
+     * @throws IndexOutOfBoundsException
+     *      If the index is less than zero or greater than or equal to the
+     *      number of elements in the iterable.
+     * @throws UnsupportedOperationException
+     *      If the iterable does not support remove.
+     */
+    public static <DataType> DataType removeElement(
+        final Iterable<DataType> iterable,
+        int index)
+    {
+        if (iterable instanceof List<?>)
+        {
+           return ((List<DataType>) iterable).remove(index);
+        }
+        else
+        {
+            if (index < 0)
+            {
+                // Bad index.
+                throw new IndexOutOfBoundsException("index must be >= 0");
+            }
+
+            Iterator<DataType> iterator = iterable.iterator();
+
+            while (iterator.hasNext())
+            {
+                DataType value = iterator.next();
+                
+                if (index == 0)
+                {
+                    iterator.remove();
+                    return value;
+                }
+
+                index--;
+            }
+
+            // Bad index.
+            throw new IndexOutOfBoundsException("index >= iterable size");
+        }
+
     }
 
     /**

@@ -191,7 +191,7 @@ public class LaplaceDistribution
     @Override
     public String toString()
     {
-        return ObjectUtil.toString(this);
+        return "Mean: " + this.getMean() + ", Scale: " + this.getScale();
     }
 
     public LaplaceDistribution.CDF getCDF()
@@ -399,7 +399,13 @@ public class LaplaceDistribution
         }
 
         public double logEvaluate(
-            Double input)
+            final Double input)
+        {
+            return this.logEvaluate((double) input);
+        }
+
+        public double logEvaluate(
+            double input)
         {
             final double n1 = Math.log( 0.5 / this.scale );
             final double n2 = -Math.abs(input-this.mean) / this.scale;

@@ -14,11 +14,9 @@ package gov.sandia.cognition.learning.algorithm.perceptron;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.util.ArgumentChecker;
 
 /**
@@ -89,12 +87,9 @@ public class OnlinePassiveAggressivePerceptron
     @Override
     public void update(
         final LinearBinaryCategorizer target,
-        final InputOutputPair<? extends Vectorizable, Boolean> example)
+        final Vector input,
+        final boolean output)
     {
-       // Get the information about the example.
-        final Vector input = example.getInput().convertToVector();
-        final boolean label = example.getOutput();
-
         Vector weights = target.getWeights();
         if (weights == null)
         {
@@ -108,7 +103,7 @@ public class OnlinePassiveAggressivePerceptron
         // Predict the output as a double (negative values are false, positive
         // are true).
         final double prediction = target.evaluateAsDouble(input);
-        final double actual = label ? +1.0 : -1.0;
+        final double actual = output ? +1.0 : -1.0;
         final double loss = 1.0 - actual * prediction;
 
         if (loss > 0.0)

@@ -70,7 +70,7 @@ public class MixtureOfGaussiansExample
         
         // Create a mixture of gaussians as mechanism to create some random
         // data.
-        final MixtureOfGaussians actualMixture = createRandomMixtureOfGaussians(
+        final MixtureOfGaussians.PDF actualMixture = createRandomMixtureOfGaussians(
             random, actualNumGaussians, dimensionality, range);
 
         // Print out our actual mixture so we can look at it to compare how
@@ -87,20 +87,18 @@ public class MixtureOfGaussiansExample
         // and fit a mixture of gaussians to the example data that we have.
 
         // We construct a new learner object.
-        final MixtureOfGaussians.SoftLearner softLearner =
-            new MixtureOfGaussians.SoftLearner();
-
         // Next we configure the parameters of the soft learner.
         // For this example, the only real parameter we are concerned with
         // is telling the soft learner how many gaussians to look for. We
         // do this by calling the setNumGaussians method.
-        softLearner.setNumGaussians(guessedNumGaussians);
+        final MixtureOfGaussians.EMLearner softLearner =
+            new MixtureOfGaussians.EMLearner( guessedNumGaussians, random );
 
         // Now that our learner is configured, we call the learning algorithm
         // by calling the learn method and passing in our dataset. This runs
         // the algorithm and then returns the mixture of gaussians it has
         // learned from that data.
-        MixtureOfGaussians learnedMixture = softLearner.learn(data);
+        MixtureOfGaussians.PDF learnedMixture = softLearner.learn(data);
 
         System.out.println("Soft Learned Gaussians: ");
         printMixture(learnedMixture);
@@ -151,17 +149,17 @@ public class MixtureOfGaussiansExample
      *      The mixture to print.
      */
     public static void printMixture(
-        final MixtureOfGaussians mixture)
+        final MixtureOfGaussians.PDF mixture)
     {
         // Loop through the mixture and print out the random variables that
         // make up the mixture.
-        for (int i = 0; i < mixture.getNumRandomVariables(); i++)
+        for (int i = 0; i < mixture.getDistributionCount(); i++)
         {
             final MultivariateGaussian gaussian =
-                mixture.getRandomVariables().get(i);
+                mixture.getDistributions().get(i);
 
             // Get some information about the gaussian.
-            final double prior = mixture.getPriorProbabilities().getElement(i);
+            final double prior = mixture.getPriorWeights()[i] / mixture.getPriorWeightSum();
             final Vector mean = gaussian.getMean();
             final Matrix covariance = gaussian.getCovariance();
 
@@ -188,7 +186,7 @@ public class MixtureOfGaussiansExample
      * @return
      *      A new random mixture of gaussians.
      */
-    public static MixtureOfGaussians createRandomMixtureOfGaussians(
+    public static MixtureOfGaussians.PDF createRandomMixtureOfGaussians(
         final Random random,
         final int numGaussians,
         final int dimensionality,
@@ -204,7 +202,7 @@ public class MixtureOfGaussiansExample
             gaussians.add(gaussian);
         }
 
-        return new MixtureOfGaussians(gaussians);
+        return new MixtureOfGaussians.PDF(gaussians);
     }
 
     /**

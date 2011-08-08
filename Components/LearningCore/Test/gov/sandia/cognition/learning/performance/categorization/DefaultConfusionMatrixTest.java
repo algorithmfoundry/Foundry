@@ -79,6 +79,16 @@ public class DefaultConfusionMatrixTest
         DefaultConfusionMatrix<String> instance = new DefaultConfusionMatrix<String>();
         assertEquals(0.0, instance.getTotalCount(), 0.0);
         assertTrue(instance.getCategories().isEmpty());
+
+        DefaultConfusionMatrix<String> other = new DefaultConfusionMatrix<String>();
+        other.add("a", "a");
+        other.add("b", "a");
+        instance = new DefaultConfusionMatrix<String>(other);
+        assertEquals(other.getTotalCount(), instance.getTotalCount(), 0.0);
+
+        other.add("c", "c");
+        assertTrue(other.getCategories().contains("c"));
+        assertFalse(instance.getCategories().contains("c"));
     }
 
     /**

@@ -28,6 +28,8 @@ import gov.sandia.cognition.math.matrix.VectorInputEvaluator;
 import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.decomposition.CholeskyDecompositionMTJ;
 import gov.sandia.cognition.statistics.AbstractDistribution;
+import gov.sandia.cognition.statistics.AbstractIncrementalEstimator;
+import gov.sandia.cognition.statistics.AbstractSufficientStatistic;
 import gov.sandia.cognition.statistics.ClosedFormComputableDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
@@ -91,6 +93,11 @@ public class MultivariateGaussian
     public static final int DEFAULT_DIMENSIONALITY = 2;
 
     /**
+     * Natural logarithm of 2pi.
+     */
+    public static final double LOG_TWO_PI = Math.log(2*Math.PI);
+
+    /**
      * Mean of the MultivariateGaussian.
      */
     private Vector mean;
@@ -101,19 +108,20 @@ public class MultivariateGaussian
     private Matrix covariance;
     
     /**
-     * Determinant of the covariance matrix, automatically computed.
+     * Natural logarithm of the covariance matrix, automatically computed.
      */
-    private Double covarianceDeterminant;
-    
+    private Double logCovarianceDeterminant;
+
     /**
      * Inverse of the covariance matrix, automatically computed.
      */
     private Matrix covarianceInverse;
     
     /**
-     * Leading coefficient of the likelihood calculation, automatically computed.
+     * Natural logarithm of the leading likelihood coefficient,
+     * automatically computed.
      */
-    private Double leadingCoefficient;
+    private Double logLeadingCoefficient;
 
     /**
      * Default constructor.
@@ -172,6 +180,7 @@ public class MultivariateGaussian
         return clone;
     }
 
+    @Override
     public MultivariateGaussian.PDF getProbabilityFunction()
     {
         return new MultivariateGaussian.PDF( this );
@@ -235,7 +244,7 @@ public class MultivariateGaussian
         MultivariateGaussian other )
     {
         Vector meanHat = this.mean.plus( other.getMean() );
-        Matrix covarianceHat = this.covariance.plus( other.getCovariance() );
+        Matrix covarianceHat = this.getCovariance().plus( other.getCovariance() );
         return new MultivariateGaussian( meanHat, covarianceHat );
     }
 
@@ -250,6 +259,7 @@ public class MultivariateGaussian
         return (this.mean != null) ? this.mean.getDimensionality() : 0;
     }
     
+    @Override
     public Vector getMean()
     {
         return this.mean;
@@ -277,6 +287,11 @@ public class MultivariateGaussian
      */
     public Matrix getCovariance()
     {
+        if( this.covariance == null )
+        {
+            this.covariance = this.covarianceInverse.inverse();
+        }
+
         return this.covariance;
     }
 
@@ -328,9 +343,9 @@ public class MultivariateGaussian
         this.covariance = covariance;
 
         // Flag the other values for recomputation...
-        this.covarianceDeterminant = null;
         this.covarianceInverse = null;
-        this.leadingCoefficient = null;
+        this.logCovarianceDeterminant = null;
+        this.logLeadingCoefficient = null;
     }
 
     /**
@@ -349,40 +364,98 @@ public class MultivariateGaussian
     }
 
     /**
-     * Gets the determinant of the covariance matrix.
-     * @return
-     * Determinant of the covariance matrix, automatically computed.
+     * Sets the covariance inverse
+     * @param covarianceInverse
+     * Inverse of the covariance matrix
      */
-    public double getCovarianceDeterminant()
+    public void setCovarianceInverse(
+        Matrix covarianceInverse )
     {
-        if( this.covarianceDeterminant == null )
+        this.setCovarianceInverse(covarianceInverse,
+            DEFAULT_COVARIANCE_SYMMETRY_TOLERANCE);
+    }
+
+    /**
+     * Sets the covariance inverse
+     * @param covarianceInverse
+     * Inverse of the covariance matrix
+     * @param symmetryTolerance
+     * Tolerance to enforce symmetry
+     */
+    public void setCovarianceInverse(
+        Matrix covarianceInverse,
+        double symmetryTolerance )
+    {
+
+        if( !covarianceInverse.isSymmetric(symmetryTolerance) )
+        {
+            covarianceInverse = covarianceInverse.clone();
+            int N = covarianceInverse.getNumRows();
+            for( int i = 1; i < N; i++ )
+            {
+                for( int j = 0; j < i; j++ )
+                {
+                    final double vij = covarianceInverse.getElement(i, j);
+                    final double vji = covarianceInverse.getElement(j, i);
+                    if( vij != vji )
+                    {
+                        final double v = (vij + vji) / 2.0;
+                        covarianceInverse.setElement(i, j, v);
+                        covarianceInverse.setElement(j, i, v);
+                    }
+                }
+            }
+        }
+
+        this.covarianceInverse = covarianceInverse;
+
+        // Flag the other values for recomputation...
+        this.covariance = null;
+        this.logCovarianceDeterminant = null;
+        this.logLeadingCoefficient = null;
+
+    }
+
+
+    /**
+     * Getter for logCovarianceDeterminant
+     * @return
+     * Natural logarithm of the covariance matrix, automatically computed.
+     */
+    public double getLogCovarianceDeterminant()
+    {
+
+        if( this.logCovarianceDeterminant == null )
         {
             // Compute the determinant of the matrix.
             ComplexNumber logDeterminant = this.covariance.logDeterminant();
 
-            // Get the real determinant.
-            this.covarianceDeterminant =
-                logDeterminant.computeExponent().getRealPart();
+            // There should be no imaginary part, as the the determinant is
+            // a positive value
+            this.logCovarianceDeterminant = logDeterminant.getRealPart();
         }
-        return this.covarianceDeterminant;
+
+        return this.logCovarianceDeterminant;
+
     }
 
     /**
-     * Gets the leading coefficient of the Gaussian.
+     * Getter for logLeadingCoefficient
      * @return
-     * Leading coefficient of the likelihood calculation, automatically computed.
+     * Natural logarithm of the leading likelihood coefficient,
+     * automatically computed.
      */
-    public double getLeadingCoefficient()
+    public double getLogLeadingCoefficient()
     {
-        if( this.leadingCoefficient == null )
+        if( this.logLeadingCoefficient == null )
         {
-            // Compute the denominator of the likelihood computation so that it
-            // does not need to be computed each time.
-            this.leadingCoefficient = 1.0 / 
-                Math.sqrt( Math.pow(2 * Math.PI, this.getInputDimensionality())
-                    * this.getCovarianceDeterminant() );
+            final int k = this.getInputDimensionality();
+            this.logLeadingCoefficient =
+                (-0.5*k*LOG_TWO_PI) + (-0.5*this.getLogCovarianceDeterminant());
         }
-        return this.leadingCoefficient;
+
+        return this.logLeadingCoefficient;
+
     }
 
     @Override
@@ -404,16 +477,17 @@ public class MultivariateGaussian
     {
         int hash = 7;
         hash = 53 * hash + ObjectUtil.hashCodeSafe(this.mean);
-        hash = 53 * hash + ObjectUtil.hashCodeSafe(this.covariance);
+        hash = 53 * hash + ObjectUtil.hashCodeSafe(this.getCovariance());
         return hash;
     }
     
+    @Override
     public ArrayList<Vector> sample(
         Random random,
         int numSamples )
     {
         Matrix covSqrt = CholeskyDecompositionMTJ.create(
-            DenseMatrixFactoryMTJ.INSTANCE.copyMatrix( this.covariance ) ).getR();
+            DenseMatrixFactoryMTJ.INSTANCE.copyMatrix( this.getCovariance() ) ).getR();
         
         return sample( this.mean, covSqrt, random, numSamples );
     }
@@ -481,7 +555,7 @@ public class MultivariateGaussian
         Matrix premultiplyMatrix)
     {
         Vector m = premultiplyMatrix.times( this.mean );
-        Matrix C = premultiplyMatrix.times( this.covariance ).times(
+        Matrix C = premultiplyMatrix.times( this.getCovariance() ).times(
             premultiplyMatrix.transpose() );
         return new MultivariateGaussian( m, C );
     }
@@ -498,7 +572,7 @@ public class MultivariateGaussian
         MultivariateGaussian other )
     {
         Vector m = this.mean.plus( other.getMean() );
-        Matrix C = this.covariance.plus( other.getCovariance() );
+        Matrix C = this.getCovariance().plus( other.getCovariance() );
         return new MultivariateGaussian( m, C );
     }
 
@@ -510,11 +584,13 @@ public class MultivariateGaussian
         return retval;
     }    
     
+    @Override
     public Vector convertToVector()
     {
-        return this.mean.stack( this.covariance.convertToVector() );
+        return this.mean.stack( this.getCovariance().convertToVector() );
     }
 
+    @Override
     public void convertFromVector(
         Vector parameters )
     {
@@ -527,6 +603,7 @@ public class MultivariateGaussian
         this.setCovariance( m );
     }
 
+    @Override
     public MultivariateGaussian.MaximumLikelihoodEstimator getEstimator()
     {
         return new MultivariateGaussian.MaximumLikelihoodEstimator();
@@ -585,21 +662,19 @@ public class MultivariateGaussian
             super( other );
         }
         
+        @Override
         public Double evaluate(
             Vector input )
         {
-            // Compute the weighted inner product.
-            double zsquared = this.computeZSquared( input );
-
-            // Compute the result.
-            return this.getLeadingCoefficient() * Math.exp(-0.5 * zsquared);
+            return Math.exp( this.logEvaluate(input) );
         }
 
+        @Override
         public double logEvaluate(
             Vector input)
         {
             double zsquared = this.computeZSquared(input);
-            return Math.log( this.getLeadingCoefficient() ) - (0.5*zsquared);
+            return this.getLogLeadingCoefficient() - 0.5*zsquared;
         }
 
         @Override
@@ -700,6 +775,7 @@ public class MultivariateGaussian
          * @param data The samples to calculate the Gaussian from
          * throws IllegalArgumentException if samples has 1 or fewer samples.
          */
+        @Override
         public MultivariateGaussian.PDF learn(
             Collection<? extends Vector> data)
         {
@@ -756,6 +832,7 @@ public class MultivariateGaussian
          * @param data The weighted samples to calculate the Gaussian from
          * throws IllegalArgumentException if samples has 1 or fewer samples.
          */
+        @Override
         public MultivariateGaussian.PDF learn(
             Collection<? extends WeightedValue<? extends Vector>> data )
         {
@@ -807,6 +884,253 @@ public class MultivariateGaussian
             return new MultivariateGaussian.PDF( mean, covariance );
             
         }
+    }
+
+    /**
+     * Implements the sufficient statistics of the MultivariateGaussian.
+     */
+    public static class SufficientStatistic
+        extends AbstractSufficientStatistic<Vector, MultivariateGaussian>
+    {
+
+        /**
+         * Default covariance of the statistics, {@value}.
+         */
+        public static final double DEFAULT_COVARIANCE =
+            MaximumLikelihoodEstimator.DEFAULT_COVARIANCE;
+
+        /**
+         * The mean of the Gaussian
+         */
+        private Vector mean;
+
+        /**
+         * This is the sum-squared differences
+         */
+        private Matrix sumSquaredDifferences;
+
+        /**
+         * Default covariance of the distribution
+         */
+        protected double defaultCovariance;
+
+        /**
+         * Default constructor
+         */
+        public SufficientStatistic()
+        {
+            this( DEFAULT_COVARIANCE );
+        }
+
+        /**
+         * Creates a new instance of SufficientStatistic
+         * @param defaultCovariance
+         * Default covariance of the distribution
+         */
+        public SufficientStatistic(
+            double defaultCovariance)
+        {
+            super();
+            this.clear();
+            this.defaultCovariance = defaultCovariance;
+        }
+
+        @Override
+        public MultivariateGaussian.SufficientStatistic clone()
+        {
+            return (MultivariateGaussian.SufficientStatistic) super.clone();
+        }
+
+        /**
+         * Resets this set of sufficient statistics to its empty state.
+         */
+        public void clear()
+        {
+            this.count = 0;
+            this.mean = null;
+            this.sumSquaredDifferences = null;
+        }
+
+        @Override
+        public void update(
+            Vector value)
+        {
+            // We've added another value.
+            this.count++;
+
+            // Compute the difference between the value and the current mean.
+            final int dim = value.getDimensionality();
+            if( this.mean == null )
+            {
+                this.mean = VectorFactory.getDefault().createVector(dim);
+            }
+            Vector delta = value.minus( this.mean );
+
+            // Update the mean based on the difference between the value
+            // and the mean along with the new count.
+            this.mean.plusEquals( delta.scale(1.0/this.count) );
+
+            // Update the squared differences from the mean, using the new
+            // mean in the process.
+            if( this.sumSquaredDifferences == null )
+            {
+                this.sumSquaredDifferences =
+                    MatrixFactory.getDefault().createIdentity(dim,dim);
+                this.sumSquaredDifferences.scaleEquals(this.getDefaultCovariance());
+            }
+            Vector delta2 = value.minus( this.mean );
+            this.sumSquaredDifferences.plusEquals( delta.outerProduct(delta2) );
+            
+        }
+
+        @Override
+        public MultivariateGaussian.PDF create()
+        {
+            return new MultivariateGaussian.PDF(
+                this.getMean(), this.getCovariance() );
+        }
+
+        @Override
+        public void create(
+            MultivariateGaussian distribution)
+        {
+            distribution.setMean( this.getMean() );
+            distribution.setCovariance( this.getCovariance() );
+        }
+
+        /**
+         * Getter for defaultCovariance
+         * @return
+         * Default covariance of the distribution
+         */
+        public double getDefaultCovariance()
+        {
+            return this.defaultCovariance;
+        }
+
+        /**
+         * Setter for defaultCovariance
+         * @param defaultCovariance
+         * Default covariance of the distribution
+         */
+        public void setDefaultCovariance(
+            double defaultCovariance)
+        {
+            this.defaultCovariance = defaultCovariance;
+        }
+
+        /**
+         * Getter for mean
+         * @return 
+         * The mean of the Gaussian
+         */
+        public Vector getMean()
+        {
+            return this.mean;
+        }
+
+        /**
+         * Getter for sumSquaredDifferences
+         * @return
+         * This is the sum-squared differences
+         */
+        public Matrix getSumSquaredDifferences()
+        {
+            return this.sumSquaredDifferences;
+        }
+
+        /**
+         * Gets the covariance of the Gaussian.
+         *
+         * @return
+         *      The covariance.
+         */
+        public Matrix getCovariance()
+        {
+            if( this.count <= 0 )
+            {
+                return null;
+            }
+            else if( this.count == 1 )
+            {
+                // This allows the default variance to be used.
+                return this.sumSquaredDifferences.clone();
+            }
+            else
+            {
+                return this.sumSquaredDifferences.scale( 1.0/(this.count - 1.0) );
+            }
+        }
+
+    }
+
+
+    /**
+     * The estimator that creates a MultivariateGaussian from a stream of
+     * values.
+     */
+    public static class IncrementalEstimator
+        extends AbstractIncrementalEstimator<Vector, MultivariateGaussian, MultivariateGaussian.SufficientStatistic>
+    {
+
+        /**
+         * Default covariance, {@value}.
+         */
+        public static final double DEFAULT_COVARIANCE = MaximumLikelihoodEstimator.DEFAULT_COVARIANCE;
+
+        /**
+         * Default covariance of the distribution
+         */
+        private double defaultCovariance;
+
+        /**
+         * Default constructor
+         */
+        public IncrementalEstimator()
+        {
+            this( DEFAULT_COVARIANCE );
+        }
+
+        /**
+         * Creates a new instance of IncrementalEstimator
+         * @param defaultCovariance
+         * Default covariance of the distribution
+         */
+        public IncrementalEstimator(
+            double defaultCovariance)
+        {
+            super();
+            this.setDefaultCovariance(defaultCovariance);
+        }
+
+        /**
+         * Getter for defaultCovariance
+         * @return
+         * Default covariance of the distribution
+         */
+        public double getDefaultCovariance()
+        {
+            return this.defaultCovariance;
+        }
+
+        /**
+         * Setter for defaultCovariance
+         * @param defaultCovariance
+         * Default covariance of the distribution
+         */
+        public void setDefaultCovariance(
+            double defaultCovariance)
+        {
+            this.defaultCovariance = defaultCovariance;
+        }
+
+        @Override
+        public MultivariateGaussian.SufficientStatistic createInitialLearnedObject()
+        {
+            return new MultivariateGaussian.SufficientStatistic(
+                this.getDefaultCovariance() );
+        }        
+
     }
 
 }
