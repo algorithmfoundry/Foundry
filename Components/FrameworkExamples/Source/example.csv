@@ -1,0 +1,13 @@
+CSVDefaultCognitiveModelLite,,,
+Version,1,,
+
+node,Brake,,
+node,Left Blinker,,
+node,Right Blinker,,
+node,Turning,,
+node,Stopping,,
+
+link,Brake,Turning,0.2
+link,Brake,Stopping,1
+link,Left Blinker,Turning,1
+link,Right Blinker,Stopping,1

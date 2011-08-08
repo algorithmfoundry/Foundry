@@ -1,0 +1,8 @@
+CSVDefaultCognitiveModelLite,,,
+Version,1,,
+
+node,a,,
+node,b,,
+
+link,a,b,1
+link,b,b,0.5

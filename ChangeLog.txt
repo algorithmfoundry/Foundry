@@ -1,0 +1,6 @@
+This file contains the change log for the Cognitive Foundry.
+
+Changes since last release:
+
+Release 3.0.0 (2010-06-25):
+First open source release.
