@@ -18,14 +18,19 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.collection.IntegerCollection;
 import gov.sandia.cognition.math.MathUtil;
+import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.AbstractClosedFormScalarDistribution;
 import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistribution;
 import gov.sandia.cognition.statistics.ClosedFormScalarCumulativeDistributionFunction;
+import gov.sandia.cognition.statistics.DistributionEstimator;
+import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
+import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -45,7 +50,8 @@ import java.util.Random;
 )
 public class PoissonDistribution
     extends AbstractClosedFormScalarDistribution<Number>
-    implements ClosedFormDiscreteScalarDistribution<Number>
+    implements ClosedFormDiscreteScalarDistribution<Number>,
+    EstimableDistribution<Number,PoissonDistribution>
 {
 
     /**
@@ -181,6 +187,11 @@ public class PoissonDistribution
     public Integer getMaxSupport()
     {
         return Integer.MAX_VALUE;
+    }
+
+    public PoissonDistribution.MaximumLikelihoodEstimator getEstimator()
+    {
+        return new PoissonDistribution.MaximumLikelihoodEstimator();
     }
 
     /**
@@ -334,4 +345,29 @@ public class PoissonDistribution
         
     }
 
+    /**
+     * Creates a PoissonDistribution from data
+     */
+    public static class MaximumLikelihoodEstimator
+        extends AbstractCloneableSerializable
+        implements DistributionEstimator<Number,PoissonDistribution>
+    {
+
+        /**
+         * Default constructor
+         */
+        public MaximumLikelihoodEstimator()
+        {
+        }
+
+        public PoissonDistribution.PMF learn(
+            Collection<? extends Number> data )
+        {
+            double mean = UnivariateStatisticsUtil.computeMean(data);
+            return new PoissonDistribution.PMF(mean);
+        }
+
+    }
+
 }
+

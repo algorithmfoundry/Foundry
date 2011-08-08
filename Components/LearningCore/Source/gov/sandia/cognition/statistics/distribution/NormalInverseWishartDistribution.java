@@ -230,7 +230,7 @@ public class NormalInverseWishartDistribution
         return R;
     }
 
-    public ArrayList<? extends Matrix> sample(
+    public ArrayList<Matrix> sample(
         Random random,
         int numSamples)
     {

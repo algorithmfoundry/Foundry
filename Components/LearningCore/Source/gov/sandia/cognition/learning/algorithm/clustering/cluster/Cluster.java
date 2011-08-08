@@ -15,6 +15,7 @@
 package gov.sandia.cognition.learning.algorithm.clustering.cluster;
 
 import gov.sandia.cognition.annotation.CodeReview;
+import gov.sandia.cognition.util.CloneableSerializable;
 import java.util.Collection;
 
 /**
@@ -34,6 +35,7 @@ import java.util.Collection;
     comments="Interface looks fine."
 )
 public interface Cluster<ClusterType>
+    extends CloneableSerializable
 {
     /**
      * Gets the member objects of the cluster.

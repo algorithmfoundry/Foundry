@@ -41,8 +41,7 @@ public class GeometricDistributionTest
     @Override
     public GeometricDistribution createInstance()
     {
-        double p = 0.2;
-//        double p = RANDOM.nextDouble();
+        double p = RANDOM.nextDouble();
         return new GeometricDistribution( p );
     }
 

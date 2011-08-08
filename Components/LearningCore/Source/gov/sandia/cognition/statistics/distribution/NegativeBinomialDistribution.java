@@ -19,14 +19,20 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.collection.IntegerCollection;
 import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.ProbabilityUtil;
+import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.AbstractClosedFormScalarDistribution;
 import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistribution;
+import gov.sandia.cognition.statistics.DistributionEstimator;
+import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
+import gov.sandia.cognition.util.AbstractCloneableSerializable;
+import gov.sandia.cognition.util.Pair;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -45,7 +51,8 @@ import java.util.Random;
 )
 public class NegativeBinomialDistribution
     extends AbstractClosedFormScalarDistribution<Number>
-    implements ClosedFormDiscreteScalarDistribution<Number>
+    implements ClosedFormDiscreteScalarDistribution<Number>,
+    EstimableDistribution<Number,NegativeBinomialDistribution>
 {
 
     /**
@@ -217,6 +224,11 @@ public class NegativeBinomialDistribution
         return new NegativeBinomialDistribution.PMF( this );
     }
 
+    public NegativeBinomialDistribution.MaximumLikelihoodEstimator getEstimator()
+    {
+        return new NegativeBinomialDistribution.MaximumLikelihoodEstimator();
+    }
+
     /**
      * PMF of the NegativeBinomialDistribution.
      */
@@ -362,5 +374,36 @@ public class NegativeBinomialDistribution
         }
 
     }
-    
+
+    /**
+     * Maximum likelihood estimator of the distribution
+     */
+    public static class MaximumLikelihoodEstimator
+        extends AbstractCloneableSerializable
+        implements DistributionEstimator<Number,NegativeBinomialDistribution>
+    {
+
+        /**
+         * Default constructor
+         */
+        public MaximumLikelihoodEstimator()
+        {
+        }
+
+        public NegativeBinomialDistribution.PMF learn(
+            Collection<? extends Number> data )
+        {
+
+            Pair<Double,Double> pair =
+                UnivariateStatisticsUtil.computeMeanAndVariance(data);
+            double mean = pair.getFirst();
+            double variance = pair.getSecond();
+            double ratio = mean/variance;
+            double r = Math.abs(mean * ratio / (ratio-1.0));
+            double p = mean / (mean + r);
+            return new NegativeBinomialDistribution.PMF(r, p);
+        }
+
+    }
+
 }

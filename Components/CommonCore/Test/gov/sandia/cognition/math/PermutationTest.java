@@ -39,6 +39,43 @@ public class PermutationTest extends TestCase
         return suite;
     }
 
+
+    /**
+     * Test of reorder method, of class Permutation.
+     */
+    public void testReorder()
+    {
+        ArrayList<Integer> inputs = new ArrayList<Integer>();
+        inputs.add(1);
+        inputs.add(2);
+        inputs.add(3);
+        inputs.add(4);
+
+        long seed = (long) (Math.random() * Long.MAX_VALUE);
+        Random random = new Random(seed);
+        Random randomCopy = new Random(seed);
+
+        ArrayList<Integer> result = new ArrayList<Integer>(inputs);
+        Permutation.reorder(result, random);
+
+        assertEquals(4, result.size());
+
+        for ( Integer i : inputs )
+        {
+            assertTrue(result.contains(i));
+        }
+
+        for ( Integer i : result )
+        {
+            assertTrue(inputs.contains(i));
+        }
+
+        ArrayList<Integer> result2 = Permutation.createReordering(
+            new ArrayList<Integer>(inputs), randomCopy);
+
+        assertEquals(result, result2);
+    }
+
     /**
      * Test of createPermutation method, of class gov.sandia.isrc.math.Permutation.
      */

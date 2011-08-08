@@ -162,8 +162,8 @@ public abstract class MonteCarloSamplerTestHarness<DataType extends Number,Sampl
 
         System.out.println( "Mean: " + mean );
         System.out.println( "Monte Carlo: " + pdf );
-        ConfidenceInterval ci = StudentTConfidence.computeConfidenceInterval(
-            pdf,samples.size(), 0.95 );
+        ConfidenceInterval ci = StudentTConfidence.INSTANCE.computeConfidenceInterval(
+            pdf.getMean(), pdf.getVariance(), samples.size(), 0.95 );
         System.out.println( "Interval: " + ci );
         assertTrue( ci.withinInterval(mean) );
 

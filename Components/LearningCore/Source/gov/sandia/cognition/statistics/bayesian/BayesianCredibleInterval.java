@@ -107,7 +107,7 @@ public class BayesianCredibleInterval
         {
             xmin = ProbabilityMassFunctionUtil.inverse(cdf, pmin).getInput().doubleValue();
             xmax = ProbabilityMassFunctionUtil.inverse(cdf, pmax).getInput().doubleValue();
-            xmedian = ProbabilityMassFunctionUtil.inverse(cdf, pmax).getInput().doubleValue();
+            xmedian = ProbabilityMassFunctionUtil.inverse(cdf, 0.5).getInput().doubleValue();
         }
         else
         {

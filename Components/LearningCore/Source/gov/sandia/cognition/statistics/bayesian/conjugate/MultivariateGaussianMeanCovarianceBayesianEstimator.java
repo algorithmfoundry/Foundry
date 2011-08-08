@@ -18,6 +18,7 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationReferences;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.collection.CollectionUtil;
+import gov.sandia.cognition.math.MultivariateStatisticsUtil;
 import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
@@ -27,7 +28,7 @@ import gov.sandia.cognition.statistics.bayesian.BayesianParameter;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import gov.sandia.cognition.statistics.distribution.MultivariateStudentTDistribution;
 import gov.sandia.cognition.statistics.distribution.NormalInverseWishartDistribution;
-import java.util.ArrayList;
+import gov.sandia.cognition.util.Pair;
 import java.util.Arrays;
 
 /**
@@ -143,22 +144,12 @@ public class MultivariateGaussianMeanCovarianceBayesianEstimator
         NormalInverseWishartDistribution prior,
         Iterable<? extends Vector> data)
     {
+        final int n = CollectionUtil.size(data);
 
-        ArrayList<? extends Vector> dataArray = CollectionUtil.asArrayList(data);
-        final int n = dataArray.size();
-
-        RingAccumulator<Vector> sum = new RingAccumulator<Vector>();
-        RingAccumulator<Matrix> sum2 = new RingAccumulator<Matrix>();
-        for( Vector x : data )
-        {
-            sum.accumulate(x);
-            sum2.accumulate(x.outerProduct(x));
-        }
-
-        Vector sampleSum = sum.getSum();
-        Vector sampleMean = sum.getMean();
-        Matrix s2 = sum2.getMean();
-        Matrix sampleCovariance = s2.minus( sampleMean.outerProduct(sampleMean) );
+        Pair<Vector,Matrix> pair =
+            MultivariateStatisticsUtil.computeMeanAndCovariance(data);
+        Vector sampleMean = pair.getFirst();
+        Matrix sampleCovariance = pair.getSecond();
 
         Vector lambda = prior.getGaussian().getMean();
         double nu = prior.getCovarianceDivisor();
@@ -167,11 +158,20 @@ public class MultivariateGaussianMeanCovarianceBayesianEstimator
 
         int alphahat = alpha + n;
         double nuhat = nu+n;
-        Vector lambdahat = lambda.scale(nu).plus(sampleSum).scale(1.0/nuhat);
 
-        Vector delta = sampleMean.minus(lambda);
-        Matrix betahat = beta.plus( sampleCovariance.scale(n) ).plus(
-            delta.outerProduct(delta.scale((n*nu)/nuhat)) );
+        Vector lambdahat = lambda.scale(nu/n);
+        lambdahat.plusEquals( sampleMean );
+        lambdahat.scaleEquals( n/nuhat );
+
+        Vector delta = sampleMean;
+        delta.minusEquals(lambda);
+        Matrix betahat = sampleCovariance;
+        if( n > 1 )
+        {
+            betahat.scaleEquals(n);
+        }
+        betahat.plusEquals(beta);
+        betahat.plusEquals( delta.outerProduct(delta.scale((n*nu)/nuhat)) );
 
         prior.getGaussian().setMean(lambdahat);
         prior.setCovarianceDivisor(nuhat);

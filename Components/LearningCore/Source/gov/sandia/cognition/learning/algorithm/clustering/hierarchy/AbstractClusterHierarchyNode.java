@@ -16,6 +16,7 @@ package gov.sandia.cognition.learning.algorithm.clustering.hierarchy;
 
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.learning.algorithm.clustering.cluster.Cluster;
+import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.Collection;
 
 /**
@@ -30,7 +31,7 @@ import java.util.Collection;
  * @since   2.1
  */
 public abstract class AbstractClusterHierarchyNode<DataType, ClusterType extends Cluster<DataType>>
-    extends Object
+    extends AbstractCloneableSerializable
     implements ClusterHierarchyNode<DataType, ClusterType>
 {
     /** The cluster associated with the node. */

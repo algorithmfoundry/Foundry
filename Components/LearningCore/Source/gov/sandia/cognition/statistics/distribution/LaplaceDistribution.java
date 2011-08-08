@@ -22,6 +22,7 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
+import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.InvertibleCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
@@ -49,6 +50,7 @@ import java.util.Random;
 )
 public class LaplaceDistribution 
     extends AbstractClosedFormSmoothScalarDistribution
+    implements EstimableDistribution<Double,LaplaceDistribution>
 {
 
     /**
@@ -210,6 +212,11 @@ public class LaplaceDistribution
     public Double getMaxSupport()
     {
         return Double.POSITIVE_INFINITY;
+    }
+
+    public LaplaceDistribution.MaximumLikelihoodEstimator getEstimator()
+    {
+        return new LaplaceDistribution.MaximumLikelihoodEstimator();
     }
 
     /**

@@ -15,6 +15,7 @@
 package gov.sandia.cognition.statistics.method;
 
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
+import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.Pair;
 import java.util.Collection;
 
@@ -32,9 +33,16 @@ import java.util.Collection;
  *
  */
 public class ChebyshevInequality
+    extends AbstractCloneableSerializable
     implements ConfidenceIntervalEvaluator<Collection<Double>>
 {
-    
+
+    /**
+     * This class has no members, so here's a static instance.
+     */
+    public static final ChebyshevInequality INSTANCE =
+        new ChebyshevInequality();
+
     /** Creates a new instance of ChebyshevInequality */
     public ChebyshevInequality()
     {
@@ -60,13 +68,12 @@ public class ChebyshevInequality
         Collection<Double> data,
         double confidence)
     {
-        
         Pair<Double,Double> result =
             UnivariateStatisticsUtil.computeMeanAndVariance(data);
         double mean = result.getFirst();
         double variance = result.getSecond();
         
-        return ChebyshevInequality.computeConfidenceInterval(
+        return computeConfidenceInterval(
             mean, variance, data.size(), confidence );
     }
     
@@ -86,7 +93,7 @@ public class ChebyshevInequality
      * ConfidenceInterval describing the worst-case range that
      * ANY random variable can take at the given confidence value
      */
-    public static ConfidenceInterval computeConfidenceInterval(
+    public ConfidenceInterval computeConfidenceInterval(
         double sampleMean,
         double sampleVariance,
         int numSamples,

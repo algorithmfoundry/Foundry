@@ -127,7 +127,7 @@ public class AutoRegressiveMovingAverageFilter
 
     public DefaultPair<FiniteCapacityBuffer<Double>, FiniteCapacityBuffer<Double>> createDefaultState()
     {
-        return new DefaultPair<FiniteCapacityBuffer<Double>, FiniteCapacityBuffer<Double>>(
+        return DefaultPair.create(
             new FiniteCapacityBuffer<Double>( this.getNumMovingAverageCoefficients() ),
             new FiniteCapacityBuffer<Double>( this.getNumAutoRegressiveCoefficients() ) );
     }

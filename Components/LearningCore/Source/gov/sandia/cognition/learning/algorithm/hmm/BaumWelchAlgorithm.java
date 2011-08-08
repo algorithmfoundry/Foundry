@@ -261,8 +261,7 @@ public class BaumWelchAlgorithm<ObservationType>
             k++;
         }
 
-        return new DefaultPair<ArrayList<ArrayList<Vector>>, ArrayList<Matrix>>(
-            allGammas, sequenceTransitionMatrices );
+        return DefaultPair.create( allGammas, sequenceTransitionMatrices );
     }
 
     /**

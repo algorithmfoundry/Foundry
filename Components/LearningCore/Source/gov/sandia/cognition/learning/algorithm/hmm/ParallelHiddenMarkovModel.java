@@ -435,7 +435,7 @@ public class ParallelHiddenMarkovModel<ObservationType>
         nextDelta.dotTimesEquals(bn);
         nextDelta.scaleEquals( 1.0/nextDelta.norm1() );
 
-        return new DefaultPair<Vector,int[]>( nextDelta, psis );
+        return DefaultPair.create( nextDelta, psis );
 
     }
 

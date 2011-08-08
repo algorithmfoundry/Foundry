@@ -189,15 +189,24 @@ public class DirichletProcessMixtureModelTest
         PointMassDistribution.PMF<Double> ks = new MapBasedPointMassDistribution.PMF<Double>();
         DirichletProcessMixtureModel.Sample<Vector> bestSample = null;
         double maxLL = Double.NEGATIVE_INFINITY;
+        int maxIndex = -1;
+        int index = 0;
         for( DirichletProcessMixtureModel.Sample<Vector> result : results.getValues() )
         {
             ks.add( (double) result.getNumClusters() );
-            double ll = result.posteriorLogLikelihood(samples);
-            if( maxLL < ll )
+            Double ll = result.getPosteriorLogLikelihood();
+            double actualLL = result.computePosteriorLogLikelihood(samples);
+            if( ll != null )
             {
+                assertEquals( index + ": expected " + actualLL + ", got: " + ll, actualLL, ll, TOLERANCE );
+            }
+            if( (ll != null) && (maxLL < ll) )
+            {
+                maxIndex = index;
                 maxLL = ll;
                 bestSample = result;
             }
+            index++;
         }
 
         for( Double k : ks.getDomain() )
@@ -211,11 +220,11 @@ public class DirichletProcessMixtureModelTest
 
         System.out.println( "Mean k = " + ks.getMean() );
 
-        System.out.println( "Best: ll = " + maxLL + ", k = " + bestSample.getNumClusters() + ", alpha = " + bestSample.getAlpha() );
+        System.out.println( "Best: " + maxIndex + ": ll = " + maxLL + ", k = " + bestSample.getNumClusters() + ", alpha = " + bestSample.getAlpha() );
         for( int i = 0; i < bestSample.getNumClusters(); i++ )
         {
-            System.out.println( "Weight = " + bestSample.getClusters().get(i).getWeight() );
-            System.out.println( "Cluster =\n" + bestSample.getClusters().get(i).getValue() );
+            System.out.println( "Members = " + bestSample.getClusters().get(i).getMembers().size() );
+            System.out.println( "PDF =\n" + bestSample.getClusters().get(i).getProbabilityFunction() );
         }
 
     }
@@ -255,15 +264,19 @@ public class DirichletProcessMixtureModelTest
         PointMassDistribution.PMF<Double> ks = new MapBasedPointMassDistribution.PMF<Double>();
         DirichletProcessMixtureModel.Sample<Vector> bestSample = null;
         double maxLL = Double.NEGATIVE_INFINITY;
+        int maxIndex = -1;
+        int index = 0;
         for( DirichletProcessMixtureModel.Sample<Vector> result : results.getValues() )
         {
             ks.add( (double) result.getNumClusters() );
-            double ll = result.posteriorLogLikelihood(samples);
-            if( maxLL < ll )
+            Double ll = result.getPosteriorLogLikelihood();
+            if( (ll != null) && (maxLL < ll) )
             {
+                maxIndex = index;
                 maxLL = ll;
                 bestSample = result;
             }
+            index++;
         }
 
         for( Double k : ks.getDomain() )
@@ -277,11 +290,11 @@ public class DirichletProcessMixtureModelTest
 
         System.out.println( "Mean k = " + ks.getMean() );
 
-        System.out.println( "Best: ll = " + maxLL + ", k = " + bestSample.getNumClusters() + ", alpha = " + bestSample.getAlpha() );
+        System.out.println( "Best: " + maxIndex + ", ll = " + maxLL + ", k = " + bestSample.getNumClusters() + ", alpha = " + bestSample.getAlpha() );
         for( int i = 0; i < bestSample.getNumClusters(); i++ )
         {
-            System.out.println( "Weight = " + bestSample.getClusters().get(i).getWeight() );
-            System.out.println( "Cluster =\n" + bestSample.getClusters().get(i).getValue() );
+            System.out.println( "Members = " + bestSample.getClusters().get(i).getMembers().size() );
+            System.out.println( "PDF =\n" + bestSample.getClusters().get(i).getProbabilityFunction() );
         }
 
     }

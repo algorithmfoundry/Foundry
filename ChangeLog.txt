@@ -2,5 +2,53 @@ This file contains the change log for the Cognitive Foundry.
 
 Changes since last release:
 
+Release 3.0.1 (2010-10-15):
+* Common Core:
+  * Added ArrayUtil class.
+  * MultivariateStatisticsUtil: computeMean changed to accept Iterable instead
+    of Collection.
+  * Permutation: Added reorder method.
+* Learning Core:
+  * DirichletProcessClustering: Performance improvements.
+  * Cluster: Made CloneableSerializable.
+  * DefaultCluster: Now extends AbstractCloneableSerializable.
+  * AbstractClusterHierarchyNode:: Now extends AbstractCloneableSerializable.
+  * gov.sandia.cognition.learning.function.cost: Added AbstractCostFunction,
+    KolmogorovSmirnocDivergence, NegativeLogLikelihood, and
+    ParallelNegativeLogLikelihood.
+  * SequantialMinimalOptimization: Added an initial implementatio of the
+    algorithm.
+  * WeightedEuclideanDistance: Added a weighted Euclidean distance metric.
+  * Added EstimableDistribution interface.
+  * AbstractMarkovChainMonteCarlo: Now keeps track of previous parameter.
+  * DirichletProcessMixtureModel: Performance improvements.
+  * ParallelDirichletProcessMixtureModel: Performance improvements.
+  * MultivariateGaussianMeanBayesianEstimator: Update now optimized for case of
+    a list instead of a single update.
+  * MultivariateGaussianMeanCovarianceBayesianEstimator: Optimizations for case
+    of providing a list of data.
+  * BetaBinomialDistribution: Now implements EstimableDistribution.
+  * BetaDistribution: Now implements EstimableDistribution.
+  * ChineseRestaurantProcess: Now keeps track of total customers.
+  * ExponentialDistribution: Now implements EstimableDistribution.
+  * GammaDistribution: Now implements EstimableDistribution.
+  * GeometricDistribution: Now implements EstimableDistribution.
+  * LaplaceDistribution: Now implements EstimableDistribution.
+  * MultinomialDistribution: Added logSize method.
+  * MultivariateGaussian: Now implements EstimableDistribution.
+  * NegativeBinomialDistribution: Now implements EstimableDistribution.
+  * NormalInverseWishartDistribution: Now implements EstimableDistribution.
+  * PoissonDistribution: Now implements EstimableDistribution.
+  * ScalarDataDistribution: getDomain now returns in sorted order.
+  * StudentTDistribution: Now implements EstimableDistribution.
+  * UniformDistribution: Now implements EstimableDistribution.
+  * UnivariateGaussian: Now implements EstimableDistribution.
+  * ConfidenceIntervalEvaluator: Added computeConfidenceInterval method that
+    takes a mean, variance, number of samples, and confidence. All existing
+    ConfidenceIntervalEvaluators updated; which mostly meant changing static
+    methods to be member methods and adding INSTANCE variables for those without
+    parameters.
+  * ChebyshevInequality: Now extends AbstractCloneableSerializable.
+
 Release 3.0.0 (2010-06-25):
 First open source release.

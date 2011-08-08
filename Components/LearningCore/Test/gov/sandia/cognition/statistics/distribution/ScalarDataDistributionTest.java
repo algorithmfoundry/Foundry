@@ -280,9 +280,9 @@ public class ScalarDataDistributionTest
         assertNotNull( instance.getDomain() );
         assertNotSame( values, instance.getDomain() );
 
-        assertEquals( 2.0, CollectionUtil.getElement( instance.getDomain(), 0 ) );
+        assertEquals( 0.0, CollectionUtil.getElement( instance.getDomain(), 0 ) );
         assertEquals( 1.0, CollectionUtil.getElement( instance.getDomain(), 1 ) );
-        assertEquals( 0.0, CollectionUtil.getElement( instance.getDomain(), 2 ) );
+        assertEquals( 2.0, CollectionUtil.getElement( instance.getDomain(), 2 ) );
         
     }
 

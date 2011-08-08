@@ -196,4 +196,31 @@ public abstract class MultivariateDistributionTestHarness<RingType extends Ring<
         assertTrue( s.length() > 0 );
     }
 
+    /**
+     * Tests getEstimator
+     */
+    @SuppressWarnings("unchecked")
+    public void testEstimableDistributionGetEstimator()
+    {
+        System.out.println( "EstimableDistribution.getEstimator" );
+
+        Distribution<RingType> instance = this.createInstance();
+        if( instance instanceof EstimableDistribution )
+        {
+            @SuppressWarnings("unchecked")
+            EstimableDistribution<RingType,? extends EstimableDistribution<RingType,? extends EstimableDistribution<RingType,?>>> estimable =
+                (EstimableDistribution<RingType,? extends EstimableDistribution<RingType,? extends EstimableDistribution<RingType,?>>>) instance;
+            DistributionEstimator<RingType, ? extends EstimableDistribution<RingType,? extends EstimableDistribution<RingType,?>>> estimator =
+                estimable.getEstimator();
+
+            ArrayList<? extends RingType> samples =
+                instance.sample(RANDOM,NUM_SAMPLES);
+            EstimableDistribution<RingType, ? extends EstimableDistribution<RingType, ?>> result =
+                estimator.learn(samples);
+            assertNotNull( result );
+            assertNotSame( instance, result );
+        }
+
+    }
+
 }

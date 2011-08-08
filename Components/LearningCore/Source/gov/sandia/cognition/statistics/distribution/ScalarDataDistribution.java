@@ -14,12 +14,15 @@
 
 package gov.sandia.cognition.statistics.distribution;
 
+import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.collection.NumberComparator;
 import gov.sandia.cognition.statistics.CumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
 import gov.sandia.cognition.statistics.ScalarDistribution;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * A data histogram that is based on scalar values (that is, Number).  This
@@ -154,6 +157,16 @@ public class ScalarDataDistribution
     public Double getMaxSupport()
     {
         return Double.POSITIVE_INFINITY;
+    }
+
+    @Override
+    public Collection<? extends Number> getDomain()
+    {
+        Collection<? extends Number> domain = super.getDomain();
+        ArrayList<? extends Number> sortedDomain =
+            CollectionUtil.asArrayList(domain);
+        Collections.sort(sortedDomain,NumberComparator.INSTANCE);
+        return sortedDomain;
     }
 
     /**

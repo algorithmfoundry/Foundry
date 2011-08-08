@@ -1,10 +1,22 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * File:                GeneralizedScalarRadialBasisKernel.java
+ * Authors:             Dan Morrow
+ * Company:             Sandia National Laboratories
+ * Project:             Cognitive Foundry
+ *
+ * Copyright August 31, 2009, Sandia Corporation.
+ * Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+ * license for use of this work by or on behalf of the U.S. Government. Export
+ * of this program may require a license from the United States Government.
+ * See CopyrightHistory.txt for complete details.
+ *
  */
 
 package gov.sandia.cognition.learning.function.kernel;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
+
+
+// TODO: I don't like the name of this class. -- jdbasil (2009-08-31)
 
 /**
  *implements a scalar kernel function of the form:

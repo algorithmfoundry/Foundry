@@ -359,9 +359,9 @@ public class ChineseRestaurantProcess
         public double logEvaluate(
             Vector input)
         {
-            int customersSoFar = 0;
             final int numTables = input.getDimensionality();
             double logSum = numTables * Math.log( this.alpha );
+            int totalCustomers = 0;
             for( int table = 0; table < numTables; table++ )
             {
                 // We must have at least 1 customer at each table in the CRP.
@@ -379,15 +379,15 @@ public class ChineseRestaurantProcess
                     throw new IllegalArgumentException(
                         "Customers at each table must be an integer: " + input );
                 }
-
+                // Posterior time: 31.828
+                // Posterior time: 39.563
                 final int customersAtTable = (int) floor;
                 logSum += MathUtil.logFactorial(customersAtTable-1);
-                for( int c = 0; c < customersAtTable; c++ )
-                {
-                    logSum -= Math.log(customersSoFar+this.alpha);
-                    customersSoFar++;
-                }
+                totalCustomers += customersAtTable;
             }
+
+            logSum += MathUtil.logGammaFunction( this.alpha );
+            logSum -= MathUtil.logGammaFunction( this.alpha + totalCustomers );
 
             return logSum;
         }

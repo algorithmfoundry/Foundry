@@ -60,7 +60,13 @@ public class StudentTConfidence
     implements NullHypothesisEvaluator<Collection<? extends Double>>,
     ConfidenceIntervalEvaluator<Collection<? extends Double>>
 {
-    
+
+    /**
+     * This class has no members, so here's a static instance.
+     */
+    public static final StudentTConfidence INSTANCE =
+        new StudentTConfidence();
+
     /** Creates a new instance of StudentTConfidence */
     public StudentTConfidence()
     {
@@ -137,8 +143,42 @@ public class StudentTConfidence
             data, UnivariateGaussian.MaximumLikelihoodEstimator.DEFAULT_VARIANCE );
         
 
-        return StudentTConfidence.computeConfidenceInterval( g, data.size(), confidence );
+        return computeConfidenceInterval(
+            g.getMean(), g.getVariance(), data.size(), confidence );
     }
+
+    @Override
+    public ConfidenceInterval computeConfidenceInterval(
+        double mean,
+        double variance,
+        int numSamples,
+        double confidence)
+    {
+        
+        if ((confidence <= 0.0) ||
+            (confidence > 1.0))
+        {
+            throw new IllegalArgumentException(
+                "Confidence must be on the interval (0,1]" );
+        }
+
+        double alpha = 1.0 - confidence;
+        int dof = numSamples - 1;
+
+        StudentTDistribution.CDF cdf = new StudentTDistribution.CDF( dof );
+        double z = -cdf.inverse( 0.5 * alpha );
+        double delta = z * Math.sqrt( variance / numSamples );
+        if (delta < 0.0)
+        {
+            delta = 0.0;
+        }
+
+        return new ConfidenceInterval(
+            mean, mean - delta, mean + delta, confidence, numSamples );
+
+    }
+
+
 
     /**
      * Computes the Student-t confidence interval given a distribution of
@@ -153,36 +193,36 @@ public class StudentTConfidence
      * ConfidenceInterval capturing the range of the mean of the data
      * at the desired level of confidence
      */
-    public static ConfidenceInterval computeConfidenceInterval(
-        UnivariateGaussian dataDistribution,
-        int numSamples,
-        double confidence )
-    {
-
-        if ((confidence <= 0.0) ||
-            (confidence > 1.0))
-        {
-            throw new IllegalArgumentException(
-                "Confidence must be on the interval (0,1]" );
-        }
-
-        double alpha = 1.0 - confidence;
-        int dof = numSamples - 1;
-
-        StudentTDistribution.CDF cdf = new StudentTDistribution.CDF( dof );
-        double z = -cdf.inverse( 0.5 * alpha );
-        double delta = z * Math.sqrt( dataDistribution.getVariance() / numSamples );
-        double mean = dataDistribution.getMean();
-
-        if (delta < 0.0)
-        {
-            delta = 0.0;
-        }
-
-        return new ConfidenceInterval(
-            mean, mean - delta, mean + delta, confidence, numSamples );
-
-    }
+//    public static ConfidenceInterval computeConfidenceInterval(
+//        UnivariateGaussian dataDistribution,
+//        int numSamples,
+//        double confidence )
+//    {
+//
+//        if ((confidence <= 0.0) ||
+//            (confidence > 1.0))
+//        {
+//            throw new IllegalArgumentException(
+//                "Confidence must be on the interval (0,1]" );
+//        }
+//
+//        double alpha = 1.0 - confidence;
+//        int dof = numSamples - 1;
+//
+//        StudentTDistribution.CDF cdf = new StudentTDistribution.CDF( dof );
+//        double z = -cdf.inverse( 0.5 * alpha );
+//        double delta = z * Math.sqrt( dataDistribution.getVariance() / numSamples );
+//        double mean = dataDistribution.getMean();
+//
+//        if (delta < 0.0)
+//        {
+//            delta = 0.0;
+//        }
+//
+//        return new ConfidenceInterval(
+//            mean, mean - delta, mean + delta, confidence, numSamples );
+//
+//    }
 
     /**
      * Confidence statistics for a Student-t test

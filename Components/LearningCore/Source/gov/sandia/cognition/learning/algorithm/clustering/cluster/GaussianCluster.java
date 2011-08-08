@@ -67,7 +67,7 @@ public class GaussianCluster
      * @param  gaussian The MultivariateGaussian representing the data.
      */
     public GaussianCluster(
-        final Collection<Vector> members,
+        final Collection<? extends Vector> members,
         final MultivariateGaussian.PDF gaussian)
     {
         super(members);
@@ -84,7 +84,7 @@ public class GaussianCluster
      */
     public GaussianCluster(
         final int index,
-        final Collection<Vector> members,
+        final Collection<? extends Vector> members,
         final MultivariateGaussian.PDF gaussian)
     {
         super(index, members);

@@ -43,6 +43,38 @@ public class Permutation
     }
 
     /**
+     * Reorders the elements in a given array list to be a permuted ordering of
+     * elements in the collection.
+     *
+     * @param   <DataType>
+     *      The data type of the list to reorder.
+     * @param   list
+     *      The array list to reorder.
+     * @param   random
+     *      The random number generator to use.
+     */
+    public static <DataType> void reorder(
+        final ArrayList<DataType> list,
+        final Random random)
+    {
+        // Go through the list and for each index pick a random index from the
+        // remaining part and then swap the two values.
+        final int size = list.size();
+        for (int i = 0; i < size; i++)
+        {
+            // Pick an index into the remaining part of the list to swap with
+            // element i.
+            final int randomIndex = i + random.nextInt(size - i);
+
+            // Now swap the two elements.
+            final DataType elementRandom = list.get(randomIndex);
+            final DataType elementI = list.get(i);
+            list.set(i, elementRandom);
+            list.set(randomIndex, elementI);
+        }
+    }
+    
+    /**
      * Takes a collection and returns an array list that contains a permutation
      * of the elements of that collection.
      *
@@ -57,15 +89,8 @@ public class Permutation
     {
         ArrayList<DataType> result = new ArrayList<DataType>( collection );
 
-        int size = result.size();
-        for (int i = 0; i < size; i++)
-        {
-            int randomIndex = i + random.nextInt( size - i );
-            DataType randomElement = result.get( randomIndex );
-            DataType temp = result.get( i );
-            result.set( i, randomElement );
-            result.set( randomIndex, temp );
-        }
+        // Reorder the result.
+        reorder(result, random);
 
         return result;
     }

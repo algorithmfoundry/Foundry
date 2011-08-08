@@ -421,7 +421,7 @@ public class UnivariateStatisticsUtil
                 max = x;
             }
         }
-        return new DefaultPair<Double, Double>( min, max );
+        return DefaultPair.create( min, max );
     }
 
     /**
@@ -689,7 +689,7 @@ public class UnivariateStatisticsUtil
             mean = 0.0;
             variance = 0.0;
         }
-        return new DefaultPair<Double,Double>( mean, variance );
+        return DefaultPair.create( mean, variance );
     }
 
     /**
@@ -741,7 +741,7 @@ public class UnivariateStatisticsUtil
             variance = 0.0;
         }
 
-        return new DefaultPair<Double, Double>( mean, variance );
+        return DefaultPair.create( mean, variance );
 
     }
 

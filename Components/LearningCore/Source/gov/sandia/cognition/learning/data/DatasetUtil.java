@@ -214,10 +214,8 @@ public class DatasetUtil
                 dfalse.add(pair.getInput());
             }
         }
-
-        return new DefaultPair<LinkedList<DataType>, LinkedList<DataType>>(
-            dtrue, dfalse);
-
+        
+        return DefaultPair.create( dtrue, dfalse );
     }
 
     /**

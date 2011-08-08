@@ -118,8 +118,8 @@ public class UnivariateMonteCarloIntegratorTest
         UnivariateGaussian sampleVarianceDistribution =
             UnivariateGaussian.MaximumLikelihoodEstimator.learn(variances, 0.0);
 
-        ConfidenceInterval ci = StudentTConfidence.computeConfidenceInterval(
-            sampleMeanDistribution, num, 0.95 );
+        ConfidenceInterval ci = StudentTConfidence.INSTANCE.computeConfidenceInterval(
+            sampleMeanDistribution.getMean(), sampleMeanDistribution.getVariance(), num, 0.95 );
         double meanTarget = targetDistribution.getMean();
         System.out.println( "====== Mean ========" );
         System.out.println( "Target D = " + targetDistribution );
@@ -128,8 +128,8 @@ public class UnivariateMonteCarloIntegratorTest
         System.out.println( "Interval = " + ci );
         assertTrue( ci.withinInterval( meanTarget ) );
 
-        ConfidenceInterval vi = StudentTConfidence.computeConfidenceInterval(
-            sampleVarianceDistribution, num, 0.95 );
+        ConfidenceInterval vi = StudentTConfidence.INSTANCE.computeConfidenceInterval(
+            sampleVarianceDistribution.getMean(), sampleVarianceDistribution.getVariance(), num, 0.95 );
         double varianceTarget = targetDistribution.getVariance()/NUM_SAMPLES;
         System.out.println( "====== Variance =======" );
         System.out.println( "Target   = " + varianceTarget );
@@ -180,16 +180,16 @@ public class UnivariateMonteCarloIntegratorTest
             UnivariateGaussian.MaximumLikelihoodEstimator.learn(variances, 0.0);
 
 
-        ConfidenceInterval ci = StudentTConfidence.computeConfidenceInterval(
-            sampleMeanDistribution, num, 0.95 );
+        ConfidenceInterval ci = StudentTConfidence.INSTANCE.computeConfidenceInterval(
+            sampleMeanDistribution.getMean(), sampleMeanDistribution.getVariance(), num, 0.95 );
         System.out.println( "====== Mean ========" );
         System.out.println( "Target   = " + targetDistribution );
         System.out.println( "Sample   = " + sampleMeanDistribution );
         System.out.println( "Interval = " + ci );
         assertTrue( ci.withinInterval( targetDistribution.getMean() ) );
 
-        ConfidenceInterval vi = StudentTConfidence.computeConfidenceInterval(
-            sampleVarianceDistribution, num, 0.95 );
+        ConfidenceInterval vi = StudentTConfidence.INSTANCE.computeConfidenceInterval(
+            sampleVarianceDistribution.getMean(), sampleVarianceDistribution.getVariance(), num, 0.95 );
         double s2 = importanceDistribution.getVariance();
         double s2hat = targetDistribution.getVariance();
         double y = targetDistribution.getMean();
@@ -233,16 +233,16 @@ public class UnivariateMonteCarloIntegratorTest
         UnivariateGaussian sampleVarianceDistribution =
             UnivariateGaussian.MaximumLikelihoodEstimator.learn(variances, 0.0);
 
-        ConfidenceInterval ci = StudentTConfidence.computeConfidenceInterval(
-            sampleMeanDistribution, num, 0.95 );
+        ConfidenceInterval ci = StudentTConfidence.INSTANCE.computeConfidenceInterval(
+            sampleMeanDistribution.getMean(), sampleMeanDistribution.getVariance(), num, 0.95 );
         System.out.println( "====== Mean ========" );
         System.out.println( "Target   = " + targetDistribution );
         System.out.println( "Sample   = " + sampleMeanDistribution );
         System.out.println( "Interval = " + ci );
         assertTrue( ci.withinInterval( targetDistribution.getMean() ) );
         
-        ConfidenceInterval vi = StudentTConfidence.computeConfidenceInterval(
-            sampleVarianceDistribution, num, 0.95 );
+        ConfidenceInterval vi = StudentTConfidence.INSTANCE.computeConfidenceInterval(
+            sampleVarianceDistribution.getMean(), sampleVarianceDistribution.getVariance(), num, 0.95 );
         double varianceTarget = targetDistribution.getVariance()/NUM_SAMPLES;
         System.out.println( "====== Variance =======" );
         System.out.println( "Target   = " + varianceTarget );
@@ -336,16 +336,16 @@ public class UnivariateMonteCarloIntegratorTest
             UnivariateGaussian.MaximumLikelihoodEstimator.learn(variances, 0.0);
         
 
-        ConfidenceInterval ci = StudentTConfidence.computeConfidenceInterval(
-            sampleMeanDistribution, num, 0.95 );
+        ConfidenceInterval ci = StudentTConfidence.INSTANCE.computeConfidenceInterval(
+            sampleMeanDistribution.getMean(), sampleMeanDistribution.getVariance(), num, 0.95 );
         System.out.println( "====== Mean ========" );
         System.out.println( "Target   = " + targetDistribution );
         System.out.println( "Sample   = " + sampleMeanDistribution );
         System.out.println( "Interval = " + ci );
         assertTrue( ci.withinInterval( targetDistribution.getMean() ) );
 
-        ConfidenceInterval vi = StudentTConfidence.computeConfidenceInterval(
-            sampleVarianceDistribution, num, 0.95 );
+        ConfidenceInterval vi = StudentTConfidence.INSTANCE.computeConfidenceInterval(
+            sampleVarianceDistribution.getMean(), sampleVarianceDistribution.getVariance(), num, 0.95 );
         double s2 = importanceDistribution.getVariance();
         double s2hat = targetDistribution.getVariance();
         double y = targetDistribution.getMean();

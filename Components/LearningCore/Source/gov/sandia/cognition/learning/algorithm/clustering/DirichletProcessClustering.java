@@ -179,34 +179,23 @@ public class DirichletProcessClustering
         DataHistogram<DirichletProcessMixtureModel.Sample<Vector>> dpmm =
             this.getAlgorithm().learn(data);
 
-        ArrayList<ComputePosteriorTask> tasks = new ArrayList<ComputePosteriorTask>( dpmm.getValues().size() );
-        for( DirichletProcessMixtureModel.Sample<Vector> sample : dpmm.getValues() )
-        {
-            tasks.add( new ComputePosteriorTask(data, sample) );
-        }
-
-        ArrayList<Double> posteriors = null;
-        try
-        {
-            posteriors = ParallelUtil.executeInParallel(tasks);
-        }
-        catch (Exception ex)
-        {
-            Logger.getLogger(DirichletProcessClustering.class.getName()).log(Level.SEVERE,null, ex);
-        }
-
         int maxIndex = -1;
         double maxPosterior = Double.NEGATIVE_INFINITY;
         DirichletProcessMixtureModel.Sample<Vector> maxSample = null;
-        for( int i = 0; i < tasks.size(); i++ )
+        int i = 0;
+        for( DirichletProcessMixtureModel.Sample<Vector> sample : dpmm.getValues() )
         {
-            double posterior = posteriors.get(i);
-            if( maxPosterior < posterior )
+            if( sample.getPosteriorLogLikelihood() != null )
             {
-                maxPosterior = posterior;
-                maxIndex = i;
-                maxSample = tasks.get(i).sample;
+                double posterior = sample.getPosteriorLogLikelihood();
+                if( maxPosterior < posterior )
+                {
+                    maxPosterior = posterior;
+                    maxIndex = i;
+                    maxSample = sample;
+                }
             }
+            i++;
         }
 
         final int K = maxSample.getNumClusters();
@@ -214,8 +203,8 @@ public class DirichletProcessClustering
         this.result = new ArrayList<GaussianCluster>( K );
         for( int k = 0; k < K; k++ )
         {
-            this.result.add( new GaussianCluster(
-                (MultivariateGaussian.PDF) maxSample.getClusters().get(k).getValue() ) );
+            this.result.add( new GaussianCluster( maxSample.getClusters().get(k).getMembers(),
+                (MultivariateGaussian.PDF) maxSample.getClusters().get(k).getProbabilityFunction() ) );
         }
 
         return this.getResult();
@@ -259,46 +248,6 @@ public class DirichletProcessClustering
     public Collection<? extends Vector> getData()
     {
         return (this.getAlgorithm() != null) ? (Collection<? extends Vector>) this.getAlgorithm().getData() : null;
-    }
-
-    /**
-     * Computes the posterior of a particular sample.
-     */
-    protected static class ComputePosteriorTask
-        implements Callable<Double>
-    {
-
-        /**
-         * Sample to consider
-         */
-        DirichletProcessMixtureModel.Sample<Vector> sample;
-
-        /**
-         * Data to use to compute the posterior
-         */
-        Collection<? extends Vector> data;
-
-        /**
-         * Creates a new instance of ComputePosteriorTask
-         * @param data
-         * Data to use to compute the posterior
-         * @param sample
-         * Sample to consider
-         */
-        public ComputePosteriorTask(
-            Collection<? extends Vector> data,
-            DirichletProcessMixtureModel.Sample<Vector> sample )
-        {
-            this.data = data;
-            this.sample = sample;
-        }
-
-        public Double call()
-            throws Exception
-        {
-            return this.sample.posteriorLogLikelihood(this.data);
-        }
-
     }
 
 }

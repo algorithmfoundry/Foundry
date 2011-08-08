@@ -62,6 +62,11 @@ public abstract class AbstractMarkovChainMonteCarlo<ObservationType,ParameterTyp
     protected ParameterType currentParameter;
 
     /**
+     * The previous parameter in the random walk.
+     */
+    protected ParameterType previousParameter;
+
+    /**
      * Resulting parameters to return.
      */
     private transient MapBasedDataHistogram<ParameterType> result;
@@ -177,8 +182,9 @@ public abstract class AbstractMarkovChainMonteCarlo<ObservationType,ParameterTyp
     @Override
     protected boolean initializeAlgorithm()
     {
-        this.setCurrentParameter(
-            ObjectUtil.cloneSmart( this.createInitialLearnedObject() ) );
+        this.previousParameter =
+            ObjectUtil.cloneSmart(this.createInitialLearnedObject());
+        this.setCurrentParameter( this.previousParameter );
 
         for( int i = 0; i < this.getBurnInIterations(); i++ )
         {
@@ -202,13 +208,24 @@ public abstract class AbstractMarkovChainMonteCarlo<ObservationType,ParameterTyp
         }
 
         // Put a clone of the current parameter into the array list.
-        this.result.add( ObjectUtil.cloneSmart( this.currentParameter ) );
+        this.previousParameter = ObjectUtil.cloneSmart(this.currentParameter);
+        this.result.add( this.previousParameter );
         return true;
     }
 
     @Override
     protected void cleanupAlgorithm()
     {
+    }
+
+    /**
+     * Getter for previousParameter
+     * @return
+     * The previous parameter in the random walk.
+     */
+    public ParameterType getPreviousParameter()
+    {
+        return this.previousParameter;
     }
 
 }

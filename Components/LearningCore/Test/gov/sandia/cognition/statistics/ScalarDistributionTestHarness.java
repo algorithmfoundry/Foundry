@@ -15,6 +15,8 @@ package gov.sandia.cognition.statistics;
 
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
+import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.statistics.method.ChiSquareConfidence;
 import gov.sandia.cognition.statistics.method.ConfidenceStatistic;
 import gov.sandia.cognition.statistics.method.GaussianConfidence;
 import gov.sandia.cognition.statistics.method.KolmogorovSmirnovConfidence;
@@ -322,34 +324,85 @@ public abstract class ScalarDistributionTestHarness<NumberType extends Number>
 
     }
 
+
+    /**
+     * Tests getEstimator
+     */
+    public void testEstimableDistributionGetEstimator()
+    {
+        System.out.println( "EstimableDistribution.getEstimator" );
+
+        ScalarDistribution<NumberType> instance = this.createInstance();
+        if( instance instanceof EstimableDistribution )
+        {
+            EstimableDistribution<NumberType,? extends EstimableDistribution<NumberType,? extends ScalarDistribution<NumberType>>> estimable =
+                (EstimableDistribution<NumberType, ? extends EstimableDistribution<NumberType, ? extends ScalarDistribution<NumberType>>>) instance;
+            @SuppressWarnings("unchecked")
+            DistributionEstimator<NumberType, ? extends ScalarDistribution<NumberType>> estimator =
+                (DistributionEstimator<NumberType, ? extends ScalarDistribution<NumberType>>) estimable.getEstimator();
+
+            this.distributionEstimatorTest(estimator);
+
+        }
+
+    }
+
     /**
      * Tests the ability of the learner to estimate a distribution from its
      * samples.
      * @param learner
      */
+    @SuppressWarnings("unchecked")
     public void distributionEstimatorTest(
-        BatchLearner<Collection<? extends NumberType>, ? extends Distribution<NumberType>> learner )
+        BatchLearner<Collection<? extends NumberType>, ? extends ScalarDistribution<NumberType>> learner )
     {
         System.out.println( "Test learner" );
-        Distribution<? extends NumberType> distribution = this.createInstance();
+        ScalarDistribution<? extends NumberType> distribution = this.createInstance();
 
-        System.out.println( "Target distribution:\n" + distribution.toString() );
+        if( distribution instanceof ClosedFormDistribution )
+        {
+            Vector parameters = ((ClosedFormDistribution) distribution).convertToVector();
+            System.out.println( "Target: " + distribution.getClass().getCanonicalName() + ", Parameters: " + parameters );
+        }
+        else
+        {
+            System.out.println( "Target distribution:\n" + distribution.toString() );
+        }
 
         Random r1 = new Random(1);
         ArrayList<? extends NumberType> samples =
             distribution.sample(r1, NUM_SAMPLES);
 
-        Distribution<? extends NumberType> estimate = learner.learn(samples);
+        ScalarDistribution<? extends NumberType> estimate = learner.learn(samples);
 
-        System.out.println( "Estimated distribution:\n" + estimate.toString() );
+        if( distribution instanceof ClosedFormDistribution )
+        {
+            Vector parameters = ((ClosedFormDistribution) estimate).convertToVector();
+            System.out.println( "Estimate: " + distribution.getClass().getCanonicalName() + ", Parameters: " + parameters );
+        }
+        else
+        {
+            System.out.println( "Estimated distribution:\n" + estimate.toString() );
+        }
 
-        r1 = new Random(1);
-        Collection<? extends Number> estimatedSamples =
-            estimate.sample(r1, NUM_SAMPLES);
-        KolmogorovSmirnovConfidence.Statistic kstest =
-            KolmogorovSmirnovConfidence.INSTANCE.evaluateNullHypothesis(samples,estimatedSamples);
-        System.out.println( "K-S Test Results:\n" + kstest );
-        assertEquals( 1.0, kstest.getNullHypothesisProbability(), CONFIDENCE );
+        if( estimate instanceof DiscreteDistribution )
+        {
+            ProbabilityMassFunction<NumberType> pmf =
+                ((DiscreteDistribution<NumberType>) estimate).getProbabilityFunction();
+            ChiSquareConfidence.Statistic chisquare =
+                ChiSquareConfidence.evaluateNullHypothesis( samples, pmf );
+            System.out.println( "Chi-Square Test Results:\n" + chisquare );
+            assertEquals( 1.0, chisquare.getNullHypothesisProbability(), CONFIDENCE );
+        }
+        else
+        {
+            CumulativeDistributionFunction<NumberType> cdf =
+                (CumulativeDistributionFunction<NumberType>) estimate.getCDF();
+            KolmogorovSmirnovConfidence.Statistic kstest =
+                KolmogorovSmirnovConfidence.evaluateNullHypothesis(samples, cdf);
+            System.out.println( "K-S Test Results:\n" + kstest );
+            assertEquals( 1.0, kstest.getNullHypothesisProbability(), CONFIDENCE );
+        }
 
     }
 

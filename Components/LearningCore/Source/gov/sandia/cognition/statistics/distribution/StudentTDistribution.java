@@ -24,6 +24,7 @@ import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
+import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.InvertibleCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
@@ -63,6 +64,7 @@ import java.util.Random;
 )
 public class StudentTDistribution
     extends AbstractClosedFormSmoothScalarDistribution
+    implements EstimableDistribution<Double,StudentTDistribution>
 {
 
     /**
@@ -313,6 +315,11 @@ public class StudentTDistribution
     public String toString()
     {
         return "Mean: " + this.getMean() + ", Variance: " + 1.0/this.getPrecision() + ", DOF: " + this.getDegreesOfFreedom();
+    }
+
+    public StudentTDistribution.MaximumLikelihoodEstimator getEstimator()
+    {
+        return new StudentTDistribution.MaximumLikelihoodEstimator();
     }
 
     /**

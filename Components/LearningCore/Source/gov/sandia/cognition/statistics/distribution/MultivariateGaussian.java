@@ -31,6 +31,7 @@ import gov.sandia.cognition.statistics.AbstractDistribution;
 import gov.sandia.cognition.statistics.ClosedFormComputableDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
+import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityDensityFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
@@ -75,7 +76,8 @@ import java.util.Random;
 )
 public class MultivariateGaussian
     extends AbstractDistribution<Vector>
-    implements ClosedFormComputableDistribution<Vector>
+    implements ClosedFormComputableDistribution<Vector>,
+    EstimableDistribution<Vector,MultivariateGaussian>
 {
 
     /**
@@ -523,7 +525,12 @@ public class MultivariateGaussian
         m.convertFromVector(
             parameters.subVector( N, parameters.getDimensionality()-1 ) );
         this.setCovariance( m );
-    }    
+    }
+
+    public MultivariateGaussian.MaximumLikelihoodEstimator getEstimator()
+    {
+        return new MultivariateGaussian.MaximumLikelihoodEstimator();
+    }
     
     /**
      * PDF of a multivariate Gaussian

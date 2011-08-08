@@ -91,7 +91,10 @@ public class MultivariateGaussianMeanCovarianceBayesianEstimatorTest
         MultivariateGaussianMeanCovarianceBayesianEstimator instance =
             this.createInstance();
 
+        long start = System.currentTimeMillis();
         NormalInverseWishartDistribution result = instance.learn(samples);
+        long stop = System.currentTimeMillis();
+        System.out.println( "NUM: " + samples.size() + ", LearnTime: " + (stop-start)/1000.0);
 
         ArrayList<? extends Matrix> parameters = result.sample(RANDOM,NUM_SAMPLES);
         Matrix averageParameter = MultivariateStatisticsUtil.computeMean(parameters);

@@ -60,6 +60,12 @@ public class GaussianConfidence
     ConfidenceIntervalEvaluator<Collection<? extends Double>>
 {
 
+    /**
+     * This class has no members, so here's a static instance.
+     */
+    public static final GaussianConfidence INSTANCE =
+        new GaussianConfidence();
+    
     /** Creates a new instance of GaussianConfidence */
     public GaussianConfidence()
     {
@@ -70,15 +76,18 @@ public class GaussianConfidence
         Collection<? extends Double> data2 )
     {
         int N1 = data1.size();
-        UnivariateGaussian g1 = UnivariateGaussian.MaximumLikelihoodEstimator.learn( data1, 0.0 );
+        UnivariateGaussian g1 =
+            UnivariateGaussian.MaximumLikelihoodEstimator.learn( data1, 0.0 );
         double std1 = Math.sqrt( g1.getVariance() );
 
         int N2 = data2.size();
-        UnivariateGaussian g2 = UnivariateGaussian.MaximumLikelihoodEstimator.learn( data2, 0.0 );
+        UnivariateGaussian g2 =
+            UnivariateGaussian.MaximumLikelihoodEstimator.learn( data2, 0.0 );
         double std2 = Math.sqrt( g2.getVariance() );
 
         double numerator = Math.abs( g1.getMean() - g2.getMean() );
-        double denominator = Math.sqrt( ((std1 * std1) / N1) + ((std2 * std2) / N2) );
+        double denominator =
+            Math.sqrt( ((std1 * std1) / N1) + ((std2 * std2) / N2) );
 
         double z = numerator / denominator;
 
@@ -165,27 +174,12 @@ public class GaussianConfidence
         int numSamples,
         double confidence )
     {
-        return computeConfidenceInterval(
+        return INSTANCE.computeConfidenceInterval(
             dataDistribution.getMean().doubleValue(),
             dataDistribution.getVariance(),
             numSamples, confidence );
     }
     
-    /**
-     * Computes the Gaussian confidence interval given a distribution of
-     * data, number of samples, and corresponding confidence interval
-     * @param mean
-     * Mean of the distribution.
-     * @param variance
-     * Variance of the distribution.
-     * @param numSamples
-     * Number of samples in the underlying data
-     * @param confidence
-     * Confidence value to assume for the ConfidenceInterval
-     * @return
-     * ConfidenceInterval capturing the range of the mean of the data
-     * at the desired level of confidence
-     */
     @PublicationReference(
         author="Wikipedia",
         title="Standard error (statistics)",
@@ -193,7 +187,7 @@ public class GaussianConfidence
         year=2009,
         url="http://en.wikipedia.org/wiki/Standard_error_(statistics)"
     )
-    public static ConfidenceInterval computeConfidenceInterval(
+    public ConfidenceInterval computeConfidenceInterval(
         double mean,
         double variance,
         int numSamples,

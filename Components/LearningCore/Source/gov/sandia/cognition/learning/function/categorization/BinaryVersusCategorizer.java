@@ -279,9 +279,8 @@ public class BinaryVersusCategorizer<InputType, CategoryType>
                         this.getLearner().learn(versusData);
 
                     // Add the learned categorizer.
-                    result.categoryPairsToEvaluatorMap.put(
-                        new DefaultPair<CategoryType, CategoryType>(
-                            falseCategory, trueCategory), learned);
+                    result.categoryPairsToEvaluatorMap.put( DefaultPair.create(
+                        falseCategory, trueCategory ), learned );
                 }
             }
 

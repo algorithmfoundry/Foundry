@@ -235,16 +235,16 @@ public class BayesianUtilTest
         UnivariateGaussian sampleVarianceDistribution =
             UnivariateGaussian.MaximumLikelihoodEstimator.learn(variances, 0.0);
 
-        ConfidenceInterval ci = StudentTConfidence.computeConfidenceInterval(
-            sampleMeanDistribution, num, CONFIDENCE );
+        ConfidenceInterval ci = StudentTConfidence.INSTANCE.computeConfidenceInterval(
+            sampleMeanDistribution.getMean(), sampleMeanDistribution.getVariance(), num, CONFIDENCE );
         System.out.println( "====== Mean ========" );
         System.out.println( "Target   = " + targetDistribution );
         System.out.println( "Sample   = " + sampleMeanDistribution );
         System.out.println( "Interval = " + ci );
         assertTrue( ci.withinInterval( targetDistribution.getMean() ) );
 
-        ConfidenceInterval vi = StudentTConfidence.computeConfidenceInterval(
-            sampleVarianceDistribution, num, CONFIDENCE );
+        ConfidenceInterval vi = StudentTConfidence.INSTANCE.computeConfidenceInterval(
+            sampleVarianceDistribution.getMean(), sampleVarianceDistribution.getVariance(), num, CONFIDENCE );
         double varianceTarget = targetDistribution.getVariance() / NUM_SAMPLES;
         System.out.println( "====== Variance =======" );
         System.out.println( "Target   = " + varianceTarget );

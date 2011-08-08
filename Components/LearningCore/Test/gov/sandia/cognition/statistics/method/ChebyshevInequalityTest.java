@@ -70,7 +70,7 @@ public class ChebyshevInequalityTest extends TestCase
         
         // This example is from Leon-Garcia, "Probability and Random Processes
         // for Electrical Engineering", p.138, Example 3.41
-        ConfidenceInterval ci2 = ChebyshevInequality.computeConfidenceInterval(
+        ConfidenceInterval ci2 = ChebyshevInequality.INSTANCE.computeConfidenceInterval(
             15, 3*3, 2, 1-0.36 );
 
         System.out.println( "Example2: " + ci2 );

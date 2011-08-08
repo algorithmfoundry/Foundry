@@ -22,6 +22,7 @@ import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
+import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
@@ -53,6 +54,7 @@ import java.util.Random;
 )
 public class LogNormalDistribution
     extends AbstractClosedFormSmoothScalarDistribution
+    implements EstimableDistribution<Double,LogNormalDistribution>
 {
 
     /**
@@ -244,6 +246,11 @@ public class LogNormalDistribution
     public Double getMaxSupport()
     {
         return Double.POSITIVE_INFINITY;
+    }
+
+    public LogNormalDistribution.MaximumLikelihoodEstimator getEstimator()
+    {
+        return new LogNormalDistribution.MaximumLikelihoodEstimator();
     }
 
     /**

@@ -16,6 +16,7 @@ package gov.sandia.cognition.statistics.method;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.math.ProbabilityUtil;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.Collection;
 
@@ -39,12 +40,17 @@ public class BernoulliConfidence
     extends AbstractCloneableSerializable
     implements ConfidenceIntervalEvaluator<Collection<Boolean>>
 {
-    
+
+    /**
+     * This class has no members, so here's a static instance.
+     */
+    public static final BernoulliConfidence INSTANCE =
+        new BernoulliConfidence();
+
     /** Creates a new instance of BernoulliConfidence */
     public BernoulliConfidence()
     {
     }
-    
     
     /**
      * Computes the ConfidenceInterval for the Bernoulli parameter based on
@@ -117,11 +123,21 @@ public class BernoulliConfidence
     {
         double p = bernoulliParameter;
         double pvar = p*(1-p) / numSamples;
-        
-        return ChebyshevInequality.computeConfidenceInterval(
-            p, pvar, numSamples, confidence );
+        return INSTANCE.computeConfidenceInterval(
+            p, pvar, numSamples,confidence);
     }
-    
+
+    @Override
+    public ConfidenceInterval computeConfidenceInterval(
+        double mean,
+        double variance,
+        int numSamples,
+        double confidence)
+    {
+        ProbabilityUtil.assertIsProbability(mean);
+        return ChebyshevInequality.INSTANCE.computeConfidenceInterval(
+            mean, variance, numSamples, confidence );
+    }
     
     /**
      * Computes the number of samples needed to estimate the Bernoulli parameter

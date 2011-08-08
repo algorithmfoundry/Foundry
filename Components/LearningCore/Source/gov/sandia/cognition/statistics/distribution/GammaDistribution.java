@@ -23,6 +23,7 @@ import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
+import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
@@ -53,6 +54,7 @@ import java.util.Random;
 )
 public class GammaDistribution
     extends AbstractClosedFormSmoothScalarDistribution
+    implements EstimableDistribution<Double,GammaDistribution>
 {
 
     /**
@@ -347,6 +349,11 @@ public class GammaDistribution
     public Double getMaxSupport()
     {
         return Double.POSITIVE_INFINITY;
+    }
+
+    public GammaDistribution.MomentMatchingEstimator getEstimator()
+    {
+        return new GammaDistribution.MomentMatchingEstimator();
     }
 
     /**

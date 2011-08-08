@@ -15,6 +15,8 @@
 package gov.sandia.cognition.learning.algorithm.clustering.cluster;
 
 import gov.sandia.cognition.annotation.CodeReview;
+import gov.sandia.cognition.util.AbstractCloneableSerializable;
+import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -35,7 +37,7 @@ import java.util.Collection;
     comments="Interface looks fine."
 )
 public class DefaultCluster<ClusterType>
-    extends java.lang.Object
+    extends AbstractCloneableSerializable
     implements Cluster<ClusterType>
 {
     /** The default index is {@value}. */
@@ -72,7 +74,7 @@ public class DefaultCluster<ClusterType>
      * @param members The members of the cluster.
      */
     public DefaultCluster(
-        final Collection<ClusterType> members)
+        final Collection<? extends ClusterType> members)
     {
         this(DEFAULT_INDEX, members);
     }
@@ -85,7 +87,7 @@ public class DefaultCluster<ClusterType>
      */
     public DefaultCluster(
         final int index,
-        final Collection<ClusterType> members)
+        final Collection<? extends ClusterType> members)
     {
         super();
         
@@ -101,6 +103,16 @@ public class DefaultCluster<ClusterType>
             // Create a copy of the given members list.
             this.setMembers(new ArrayList<ClusterType>(members));
         }
+    }
+
+    @Override
+    public DefaultCluster<ClusterType> clone()
+    {
+        @SuppressWarnings("unchecked")
+        DefaultCluster<ClusterType> clone =
+            (DefaultCluster<ClusterType>) super.clone();
+        clone.setMembers( ObjectUtil.cloneSmart( this.getMembers() ) );
+        return clone;
     }
     
     /**

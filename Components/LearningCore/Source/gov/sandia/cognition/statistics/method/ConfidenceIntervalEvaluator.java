@@ -41,5 +41,26 @@ public interface ConfidenceIntervalEvaluator<DataType>
     ConfidenceInterval computeConfidenceInterval(
         DataType data,
         double confidence );
+
+    /**
+     * Computes the confidence interval given the mean and variance of
+     * the samples, number of samples, and corresponding confidence interval
+     * @param mean
+     * Mean of the distribution.
+     * @param variance
+     * Variance of the distribution.
+     * @param numSamples
+     * Number of samples in the underlying data
+     * @param confidence
+     * Confidence value to assume for the ConfidenceInterval
+     * @return
+     * ConfidenceInterval capturing the range of the mean of the data
+     * at the desired level of confidence
+     */
+    ConfidenceInterval computeConfidenceInterval(
+        double mean,
+        double variance,
+        int numSamples,
+        double confidence );
     
 }

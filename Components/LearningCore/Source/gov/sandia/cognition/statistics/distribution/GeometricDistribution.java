@@ -18,14 +18,19 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.collection.IntegerCollection;
 import gov.sandia.cognition.math.ProbabilityUtil;
+import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.AbstractClosedFormScalarDistribution;
 import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistribution;
 import gov.sandia.cognition.statistics.ClosedFormScalarCumulativeDistributionFunction;
+import gov.sandia.cognition.statistics.DistributionEstimator;
+import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
+import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -43,7 +48,8 @@ import java.util.Random;
 )
 public class GeometricDistribution 
     extends AbstractClosedFormScalarDistribution<Number>
-    implements ClosedFormDiscreteScalarDistribution<Number>
+    implements ClosedFormDiscreteScalarDistribution<Number>,
+    EstimableDistribution<Number,GeometricDistribution>
 {
 
     /**
@@ -177,6 +183,11 @@ public class GeometricDistribution
         return new GeometricDistribution.PMF( this );
     }
 
+    public GeometricDistribution.MaximumLikelihoodEstimator getEstimator()
+    {
+        return new GeometricDistribution.MaximumLikelihoodEstimator();
+    }
+
     /**
      * PMF of the Geometric distribution
      */
@@ -301,6 +312,32 @@ public class GeometricDistribution
         public GeometricDistribution.CDF getCDF()
         {
             return this;
+        }
+
+    }
+
+    /**
+     * Maximum likelihood estimator of the distribution
+     */
+    public static class MaximumLikelihoodEstimator
+        extends AbstractCloneableSerializable
+        implements DistributionEstimator<Number,GeometricDistribution>
+    {
+
+        /**
+         * Default constructor
+         */
+        public MaximumLikelihoodEstimator()
+        {
+        }
+
+        public GeometricDistribution.PMF learn(
+            Collection<? extends Number> data )
+        {
+
+            double mean = UnivariateStatisticsUtil.computeMean(data);
+            double p = 1.0/(1+mean);
+            return new GeometricDistribution.PMF( p );
         }
 
     }

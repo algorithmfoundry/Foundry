@@ -790,8 +790,7 @@ public class HiddenMarkovModel<ObservationType>
         delta = dn;
         delta.scaleEquals( 1.0/delta.norm1() );
 
-        return new DefaultPair<Vector,int[]>( delta, psi );
-
+        return DefaultPair.create( delta, psi );
     }
 
     /**

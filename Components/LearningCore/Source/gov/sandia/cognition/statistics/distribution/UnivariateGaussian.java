@@ -25,6 +25,7 @@ import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
+import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.InvertibleCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
@@ -53,6 +54,7 @@ import java.util.Random;
 )
 public class UnivariateGaussian 
     extends AbstractClosedFormSmoothScalarDistribution
+    implements EstimableDistribution<Double,UnivariateGaussian>
 {
 
     /**
@@ -282,6 +284,11 @@ public class UnivariateGaussian
         double meanHat = this.getMean() + other.getMean();
         double varianceHat = this.getVariance() + other.getVariance();
         return new UnivariateGaussian( meanHat, varianceHat );
+    }
+
+    public UnivariateGaussian.MaximumLikelihoodEstimator getEstimator()
+    {
+        return new UnivariateGaussian.MaximumLikelihoodEstimator();
     }
 
     /**

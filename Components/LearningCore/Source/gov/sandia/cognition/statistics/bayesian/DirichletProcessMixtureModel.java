@@ -18,6 +18,7 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationReferences;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.collection.CollectionUtil;
+import gov.sandia.cognition.learning.algorithm.clustering.cluster.DefaultCluster;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
@@ -32,9 +33,7 @@ import gov.sandia.cognition.statistics.distribution.MultivariateStudentTDistribu
 import gov.sandia.cognition.statistics.distribution.NormalInverseWishartDistribution;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.CloneableSerializable;
-import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.ObjectUtil;
-import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -161,13 +160,20 @@ public class DirichletProcessMixtureModel<ObservationType>
         // This assigns observations to each of the K clusters, plus the
         // as-yet-uncreated new cluster
         final int K = this.currentParameter.getNumClusters();
+        DPMMLogConditional logConditional = new DPMMLogConditional();
         ArrayList<Collection<ObservationType>> clusterAssignments =
-            this.assignObservationsToClusters(K);
-        final int Kp1 = clusterAssignments.size();
-        int numObservations = 0;
-        for( int k = 0; k < Kp1; k++ )
+            this.assignObservationsToClusters( K, logConditional );
+        
+        final int numObservations = CollectionUtil.size(this.data);
+
+        // Through a bizarre quirk of the math, the log conditional is for
+        // the sample we previously generated...
+        if( (this.previousParameter != null) &&
+            (this.previousParameter.posteriorLogLikelihood == null) )
         {
-            numObservations += clusterAssignments.get(k).size();
+            this.previousParameter.posteriorLogLikelihood =
+                this.previousParameter.computePosteriorLogLikelihood(
+                    numObservations, logConditional.logConditional );
         }
 
         // Now, update each cluster according to the data assigned to it
@@ -190,19 +196,19 @@ public class DirichletProcessMixtureModel<ObservationType>
      * Cluster that contains an update parameter estimate and weighted by
      * the number of observations assigned to the cluster
      */
-    protected ArrayList<WeightedValue<ProbabilityFunction<ObservationType>>> updateClusters(
+    protected ArrayList<DPMMCluster<ObservationType>> updateClusters(
         ArrayList<Collection<ObservationType>> clusterAssignments )
     {
 
         final int Kp1 = clusterAssignments.size();
-        ArrayList<WeightedValue<ProbabilityFunction<ObservationType>>> clusters =
-            new ArrayList<WeightedValue<ProbabilityFunction<ObservationType>>>( Kp1 );
+        ArrayList<DPMMCluster<ObservationType>> clusters =
+            new ArrayList<DPMMCluster<ObservationType>>( Kp1 );
         for( int k = 0; k < Kp1; k++ )
         {
             Collection<ObservationType> assignments = clusterAssignments.get(k);
             if( assignments.size() > 1 )
             {
-                WeightedValue<ProbabilityFunction<ObservationType>> cluster =
+                DPMMCluster<ObservationType> cluster =
                     this.createCluster( assignments, this.updater );
                 if( cluster != null )
                 {
@@ -216,6 +222,28 @@ public class DirichletProcessMixtureModel<ObservationType>
     }
 
     /**
+     * Container for the log conditional likelihood
+     */
+    protected static class DPMMLogConditional
+        extends AbstractCloneableSerializable
+    {
+
+        /**
+         * log conditional likelihood
+         */
+        double logConditional;
+
+        /**
+         * Default constructor
+         */
+        public DPMMLogConditional()
+        {
+            this.logConditional = 0.0;
+        }
+
+    }
+
+    /**
      * Assigns observations to each of the K clusters,
      * plus the as-yet-uncreated new cluster
      * @param K
@@ -224,7 +252,8 @@ public class DirichletProcessMixtureModel<ObservationType>
      * Assignments from observations to clusters
      */
     protected ArrayList<Collection<ObservationType>> assignObservationsToClusters(
-        int K )
+        int K,
+        DPMMLogConditional logConditional )
     {
 
         // This is just a convenience to keep us from re-creating this
@@ -250,7 +279,7 @@ public class DirichletProcessMixtureModel<ObservationType>
         {
             // Figure out which cluster this observation is assigned to.
             int clusterAssignment = this.assignObservationToCluster(
-                observation, this.clusterWeights );
+                observation, this.clusterWeights, logConditional );
             clusterAssignments.get(clusterAssignment).add(observation);
         }
 
@@ -271,7 +300,8 @@ public class DirichletProcessMixtureModel<ObservationType>
      */
     protected int assignObservationToCluster(
         ObservationType observation,
-        double[] weights )
+        double[] weights,
+        DPMMLogConditional logConditional )
     {
 
         final double alpha = this.currentParameter.alpha;
@@ -286,6 +316,7 @@ public class DirichletProcessMixtureModel<ObservationType>
 
         // The weight of each cluster is proporationate to the number of
         // points assigned to each cluster
+        double conditional = 1e-100;
         for( int k = 0; k < K; k++ )
         {
             // This is an approximation.  We're really supposed to subtract
@@ -294,20 +325,24 @@ public class DirichletProcessMixtureModel<ObservationType>
             // expensive.  In any case, by subtracting "1.0" from all weights
             // we eliminate that nasty condition of assigning a cluster to
             // a single data point and getting infinite likelihood.
-            WeightedValue<ProbabilityFunction<ObservationType>> cluster =
+            DPMMCluster<ObservationType> cluster =
                 this.currentParameter.clusters.get(k);
-            double num = cluster.getWeight()-1.0;
-            if( num > 0.0 )
+            int num = cluster.getMembers().size();
+            if( num > 0 )
             {
-                final double w = num*cluster.getValue().evaluate(observation);
-                weights[k] = w;
-                weightSum += w;
+                final double c = cluster.getProbabilityFunction().evaluate(observation);
+                final double weight = (num-1)*c;
+                weights[k] = weight;
+                weightSum += weight;
+                conditional += num*c;
             }
             else
             {
                 weights[k] = 0.0;
             }
         }
+
+        logConditional.logConditional += Math.log( conditional );
 
         // Choose a uniform number on [0,weightSum] to figure out which
         // cluster to assign this observation to
@@ -338,7 +373,7 @@ public class DirichletProcessMixtureModel<ObservationType>
      * Cluster that contains an update parameter estimate and weighted by
      * the number of observations assigned to the cluster
      */
-    protected WeightedValue<ProbabilityFunction<ObservationType>> createCluster(
+    protected DPMMCluster<ObservationType> createCluster(
         Collection<ObservationType> clusterAssignment,
         Updater<ObservationType> localUpdater )
     {
@@ -355,9 +390,9 @@ public class DirichletProcessMixtureModel<ObservationType>
         }
         else
         {
-            ProbabilityFunction<ObservationType> cluster =
-                localUpdater.createCluster( clusterAssignment, this.random );
-            return new DefaultWeightedValue<ProbabilityFunction<ObservationType>>( cluster, weight );
+            ProbabilityFunction<ObservationType> probabilityFunction =
+                localUpdater.createClusterPosterior( clusterAssignment, this.random );
+            return new DPMMCluster<ObservationType>( clusterAssignment, probabilityFunction );
         }
     }
 
@@ -427,16 +462,17 @@ public class DirichletProcessMixtureModel<ObservationType>
     @Override
     public DirichletProcessMixtureModel.Sample<ObservationType> createInitialLearnedObject()
     {
-        ArrayList<WeightedValue<ProbabilityFunction<ObservationType>>> clusters =
-            new ArrayList<WeightedValue<ProbabilityFunction<ObservationType>>>(
+        ArrayList<DPMMCluster<ObservationType>> clusters =
+            new ArrayList<DPMMCluster<ObservationType>>(
                 this.getNumInitialClusters() );
-        ProbabilityFunction<ObservationType> cluster =
-            this.updater.createCluster( this.data, this.random );
-        double weight = CollectionUtil.size(this.data);
+        ProbabilityFunction<ObservationType> probabilityFunction =
+            this.updater.createClusterPosterior( this.data, this.random );
+        ArrayList<? extends ObservationType> dataArray =
+            CollectionUtil.asArrayList(this.data);
         for( int k = 0; k < this.getNumInitialClusters(); k++ )
         {
-            clusters.add( new DefaultWeightedValue<ProbabilityFunction<ObservationType>>(
-                cluster, weight) );
+            clusters.add( new DPMMCluster<ObservationType>(
+                dataArray, probabilityFunction ) );
         }
         return new Sample<ObservationType>(this.getInitialAlpha(),clusters);
     }
@@ -528,6 +564,69 @@ public class DirichletProcessMixtureModel<ObservationType>
     }
 
     /**
+     * Cluster for a step in the DPMM
+     * @param <ObservationType>
+     * Types of observations of the DPMM
+     */
+    public static class DPMMCluster<ObservationType>
+        extends DefaultCluster<ObservationType>
+    {
+
+        /**
+         * Probability function describing the assigned data
+         */
+        private ProbabilityFunction<? super ObservationType> probabilityFunction;
+
+        /**
+         * Creates a new instance of DPMMCluster
+         * @param assignedData
+         * Data assigned to the cluster
+         * @param probabilityFunction
+         * Probability function describing the assigned data
+         */
+        public DPMMCluster(
+            Collection<? extends ObservationType> assignedData,
+            ProbabilityFunction<? super ObservationType> probabilityFunction )
+        {
+            super( assignedData );
+            this.setProbabilityFunction(probabilityFunction);
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public DPMMCluster<ObservationType> clone()
+        {
+            DPMMCluster<ObservationType> clone =
+                (DPMMCluster<ObservationType>) super.clone();
+            clone.setProbabilityFunction(
+                ObjectUtil.cloneSafe( this.getProbabilityFunction() ) );
+            return clone;
+        }
+
+        /**
+         * Getter for probabilityFunction
+         * @return 
+         * Probability function describing the assigned data
+         */
+        public ProbabilityFunction<? super ObservationType> getProbabilityFunction()
+        {
+            return this.probabilityFunction;
+        }
+
+        /**
+         * Setter for probabilityFunction
+         * @param probabilityFunction
+         * Probability function describing the assigned data
+         */
+        public void setProbabilityFunction(
+            ProbabilityFunction<? super ObservationType> probabilityFunction)
+        {
+            this.probabilityFunction = probabilityFunction;
+        }        
+
+    }
+
+    /**
      * A sample from the Dirichlet Process Mixture Model.
      * @param <ObservationType>
      * Type of observations handled by the mixture model
@@ -545,7 +644,12 @@ public class DirichletProcessMixtureModel<ObservationType>
         /**
          * Point mass realizations from the base distribution.
          */
-        protected ArrayList<WeightedValue<ProbabilityFunction<ObservationType>>> clusters;
+        protected ArrayList<DPMMCluster<ObservationType>> clusters;
+
+        /**
+         * Posterior log likelihood of the sample
+         */
+        private Double posteriorLogLikelihood;
 
         /**
          * Creates a new instance of Sample
@@ -557,10 +661,11 @@ public class DirichletProcessMixtureModel<ObservationType>
          */
         public Sample(
             double alpha,
-            ArrayList<WeightedValue<ProbabilityFunction<ObservationType>>> clusters )
+            ArrayList<DPMMCluster<ObservationType>> clusters )
         {
             this.setAlpha(alpha);
             this.setClusters(clusters);
+            this.setPosteriorLogLikelihood(null);
         }
 
         @Override
@@ -570,6 +675,10 @@ public class DirichletProcessMixtureModel<ObservationType>
             Sample<ObservationType> clone = (Sample<ObservationType>) super.clone();
             clone.setClusters(
                 ObjectUtil.cloneSmartElementsAsArrayList( this.getClusters() ) );
+
+            // The reason this is null is so that the we know to compute
+            // the conditional on the next MCMC step
+            clone.setPosteriorLogLikelihood( null );
             return clone;
         }
 
@@ -582,37 +691,62 @@ public class DirichletProcessMixtureModel<ObservationType>
          * @return
          * Posterior log likelihood of the data
          */
-        public double posteriorLogLikelihood(
+        public double computePosteriorLogLikelihood(
             Iterable<? extends ObservationType> data )
         {
             final int K = this.getNumClusters();
+            final int numObservations = CollectionUtil.size(data);
             double logSum = 0.0;
-            int numObservations = 0;
             for( ObservationType value : data )
             {
                 double p = 1e-100;
                 for( int k = 0; k < K; k++ )
                 {
-                    WeightedValue<ProbabilityFunction<ObservationType>> wv =
-                        this.clusters.get(k);
-                    final double weight = wv.getWeight();
-                    final double likelihood = wv.getValue().evaluate(value);
+                    DPMMCluster<ObservationType> cluster = this.clusters.get(k);
+                    final int weight = cluster.getMembers().size();
+                    final double likelihood =
+                        cluster.getProbabilityFunction().evaluate(value);
                     p += weight * likelihood;
                 }
                 logSum += Math.log(p);
-                numObservations++;
             }
-            
+
             ChineseRestaurantProcess.PMF pmf = new ChineseRestaurantProcess.PMF(
                 this.getAlpha(), numObservations );
             Vector counts = VectorFactory.getDefault().createVector(K);
             for( int k = 0; k < K; k++ )
             {
-                counts.setElement(k, this.clusters.get(k).getWeight() );
+                counts.setElement(k, this.clusters.get(k).getMembers().size() );
             }
             logSum += pmf.logEvaluate( counts );
 
             return logSum;
+        }
+
+        /**
+         * Computes the posterior log likelihood of the Sample
+         * @param numObservations
+         * Number of observations in the Sample
+         * @param logConditional
+         * Log conditional likelihood of the data given the sample
+         * @return
+         * Posterior log likelihood
+         */
+        public double computePosteriorLogLikelihood(
+            int numObservations,
+            double logConditional )
+        {
+            final int K = this.getNumClusters();
+            ChineseRestaurantProcess.PMF pmf = new ChineseRestaurantProcess.PMF(
+                this.getAlpha(), numObservations );
+            Vector counts = VectorFactory.getDefault().createVector(K);
+            for( int k = 0; k < K; k++ )
+            {
+                counts.setElement(k, this.clusters.get(k).getMembers().size() );
+            }
+            double logPrior = pmf.logEvaluate( counts );
+            double logPosterior = logPrior + logConditional;
+            return logPosterior;
         }
 
         /**
@@ -622,9 +756,8 @@ public class DirichletProcessMixtureModel<ObservationType>
         {
             for( int j = 0; j < this.getNumClusters(); j++ )
             {
-                WeightedValue<ProbabilityFunction<ObservationType>> cluster =
-                    this.clusters.get(j);
-                if( cluster.getWeight() <= 0.0 )
+                DPMMCluster<ObservationType> cluster = this.clusters.get(j);
+                if( cluster.getMembers().size() <= 0 )
                 {
                     this.clusters.remove(j);
                     j--;
@@ -675,7 +808,7 @@ public class DirichletProcessMixtureModel<ObservationType>
          * @return
          * Point mass realizations from the base distribution.
          */
-        public ArrayList<WeightedValue<ProbabilityFunction<ObservationType>>> getClusters()
+        public ArrayList<DPMMCluster<ObservationType>> getClusters()
         {
             return this.clusters;
         }
@@ -686,9 +819,20 @@ public class DirichletProcessMixtureModel<ObservationType>
          * Point mass realizations from the base distribution.
          */
         protected void setClusters(
-            ArrayList<WeightedValue<ProbabilityFunction<ObservationType>>> clusters)
+            ArrayList<DPMMCluster<ObservationType>> clusters)
         {
             this.clusters = clusters;
+        }
+
+        public Double getPosteriorLogLikelihood()
+        {
+            return this.posteriorLogLikelihood;
+        }
+
+        public void setPosteriorLogLikelihood(
+            Double posteriorLogLikelihood)
+        {
+            this.posteriorLogLikelihood = posteriorLogLikelihood;
         }
 
     }
@@ -721,7 +865,7 @@ public class DirichletProcessMixtureModel<ObservationType>
          * @return
          * Updated cluster value
          */
-        public ProbabilityFunction<ObservationType> createCluster(
+        public ProbabilityFunction<ObservationType> createClusterPosterior(
             Iterable<? extends ObservationType> values,
             Random random );
 
@@ -788,7 +932,7 @@ public class DirichletProcessMixtureModel<ObservationType>
             return this.estimator.createPredictiveDistribution(posterior).getProbabilityFunction();
         }
 
-        public MultivariateGaussian.PDF createCluster(
+        public MultivariateGaussian.PDF createClusterPosterior(
             Iterable<? extends Vector> values,
             Random random )
         {
@@ -859,7 +1003,7 @@ public class DirichletProcessMixtureModel<ObservationType>
             return this.estimator.createPredictiveDistribution(posterior).getProbabilityFunction();
         }
 
-        public MultivariateGaussian.PDF createCluster(
+        public MultivariateGaussian.PDF createClusterPosterior(
             Iterable<? extends Vector> values,
             Random random )
         {

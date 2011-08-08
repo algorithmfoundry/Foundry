@@ -18,13 +18,18 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.collection.IntegerCollection;
 import gov.sandia.cognition.math.MathUtil;
+import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.AbstractClosedFormScalarDistribution;
 import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistribution;
 import gov.sandia.cognition.statistics.ClosedFormScalarCumulativeDistributionFunction;
+import gov.sandia.cognition.statistics.DistributionEstimator;
+import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
+import gov.sandia.cognition.util.AbstractCloneableSerializable;
+import gov.sandia.cognition.util.Pair;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
@@ -44,7 +49,8 @@ import java.util.Random;
 )
 public class BetaBinomialDistribution 
     extends AbstractClosedFormScalarDistribution<Number>
-    implements ClosedFormDiscreteScalarDistribution<Number>
+    implements ClosedFormDiscreteScalarDistribution<Number>,
+    EstimableDistribution<Number,BetaBinomialDistribution>
 {
 
     /**
@@ -101,9 +107,9 @@ public class BetaBinomialDistribution
         double shape,
         double scale )
     {
-        this.shape = shape;
-        this.scale = scale;
-        this.n = n;
+        this.setN(n);
+        this.setShape(shape);
+        this.setScale(scale);
     }
 
     /**
@@ -251,7 +257,7 @@ public class BetaBinomialDistribution
         return numer / denom;
     }
 
-    public Collection<? extends Number> getDomain()
+    public Collection<Integer> getDomain()
     {
         return new IntegerCollection(0, (int) Math.ceil(this.n) );
     }
@@ -259,6 +265,11 @@ public class BetaBinomialDistribution
     public BetaBinomialDistribution.PMF getProbabilityFunction()
     {
         return new BetaBinomialDistribution.PMF( this );
+    }
+
+    public BetaBinomialDistribution.MomentMatchingEstimator getEstimator()
+    {
+        return new BetaBinomialDistribution.MomentMatchingEstimator();
     }
 
     /**
@@ -333,8 +344,8 @@ public class BetaBinomialDistribution
             final int x = input.intValue();
             double logSum = 0.0;
             logSum += MathUtil.logBinomialCoefficient(this.n, x);
-            logSum += MathUtil.logBetaFunction( this.shape + x, this.n+this.scale - x);
             logSum -= MathUtil.logBetaFunction( this.shape, this.scale );
+            logSum += MathUtil.logBetaFunction( this.shape + x, this.n+this.scale - x);
             return logSum;
         }
 
@@ -401,6 +412,95 @@ public class BetaBinomialDistribution
         public BetaBinomialDistribution.CDF getCDF()
         {
             return this;
+        }
+
+    }
+
+    /**
+     * Estimates the parameters of a Beta distribution using the matching
+     * of moments, not maximum likelihood.
+     */
+    @PublicationReference(
+        author={
+            "Ram C. Tripathi",
+            "Ramesh C. Gupta",
+            "John Gurland"
+        },
+        title="Estimation of parameters in the beta binomial model",
+        type=PublicationType.Journal,
+        publication="Annals of the Institute of Statistical Mathematics",
+        year=1994,
+        pages={317,331},
+        notes="Equation 2.11"
+    )
+    public static class MomentMatchingEstimator
+        extends AbstractCloneableSerializable
+        implements DistributionEstimator<Number,BetaBinomialDistribution>
+    {
+
+        /**
+         * Default constructor
+         */
+        public MomentMatchingEstimator()
+        {
+        }
+
+        public BetaBinomialDistribution learn(
+            Collection<? extends Number> data)
+        {
+            Pair<Double,Double> pair =
+                UnivariateStatisticsUtil.computeMeanAndVariance(data);
+            double mean = pair.getFirst();
+            double max = UnivariateStatisticsUtil.computeMaximum(data);
+            int N = (int) Math.ceil( max );
+
+            double eta = 0.0;
+            double smooth = 1.0;
+            for( Number value : data )
+            {
+                double numPositive = value.doubleValue() + smooth;
+                double numNegative = N - value.doubleValue() + smooth;
+                double e = numPositive / numNegative;
+                eta += e;
+            }
+            eta /= N;
+
+            double denom = N*mean - (N-mean)*eta;
+            double alpha = Math.abs( ((N-1) * eta * mean) / denom );
+            double beta = Math.abs( (N-1)*(N-mean)*eta / denom );
+
+            BetaBinomialDistribution.PMF distribution =
+                new BetaBinomialDistribution.PMF( N, alpha, beta );
+            System.out.println( "Mean: " + distribution.getMean().doubleValue() + ", Variance: " + distribution.getVariance() );
+                return distribution;
+        }
+
+        /**
+         * Computes the Beta-Binomial distribution describes by the given moments
+         * @param N
+         * Number of trials
+         * @param mean
+         * Mean of the distribution
+         * @param variance
+         * Variance of the distribution
+         * @return
+         * Beta-Binomial distribution that has the same mean/variance as the
+         * given parameters.
+         */
+        public static BetaBinomialDistribution.PMF learn(
+            int N,
+            double mean,
+            double variance )
+        {
+
+            double denom = N*((variance/mean) - mean - 1.0) + mean;
+            double alpha = Math.abs((N*mean - variance) / denom);
+            double beta = Math.abs( (N-mean)*(N-(variance/mean)) / denom );
+            System.out.println( "N = " + N + ", alpha = " + alpha + ", beta = " + beta );
+            BetaBinomialDistribution.PMF distribution =
+                new BetaBinomialDistribution.PMF( N, alpha, beta );
+            System.out.println( "Mean: " + distribution.getMean().doubleValue() + ", Variance: " + distribution.getVariance() );
+            return new BetaBinomialDistribution.PMF( N, alpha, beta );
         }
 
     }

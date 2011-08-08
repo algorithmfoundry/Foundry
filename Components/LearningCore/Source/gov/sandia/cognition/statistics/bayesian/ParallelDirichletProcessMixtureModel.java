@@ -17,10 +17,9 @@ package gov.sandia.cognition.statistics.bayesian;
 import gov.sandia.cognition.algorithm.ParallelAlgorithm;
 import gov.sandia.cognition.algorithm.ParallelUtil;
 import gov.sandia.cognition.collection.CollectionUtil;
-import gov.sandia.cognition.statistics.ProbabilityFunction;
+import gov.sandia.cognition.statistics.bayesian.DirichletProcessMixtureModel.DPMMLogConditional;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
-import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -83,7 +82,8 @@ public class ParallelDirichletProcessMixtureModel<ObservationType>
 
     @Override
     protected ArrayList<Collection<ObservationType>> assignObservationsToClusters(
-        int K)
+        int K,
+        DPMMLogConditional logConditional )
     {
         if( this.assignmentTasks == null )
         {
@@ -107,7 +107,7 @@ public class ParallelDirichletProcessMixtureModel<ObservationType>
                 dataArray.subList(endIndex,N) ) );
         }
 
-        ArrayList<ArrayList<Integer>> results;
+        ArrayList<DPMMAssignments> results;
         try
         {
             results = ParallelUtil.executeInParallel(
@@ -129,7 +129,9 @@ public class ParallelDirichletProcessMixtureModel<ObservationType>
 
         for( int n = 0; n < results.size(); n++ )
         {
-            ArrayList<Integer> assignments = results.get(n);
+            logConditional.logConditional +=
+                results.get(n).logConditional.logConditional;
+            ArrayList<Integer> assignments = results.get(n).assignments;
             int index = 0;
             for( ObservationType observation : this.assignmentTasks.get(n).observations )
             {
@@ -144,11 +146,44 @@ public class ParallelDirichletProcessMixtureModel<ObservationType>
     }
 
     /**
+     * Assignments from the DPMM
+     */
+    public static class DPMMAssignments
+    {
+
+        /**
+         * List of assignment indices
+         */
+        protected ArrayList<Integer> assignments;
+
+        /**
+         * Log conditional likelihood of the previous sample
+         */
+        protected DPMMLogConditional logConditional;
+
+        /**
+         * Constructor
+         * @param assignments
+         * List of assignment indices
+         * @param logConditional
+         * Log conditional likelihood of the previous sample
+         */
+        public DPMMAssignments(
+            ArrayList<Integer> assignments,
+            DPMMLogConditional logConditional)
+        {
+            this.assignments = assignments;
+            this.logConditional = logConditional;
+        }
+
+    }
+
+    /**
      * Task that assign observations to cluster indices
      */
     protected class ObservationAssignmentTask
         extends AbstractCloneableSerializable
-        implements Callable<ArrayList<Integer>>
+        implements Callable<DPMMAssignments>
     {
 
         /**
@@ -167,6 +202,11 @@ public class ParallelDirichletProcessMixtureModel<ObservationType>
         private ArrayList<Integer> assignments;
 
         /**
+         * Log conditional of the previous sample
+         */
+        private DPMMLogConditional logConditional;
+
+        /**
          * Creates a new instance of ObservationAssignmentTask
          * @param observations
          * Observations to assign
@@ -178,7 +218,7 @@ public class ParallelDirichletProcessMixtureModel<ObservationType>
             this.observations = observations;
         }
 
-        public ArrayList<Integer> call()
+        public DPMMAssignments call()
             throws Exception
         {
 
@@ -199,16 +239,18 @@ public class ParallelDirichletProcessMixtureModel<ObservationType>
                 }
             }
 
+            this.logConditional = new DPMMLogConditional();
+
             int index = 0;
             for( ObservationType observation : this.observations )
             {
                 int clusterAssignment = assignObservationToCluster(
-                    observation, this.weights );
+                    observation, this.weights, this.logConditional );
                 this.assignments.set( index, clusterAssignment );
                 index++;
             }
 
-            return this.assignments;
+            return new DPMMAssignments(this.assignments, this.logConditional);
         }
 
     }
@@ -219,7 +261,7 @@ public class ParallelDirichletProcessMixtureModel<ObservationType>
     transient protected ArrayList<ClusterUpdaterTask> clusterUpdaterTasks;
 
     @Override
-    protected ArrayList<WeightedValue<ProbabilityFunction<ObservationType>>> updateClusters(
+    protected ArrayList<DPMMCluster<ObservationType>> updateClusters(
         ArrayList<Collection<ObservationType>> clusterAssignments)
     {
 
@@ -229,19 +271,12 @@ public class ParallelDirichletProcessMixtureModel<ObservationType>
             (this.clusterUpdaterTasks.size() != Kp1) )
         {
             this.clusterUpdaterTasks = new ArrayList<ClusterUpdaterTask>( Kp1 );
+            for( int k = 0; k < Kp1; k++ )
+            {
+                this.clusterUpdaterTasks.add( new ClusterUpdaterTask() );
+            }
         }
 
-        while( this.clusterUpdaterTasks.size() > Kp1 )
-        {
-            this.clusterUpdaterTasks.remove( this.clusterUpdaterTasks.size()-1 );
-        }
-
-        this.clusterUpdaterTasks.ensureCapacity(Kp1);
-        while( this.clusterUpdaterTasks.size() < Kp1 )
-        {
-            this.clusterUpdaterTasks.add( new ClusterUpdaterTask() );
-        }
-        
         for( int k = 0; k < Kp1; k++ )
         {
             Collection<ObservationType> observations = clusterAssignments.get(k);
@@ -252,7 +287,7 @@ public class ParallelDirichletProcessMixtureModel<ObservationType>
             this.clusterUpdaterTasks.get(k).observations = observations;
         }
 
-        ArrayList<WeightedValue<ProbabilityFunction<ObservationType>>> clusters = null;
+        ArrayList<DPMMCluster<ObservationType>> clusters = null;
 
         try
         {
@@ -264,11 +299,11 @@ public class ParallelDirichletProcessMixtureModel<ObservationType>
             throw new RuntimeException(e);
         }
 
-        ArrayList<WeightedValue<ProbabilityFunction<ObservationType>>> results =
-            new ArrayList<WeightedValue<ProbabilityFunction<ObservationType>>>( Kp1 );
+        ArrayList<DPMMCluster<ObservationType>> results =
+            new ArrayList<DPMMCluster<ObservationType>>( Kp1 );
         for( int k = 0; k < Kp1; k++ )
         {
-            WeightedValue<ProbabilityFunction<ObservationType>> cluster = clusters.get(k);
+            DPMMCluster<ObservationType> cluster = clusters.get(k);
             if( cluster != null )
             {
                 results.add( cluster );
@@ -283,7 +318,7 @@ public class ParallelDirichletProcessMixtureModel<ObservationType>
      */
     protected class ClusterUpdaterTask
         extends AbstractCloneableSerializable
-        implements Callable<WeightedValue<ProbabilityFunction<ObservationType>>>
+        implements Callable<DPMMCluster<ObservationType>>
     {
 
         /**
@@ -304,7 +339,7 @@ public class ParallelDirichletProcessMixtureModel<ObservationType>
             this.localUpdater = ObjectUtil.cloneSafe( updater );
         }
 
-        public WeightedValue<ProbabilityFunction<ObservationType>> call()
+        public DPMMCluster<ObservationType> call()
         {
             return createCluster(this.observations, this.localUpdater );
         }

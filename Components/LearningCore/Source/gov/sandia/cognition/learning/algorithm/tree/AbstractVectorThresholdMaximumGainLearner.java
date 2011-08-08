@@ -155,7 +155,7 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
             final OutputType output = example.getOutput();
             final double value = input.getElement(dimension);
 
-            values.add(new DefaultPair<Double, OutputType>(value, output));
+            values.add( DefaultPair.create( value, output ) );
         }
 
         // Sort the list in ascending order by value.

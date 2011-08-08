@@ -19,13 +19,17 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.collection.IntegerCollection;
 import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.ProbabilityUtil;
+import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.AbstractClosedFormScalarDistribution;
 import gov.sandia.cognition.statistics.ClosedFormDiscreteScalarDistribution;
 import gov.sandia.cognition.statistics.ClosedFormScalarCumulativeDistributionFunction;
+import gov.sandia.cognition.statistics.DistributionEstimator;
+import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
+import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
@@ -46,7 +50,8 @@ import java.util.Random;
 )
 public class BinomialDistribution
     extends AbstractClosedFormScalarDistribution<Number>
-    implements ClosedFormDiscreteScalarDistribution<Number>
+    implements ClosedFormDiscreteScalarDistribution<Number>,
+    EstimableDistribution<Number,BinomialDistribution>
 {
 
     /**
@@ -220,6 +225,11 @@ public class BinomialDistribution
     public Integer getMaxSupport()
     {
         return this.getN();
+    }
+
+    public BinomialDistribution.MaximumLikelihoodEstimator getEstimator()
+    {
+        return new BinomialDistribution.MaximumLikelihoodEstimator();
     }
 
     /**
@@ -454,5 +464,39 @@ public class BinomialDistribution
         }
 
     }
+
+    /**
+     * Maximum likelihood estimator of the distribution
+     */
+    public static class MaximumLikelihoodEstimator
+        extends AbstractCloneableSerializable
+        implements DistributionEstimator<Number,BinomialDistribution>
+    {
+
+        /**
+         * Default constructor
+         */
+        public MaximumLikelihoodEstimator()
+        {
+        }
+
+        public BinomialDistribution.PMF learn(
+            Collection<? extends Number> data )
+        {
+            double r = UnivariateStatisticsUtil.computeMaximum(data);
+//            int N = (int) Math.ceil( r );
+            int N = (int) Math.ceil( r + 1.0/data.size() );
+            double psum = 0.0;
+            for( Number value : data )
+            {
+                double p = value.doubleValue() / N;
+                psum += p;
+            }
+            double phat = psum/data.size();
+            return new BinomialDistribution.PMF( N, phat );
+        }
+
+    }
+
 
 }

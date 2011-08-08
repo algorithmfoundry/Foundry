@@ -440,6 +440,12 @@ public class MultinomialDistribution
                 this.numClasses+this.numTrials-1,this.numClasses-1 );
         }
 
+        public double logSize()
+        {
+            return MathUtil.logBinomialCoefficient(
+                this.numClasses+this.numTrials-1,this.numClasses-1 );
+        }
+
         /**
          * An Iterator over a Domain
          */

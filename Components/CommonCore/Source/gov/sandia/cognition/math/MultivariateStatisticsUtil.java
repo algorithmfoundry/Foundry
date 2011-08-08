@@ -63,21 +63,10 @@ public class MultivariateStatisticsUtil
      * Arithmetic mean of the given dataset
      */
     static public <RingType extends Ring<RingType>> RingType computeMean(
-        Collection<? extends RingType> data )
+        Iterable<? extends RingType> data )
     {
-
-        RingType mean = computeSum( data );
-        if (data.size() <= 0)
-        {
-            mean = null;
-        }
-        else
-        {
-            mean.scaleEquals( 1.0 / data.size() );
-        }
-
-        return mean;
-
+        RingAccumulator<RingType> mean = new RingAccumulator<RingType>( data );
+        return mean.getMean();
     }
 
     /**
@@ -198,7 +187,7 @@ public class MultivariateStatisticsUtil
             return null;
         }
 
-        return new DefaultPair<Vector, Matrix>( mean, C );
+        return DefaultPair.create( mean, C );
 
     }
 
@@ -270,7 +259,7 @@ public class MultivariateStatisticsUtil
             return null;
         }
 
-        return new DefaultPair<Vector, Matrix>( mean, covariance );
+        return DefaultPair.create( mean, covariance );
 
     }
 

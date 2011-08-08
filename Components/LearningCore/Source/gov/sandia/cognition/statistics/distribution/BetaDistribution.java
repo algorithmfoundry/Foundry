@@ -23,6 +23,7 @@ import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
+import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
@@ -48,6 +49,7 @@ import java.util.Random;
 )
 public class BetaDistribution
     extends AbstractClosedFormSmoothScalarDistribution
+    implements EstimableDistribution<Double,BetaDistribution>
 {
 
     /**
@@ -240,6 +242,11 @@ public class BetaDistribution
         return 1.0;
     }
 
+    public BetaDistribution.MomentMatchingEstimator getEstimator()
+    {
+        return new BetaDistribution.MomentMatchingEstimator();
+    }
+
     /**
      * Estimates the parameters of a Beta distribution using the matching
      * of moments, not maximum likelihood.
@@ -292,8 +299,8 @@ public class BetaDistribution
             double variance )
         {
             double apb = mean*(1.0-mean) / variance - 1.0;
-            double alpha = apb * mean;
-            double beta = apb * (1.0-mean);
+            double alpha = Math.abs(apb * mean);
+            double beta = Math.abs(apb * (1.0-mean));
             return new BetaDistribution( alpha, beta );
         }
 

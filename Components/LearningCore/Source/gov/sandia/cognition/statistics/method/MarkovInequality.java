@@ -46,7 +46,13 @@ public class MarkovInequality
     extends AbstractCloneableSerializable
     implements ConfidenceIntervalEvaluator<Collection<Double>>
 {
-    
+
+    /**
+     * This class has no members, so here's a static instance.
+     */
+    public static final MarkovInequality INSTANCE =
+        new MarkovInequality();
+
     /** Creates a new instance of MarkovInequality */
     public MarkovInequality()
     {
@@ -131,6 +137,17 @@ public class MarkovInequality
         return new ConfidenceInterval( 
             sampleMean, -a, a, confidence, numSamples );        
         
+    }
+
+    @Override
+    public ConfidenceInterval computeConfidenceInterval(
+        double mean,
+        double variance,
+        int numSamples,
+        double confidence)
+    {
+        return MarkovInequality.computeConfidenceInterval(
+            mean, numSamples, confidence);
     }
     
 }

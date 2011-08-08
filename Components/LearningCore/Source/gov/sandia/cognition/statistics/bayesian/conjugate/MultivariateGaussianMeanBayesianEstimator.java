@@ -16,7 +16,9 @@ package gov.sandia.cognition.statistics.bayesian.conjugate;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.math.ComplexNumber;
+import gov.sandia.cognition.math.MultivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
@@ -24,6 +26,7 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.bayesian.AbstractBayesianParameter;
 import gov.sandia.cognition.statistics.bayesian.BayesianParameter;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
+import java.util.Arrays;
 
 /**
  * Bayesian estimator for the mean of a MultivariateGaussian using its conjugate
@@ -163,17 +166,38 @@ public class MultivariateGaussianMeanBayesianEstimator
             knownCovarianceInverse.inverse() );
     }
 
+    @Override
+    public void update(
+        MultivariateGaussian target,
+        Iterable<? extends Vector> data)
+    {
+        
+        int N = CollectionUtil.size(data);
+        Matrix Ci0 = target.getCovarianceInverse();
+        Matrix CiN = this.getKnownCovarianceInverse().clone();
+        if( N > 1 )
+        {
+            CiN.scaleEquals(N);
+        }
+        Vector sampleMean = MultivariateStatisticsUtil.computeMean(data);
+        Vector t0 = Ci0.times( target.getMean() );
+        t0.plusEquals( CiN.times( sampleMean ) );
+
+        // Saving another Matrix creation here... just make sure the
+        // "t0" stuff gets completed first
+        CiN.plusEquals(Ci0);
+        Matrix updatedCovariance = CiN.inverse();
+        Vector updatedMean = updatedCovariance.times( t0 );
+
+        target.setMean(updatedMean);
+        target.setCovariance(updatedCovariance);
+    }
+
     public void update(
         MultivariateGaussian updater,
         Vector data)
     {
-        Matrix updatedCovariance = updater.getCovarianceInverse().plus(
-            this.getKnownCovarianceInverse() ).inverse();
-        Vector t0 = updater.getCovarianceInverse().times( updater.getMean() );
-        Vector t1 = this.getKnownCovarianceInverse().times( data );
-        Vector updatedMean = updatedCovariance.times( t0.plus( t1 ) );
-        updater.setMean(updatedMean);
-        updater.setCovariance(updatedCovariance);
+        this.update(updater, Arrays.asList(data) );
     }
 
     public double computeEquivalentSampleSize(

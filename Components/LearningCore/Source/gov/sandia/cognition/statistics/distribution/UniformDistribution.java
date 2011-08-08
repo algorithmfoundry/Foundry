@@ -21,6 +21,7 @@ import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.AbstractClosedFormSmoothScalarDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
+import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.InvertibleCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.ScalarProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
@@ -46,6 +47,7 @@ import java.util.Random;
 )
 public class UniformDistribution
     extends AbstractClosedFormSmoothScalarDistribution
+    implements EstimableDistribution<Double,UniformDistribution>
 {
 
     /**
@@ -197,6 +199,11 @@ public class UniformDistribution
     public UniformDistribution.PDF getProbabilityFunction()
     {
         return new UniformDistribution.PDF( this );
+    }
+
+    public UniformDistribution.MaximumLikelihoodEstimator getEstimator()
+    {
+        return new UniformDistribution.MaximumLikelihoodEstimator();
     }
 
     /**
