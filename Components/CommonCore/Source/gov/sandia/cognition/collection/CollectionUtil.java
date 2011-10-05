@@ -3,13 +3,13 @@
  * Authors:             Justin Basilico
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
- * 
+ *
  * Copyright March 25, 2008, Sandia Corporation.
- * Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive 
- * license for use of this work by or on behalf of the U.S. Government. Export 
- * of this program may require a license from the United States Government. 
+ * Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+ * license for use of this work by or on behalf of the U.S. Government. Export
+ * of this program may require a license from the United States Government.
  * See CopyrightHistory.txt for complete details.
- * 
+ *
  */
 
 package gov.sandia.cognition.collection;
@@ -28,7 +28,7 @@ import java.util.List;
  * {@code Collection} and {@code Iterable} objects. They are both put into the
  * same utility class so that they can be interchanged without changing the
  * method call.
- * 
+ *
  * @author  Justin Basilico
  * @since   2.1
  */
@@ -42,7 +42,7 @@ public class CollectionUtil
 {
     /**
      * Returns true if the given collection is null or empty.
-     * 
+     *
      * @param   collection
      *      The collection to determine if it is null or empty.
      * @return
@@ -53,10 +53,10 @@ public class CollectionUtil
     {
         return collection == null || collection.isEmpty();
     }
-    
+
     /**
      * Returns true if the given iterable is null or empty.
-     * 
+     *
      * @param   iterable
      *      The iterable to determine if it is null or empty.
      * @return
@@ -118,7 +118,7 @@ public class CollectionUtil
 
     /**
      * Determines the size of the given collection, checking for null.
-     * 
+     *
      * @param   collection
      *      The collection to get the size of.
      * @return
@@ -136,12 +136,12 @@ public class CollectionUtil
             return collection.size();
         }
     }
-    
+
     /**
-     * Determines the size of the given iterable. If it is null, zero is 
+     * Determines the size of the given iterable. If it is null, zero is
      * returned. If it is a {@code Collection}, then the size method is used.
      * Otherwise, the iterable is iterated over to get the size.
-     * 
+     *
      * @param   iterable
      *      The iterable to determine the size of.
      * @return
@@ -174,11 +174,11 @@ public class CollectionUtil
             return counter;
         }
     }
-    
+
     /**
      * Gets the first element from an iterable. If the iterable is null or
      * empty, null is returned.
-     * 
+     *
      * @param   <T>
      *      The type of element.
      * @param   iterable
@@ -195,7 +195,7 @@ public class CollectionUtil
             // No first element.
             return null;
         }
-        
+
         final Iterator<? extends T> iterator = iterable.iterator();
         if (iterator.hasNext())
         {
@@ -380,54 +380,73 @@ public class CollectionUtil
         Iterable<? extends DataType> data,
         int numPartitions )
     {
+        if (data instanceof List<?>)
+        {
+            @SuppressWarnings("unchecked")
+            final List<? extends DataType> list = (List<? extends DataType>) data;
+            return createSequentialPartitions(list,
+                numPartitions);
+        }
 
         final int numData = CollectionUtil.size( data );
         final int numEach = numData / numPartitions;
         ArrayList<List<? extends DataType>> retval =
             new ArrayList<List<? extends DataType>>( numPartitions );
 
-        if( data instanceof List )
+        int index = 0;
+        Iterator<? extends DataType> iterator = data.iterator();
+        for( int n = 0; n < numPartitions; n++ )
         {
-            @SuppressWarnings("unchecked")
-            List<? extends DataType> list = (List<? extends DataType>) data;
+            // The remainder goes into the final partition
+            int numThis = (n < (numPartitions-1)) ? numEach : (numData-index);
+            ArrayList<DataType> partition = new ArrayList<DataType>( numThis );
 
-            int beginIndex = 0;
-            int endIndex = beginIndex + numEach;
-            for( int i = 0; i < numPartitions; i++ )
+            for( int i = 0; i < numThis; i++ )
             {
-                if( i == numPartitions-1 )
-                {
-                    endIndex = numData;
-                }
-                retval.add( list.subList(beginIndex, endIndex) );
-                beginIndex = endIndex;
-                endIndex += numEach;
+                partition.add( iterator.next() );
+                index++;
             }
 
+            retval.add( partition );
+
         }
-        else
-        {
-            int index = 0;
-            Iterator<? extends DataType> iterator = data.iterator();
-            for( int n = 0; n < numPartitions; n++ )
-            {
-                // The remainder goes into the final partition
-                int numThis = (n < (numPartitions-1)) ? numEach : (numData-index);
-                ArrayList<DataType> partition = new ArrayList<DataType>( numThis );
-
-                for( int i = 0; i < numThis; i++ )
-                {
-                    partition.add( iterator.next() );
-                    index++;
-                }
-
-                retval.add( partition );
-
-            }
-        }
-
         return retval;
+    }
 
+    /**
+     * Creates a partition of the given data into "numPartition" roughly equal
+     * sets, preserving their pre-existing sequential ordering, with the
+     * nonzero remainder elements going into the final partition.
+     *
+     * @param <DataType> Type of data to partition.
+     * @param data Collection of data to partition
+     * @param numPartitions Number of partitions to create.
+     * @return
+     * List of Lists of size data.size()/numPartitions, with the remainder of
+     * data elements going into the final partition.
+     */
+    public static <DataType> ArrayList<List<? extends DataType>> createSequentialPartitions(
+        List<? extends DataType> data,
+        int numPartitions)
+    {
+        final int numData = CollectionUtil.size(data);
+        final int numEach = numData / numPartitions;
+        ArrayList<List<? extends DataType>> result =
+            new ArrayList<List<? extends DataType>>(numPartitions);
+        int beginIndex = 0;
+        int endIndex = beginIndex + numEach;
+        for (int i = 0; i < numPartitions; i++)
+        {
+            if (i == numPartitions - 1)
+            {
+                endIndex = numData;
+            }
+            result.add(data.subList(beginIndex, endIndex));
+            beginIndex = endIndex;
+            endIndex += numEach;
+        }
+
+        return result;
     }
 
     /**
@@ -435,11 +454,11 @@ public class CollectionUtil
      * see if the {@code Iterable} is a {@code List}, and if so calls the get
      * method. Otherwise, it walks the {@code Iterable} to get to the element.
      *
-     * @param <DataType>  
+     * @param <DataType>
      *      The type of data.
-     * @param iterable    
+     * @param iterable
      *      The iterable to pull the value from.
-     * @param index       
+     * @param index
      *      The 0-based index to pull from the iterable.
      * @return
      *      The value at the given spot in the iterable.
@@ -476,7 +495,7 @@ public class CollectionUtil
             // Bad index.
             throw new IndexOutOfBoundsException("index >= iterable size");
         }
-        
+
     }
 
     /**
@@ -522,7 +541,7 @@ public class CollectionUtil
             while (iterator.hasNext())
             {
                 DataType value = iterator.next();
-                
+
                 if (index == 0)
                 {
                     iterator.remove();
@@ -573,7 +592,7 @@ public class CollectionUtil
             result.append(delimiter);
             result.append(iterator.next());
         }
-        
+
         return result.toString();
     }
 
