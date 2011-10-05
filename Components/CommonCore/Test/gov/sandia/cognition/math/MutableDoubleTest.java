@@ -393,5 +393,25 @@ public class MutableDoubleTest
         }
     }
 
+    /**
+     * Test of zero method, of class gov.sandia.isrc.math.Ring.
+     */
+    @Override
+    public void testZero()
+    {
+
+        System.out.println( "zero" );
+        MutableDouble r1 = this.createRandom();
+        MutableDouble r1clone = r1.clone();
+        MutableDouble r2 = r1.clone();
+        MutableDouble r2clone = r2.clone();
+
+        assertEquals( r1.value, r2.value );
+        r1.zero();
+        assertFalse( r1.equals( r1clone ) );
+        assertEquals( r1.value, r2.scale( 0.0 ).value, 0.0);
+        assertEquals( r2.value, r2clone.value );
+
+    }
 
 }

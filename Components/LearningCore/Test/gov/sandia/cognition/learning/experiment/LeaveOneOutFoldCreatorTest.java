@@ -75,7 +75,7 @@ public class LeaveOneOutFoldCreatorTest
         }
         finally
         {
-            assert(exceptionThrown);
+            assertTrue(exceptionThrown);
         }
         
         data.add(this.random.nextDouble());
@@ -90,7 +90,7 @@ public class LeaveOneOutFoldCreatorTest
         }
         finally
         {
-            assert(exceptionThrown);
+            assertTrue(exceptionThrown);
         }
         
     }
