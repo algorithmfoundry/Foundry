@@ -25,9 +25,9 @@ import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * A deterministic distribution that returns samples at a single point.  This
@@ -168,9 +168,9 @@ public class DeterministicDistribution
     }
 
     @Override
-    public Collection<Double> getDomain()
+    public Set<Double> getDomain()
     {
-        return Arrays.asList( this.getPoint() );
+        return Collections.singleton(this.getPoint());
     }
 
     @Override

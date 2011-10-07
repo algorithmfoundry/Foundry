@@ -84,32 +84,24 @@ public class FiniteCapacityBufferTest
 
         FiniteCapacityBuffer<Double> buffer = new FiniteCapacityBuffer<Double>(1000);
 
-        boolean exceptionThrown = false;
         try
         {
             buffer.getFirst();
+            fail( "Should have throw exception" );
         }
-        catch (NoSuchElementException e)
+        catch (Exception e)
         {
-            exceptionThrown = true;
-        }
-        finally
-        {
-            assertTrue(exceptionThrown);
+            System.out.println( "Good: " + e );
         }
 
-        exceptionThrown = false;
         try
         {
             buffer.getLast();
+            fail( "Should have throw exception" );
         }
-        catch (NoSuchElementException e)
+        catch (Exception e)
         {
-            exceptionThrown = true;
-        }
-        finally
-        {
-            assertTrue(exceptionThrown);
+            System.out.println( "Good: " + e );
         }
 
         FiniteCapacityBuffer<Double> clone = buffer.clone();

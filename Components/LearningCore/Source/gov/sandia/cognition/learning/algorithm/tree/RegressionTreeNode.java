@@ -10,7 +10,6 @@
  * license from the United States Government. See CopyrightHistory.txt for
  * complete details.
  *
- *
  */
 
 package gov.sandia.cognition.learning.algorithm.tree;

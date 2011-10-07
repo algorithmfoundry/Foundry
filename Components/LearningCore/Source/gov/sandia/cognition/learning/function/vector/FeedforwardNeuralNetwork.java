@@ -42,7 +42,7 @@ public class FeedforwardNeuralNetwork
     /**
      * Layers that comprise this neural network
      */
-    private ArrayList<? extends SquashedMatrixMultiplyVectorFunction> layers;
+    private ArrayList<? extends GeneralizedLinearModel> layers;
 
     /**
      * Creates a new instance of FeedforwardNeuralNetwork
@@ -63,8 +63,8 @@ public class FeedforwardNeuralNetwork
             throw new IllegalArgumentException(
                 "Number of layers must equal layerActivationFunction + 1" );
         }
-        ArrayList<SquashedMatrixMultiplyVectorFunction> localLayers =
-            new ArrayList<SquashedMatrixMultiplyVectorFunction>(
+        ArrayList<GeneralizedLinearModel> localLayers =
+            new ArrayList<GeneralizedLinearModel>(
             layerActivationFunctions.size() );
 
         for (int i = 0; i < nodesPerLayer.size() - 1; i++)
@@ -72,7 +72,7 @@ public class FeedforwardNeuralNetwork
             int currentNum = nodesPerLayer.get( i );
             int nextNum = nodesPerLayer.get( i + 1 );
 
-            localLayers.add( new SquashedMatrixMultiplyVectorFunction(
+            localLayers.add( new GeneralizedLinearModel(
                     currentNum, nextNum, layerActivationFunctions.get( i ) ) );
         }
 
@@ -98,13 +98,13 @@ public class FeedforwardNeuralNetwork
         int numOutputs,
         UnivariateScalarFunction activationFunction )
     {
-        ArrayList<SquashedMatrixMultiplyVectorFunction> localLayers =
-            new ArrayList<SquashedMatrixMultiplyVectorFunction>( 2 );
+        ArrayList<GeneralizedLinearModel> localLayers =
+            new ArrayList<GeneralizedLinearModel>( 2 );
 
-        localLayers.add( new SquashedMatrixMultiplyVectorFunction(
+        localLayers.add( new GeneralizedLinearModel(
             numInputs, numHiddens, activationFunction ) );
 
-        localLayers.add( new SquashedMatrixMultiplyVectorFunction(
+        localLayers.add( new GeneralizedLinearModel(
             numHiddens, numOutputs, activationFunction ) );
 
         this.setLayers( localLayers );
@@ -117,7 +117,7 @@ public class FeedforwardNeuralNetwork
      * Layers that comprise this neural network
      */
     public FeedforwardNeuralNetwork(
-        ArrayList<? extends SquashedMatrixMultiplyVectorFunction> layers )
+        ArrayList<? extends GeneralizedLinearModel> layers )
     {
         this.setLayers( layers );
     }
@@ -168,8 +168,8 @@ public class FeedforwardNeuralNetwork
 
         for (int i = 0; i < this.getLayers().size(); i++)
         {
-            SquashedMatrixMultiplyVectorFunction layer = this.getLayers().get( i );
-            Matrix matrix = layer.getMatrixMultiply().getInternalMatrix();
+            GeneralizedLinearModel layer = this.getLayers().get( i );
+            Matrix matrix = layer.getDiscriminant().getDiscriminant();
             int num = matrix.getNumRows() * matrix.getNumColumns();
 
             minIndex = maxIndex + 1;
@@ -201,7 +201,7 @@ public class FeedforwardNeuralNetwork
         ArrayList<Vector> layerActivations = new ArrayList<Vector>( N + 1 );
         layerActivations.add( input );
         Vector activation = input;
-        for (SquashedMatrixMultiplyVectorFunction f : this.getLayers())
+        for (GeneralizedLinearModel f : this.getLayers())
         {
             activation = f.evaluate( activation );
             layerActivations.add( activation );
@@ -216,7 +216,7 @@ public class FeedforwardNeuralNetwork
      * @return 
      * Layers that comprise this neural network
      */
-    public ArrayList<? extends SquashedMatrixMultiplyVectorFunction> getLayers()
+    public ArrayList<? extends GeneralizedLinearModel> getLayers()
     {
         return this.layers;
     }
@@ -227,7 +227,7 @@ public class FeedforwardNeuralNetwork
      * Layers that comprise this neural network
      */
     public void setLayers(
-        ArrayList<? extends SquashedMatrixMultiplyVectorFunction> layers )
+        ArrayList<? extends GeneralizedLinearModel> layers )
     {
         this.layers = layers;
     }

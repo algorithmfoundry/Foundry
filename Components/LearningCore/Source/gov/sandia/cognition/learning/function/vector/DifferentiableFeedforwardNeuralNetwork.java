@@ -53,10 +53,10 @@ public class DifferentiableFeedforwardNeuralNetwork
         ArrayList<DifferentiableUnivariateScalarFunction> layerActivationFunctions,
         Random random)
     {
-        super(new ArrayList<DifferentiableSquashedMatrixMultiplyVectorFunction>());
+        super(new ArrayList<DifferentiableGeneralizedLinearModel>());
 
-        ArrayList<DifferentiableSquashedMatrixMultiplyVectorFunction> layers =
-            new ArrayList<DifferentiableSquashedMatrixMultiplyVectorFunction>(
+        ArrayList<DifferentiableGeneralizedLinearModel> layers =
+            new ArrayList<DifferentiableGeneralizedLinearModel>(
             layerActivationFunctions.size());
 
         final double range = 0.1;
@@ -66,9 +66,9 @@ public class DifferentiableFeedforwardNeuralNetwork
             int nextNum = nodesPerLayer.get(i + 1);
 
             Matrix w = MatrixFactory.getDefault().createUniformRandom(nextNum, currentNum, -range, range, random);
-            DifferentiableSquashedMatrixMultiplyVectorFunction layer =
-                new DifferentiableSquashedMatrixMultiplyVectorFunction(
-                new MatrixMultiplyVectorFunction(w),
+            DifferentiableGeneralizedLinearModel layer =
+                new DifferentiableGeneralizedLinearModel(
+                new MultivariateDiscriminant(w),
                 layerActivationFunctions.get(i));
             layers.add(layer);
         }
@@ -98,21 +98,21 @@ public class DifferentiableFeedforwardNeuralNetwork
         DifferentiableVectorFunction activationFunction,
         Random random)
     {
-        super(new ArrayList<DifferentiableSquashedMatrixMultiplyVectorFunction>());
+        super(new ArrayList<DifferentiableGeneralizedLinearModel>());
 
-        ArrayList<DifferentiableSquashedMatrixMultiplyVectorFunction> layers =
-            new ArrayList<DifferentiableSquashedMatrixMultiplyVectorFunction>(2);
+        ArrayList<DifferentiableGeneralizedLinearModel> layers =
+            new ArrayList<DifferentiableGeneralizedLinearModel>(2);
 
         final double range = 1.0;
 
         Matrix w12 = MatrixFactory.getDefault().createUniformRandom(numHiddens, numInputs, -range, range, random);
         Matrix w23 = MatrixFactory.getDefault().createUniformRandom(numOutputs, numHiddens, -range, range, random);
 
-        layers.add(new DifferentiableSquashedMatrixMultiplyVectorFunction(
-            new MatrixMultiplyVectorFunction(w12), activationFunction));
+        layers.add(new DifferentiableGeneralizedLinearModel(
+            new MultivariateDiscriminant(w12), activationFunction));
 
-        layers.add(new DifferentiableSquashedMatrixMultiplyVectorFunction(
-            new MatrixMultiplyVectorFunction(w23), activationFunction));
+        layers.add(new DifferentiableGeneralizedLinearModel(
+            new MultivariateDiscriminant(w23), activationFunction));
 
         this.setLayers(layers);
     }
@@ -149,9 +149,9 @@ public class DifferentiableFeedforwardNeuralNetwork
      * Layers of the neural network
      */
     public DifferentiableFeedforwardNeuralNetwork(
-        DifferentiableSquashedMatrixMultiplyVectorFunction ... layers )
+        DifferentiableGeneralizedLinearModel ... layers )
     {
-        super( new ArrayList<DifferentiableSquashedMatrixMultiplyVectorFunction>( 
+        super( new ArrayList<DifferentiableGeneralizedLinearModel>(
             Arrays.asList( layers ) ) );
     }
 
@@ -163,9 +163,9 @@ public class DifferentiableFeedforwardNeuralNetwork
     
     @SuppressWarnings("unchecked")
     @Override
-    public ArrayList<DifferentiableSquashedMatrixMultiplyVectorFunction> getLayers()
+    public ArrayList<DifferentiableGeneralizedLinearModel> getLayers()
     {
-        return (ArrayList<DifferentiableSquashedMatrixMultiplyVectorFunction>) super.getLayers();
+        return (ArrayList<DifferentiableGeneralizedLinearModel>) super.getLayers();
     }
 
     public Matrix computeParameterGradient(
@@ -180,7 +180,7 @@ public class DifferentiableFeedforwardNeuralNetwork
         Matrix layerDerivative = MatrixFactory.getDefault().createIdentity(M, M);
         for (int i = numLayers - 1; i >= 0; i--)
         {
-            DifferentiableSquashedMatrixMultiplyVectorFunction layer =
+            DifferentiableGeneralizedLinearModel layer =
                 this.getLayers().get(i);
 
             Vector layerInput = layerActivations.get(i);

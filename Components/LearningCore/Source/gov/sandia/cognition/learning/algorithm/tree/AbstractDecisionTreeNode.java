@@ -162,7 +162,9 @@ public abstract class AbstractDecisionTreeNode<InputType, OutputType, InteriorTy
 
     public int getDepth()
     {
-        return this.parent == null ? 1 : 1 + parent.getDepth();
+	// A node's depth is the length of the path from the node to
+	// the root.  The root node has depth 0.
+        return this.parent == null ? 0 : 1 + parent.getDepth();
     }
 
     public int getTreeSize()

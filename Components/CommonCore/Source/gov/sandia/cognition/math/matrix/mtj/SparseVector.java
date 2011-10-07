@@ -44,7 +44,7 @@ public class SparseVector
      * @param numDimensions Maximum number of entries in the SparseVector.
      */
     protected SparseVector(
-        int numDimensions)
+        final int numDimensions)
     {
         this(numDimensions, 0);
     }
@@ -56,8 +56,8 @@ public class SparseVector
      * @param initialNonZeros Initial size of the SparseVector.
      */
     protected SparseVector(
-        int numDimensions,
-        int initialNonZeros)
+        final int numDimensions,
+        final int initialNonZeros)
     {
         this(new no.uib.cipr.matrix.sparse.SparseVector( 
             numDimensions, initialNonZeros));
@@ -69,7 +69,7 @@ public class SparseVector
      * @param internalVector Internal MTJ-based vector to set into this.
      */
     protected SparseVector(
-        no.uib.cipr.matrix.sparse.SparseVector internalVector)
+        final no.uib.cipr.matrix.sparse.SparseVector internalVector)
     {
         super(internalVector);
     }
@@ -80,7 +80,7 @@ public class SparseVector
      * @param vector Vector to copy into this, will not be modified.
      */
     protected SparseVector(
-        Vector vector)
+        final Vector vector)
     {
         this(vector.getDimensionality());
         
@@ -107,8 +107,8 @@ public class SparseVector
 
     @Override
     public void setElement(
-        int index,
-        double value)
+        final int index,
+        final double value)
     {
         // Only set a value in a SparseVector if it's different than what's
         // in there already!
@@ -135,11 +135,19 @@ public class SparseVector
      * @param internalVector Internal MTJ-based vector.
      */
     protected void setInternalVector(
-        no.uib.cipr.matrix.sparse.SparseVector internalVector)
+        final no.uib.cipr.matrix.sparse.SparseVector internalVector)
     {
         super.setInternalVector(internalVector);
     }
 
+    @Override
+    public double euclideanDistanceSquared(
+        final Vector other )
+    {
+        return this.minus( other ).norm2Squared();
+    }
+
+    @Override
     public SparseRowMatrix outerProduct(
         final AbstractMTJVector other)
     {  
@@ -189,8 +197,9 @@ public class SparseVector
         this.getInternalVector().compact();
     }
 
+    @Override
     public SparseVector stack(
-        Vector other)
+        final Vector other)
     {
         int d1 = this.getDimensionality();
         int d2 = other.getDimensionality();
@@ -267,9 +276,10 @@ public class SparseVector
         this.compact();
     }
 
+    @Override
     public SparseVector subVector(
-        int minIndex,
-        int maxIndex)
+        final int minIndex,
+        final int maxIndex)
     {
         int M = maxIndex - minIndex + 1;
         SparseVector subvector = new SparseVector( M );

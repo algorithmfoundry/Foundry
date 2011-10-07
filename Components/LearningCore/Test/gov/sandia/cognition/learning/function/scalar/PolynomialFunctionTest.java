@@ -51,7 +51,7 @@ public class PolynomialFunctionTest extends TestCase
      */
     protected PolynomialFunction createInstance()
     {
-        double exponent = (int) (4.0 * Math.random() - 2.0);
+        double exponent = (int) (4.0 * random.nextDouble() - 2.0);
         return new PolynomialFunction( exponent );
     }
 
@@ -62,7 +62,7 @@ public class PolynomialFunctionTest extends TestCase
     {
         System.out.println( "clone" );
 
-        double exponent = Math.random();
+        double exponent = random.nextDouble();
         PolynomialFunction instance = new PolynomialFunction( exponent );
         PolynomialFunction clone = instance.clone();
         assertNotSame( instance, clone );
@@ -77,7 +77,7 @@ public class PolynomialFunctionTest extends TestCase
     {
         System.out.println( "convertToVector" );
 
-        double exponent = Math.random();
+        double exponent = random.nextDouble();
         PolynomialFunction instance = new PolynomialFunction( exponent );
         Vector params = instance.convertToVector();
         assertEquals( 1, params.getDimensionality() );
@@ -93,7 +93,7 @@ public class PolynomialFunctionTest extends TestCase
 
         System.out.println( "convertFromVector" );
 
-        double exponent = Math.random();
+        double exponent = random.nextDouble();
         PolynomialFunction instance = new PolynomialFunction( exponent );
         assertEquals( exponent, instance.getExponent() );
         Vector params = instance.convertToVector();
@@ -120,14 +120,14 @@ public class PolynomialFunctionTest extends TestCase
 
         for (int i = 0; i < 10; i++)
         {
-            double e1 = Math.random() * 10 + 1;
+            double e1 = random.nextDouble() * 10 + 1;
             PolynomialFunction p1 = new PolynomialFunction( e1 );
 
             final double EPS = 1e-5;
 
             System.out.println( p1.toString() );
 
-            double x1 = Math.random();
+            double x1 = random.nextDouble();
             double d1 = e1 * Math.pow( x1, e1 - 1.0 );
             assertEquals( d1, p1.differentiate( x1 ), EPS );
         }
@@ -144,14 +144,14 @@ public class PolynomialFunctionTest extends TestCase
         for (int i = 0; i < 10; i++)
         {
             PolynomialFunction p1 = new PolynomialFunction( 0.0 );
-            assertEquals( 1.0, p1.evaluate( Math.random() ) );
+            assertEquals( 1.0, p1.evaluate( random.nextDouble() ) );
 
             PolynomialFunction p2 = new PolynomialFunction( 1.0 );
-            double x2 = Math.random();
+            double x2 = random.nextDouble();
             assertEquals( x2, p2.evaluate( x2 ) );
 
-            PolynomialFunction p3 = new PolynomialFunction( 10 * Math.random() - 5 );
-            double x3 = 10 * Math.random();
+            PolynomialFunction p3 = new PolynomialFunction( 10 * random.nextDouble() - 5 );
+            double x3 = 10 * random.nextDouble();
             assertEquals( Math.pow( x3, p3.getExponent() ), p3.evaluate( x3 ), EPS );
         }
 
@@ -164,8 +164,8 @@ public class PolynomialFunctionTest extends TestCase
     {
         System.out.println( "computeParameterGradient" );
 
-        PolynomialFunction p2 = new PolynomialFunction( Math.random() );
-        double x = Math.random() * 20 - 10;
+        PolynomialFunction p2 = new PolynomialFunction( random.nextDouble() );
+        double x = random.nextDouble() * 20 - 10;
         Vector g = VectorFactory.getDefault().createVector( 1 );
         double v = Math.log( x ) * p2.evaluate( x );
         g.setElement( 0, v );
@@ -189,12 +189,12 @@ public class PolynomialFunctionTest extends TestCase
             new LinkedList<InputOutputPair<Double, Double>>();
         int o1 = 5;
         VectorFunctionLinearDiscriminant<Double> t1 = new VectorFunctionLinearDiscriminant<Double>(
-            new ScalarBasisSet<Double>( PolynomialFunction.createPolynomials( 0.0, 1.0, 2.0, 3.0, 4.0, 5.0 ) ),
-            VectorFactory.getDefault().createUniformRandom( o1 + 1, -10, 10, random ) );
+            new ScalarBasisSet<Double>( PolynomialFunction.createPolynomials( 1.0, 2.0, 3.0, 4.0, 5.0 ) ),
+            new LinearDiscriminantWithBias( VectorFactory.getDefault().createUniformRandom( o1, -10, 10, random ), random.nextGaussian() ) );
         double r = 5;
         for (int n = 0; n < 10; n++)
         {
-            double x = Math.random() * 2 * r - r;
+            double x = random.nextDouble() * 2 * r - r;
             double y = t1.evaluate( x );
             d1.add( new DefaultInputOutputPair<Double, Double>( x, y ) );
         }
@@ -202,8 +202,8 @@ public class PolynomialFunctionTest extends TestCase
         VectorFunctionLinearDiscriminant<Double> e1 =
             PolynomialFunction.Regression.learn( o1, d1 );
 
-        System.out.println( "Target:     " + t1 );
-        System.out.println( "Regression: " + e1 );
+        System.out.println( "Target:     " + t1.convertToVector() );
+        System.out.println( "Regression: " + e1.convertToVector() );
 
         double EPS = 1e-5;
         assertTrue( t1.convertToVector().equals( e1.convertToVector(), EPS ) );
@@ -217,7 +217,7 @@ public class PolynomialFunctionTest extends TestCase
     {
         System.out.println( "getExponent" );
 
-        double exponent = Math.random();
+        double exponent = random.nextDouble();
         PolynomialFunction instance = new PolynomialFunction( exponent );
         assertEquals( exponent, instance.getExponent() );
 
@@ -230,11 +230,11 @@ public class PolynomialFunctionTest extends TestCase
     {
         System.out.println( "setExponent" );
 
-        double exponent = Math.random();
+        double exponent = random.nextDouble();
         PolynomialFunction instance = new PolynomialFunction( exponent );
         assertEquals( exponent, instance.getExponent() );
 
-        double e2 = exponent + Math.random();
+        double e2 = exponent + random.nextDouble();
         instance.setExponent( e2 );
         assertEquals( e2, instance.getExponent() );
     }
@@ -250,7 +250,7 @@ public class PolynomialFunctionTest extends TestCase
         double[] polynomialExponents = new double[num];
         for (int i = 0; i < num; i++)
         {
-            polynomialExponents[i] = Math.random();
+            polynomialExponents[i] = random.nextDouble();
         }
         ArrayList<PolynomialFunction> result = PolynomialFunction.createPolynomials( polynomialExponents );
 
@@ -292,8 +292,8 @@ public class PolynomialFunctionTest extends TestCase
         // the mid-point rule
         for (int n = 0; n < 10; n++)
         {
-            double min = Math.random() * 4.0;
-            double max = min + Math.random() * 4.0;
+            double min = random.nextDouble() * 4.0;
+            double max = min + random.nextDouble() * 4.0;
             double step = 1e-3;
             double sum = 0.0;
             PolynomialFunction f = this.createFunction();

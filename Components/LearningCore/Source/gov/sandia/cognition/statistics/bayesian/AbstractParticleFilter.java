@@ -15,7 +15,7 @@
 package gov.sandia.cognition.statistics.bayesian;
 
 import gov.sandia.cognition.learning.algorithm.AbstractBatchAndIncrementalLearner;
-import gov.sandia.cognition.statistics.PointMassDistribution;
+import gov.sandia.cognition.statistics.DataDistribution;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.Random;
 
@@ -29,7 +29,7 @@ import java.util.Random;
  * Type of parameters to infer.
  */
 public abstract class AbstractParticleFilter<ObservationType,ParameterType>
-    extends AbstractBatchAndIncrementalLearner<ObservationType,PointMassDistribution<ParameterType>>
+    extends AbstractBatchAndIncrementalLearner<ObservationType,DataDistribution<ParameterType>>
     implements ParticleFilter<ObservationType,ParameterType>
 {
 
@@ -92,20 +92,20 @@ public abstract class AbstractParticleFilter<ObservationType,ParameterType>
         this.random = random;
     }
 
-    public PointMassDistribution<ParameterType> createInitialLearnedObject()
+    public DataDistribution<ParameterType> createInitialLearnedObject()
     {
         return this.getUpdater().createInitialParticles( this.getNumParticles() );
     }
 
     public double computeEffectiveParticles(
-        PointMassDistribution<ParameterType> particles)
+        DataDistribution<ParameterType> particles)
     {
         // This is Equation (50) in Arulampalam's IEEE Trans paper on p. 179
-        double totalMass = particles.getTotalMass();
+        double totalMass = particles.getTotal();
         double sumSquared = 0.0;
         for( ParameterType particle : particles.getDomain() )
         {
-            double w = particles.getMass(particle) / totalMass;
+            double w = particles.get(particle) / totalMass;
             sumSquared += w*w;
         }
 

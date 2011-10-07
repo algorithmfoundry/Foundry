@@ -19,7 +19,7 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -85,40 +85,40 @@ public class DiscreteNaiveBayesCategorizerTest
     {
 
         // From 
-        Map<String,List<MapBasedDataHistogram<Boolean>>> conditionalPMFs =
-            new LinkedHashMap<String, List<MapBasedDataHistogram<Boolean>>>();
+        Map<String,List<DefaultDataDistribution<Boolean>>> conditionalPMFs =
+            new LinkedHashMap<String, List<DefaultDataDistribution<Boolean>>>();
 
-        MapBasedDataHistogram<Boolean> p0 = new MapBasedDataHistogram<Boolean>();
-        p0.add( Boolean.TRUE, 10 );
-        p0.add( Boolean.FALSE, 90 );
+        DefaultDataDistribution<Boolean> p0 = new DefaultDataDistribution<Boolean>();
+        p0.increment( Boolean.TRUE, 10 );
+        p0.increment( Boolean.FALSE, 90 );
 
-        MapBasedDataHistogram<Boolean> p1 = new MapBasedDataHistogram<Boolean>();
-        p1.add( Boolean.TRUE, 90 );
-        p1.add( Boolean.FALSE, 10 );
+        DefaultDataDistribution<Boolean> p1 = new DefaultDataDistribution<Boolean>();
+        p1.increment( Boolean.TRUE, 90 );
+        p1.increment( Boolean.FALSE, 10 );
 
-        MapBasedDataHistogram<Boolean> p2 = new MapBasedDataHistogram<Boolean>();
-        p2.add( Boolean.TRUE, 90 );
-        p2.add( Boolean.FALSE, 10 );
+        DefaultDataDistribution<Boolean> p2 = new DefaultDataDistribution<Boolean>();
+        p2.increment( Boolean.TRUE, 90 );
+        p2.increment( Boolean.FALSE, 10 );
 
-        MapBasedDataHistogram<Boolean> n0 = new MapBasedDataHistogram<Boolean>();
-        n0.add( Boolean.TRUE, 20 );
-        n0.add( Boolean.FALSE, 80 );
+        DefaultDataDistribution<Boolean> n0 = new DefaultDataDistribution<Boolean>();
+        n0.increment( Boolean.TRUE, 20 );
+        n0.increment( Boolean.FALSE, 80 );
 
-        MapBasedDataHistogram<Boolean> n1 = new MapBasedDataHistogram<Boolean>();
-        n1.add( Boolean.TRUE, 30 );
-        n1.add( Boolean.FALSE, 70 );
+        DefaultDataDistribution<Boolean> n1 = new DefaultDataDistribution<Boolean>();
+        n1.increment( Boolean.TRUE, 30 );
+        n1.increment( Boolean.FALSE, 70 );
 
-        MapBasedDataHistogram<Boolean> n2 = new MapBasedDataHistogram<Boolean>();
-        n2.add( Boolean.TRUE, 30 );
-        n2.add( Boolean.FALSE, 70 );
+        DefaultDataDistribution<Boolean> n2 = new DefaultDataDistribution<Boolean>();
+        n2.increment( Boolean.TRUE, 30 );
+        n2.increment( Boolean.FALSE, 70 );
 
         conditionalPMFs.put(CLASS1, Arrays.asList( p0, p1, p2 ) );
         conditionalPMFs.put(CLASS2, Arrays.asList( n0, n1, n2 ) );
 
-        MapBasedDataHistogram<String> priors =
-            new MapBasedDataHistogram<String>();
-        priors.add( CLASS1, 300 );
-        priors.add( CLASS2, 300 );
+        DefaultDataDistribution<String> priors =
+            new DefaultDataDistribution<String>();
+        priors.increment( CLASS1, 300 );
+        priors.increment( CLASS2, 300 );
 
         return new DiscreteNaiveBayesCategorizer<Boolean, String>(
                 3, priors, conditionalPMFs );
@@ -285,7 +285,7 @@ public class DiscreteNaiveBayesCategorizerTest
     public void testGetInputDimensionality()
     {
         System.out.println("getInputDimensionality");
-        DiscreteNaiveBayesCategorizer instance = this.createInstance();
+        DiscreteNaiveBayesCategorizer<Boolean, String> instance = this.createInstance();
         assertEquals( 3, instance.getInputDimensionality() );
     }
 

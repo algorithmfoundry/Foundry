@@ -16,7 +16,7 @@ package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.collection.IntegerCollection;
+import gov.sandia.cognition.collection.IntegerSpan;
 import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.ProbabilityUtil;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
@@ -224,10 +224,10 @@ public class NegativeBinomialDistribution
     }
 
     @Override
-    public IntegerCollection getDomain()
+    public IntegerSpan getDomain()
     {
         final int max = (int) Math.ceil( 10 * this.getMean() + 10 );
-        return new IntegerCollection(0, max);
+        return new IntegerSpan(0, max);
     }
 
     @Override

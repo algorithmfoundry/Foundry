@@ -15,11 +15,10 @@
 package gov.sandia.cognition.learning.algorithm.ensemble;
 
 import gov.sandia.cognition.evaluator.Evaluator;
-import gov.sandia.cognition.learning.data.ValueDiscriminantPair;
 import gov.sandia.cognition.learning.data.DefaultWeightedValueDiscriminant;
 import gov.sandia.cognition.learning.function.categorization.AbstractCategorizer;
 import gov.sandia.cognition.learning.function.categorization.DiscriminantCategorizer;
-import gov.sandia.cognition.statistics.distribution.MapBasedPointMassDistribution;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
@@ -143,15 +142,16 @@ public class WeightedVotingCategorizerEnsemble<InputType, CategoryType, MemberTy
      * @return
      *      The ensemble evaluated on the given input.
      */
+    @Override
     public CategoryType evaluate(
         final InputType input)
     {
         // Get the vote distribution.
-        final MapBasedPointMassDistribution<CategoryType> votes =
+        final DefaultDataDistribution<CategoryType> votes =
             this.evaluateAsVotes(input);
 
         // Get the maximum value of the votes.
-        return votes.getMaximumValue();
+        return votes.getMaxValueKey();
     }
 
     /**
@@ -167,11 +167,11 @@ public class WeightedVotingCategorizerEnsemble<InputType, CategoryType, MemberTy
         final InputType input)
     {
         // Get the votes for the input.
-        final MapBasedPointMassDistribution<CategoryType> votes =
+        final DefaultDataDistribution<CategoryType> votes =
             this.evaluateAsVotes(input);
 
         // Find the best votes.
-        final CategoryType bestCategory = votes.getMaximumValue();
+        final CategoryType bestCategory = votes.getMaxValueKey();
         if (bestCategory == null)
         {
             // No category had any votes.
@@ -197,12 +197,12 @@ public class WeightedVotingCategorizerEnsemble<InputType, CategoryType, MemberTy
      * @return
      *      The ensemble's distribution of votes for the given input.
      */
-    public MapBasedPointMassDistribution<CategoryType> evaluateAsVotes(
+    public DefaultDataDistribution<CategoryType> evaluateAsVotes(
         final InputType input)
     {
         // Compute the votes.
-        final MapBasedPointMassDistribution<CategoryType> votes =
-            new MapBasedPointMassDistribution<CategoryType>(
+        final DefaultDataDistribution<CategoryType> votes =
+            new DefaultDataDistribution<CategoryType>(
                 this.getCategories().size());
 
         for (WeightedValue<MemberType> member : this.getMembers())
@@ -214,7 +214,7 @@ public class WeightedVotingCategorizerEnsemble<InputType, CategoryType, MemberTy
             if (category != null)
             {
                 // Update the vote information for the voted category.
-                votes.add(category, weight);
+                votes.increment(category, weight);
             }
             // else - The member had no vote.
         }
@@ -227,6 +227,7 @@ public class WeightedVotingCategorizerEnsemble<InputType, CategoryType, MemberTy
      *
      * @return The members of the ensemble.
      */
+    @Override
     public List<WeightedValue<MemberType>> getMembers()
     {
         return this.members;

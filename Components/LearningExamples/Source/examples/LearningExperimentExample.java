@@ -28,7 +28,6 @@ import gov.sandia.cognition.learning.function.distance.EuclideanDistanceMetric;
 import gov.sandia.cognition.learning.function.scalar.AtanFunction;
 import gov.sandia.cognition.learning.function.scalar.VectorFunctionToScalarFunction;
 import gov.sandia.cognition.learning.function.vector.ThreeLayerFeedforwardNeuralNetwork;
-import gov.sandia.cognition.learning.function.vector.VectorizableVectorConverter;
 import gov.sandia.cognition.learning.performance.RootMeanSquaredErrorEvaluator;
 import gov.sandia.cognition.math.NumberAverager;
 import gov.sandia.cognition.math.matrix.Vector;
@@ -158,15 +157,14 @@ public class LearningExperimentExample
         // This means that, with 95% confidence, the RMS error on the interval
         // [0.391, 0.534] and we used 10 samples (folds) to determine this result
         // Not bad, eh?
-        System.out.println( knn.getClass() + " Result: " + knnResult );
+        System.out.println( ObjectUtil.getShortClassName(knn) + " Result: " + knnResult );
 
         // Let's use a (slightly) more sophisticated learning algorithm and 
         // compare.
         // Linear regression determines the best (linear) fit to the data.
         // In this case, we're just fitting a single vector of weights to
         // the input set using the regression algorithm.
-        LinearRegression<Vector> regression =
-            new LinearRegression<Vector>( new VectorizableVectorConverter() );
+        LinearRegression regression = new LinearRegression();
         ConfidenceInterval regressionResult = 
             experiment.evaluatePerformance( regression, labeledDataset );
 
@@ -175,7 +173,7 @@ public class LearningExperimentExample
         // We can see that, with 95% confidence, the RMS error for regression is
         // [0.709, 0.829].  This is statistically significantly worse than
         // just using 3-nearest neighbor.
-        System.out.println( regression.getClass() + " Result: " + regressionResult );
+        System.out.println( ObjectUtil.getShortClassName(regression) + " Result: " + regressionResult );
         
         // Let's create a neural network and see how well that performs
         // This is a neural network with a differentiable with "dimensionality"
@@ -212,7 +210,7 @@ public class LearningExperimentExample
         // is [0.049, 0.162].  This is statistically significantly better than
         // any other learner we've tried (not surprising, since this is the
         // functional form used to generate the targets!).
-        System.out.println( ann.getClass() + " Result: " + annResult );
+        System.out.println( ObjectUtil.getShortClassName(ann) + " Result: " + annResult );
         
         // However, this comparison of learners is somewhat ad hoc.  Wouldn't
         // it be great to run an experiment to determine if one of two

@@ -15,7 +15,7 @@
 package gov.sandia.cognition.learning.algorithm.pca;
 
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.learning.function.vector.MatrixMultiplyVectorFunction;
+import gov.sandia.cognition.learning.function.vector.MultivariateDiscriminant;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
@@ -45,7 +45,7 @@ public class PrincipalComponentsAnalysisFunctionTest extends TestCase
         Vector mean = VectorFactory.getDefault().createUniformRandom( N, -r, r, random );
         Matrix C = MatrixFactory.getDefault().createUniformRandom( M, N, -r, r, random );
         return new PrincipalComponentsAnalysisFunction(
-            mean, new MatrixMultiplyVectorFunction( C ) );
+            mean, new MultivariateDiscriminant( C ) );
     }
     
     /**
@@ -65,7 +65,7 @@ public class PrincipalComponentsAnalysisFunctionTest extends TestCase
         assertNotSame( instance.getMean(), clone.getMean() );
         assertEquals( instance.getMean(), clone.getMean() );
         assertNotSame( instance.getDimensionReducer(), clone.getDimensionReducer() );
-        assertEquals( instance.getDimensionReducer().getInternalMatrix(), clone.getDimensionReducer().getInternalMatrix() );
+        assertEquals( instance.getDimensionReducer().getDiscriminant(), clone.getDimensionReducer().getDiscriminant() );
         
     }
     
@@ -111,7 +111,7 @@ public class PrincipalComponentsAnalysisFunctionTest extends TestCase
         System.out.println("getOutputDimensionality");
         
         PrincipalComponentsAnalysisFunction instance = this.createInstance();
-        assertEquals( instance.getDimensionReducer().getInternalMatrix().getNumRows(), instance.getOutputDimensionality() );
+        assertEquals( instance.getDimensionReducer().getDiscriminant().getNumRows(), instance.getOutputDimensionality() );
 
     }
     
@@ -155,7 +155,7 @@ public class PrincipalComponentsAnalysisFunctionTest extends TestCase
         System.out.println("getDimensionReducer");
         
         PrincipalComponentsAnalysisFunction instance = this.createInstance();
-        MatrixMultiplyVectorFunction m = instance.getDimensionReducer();
+        MultivariateDiscriminant m = instance.getDimensionReducer();
         assertNotNull( m );    
     }
     
@@ -167,7 +167,7 @@ public class PrincipalComponentsAnalysisFunctionTest extends TestCase
         System.out.println("setDimensionReducer");
         
         PrincipalComponentsAnalysisFunction instance = this.createInstance();
-        MatrixMultiplyVectorFunction m = instance.getDimensionReducer();
+        MultivariateDiscriminant m = instance.getDimensionReducer();
         assertNotNull( m );
         
         instance.setDimensionReducer( null );

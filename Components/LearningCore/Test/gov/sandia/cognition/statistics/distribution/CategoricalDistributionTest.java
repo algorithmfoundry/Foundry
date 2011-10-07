@@ -14,7 +14,8 @@
 
 package gov.sandia.cognition.statistics.distribution;
 
-import java.util.ArrayList;
+import gov.sandia.cognition.collection.CollectionUtil;
+import java.util.Set;
 import gov.sandia.cognition.statistics.MultivariateClosedFormComputableDiscreteDistributionTestHarness;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
@@ -149,13 +150,13 @@ public class CategoricalDistributionTest
 
         int dim = 3;
         CategoricalDistribution instance = new CategoricalDistribution( dim );
-        ArrayList<Vector> domain = instance.getDomain();
+        Set<Vector> domain = instance.getDomain();
         assertEquals( dim, domain.size() );
         for( int i = 0; i < dim; i++ )
         {
             Vector v = VectorFactory.getDefault().createVector(dim);
             v.setElement(i, 1.0);
-            assertEquals( v, domain.get(i) );
+            assertTrue( domain.contains(v) );
         }
 
     }

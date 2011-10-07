@@ -26,6 +26,7 @@ import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.statistics.AbstractSufficientStatistic;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
@@ -38,8 +39,6 @@ import java.util.Collection;
  * and a set of observed data.
  * @author Kevin R. Dixon
  * @since 3.0
- * @param <InputType>
- * Type of inputs to map through the feature map onto a Vector.
  */
 @PublicationReferences(
     references={
@@ -68,8 +67,9 @@ import java.util.Collection;
         )
     }
 )
-public class BayesianLinearRegression<InputType>
-    extends AbstractBayesianRegression<InputType,Double,MultivariateGaussian>
+public class BayesianLinearRegression
+    extends AbstractCloneableSerializable
+    implements BayesianRegression<Double,MultivariateGaussian>
 {
 
     /**
@@ -103,15 +103,13 @@ public class BayesianLinearRegression<InputType>
     public BayesianLinearRegression(
         int dimensionality )
     {
-        this( null, DEFAULT_OUTPUT_VARIANCE,
+        this( DEFAULT_OUTPUT_VARIANCE,
             new MultivariateGaussian( VectorFactory.getDefault().createVector(dimensionality),
                 MatrixFactory.getDefault().createIdentity(dimensionality,dimensionality).scale( DEFAULT_WEIGHT_VARIANCE ) ) );
     }
 
     /**
      * Creates a new instance of BayesianLinearRegression
-     * @param featureMap
-     * Function that maps the input space onto a Vector.
      * @param outputVariance
      * Assumed known variance of the outputs (measurements),
      * must be greater than zero.
@@ -120,28 +118,25 @@ public class BayesianLinearRegression<InputType>
      * diagonal-variance distribution.
      */
     public BayesianLinearRegression(
-        Evaluator<? super InputType, Vector> featureMap,
         double outputVariance,
         MultivariateGaussian weightPrior)
     {
-        super( featureMap );
         this.setOutputVariance(outputVariance);
         this.setWeightPrior(weightPrior);
     }
 
     @Override
-    public BayesianLinearRegression<InputType> clone()
+    public BayesianLinearRegression clone()
     {
         @SuppressWarnings("unchecked")
-        BayesianLinearRegression<InputType> clone =
-            (BayesianLinearRegression<InputType>) super.clone();
+        BayesianLinearRegression clone = (BayesianLinearRegression) super.clone();
         clone.setWeightPrior( ObjectUtil.cloneSafe( this.getWeightPrior() ) );
         return clone;
     }
 
     @Override
     public MultivariateGaussian.PDF learn(
-        Collection<? extends InputOutputPair<? extends InputType, Double>> data)
+        Collection<? extends InputOutputPair<? extends Vectorizable, Double>> data)
     {
         MultivariateGaussian prior = this.getWeightPrior();
 
@@ -152,9 +147,9 @@ public class BayesianLinearRegression<InputType>
         Vector z = Ci.times( prior.getMean() );
         zn.accumulate( z );
 
-        for (InputOutputPair<? extends InputType, Double> pair : data)
+        for (InputOutputPair<? extends Vectorizable, Double> pair : data)
         {
-            Vector x1 = this.featureMap.evaluate(pair.getInput());
+            Vector x1 = pair.getInput().convertToVector();
             Vector x2 = x1.clone();
             final double beta = DatasetUtil.getWeight(pair) / this.outputVariance;
             if( beta != 1.0 )
@@ -192,10 +187,10 @@ public class BayesianLinearRegression<InputType>
      */
     @Override
     public UnivariateGaussian createConditionalDistribution(
-        InputType input,
+        Vectorizable input,
         Vector weights )
     {
-        double mean = this.featureMap.evaluate(input).dotProduct(weights);
+        double mean = input.convertToVector().dotProduct(weights);
         return new UnivariateGaussian( mean, this.getOutputVariance() );
     }
 
@@ -258,7 +253,7 @@ public class BayesianLinearRegression<InputType>
      * Predictive distribution of outputs given the posterior.
      */
     @Override
-    public BayesianLinearRegression<InputType>.PredictiveDistribution createPredictiveDistribution(
+    public BayesianLinearRegression.PredictiveDistribution createPredictiveDistribution(
         MultivariateGaussian posterior )
     {
         return new PredictiveDistribution( posterior );
@@ -276,7 +271,7 @@ public class BayesianLinearRegression<InputType>
     )
     public class PredictiveDistribution
         extends AbstractCloneableSerializable
-        implements Evaluator<InputType,UnivariateGaussian.PDF>
+        implements Evaluator<Vectorizable,UnivariateGaussian.PDF>
     {
 
         /**
@@ -297,10 +292,10 @@ public class BayesianLinearRegression<InputType>
 
         @Override
         public UnivariateGaussian.PDF evaluate(
-            InputType input)
+            Vectorizable input)
         {
             // Bishop's equations 3.58-3.59
-            Vector x = featureMap.evaluate(input);
+            Vector x = input.convertToVector();
             double mean = x.dotProduct( this.posterior.getMean() );
             double variance = x.times( this.posterior.getCovariance() ).dotProduct(x) + outputVariance;
             return new UnivariateGaussian.PDF( mean, variance );
@@ -310,11 +305,10 @@ public class BayesianLinearRegression<InputType>
 
     /**
      * Incremental estimator for BayesianLinearRegression
-     * @param <InputType>
      */
-    public static class IncrementalEstimator<InputType>
-        extends BayesianLinearRegression<InputType>
-        implements IncrementalLearner<InputOutputPair<? extends InputType,Double>, IncrementalEstimator<InputType>.SufficientStatistic>
+    public static class IncrementalEstimator
+        extends BayesianLinearRegression
+        implements IncrementalLearner<InputOutputPair<? extends Vectorizable,Double>, IncrementalEstimator.SufficientStatistic>
     {
 
         /**
@@ -330,27 +324,7 @@ public class BayesianLinearRegression<InputType>
         }
 
         /**
-         * Creates a new instance of IncrementalEstimator with the given
-         * dimensionality and feature map.
-         *
-         * @param dimensionality
-         * Sets up the parameters (except featureMap) for the given dimensionality
-         * of objects in feature space.
-         * @param featureMap
-         * Function that maps the input space onto a Vector.
-         */
-        public IncrementalEstimator(
-            int dimensionality,
-            Evaluator<? super InputType, Vector> featureMap)
-        {
-            this(dimensionality);
-
-            this.setFeatureMap(featureMap);
-        }
-        /**
          * Creates a new instance of IncrementalEstimator
-         * @param featureMap
-         * Function that maps the input space onto a Vector.
          * @param outputVariance
          * Assumed known variance of the outputs (measurements),
          * must be greater than zero.
@@ -359,24 +333,23 @@ public class BayesianLinearRegression<InputType>
          * diagonal-variance distribution.
          */
         public IncrementalEstimator(
-            Evaluator<? super InputType, Vector> featureMap,
             double outputVariance,
             MultivariateGaussian weightPrior)
         {
-            super( featureMap, outputVariance, weightPrior);
+            super( outputVariance, weightPrior);
         }
 
         @Override
-        public IncrementalEstimator<InputType>.SufficientStatistic createInitialLearnedObject()
+        public IncrementalEstimator.SufficientStatistic createInitialLearnedObject()
         {
             return new SufficientStatistic(this.getWeightPrior());
         }
 
         @Override
         public MultivariateGaussian.PDF learn(
-            Collection<? extends InputOutputPair<? extends InputType, Double>> data)
+            Collection<? extends InputOutputPair<? extends Vectorizable, Double>> data)
         {
-            IncrementalEstimator<InputType>.SufficientStatistic target =
+            IncrementalEstimator.SufficientStatistic target =
                 this.createInitialLearnedObject();
             this.update(target, data);
             return target.create();
@@ -384,8 +357,8 @@ public class BayesianLinearRegression<InputType>
 
         @Override
         public void update(
-            IncrementalEstimator<InputType>.SufficientStatistic target,
-            InputOutputPair<? extends InputType, Double> data)
+            IncrementalEstimator.SufficientStatistic target,
+            InputOutputPair<? extends Vectorizable, Double> data)
         {
             target.update(data);
         }
@@ -393,7 +366,7 @@ public class BayesianLinearRegression<InputType>
         @Override
         public void update(
             SufficientStatistic target,
-            Iterable<? extends InputOutputPair<? extends InputType, Double>> data)
+            Iterable<? extends InputOutputPair<? extends Vectorizable, Double>> data)
         {
             target.update(data);
         }
@@ -402,7 +375,7 @@ public class BayesianLinearRegression<InputType>
          * SufficientStatistic for incremental Bayesian linear regression
          */
         public class SufficientStatistic
-            extends AbstractSufficientStatistic<InputOutputPair<? extends InputType, Double>, MultivariateGaussian>
+            extends AbstractSufficientStatistic<InputOutputPair<? extends Vectorizable, Double>, MultivariateGaussian>
         {
 
             /**
@@ -441,11 +414,10 @@ public class BayesianLinearRegression<InputType>
 
             @Override
             public void update(
-                InputOutputPair<? extends InputType, Double> value)
+                InputOutputPair<? extends Vectorizable, Double> value)
             {
                 this.count++;
-                Vector v = featureMap.evaluate(value.getInput());
-
+                Vector v = value.getInput().convertToVector();
                 Vector x1 = v;
                 Vector x2 = v.clone();
                 final double y = value.getOutput();
@@ -538,7 +510,6 @@ public class BayesianLinearRegression<InputType>
             }
 
         }
-
 
     }
 

@@ -15,9 +15,10 @@
 package gov.sandia.cognition.learning.function.categorization;
 
 import gov.sandia.cognition.evaluator.Evaluator;
+import gov.sandia.cognition.learning.algorithm.regression.MultivariateLinearRegression;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.learning.function.vector.MatrixMultiplyVectorFunction;
+import gov.sandia.cognition.learning.function.vector.MultivariateDiscriminant;
 import gov.sandia.cognition.learning.function.vector.VectorizableVectorConverter;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.Vectorizable;
@@ -211,7 +212,7 @@ public class WinnerTakeAllCategorizerTest
     {
         WinnerTakeAllCategorizer.Learner<Vector, String> learner = 
             new WinnerTakeAllCategorizer.Learner<Vector, String>();
-        learner.setLearner(new MatrixMultiplyVectorFunction.ClosedFormSolver());
+        learner.setLearner(new MultivariateLinearRegression());
 
         ArrayList<InputOutputPair<Vector, String>> training =
             new ArrayList<InputOutputPair<Vector, String>>();
@@ -220,7 +221,7 @@ public class WinnerTakeAllCategorizerTest
         training.add(new DefaultInputOutputPair<Vector, String>(new Vector3(0.0, 0.0, 3.0), "c"));
 
         WinnerTakeAllCategorizer<Vector, String> instance = learner.learn(training);
-        assertTrue(instance.getEvaluator() instanceof MatrixMultiplyVectorFunction);
+        assertTrue(instance.getEvaluator() instanceof MultivariateDiscriminant);
         assertEquals(3, instance.getCategories().size());
         assertTrue(instance.getCategories().contains("a"));
         assertTrue(instance.getCategories().contains("b"));

@@ -128,7 +128,6 @@ public class MutableDouble
      * @return
      *      True if the two values are equal (according to Double.equals) and
      *      false otherwise.
-     * @see java.lang.Double.equals
      */
     public boolean equals(
         final double other)

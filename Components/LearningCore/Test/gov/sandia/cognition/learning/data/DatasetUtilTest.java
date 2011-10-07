@@ -2,14 +2,13 @@
  * File:                DatasetUtilTest.java
  * Authors:             Kevin R. Dixon
  * Company:             Sandia National Laboratories
- * Project:             Cognitive Framework Lite
+ * Project:             Cognitive Foundry
  *
  * Copyright September 19, 2007, Sandia Corporation.  Under the terms of Contract
  * DE-AC04-94AL85000, there is a non-exclusive license for use of this work by
  * or on behalf of the U.S. Government. Export of this program may require a
  * license from the United States Government. See CopyrightHistory.txt for
  * complete details.
- *
  *
  */
 
@@ -27,7 +26,7 @@ import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.mtj.Vector2;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
-import gov.sandia.cognition.statistics.DataHistogram;
+import gov.sandia.cognition.statistics.DataDistribution;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +41,7 @@ public class DatasetUtilTest
 {
 
     /** The random number generator for the tests. */
-    protected Random random = new Random();
+    protected Random random = new Random(1);
 
     /**
      * 
@@ -61,8 +60,8 @@ public class DatasetUtilTest
     {
         System.out.println( "appendBias" );
 
-        int M = (int) (Math.random() * 5) + 2;
-        int num = (int) (Math.random() * 10000) + 1000;
+        int M = (int) (random.nextDouble() * 5) + 2;
+        int num = (int) (random.nextDouble() * 10000) + 1000;
 
         ArrayList<Vector> dataset = new ArrayList<Vector>( num );
         for (int n = 0; n < num; n++)
@@ -88,8 +87,8 @@ public class DatasetUtilTest
     {
         System.out.println( "decoupleVectorPairDataset" );
 
-        int M = (int) (Math.random() * 5) + 2;
-        int num = (int) (Math.random() * 10000) + 1000;
+        int M = (int) (random.nextDouble() * 5) + 2;
+        int num = (int) (random.nextDouble() * 10000) + 1000;
 
         ArrayList<WeightedInputOutputPair<Vector, Vector>> dataset =
             new ArrayList<WeightedInputOutputPair<Vector, Vector>>( num );
@@ -98,7 +97,7 @@ public class DatasetUtilTest
             Vector input = VectorFactory.getDefault().createUniformRandom( M, -1, 1, random );
             Vector output = VectorFactory.getDefault().createUniformRandom( M, -1, 1, random );
             dataset.add( new DefaultWeightedInputOutputPair<Vector, Vector>(
-                input, output, Math.random() ) );
+                input, output, random.nextDouble() ) );
         }
 
         ArrayList<ArrayList<InputOutputPair<Double, Double>>> result =
@@ -124,8 +123,8 @@ public class DatasetUtilTest
     {
         System.out.println( "decoupleVectorDataset" );
 
-        int M = (int) (Math.random() * 5) + 2;
-        int num = (int) (Math.random() * 10000) + 1000;
+        int M = (int) (random.nextDouble() * 5) + 2;
+        int num = (int) (random.nextDouble() * 10000) + 1000;
 
         ArrayList<Vector> dataset = new ArrayList<Vector>( num );
         for (int n = 0; n < num; n++)
@@ -368,7 +367,7 @@ public class DatasetUtilTest
     public void testCountOutputValues()
     {
         Collection<InputOutputPair<Object, String>> data = null;
-        DataHistogram<String> result = DatasetUtil.countOutputValues(data);
+        DataDistribution<String> result = DatasetUtil.countOutputValues(data);
         assertTrue(result.isEmpty());
 
         data = new LinkedList<InputOutputPair<Object, String>>();
@@ -378,21 +377,21 @@ public class DatasetUtilTest
         data.add(new DefaultInputOutputPair<Object, String>(null, "one"));
         result = DatasetUtil.countOutputValues(data);
         assertEquals(1, result.getDomainSize());
-        assertEquals(1, result.getTotalCount());
-        assertEquals(1, result.getCount("one"));
+        assertEquals(1.0, result.getTotal());
+        assertEquals(1.0, result.get("one"));
 
         data.add(new DefaultInputOutputPair<Object, String>(null, "one"));
         result = DatasetUtil.countOutputValues(data);
         assertEquals(1, result.getDomainSize());
-        assertEquals(2, result.getTotalCount());
-        assertEquals(2, result.getCount("one"));
+        assertEquals(2.0, result.getTotal());
+        assertEquals(2.0, result.get("one"));
 
         data.add(new DefaultInputOutputPair<Object, String>(null, "two"));
         result = DatasetUtil.countOutputValues(data);
         assertEquals(2, result.getDomainSize());
-        assertEquals(3, result.getTotalCount());
-        assertEquals(2, result.getCount("one"));
-        assertEquals(1, result.getCount("two"));
+        assertEquals(3.0, result.getTotal());
+        assertEquals(2.0, result.get("one"));
+        assertEquals(1.0, result.get("two"));
 
 
         data.add(new DefaultInputOutputPair<Object, String>(null, "another"));
@@ -400,20 +399,20 @@ public class DatasetUtilTest
         data.add(new DefaultInputOutputPair<Object, String>(null, "another"));
         result = DatasetUtil.countOutputValues(data);
         assertEquals(3, result.getDomainSize());
-        assertEquals(6, result.getTotalCount());
-        assertEquals(2, result.getCount("one"));
-        assertEquals(1, result.getCount("two"));
-        assertEquals(3, result.getCount("another"));
+        assertEquals(6.0, result.getTotal());
+        assertEquals(2.0, result.get("one"));
+        assertEquals(1.0, result.get("two"));
+        assertEquals(3.0, result.get("another"));
 
         data.add(new DefaultInputOutputPair<Object, String>(null, "two"));
         data.add(new DefaultInputOutputPair<Object, String>(null, "another"));
         data.add(new DefaultInputOutputPair<Object, String>(null, "one"));
         result = DatasetUtil.countOutputValues(data);
         assertEquals(3, result.getDomainSize());
-        assertEquals(9, result.getTotalCount());
-        assertEquals(3, result.getCount("one"));
-        assertEquals(2, result.getCount("two"));
-        assertEquals(4, result.getCount("another"));
+        assertEquals(9.0, result.getTotal());
+        assertEquals(3.0, result.get("one"));
+        assertEquals(2.0, result.get("two"));
+        assertEquals(4.0, result.get("another"));
     }
 
     /**

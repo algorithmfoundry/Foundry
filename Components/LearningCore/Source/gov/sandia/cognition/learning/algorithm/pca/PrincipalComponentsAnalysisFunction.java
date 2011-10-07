@@ -15,7 +15,7 @@
 package gov.sandia.cognition.learning.algorithm.pca;
 
 import gov.sandia.cognition.annotation.CodeReview;
-import gov.sandia.cognition.learning.function.vector.MatrixMultiplyVectorFunction;
+import gov.sandia.cognition.learning.function.vector.MultivariateDiscriminant;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
@@ -56,7 +56,7 @@ public class PrincipalComponentsAnalysisFunction
      * simple low-dimensional output space capturing the directions of
      * maximum variance (information gain)
      */
-    private MatrixMultiplyVectorFunction dimensionReducer;
+    private MultivariateDiscriminant dimensionReducer;
 
     /**
      * Default constructor
@@ -78,7 +78,7 @@ public class PrincipalComponentsAnalysisFunction
      */
     public PrincipalComponentsAnalysisFunction(
         Vector mean,
-        MatrixMultiplyVectorFunction dimensionReducer )
+        MultivariateDiscriminant dimensionReducer )
     {
         this.setMean( mean );
         this.setDimensionReducer( dimensionReducer );
@@ -118,7 +118,7 @@ public class PrincipalComponentsAnalysisFunction
      */
     public int getInputDimensionality()
     {
-        return this.getDimensionReducer().getInternalMatrix().getNumColumns();
+        return this.getDimensionReducer().getDiscriminant().getNumColumns();
     }
     
     /**
@@ -128,7 +128,7 @@ public class PrincipalComponentsAnalysisFunction
      */
     public int getOutputDimensionality()
     {
-        return this.getDimensionReducer().getInternalMatrix().getNumRows();
+        return this.getDimensionReducer().getDiscriminant().getNumRows();
     }
 
     /**
@@ -161,7 +161,7 @@ public class PrincipalComponentsAnalysisFunction
      * simple low-dimensional output space capturing the directions of
      * maximum variance (information gain)
      */
-    public MatrixMultiplyVectorFunction getDimensionReducer()
+    public MultivariateDiscriminant getDimensionReducer()
     {
         return this.dimensionReducer;
     }
@@ -174,7 +174,7 @@ public class PrincipalComponentsAnalysisFunction
      * maximum variance (information gain)
      */
     public void setDimensionReducer(
-        MatrixMultiplyVectorFunction dimensionReducer)
+        MultivariateDiscriminant dimensionReducer)
     {
         this.dimensionReducer = dimensionReducer;
     }

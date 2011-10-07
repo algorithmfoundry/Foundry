@@ -2,6 +2,77 @@ This file contains the change log for the Cognitive Foundry.
 
 Changes since last release:
 
+Release 3.3.1 (2011-10-06):
+  * Common Core:
+    * Added NumericMap interface, which provides a mapping of keys to numeric
+      values.
+    * Added ScalarMap interface, which extends NumericMap to provide a mapping
+      of objects to scalar values represented as doubled.
+    * Added AbstractScalarMap and AbstractMutableDoubleMap to provide abstract,
+      partial implementations of the ScalarMap interface.
+    * Added VectorSpace interface, where a VectorSpace is a type of Ring that
+      you can perform Vector-like operations on such as norm, distances, etc.
+    * Added AbstractVectorSpace, which provides an abstract, partial 
+      implementation of the VectorSpace interface.
+    * Updated Vector, AbstractVector, VectorEntry to build on new VectorSpace 
+      interface and AbstractVectorSpace class.
+    * Added InfiniteVector interface, which has a potentially infinite number
+      of indices, but contains only a countable number in any given instance.
+    * Added DefaultInfiniteVector, an implementation of the InfiniteVector
+      interface backed by a LinkedHashMap.
+    * Rewrote FiniteCapacityBuffer from the ground up, now with backing from a
+      fixed-size array to minimize memory allocation.
+    * Renamed IntegerCollection to IntegerSpan.
+  * Learning Core:
+    * Updated ReceiverOperatingCharacteristic to improve calculation
+    * Added PriorWeightedNodeLearner interface, which provides for configuring the
+      prior weights on the learning algorithm that searches for a decision
+      function inside a decision tree.
+    * Updated AbstractDecisionTreeNode to fix off by one error in computing node's
+      depth.
+    * Updated CategorizationTreeLearner to add ability to specify class priors 
+      for decision tree algorithm.
+    * Updated VectorThresholdInformationGainLearner to add class priors to
+      information gain calculation.
+    * Updated SequentialMinimalOptimization to improve speed.
+    * Added LinearBasisRegression, which uses a basis function to generate
+      vectors before performing a LinearRegression.
+    * Added MultivariateLinearRegression, which performs multivariate regression;
+      does not explicitly estimate a bias term or perform regularization.
+    * Added LinearDiscriminantWithBias, which provides a LinearDiscriminant with
+      an additional bias term that gets added to the output of the dot product.
+    * Updated LinearRegression and LogisticRegression to provide for bias term 
+      estimation and use of L2 regularization.
+    * Renamed SquashedMatrixMultiplyVectorFunction to GeneralizedLinearModel.
+    * Renamed DifferentiableSquashedMatrixMultiplyVectorFunction to
+      DifferentiableGeneralizedLinearModel.
+    * Renamed MatrixMultiplyVectorFunction to MultivariateDiscriminant.
+    * Added MultivariateDiscriminantWithBias, which provides a multivariate
+      discriminant with a bias term.
+    * Renamed DataHistogram to DataDistribution.
+    * Renamed AbstractDataHistogram to AbstractDataDistribution.
+    * Added DefaultDataDistribution, a default implementation of the
+      DataDistribution interface that uses a backing map.
+    * Added LogisticDistribution, an implementation of the scalar logistic
+      distribution.
+    * Updated MultivariateGaussian to provide for incremental estimation of
+      covariance-matrix inverse without a single matrix inversion.
+    * Removed DecoupledVectorFunction.
+    * Removed DecoupledVectorLinearRegression.
+    * Removed PointMassDistribution.
+    * Removed MapBasedDataHistogram.
+    * Removed MapBasedPointDistribution.
+    * Removed MapBasedSortedDataHistogram.
+    * Removed AbstractBayseianRegression.
+    * Additional general reworking and clean up of distribution code,
+      impacting classes in gov.sandia.cognition.statistics.distribution
+      package.
+  * Text Core:
+    * Renamed LatentDirichetAllocationVectorGibbsSampler to
+      LatentDirichletAllocationVectorGibbsSampler to fix misspelling.
+    * Added ParallelLatentDirichletAllocationVectorGibbsSampler, a parallelized
+      version of Latent Dirichlet Allocation.
+      
 Release 3.3.0 (2011-06-22):
   * Common Core:
     * Added LogMath and LogNumber as utilities for computation involving numbers

@@ -32,15 +32,15 @@ import gov.sandia.cognition.util.ObjectUtil;
  */
 public class LinearDiscriminant
     extends AbstractCloneableSerializable
-    implements Evaluator<Vector,Double>,
+    implements Evaluator<Vectorizable,Double>,
     Vectorizable,
-    VectorInputEvaluator<Vector,Double>
+    VectorInputEvaluator<Vectorizable,Double>
 {
     
     /**
      * Weight Vector to dot-product with the input
      */
-    private Vector weightVector;
+    protected Vector weightVector;
     
     /**
      * Creates a new instance of LinearClassifier
@@ -56,7 +56,7 @@ public class LinearDiscriminant
      * Weight Vector to dot-product with the input
      */
     public LinearDiscriminant(
-        Vector weightVector )
+        final Vector weightVector )
     {
         this.setWeightVector( weightVector );
     }
@@ -69,6 +69,7 @@ public class LinearDiscriminant
         return clone;
     }
     
+    @Override
     public int getInputDimensionality()
     {
         return this.getWeightVector().getDimensionality();
@@ -90,24 +91,27 @@ public class LinearDiscriminant
      * Weight Vector to dot-product with the input
      */
     public void setWeightVector(
-        Vector weightVector)
+        final Vector weightVector)
     {
         this.weightVector = weightVector;
     }
 
+    @Override
     public Double evaluate(
-        Vector input)
+        final Vectorizable input)
     {
-        return this.getWeightVector().dotProduct( input );
+        return this.getWeightVector().dotProduct( input.convertToVector() );
     }
 
+    @Override
     public Vector convertToVector()
     {
         return this.getWeightVector();
     }
 
+    @Override
     public void convertFromVector(
-        Vector parameters)
+        final Vector parameters)
     {
         this.setWeightVector( parameters );
     }

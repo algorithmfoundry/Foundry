@@ -1133,4 +1133,277 @@ public class MultivariateGaussian
 
     }
 
+    /**
+     * Implements the sufficient statistics of the MultivariateGaussian
+     * while estimating the inverse of the covariance matrix.  This is only
+     * slightly more computationally intensive than estimating the covariance
+     * directly, but does not require a single matrix inversion.  This is
+     * useful when it's the covariance inverse ("precision") that you're
+     * interested in.
+     */
+    @PublicationReference(
+        author="Wikipedia",
+        title="Sherman–Morrison formula",
+        type=PublicationType.WebPage,
+        year=2011,
+        url="http://en.wikipedia.org/wiki/Sherman%E2%80%93Morrison_formula"
+    )
+    public static class SufficientStatisticCovarianceInverse
+        extends AbstractSufficientStatistic<Vector, MultivariateGaussian>
+    {
+
+        /**
+         * Default covariance of the statistics, {@value}.
+         */
+        public static final double DEFAULT_COVARIANCE_INVERSE =
+            1.0/MultivariateGaussian.MaximumLikelihoodEstimator.DEFAULT_COVARIANCE;
+
+        /**
+         * The mean of the Gaussian
+         */
+        private Vector mean;
+
+        /**
+         * This is the sum-squared differences
+         */
+        private Matrix sumSquaredDifferencesInverse;
+
+        /**
+         * Default covariance inverse of the distribution
+         */
+        protected double defaultCovarianceInverse;
+
+        /**
+         * Default constructor
+         */
+        public SufficientStatisticCovarianceInverse()
+        {
+            this( DEFAULT_COVARIANCE_INVERSE );
+        }
+
+        /**
+         * Creates a new instance of SufficientStatisticCovarianceInverse
+         * @param defaultCovarianceInverse
+         * Default covariance inverse of the distribution
+         */
+        public SufficientStatisticCovarianceInverse(
+            double defaultCovarianceInverse)
+        {
+            super();
+            this.clear();
+            this.defaultCovarianceInverse = defaultCovarianceInverse;
+        }
+
+        @Override
+        public SufficientStatisticCovarianceInverse clone()
+        {
+            return (SufficientStatisticCovarianceInverse) super.clone();
+        }
+
+        /**
+         * Resets this set of sufficient statistics to its empty state.
+         */
+        public void clear()
+        {
+            this.count = 0;
+            this.mean = null;
+            this.sumSquaredDifferencesInverse = null;
+        }
+
+        @Override
+        public void update(
+            Vector value)
+        {
+            // We've added another value.
+            this.count++;
+
+            // Compute the difference between the value and the current mean.
+            final int dim = value.getDimensionality();
+            if( this.mean == null )
+            {
+                this.mean = VectorFactory.getDefault().createVector(dim);
+            }
+            Vector delta = value.minus( this.mean );
+
+            // Update the mean based on the difference between the value
+            // and the mean along with the new count.
+            this.mean.plusEquals( delta.scale(1.0/this.count) );
+
+            // Update the squared differences from the mean, using the new
+            // mean in the process.
+            if( this.sumSquaredDifferencesInverse == null )
+            {
+                this.sumSquaredDifferencesInverse =
+                    MatrixFactory.getDefault().createIdentity(dim,dim);
+                this.sumSquaredDifferencesInverse.scaleEquals(this.getDefaultCovarianceInverse());
+            }
+            Vector delta2 = value.minus( this.mean );
+
+            // This is the Sherman–Morrison formula:
+            // inv(A+uv') = inv(A)-(inv(A)uv'inv(A))/(1+v'inv(A)*u)
+            Vector Aiu = this.sumSquaredDifferencesInverse.times( delta );
+            Vector vtAi = delta2.times(this.sumSquaredDifferencesInverse);
+            double denom = 1.0 + delta2.dotProduct(Aiu);
+            vtAi.scaleEquals(1.0/denom);
+            Matrix update = Aiu.outerProduct(vtAi);
+            this.sumSquaredDifferencesInverse.minusEquals(update);
+        }
+
+        @Override
+        public MultivariateGaussian.PDF create()
+        {
+            final Vector m = this.getMean();
+            MultivariateGaussian.PDF retval =
+                new MultivariateGaussian.PDF( m.getDimensionality() );
+            retval.setMean(m);
+            retval.setCovarianceInverse(this.getCovarianceInverse());
+            return retval;
+        }
+
+        @Override
+        public void create(
+            MultivariateGaussian distribution)
+        {
+            distribution.setMean( this.getMean() );
+            distribution.setCovarianceInverse( this.getCovarianceInverse() );
+        }
+
+        /**
+         * Getter for defaultCovarianceInverse
+         * @return
+         * Default covariance Inverse of the distribution
+         */
+        public double getDefaultCovarianceInverse()
+        {
+            return this.defaultCovarianceInverse;
+        }
+
+        /**
+         * Setter for defaultCovarianceInverse
+         * @param defaultCovarianceInverse
+         * Default covariance Inverse of the distribution
+         */
+        public void setDefaultCovariance(
+            double defaultCovarianceInverse)
+        {
+            this.defaultCovarianceInverse = defaultCovarianceInverse;
+        }
+
+        /**
+         * Getter for mean
+         * @return
+         * The mean of the Gaussian
+         */
+        public Vector getMean()
+        {
+            return this.mean;
+        }
+
+        /**
+         * Getter for sumSquaredDifferences
+         * @return
+         * This is the sum-squared differences
+         */
+        public Matrix getSumSquaredDifferencesInverse()
+        {
+            return this.sumSquaredDifferencesInverse;
+        }
+
+        /**
+         * Gets the covariance Inverse of the Gaussian.
+         *
+         * @return
+         *      The covariance.
+         */
+        public Matrix getCovarianceInverse()
+        {
+            if( this.count <= 0 )
+            {
+                return null;
+            }
+            else if( this.count == 1 )
+            {
+                // This allows the default variance to be used.
+                return this.sumSquaredDifferencesInverse.clone();
+            }
+            else
+            {
+                return this.sumSquaredDifferencesInverse.scale( this.count - 1.0 );
+            }
+        }
+
+    }
+
+    /**
+     * The estimator that creates a MultivariateGaussian from a stream of
+     * values by estimating the mean and covariance inverse (as opposed to
+     * the covariance directly), without ever performing a matrix inversion.
+     * This is useful when you're interested in the covariance inverse
+     * (precision) instead of the covariance itself.
+     */
+    public static class IncrementalEstimatorCovarianceInverse
+        extends AbstractIncrementalEstimator<Vector, MultivariateGaussian, MultivariateGaussian.SufficientStatisticCovarianceInverse>
+    {
+
+        /**
+         * Default covariance Inverse, {@value}.
+         */
+        public static final double DEFAULT_COVARIANCE_INVERSE = 1.0/MaximumLikelihoodEstimator.DEFAULT_COVARIANCE;
+
+        /**
+         * Default covariance Inverse of the distribution
+         */
+        private double defaultCovarianceInverse;
+
+        /**
+         * Default constructor
+         */
+        public IncrementalEstimatorCovarianceInverse()
+        {
+            this( DEFAULT_COVARIANCE_INVERSE );
+        }
+
+        /**
+         * Creates a new instance of IncrementalEstimatorCovarianceInverse
+         * @param defaultCovarianceInverse
+         * Default covariance Inverse of the distribution
+         */
+        public IncrementalEstimatorCovarianceInverse(
+            double defaultCovarianceInverse )
+        {
+            super();
+            this.setDefaultCovarianceInverse(defaultCovarianceInverse);
+        }
+
+        /**
+         * Getter for defaultCovarianceInverse
+         * @return
+         * Default covariance Inverse of the distribution
+         */
+        public double getDefaultCovarianceInverse()
+        {
+            return this.defaultCovarianceInverse;
+        }
+
+        /**
+         * Setter for defaultCovarianceInverse
+         * @param defaultCovarianceInverse
+         * Default covariance Inverse of the distribution
+         */
+        public void setDefaultCovarianceInverse(
+            double defaultCovarianceInverse)
+        {
+            this.defaultCovarianceInverse = defaultCovarianceInverse;
+        }
+
+        @Override
+        public MultivariateGaussian.SufficientStatisticCovarianceInverse createInitialLearnedObject()
+        {
+            return new MultivariateGaussian.SufficientStatisticCovarianceInverse(
+                this.getDefaultCovarianceInverse() );
+        }
+
+    }
+
+
 }

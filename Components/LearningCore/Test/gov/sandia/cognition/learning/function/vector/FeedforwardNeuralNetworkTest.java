@@ -116,8 +116,8 @@ public class FeedforwardNeuralNetworkTest
         assertEquals(numLayers - 1, f.getLayers().size());
         for (int n = 0; n < numLayers - 1; n++)
         {
-            assertEquals(nodes.get(n).intValue(), f.getLayers().get(n).getMatrixMultiply().getInternalMatrix().getNumColumns());
-            assertEquals(nodes.get(n + 1).intValue(), f.getLayers().get(n).getMatrixMultiply().getInternalMatrix().getNumRows());
+            assertEquals(nodes.get(n).intValue(), f.getLayers().get(n).getDiscriminant().getDiscriminant().getNumColumns());
+            assertEquals(nodes.get(n + 1).intValue(), f.getLayers().get(n).getDiscriminant().getDiscriminant().getNumRows());
         }
 
 
@@ -206,7 +206,7 @@ public class FeedforwardNeuralNetworkTest
         for (int i = 0; i < 10; i++)
         {
             FeedforwardNeuralNetwork ann = this.createRandom();
-            int N = ann.getLayers().get(0).getMatrixMultiply().getInternalMatrix().getNumColumns();
+            int N = ann.getLayers().get(0).getDiscriminant().getDiscriminant().getNumColumns();
             for (int j = 0; j < 100; j++)
             {
                 Vector x = VectorFactory.getDefault().createUniformRandom(N, -10.0, 10.0, random);
@@ -249,7 +249,7 @@ public class FeedforwardNeuralNetworkTest
         FeedforwardNeuralNetwork ann = this.createRandom();
 
         assertNotNull(ann.getLayers());
-        ArrayList<? extends SquashedMatrixMultiplyVectorFunction> layers = ann.getLayers();
+        ArrayList<? extends GeneralizedLinearModel> layers = ann.getLayers();
         assertNotNull(layers);
         ann.setLayers(null);
         assertNull(ann.getLayers());

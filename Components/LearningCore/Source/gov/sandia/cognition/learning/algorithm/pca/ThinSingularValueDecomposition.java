@@ -16,7 +16,7 @@ package gov.sandia.cognition.learning.algorithm.pca;
 
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.learning.data.DatasetUtil;
-import gov.sandia.cognition.learning.function.vector.MatrixMultiplyVectorFunction;
+import gov.sandia.cognition.learning.function.vector.MultivariateDiscriminant;
 import gov.sandia.cognition.math.MultivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.decomposition.EigenvectorPowerIteration;
 import gov.sandia.cognition.math.matrix.Matrix;
@@ -141,7 +141,7 @@ public class ThinSingularValueDecomposition
         }
 
         return new PrincipalComponentsAnalysisFunction(
-            mean, new MatrixMultiplyVectorFunction(V));
+            mean, new MultivariateDiscriminant(V));
 
     }
 

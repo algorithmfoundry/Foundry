@@ -10,7 +10,6 @@
  * license from the United States Government. See CopyrightHistory.txt for
  * complete details.
  *
- *
  */
 
 package gov.sandia.cognition.learning.algorithm.tree;
@@ -58,6 +57,7 @@ public class VectorThresholdVarianceLearner
      *      The learned threshold categorizer, or none if there is no good
      *      categorizer.
      */
+    @Override
     public VectorElementThresholdCategorizer learn(
         final Collection
             <? extends InputOutputPair<? extends Vectorizable, Double>> 
@@ -192,6 +192,7 @@ public class VectorThresholdVarianceLearner
         // Sort the list in ascending order by value.
         Collections.sort(values, new Comparator<DefaultPair<Double, Double>>()
         {
+            @Override
             public int compare(
                 DefaultPair<Double, Double> o1, 
                 DefaultPair<Double, Double> o2)

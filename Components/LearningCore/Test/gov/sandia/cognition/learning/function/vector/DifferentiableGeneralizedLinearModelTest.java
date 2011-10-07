@@ -1,5 +1,5 @@
 /*
- * File:                DifferentiableSquashedMatrixMultiplyVectorFunctionTest.java
+ * File:                DifferentiableGeneralizedLinearModelTest.java
  * Authors:             Kevin R. Dixon
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
@@ -18,16 +18,17 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 
 /**
- * Unit tests for DifferentiableSquashedMatrixMultiplyVectorFunctionTest
+ * Unit tests for DifferentiableGeneralizedLinearModelTest
  *
  * @author Kevin R. Dixon
  * @since  1.0
  */
-public class DifferentiableSquashedMatrixMultiplyVectorFunctionTest
-    extends SquashedMatrixMultiplyVectorFunctionTest
+public class DifferentiableGeneralizedLinearModelTest
+    extends GeneralizedLinearModelTest
 {
     
-    public DifferentiableSquashedMatrixMultiplyVectorFunctionTest(String testName)
+    public DifferentiableGeneralizedLinearModelTest(
+        String testName)
     {
         super(testName);
     }
@@ -36,8 +37,8 @@ public class DifferentiableSquashedMatrixMultiplyVectorFunctionTest
     {
         System.out.println( "Constructors" );
 
-        DifferentiableSquashedMatrixMultiplyVectorFunction f =
-            new DifferentiableSquashedMatrixMultiplyVectorFunction();
+        DifferentiableGeneralizedLinearModel f =
+            new DifferentiableGeneralizedLinearModel();
         assertEquals( 1, f.getInputDimensionality() );
         assertEquals( 1, f.getOutputDimensionality() );
         assertNotNull( f.getSquashingFunction() );
@@ -45,18 +46,18 @@ public class DifferentiableSquashedMatrixMultiplyVectorFunctionTest
     }
 
     /**
-     * Test of getSquashingFunction method, of class gov.sandia.isrc.learning.util.function.DifferentiableSquashedMatrixMultiplyVectorFunction.
+     * Test of getSquashingFunction method, of class gov.sandia.isrc.learning.util.function.DifferentiableGeneralizedLinearModelTest.
      */
     public void testDiffyGetSquashingFunction()
     {
         System.out.println("getSquashingFunction");
         
-        DifferentiableSquashedMatrixMultiplyVectorFunction instance = this.createRandom();
+        DifferentiableGeneralizedLinearModel instance = this.createRandom();
         assertNotNull( instance.getSquashingFunction() );
     }
 
     /**
-     * Test of computeParameterGradient method, of class gov.sandia.isrc.learning.util.function.DifferentiableSquashedMatrixMultiplyVectorFunction.
+     * Test of computeParameterGradient method, of class gov.sandia.isrc.learning.util.function.DifferentiableGeneralizedLinearModelTest.
      */
     public void testComputeParameterGradient()
     {
@@ -64,8 +65,8 @@ public class DifferentiableSquashedMatrixMultiplyVectorFunctionTest
         double A = 1.0;
         for( int i = 0; i < 10; i++ )
         {
-            DifferentiableSquashedMatrixMultiplyVectorFunction instance = this.createRandom();
-            int N = instance.getMatrixMultiply().getInternalMatrix().getNumColumns();
+            DifferentiableGeneralizedLinearModel instance = this.createRandom();
+            int N = instance.getDiscriminant().getDiscriminant().getNumColumns();
             Vector input = VectorFactory.getDefault().createUniformRandom( N, -A, A, random );
             GradientDescendableTestHarness.testGradient( instance, input );
         }

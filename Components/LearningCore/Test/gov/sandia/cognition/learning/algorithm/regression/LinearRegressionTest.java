@@ -20,14 +20,13 @@ import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.DefaultWeightedInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.data.WeightedInputOutputPair;
-import gov.sandia.cognition.learning.function.scalar.AtanFunction;
+import gov.sandia.cognition.learning.function.scalar.LinearDiscriminant;
+import gov.sandia.cognition.learning.function.scalar.LinearDiscriminantWithBias;
 import gov.sandia.cognition.learning.function.scalar.PolynomialFunction;
-import gov.sandia.cognition.learning.function.scalar.VectorFunctionLinearDiscriminant;
-import gov.sandia.cognition.learning.function.vector.VectorizableVectorConverterWithBias;
+import gov.sandia.cognition.learning.function.vector.ScalarBasisSet;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.math.matrix.Vectorizable;
-import gov.sandia.cognition.math.matrix.mtj.Vector3;
+import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -73,35 +72,37 @@ public class LinearRegressionTest
      * 
      * @return
      */
-    public static LinearRegression<Double> createInstance()
+    public static LinearRegression createInstance()
     {
         /*
         LinearCombinationScalarFunction<Double> f = new LinearCombinationScalarFunction<Double>(
         PolynomialFunction.createPolynomials( 0.0, 1.0, 2.0 ),
         VectorFactory.getDefault().createUniformRandom( 3, -1, 1 ) );
          */
-        return new LinearRegression<Double>(
-            PolynomialFunction.createPolynomials( 0.0, 1.0, 2.0 ) );
+        return new LinearRegression();
+//            PolynomialFunction.createPolynomials( 0.0, 1.0, 2.0 ) );
 
     }
 
     /**
      * 
-     * @param f 
+     * @param basis
+     * @param f
      * @return
      */
-    public static Collection<InputOutputPair<Double, Double>> createDataset(
-        Evaluator<Double, Double> f )
+    public static Collection<InputOutputPair<Vector, Double>> createDataset(
+        Evaluator<Double, Vector> basis,
+        LinearDiscriminant f )
     {
-        Collection<InputOutputPair<Double, Double>> retval =
-            new LinkedList<InputOutputPair<Double, Double>>();
+        Collection<InputOutputPair<Vector, Double>> retval =
+            new LinkedList<InputOutputPair<Vector, Double>>();
         int num = random.nextInt(100) + 10;
         for (int i = 0; i < num; i++)
         {
-            double weight = random.nextDouble();
             double x = random.nextGaussian();
-            double y = f.evaluate( x );
-            retval.add( new DefaultWeightedInputOutputPair<Double, Double>( x, y, weight ) );
+            Vector phi = basis.evaluate(x);
+            double y = f.evaluate( phi );
+            retval.add( DefaultInputOutputPair.create(phi, y) );
         }
         return retval;
     }
@@ -114,10 +115,8 @@ public class LinearRegressionTest
         System.out.println( "Constructors" );
 
         @SuppressWarnings("unchecked")
-        LinearRegression<Double> f =
-            new LinearRegression<Double>( new AtanFunction() );
+        LinearRegression f = new LinearRegression();
         assertNotNull( f );
-        assertNotNull( f.getInputToVectorMap() );
     }
 
     /**
@@ -127,84 +126,25 @@ public class LinearRegressionTest
     {
         System.out.println( "clone" );
 
-        LinearRegression<Double> instance = LinearRegressionTest.createInstance();
+        LinearRegression instance = LinearRegressionTest.createInstance();
         assertTrue( instance.getUsePseudoInverse() );
         instance.setUsePseudoInverse( false );
         assertFalse( instance.getUsePseudoInverse() );
 
-        VectorFunctionLinearDiscriminant<Double> f = new VectorFunctionLinearDiscriminant<Double>(
-            instance.getInputToVectorMap(), VectorFactory.getDefault().createUniformRandom( 3, -1, 1, random ) );
-        Collection<InputOutputPair<Double, Double>> data = LinearRegressionTest.createDataset( f );
+        ScalarBasisSet<Double> polynomials = new ScalarBasisSet<Double>(
+            PolynomialFunction.createPolynomials( 1.0, 2.0 ) );
+        LinearDiscriminant f = new LinearDiscriminant(
+            VectorFactory.getDefault().createUniformRandom( 2, -1, 1, random ) );
+
+        Collection<InputOutputPair<Vector, Double>> data = LinearRegressionTest.createDataset( polynomials, f );
         instance.learn( data );
 
-        LinearRegression<Double> clone = instance.clone();
+        LinearRegression clone = instance.clone();
         assertNotNull( clone );
         assertNotSame( instance, clone );
-        assertNotSame( instance.getInputToVectorMap(), clone.getInputToVectorMap() );
-        assertNotNull( clone.getLearned() );
-        assertNotSame( instance.getLearned(), clone.getLearned() );
         assertFalse( instance.getUsePseudoInverse() );
     }
 
-    /**
-     * Test of getLearned method, of class gov.sandia.cognition.learning.regression.LinearRegression.
-     */
-    public void testGetLearned()
-    {
-        System.out.println( "getLearned" );
-
-        LinearRegression<Double> instance = LinearRegressionTest.createInstance();
-        assertNull( instance.getLearned() );
-
-    }
-
-    /**
-     * Test of setLearned method, of class gov.sandia.cognition.learning.regression.LinearRegression.
-     */
-    public void testSetLearned()
-    {
-        System.out.println( "setLearned" );
-
-        LinearRegression<Double> instance = LinearRegressionTest.createInstance();
-        VectorFunctionLinearDiscriminant<Double> f = instance.getLearned();
-        assertNull( f );
-        instance.setLearned( null );
-        assertNull( instance.getLearned() );
-
-        instance.setLearned( f );
-        assertSame( f, instance.getLearned() );
-
-    }
-
-    /**
-     * Test of getInputToVectorMap method, of class LinearRegression.
-     */
-    public void testGetInputToVectorMap()
-    {
-        System.out.println( "getInputToVectorMap" );
-        LinearRegression<Double> instance = LinearRegressionTest.createInstance();
-        Evaluator<? super Double,Vector> f = instance.getInputToVectorMap();
-        assertNotNull( f );
-
-    }
-
-    /**
-     * Test of setInputToVectorMap method, of class LinearRegression.
-     */
-    public void testSetInputToVectorMap()
-    {
-        System.out.println( "setInputToVectorMap" );
-        LinearRegression<Double> instance = LinearRegressionTest.createInstance();
-        Evaluator<? super Double,Vector> f = instance.getInputToVectorMap();
-        assertNotNull( f );
-        
-        instance.setInputToVectorMap(null);
-        assertNull( instance.getInputToVectorMap() );
-        instance.setInputToVectorMap(f);
-        assertSame( f, instance.getInputToVectorMap() );
-    }
-
-    
     /**
      * Tests a known non-pathological function
      */
@@ -218,15 +158,28 @@ public class LinearRegressionTest
         data.add( new DefaultWeightedInputOutputPair<Double, Double>( 2.0, 1.0, 2.0 ) );
         data.add( new DefaultWeightedInputOutputPair<Double, Double>( 3.0, 4.0, 3.0 ) );
         
-        LinearRegression<Double> regression = 
-            new LinearRegression<Double>( PolynomialFunction.createPolynomials(0.0,1.0) );
-        
-        VectorFunctionLinearDiscriminant<Double> result = regression.learn(data);
-        System.out.println( "Weights: " + result.getWeightVector() );
+        ArrayList<WeightedInputOutputPair<Vector,Double>> vectorData =
+            new ArrayList<WeightedInputOutputPair<Vector, Double>>( data.size() );
+        for( WeightedInputOutputPair<Double,Double> pair : data )
+        {
+            vectorData.add( DefaultWeightedInputOutputPair.create(
+                VectorFactory.getDefault().copyValues( pair.getInput() ), pair.getOutput(), pair.getWeight() ) );
+        }
+
+        for( WeightedInputOutputPair<Vector,Double> d : vectorData )
+        {
+            System.out.println( "Input: " + d.getInput() + ", Output: " + d.getOutput() + ", Weight: " + d.getWeight() );
+        }
+
+
+        LinearRegression regression = new LinearRegression();
+        regression.setUsePseudoInverse(false);
+        LinearDiscriminantWithBias result = regression.learn(vectorData);
+        System.out.println( "Weights: " + result.convertToVector() );
 
         // I computed this result by hand in octave
-        assertEquals( -3.3684210526, result.getWeightVector().getElement(0), EPS );
-        assertEquals(  2.4210526316, result.getWeightVector().getElement(1), EPS );
+        assertEquals(  2.4210526316, result.getWeightVector().getElement(0), EPS );
+        assertEquals( -3.3684210526, result.getBias(), EPS );
         
     }    
     
@@ -237,16 +190,19 @@ public class LinearRegressionTest
     {
         System.out.println( "learn" );
 
-        LinearRegression<Double> instance = LinearRegressionTest.createInstance();
-        VectorFunctionLinearDiscriminant<Double> f = new VectorFunctionLinearDiscriminant<Double>(
-            instance.getInputToVectorMap(), VectorFactory.getDefault().createUniformRandom( 3, -1, 1, random ) );
-        Collection<InputOutputPair<Double, Double>> data = LinearRegressionTest.createDataset( f );
+        LinearRegression instance = LinearRegressionTest.createInstance();
+        ScalarBasisSet<Double> polynomials = new ScalarBasisSet<Double>(
+            PolynomialFunction.createPolynomials( 1.0, 2.0 ) );
+        LinearDiscriminantWithBias f = new LinearDiscriminantWithBias(
+            VectorFactory.getDefault().createUniformRandom( 2, -1, 1, random ), random.nextGaussian() );
 
-        VectorFunctionLinearDiscriminant<Double> result = instance.learn( data );
+        Collection<InputOutputPair<Vector, Double>> data = LinearRegressionTest.createDataset( polynomials, f );
 
-        if (!result.convertToVector().equals( f.convertToVector().convertToVector(), EPS ))
+        LinearDiscriminantWithBias result = instance.learn( data );
+
+        if (!result.convertToVector().equals( f.convertToVector(), EPS ))
         {
-            assertEquals( f.convertToVector().convertToVector(), result.convertToVector() );
+            assertEquals( f.convertToVector(), result.convertToVector() );
         }
 
     }
@@ -259,12 +215,11 @@ public class LinearRegressionTest
      
         System.out.println( "learn2" );
         
-        LinearRegression<Vectorizable> regressionLearner = 
-            new LinearRegression<Vectorizable>(
-                new VectorizableVectorConverterWithBias());
+        LinearRegression regressionLearner = new LinearRegression();
+        regressionLearner.setUsePseudoInverse(true);
         
-        ArrayList<InputOutputPair<Vector3, Double>> data = 
-            new ArrayList<InputOutputPair<Vector3, Double>>();
+        ArrayList<InputOutputPair<Vector, Double>> data = 
+            new ArrayList<InputOutputPair<Vector, Double>>();
         
         // Make sure we're using pseudoinverse and not LU, which can't
         // handle this test case
@@ -272,12 +227,12 @@ public class LinearRegressionTest
                 
         // This is a rank-one matrix, which the third dimension has the regression equation
         // y = -0.642857*x + 1.85714 (according to Octave)
-        data.add(new DefaultInputOutputPair<Vector3, Double>(new Vector3(1.0, 2.0, 3.0 ), 0.0));
-        data.add(new DefaultInputOutputPair<Vector3, Double>(new Vector3(1.0, 2.0, 1.0 ), 1.0));        
-        data.add(new DefaultInputOutputPair<Vector3, Double>(new Vector3(1.0, 2.0, 0.0 ), 2.0));
+        data.add(DefaultInputOutputPair.create(VectorFactory.getDefault().copyValues(1.0, 2.0, 3.0 ), 0.0));
+        data.add(DefaultInputOutputPair.create(VectorFactory.getDefault().copyValues(1.0, 2.0, 1.0 ), 1.0));
+        data.add(DefaultInputOutputPair.create(VectorFactory.getDefault().copyValues(1.0, 2.0, 0.0 ), 2.0));
         
-        VectorFunctionLinearDiscriminant<Vectorizable> result = regressionLearner.learn( data );
-        System.out.println( "Result weights: " + result.getWeightVector() );
+        LinearDiscriminantWithBias result = regressionLearner.learn( data );
+        System.out.println( "SVD weights: " + result.convertToVector() );
         
         // These are the results, as validated by octave's backslash "\" command
         assertEquals( -0.071429, result.evaluate( data.get(0).getInput() ), EPS );
@@ -287,8 +242,9 @@ public class LinearRegressionTest
         // Now use LU solver, which will return numerically unstable results for this example
         regressionLearner.setUsePseudoInverse( false );
 
-        VectorFunctionLinearDiscriminant<Vectorizable> resultLU = regressionLearner.learn( data );
-        System.out.println( "Result LU weights: " + resultLU.getWeightVector() );
+        LinearDiscriminantWithBias resultLU = regressionLearner.learn( data );
+        Vector v1 = resultLU.convertToVector();
+        System.out.println( "LU  weights: " + v1 );
         
         // These results aren't quite right, especially when you see that the
         // LU weights from this unit test are ~1e14
@@ -300,10 +256,23 @@ public class LinearRegressionTest
         {
             System.out.println( i + ": " + resultLU.evaluate( data.get(i).getInput() ) );
         }
-        assertEquals( -0.34375, resultLU.evaluate( data.get(0).getInput() ), EPS );
-        assertEquals(  1.28125, resultLU.evaluate( data.get(1).getInput() ), EPS );
-        assertEquals(  2.09375, resultLU.evaluate( data.get(2).getInput() ), EPS );
+        assertEquals( -33.67857142857143, resultLU.evaluate( data.get(0).getInput() ), EPS );
+        assertEquals( -32.392857142857146, resultLU.evaluate( data.get(1).getInput() ), EPS );
+        assertEquals( -31.75, resultLU.evaluate( data.get(2).getInput() ), EPS );
         
+        regressionLearner.setRegularization(1e-3);
+        LinearDiscriminantWithBias resultLUr = regressionLearner.learn(data);
+        Vector v2 = resultLUr.convertToVector();
+        System.out.println( "LUr weights: " + v2 );
+        for( int i = 0; i  < 3; i++ )
+        {
+            System.out.println( i + ": " + resultLUr.evaluate( data.get(i).getInput() ) );
+        }
+        assertEquals( -0.0711990287795472, resultLUr.evaluate( data.get(0).getInput() ), EPS );
+        assertEquals(  1.2142398057559096, resultLUr.evaluate( data.get(1).getInput() ), EPS );
+        assertEquals(  1.856959223023638, resultLUr.evaluate( data.get(2).getInput() ), EPS );
+
+
     }
 
     /**
@@ -313,21 +282,16 @@ public class LinearRegressionTest
      * @return
      */
     public LinearRegression.Statistic createStatisticInstance(
-        LinearRegression<Double> lr1,
-        LinearRegression<Double> lr2 )
+        LinearDiscriminant f1,
+        LinearDiscriminant f2 )
     {
-        // First create the dataset
-        VectorFunctionLinearDiscriminant<Double> f1 = new VectorFunctionLinearDiscriminant<Double>(
-            lr1.getInputToVectorMap(), VectorFactory.getDefault().createUniformRandom( 3, -1, 1, random ) );
-
-        VectorFunctionLinearDiscriminant<Double> f2 = new VectorFunctionLinearDiscriminant<Double>(
-            lr2.getInputToVectorMap(), VectorFactory.getDefault().createUniformRandom( 3, -1, 1, random ) );
         
         LinkedList<Double> targets = new LinkedList<Double>();
         LinkedList<Double> estimates = new LinkedList<Double>();
-        for( int i = 0; i < 100; i++ )
+        MultivariateGaussian g = new MultivariateGaussian( f1.getInputDimensionality() );
+        ArrayList<Vector> samples = g.sample(random, 100);
+        for( Vector x : samples )
         {
-            double x = random.nextGaussian();
             targets.add( f1.evaluate(x) );
             estimates.add( f2.evaluate(x) );
         }
@@ -343,9 +307,9 @@ public class LinearRegressionTest
         System.out.println( "Statistic.getRootMeanSquaredError" );
 
 
-        LinearRegression<Double> lr1 = LinearRegressionTest.createInstance();
-        LinearRegression<Double> lr2 = LinearRegressionTest.createInstance();
-        LinearRegression.Statistic instance = this.createStatisticInstance( lr1, lr2 );
+        LinearDiscriminant f1 = new LinearDiscriminant( VectorFactory.getDefault().createUniformRandom(3, -1, 1, random) );
+        LinearDiscriminant f2 = new LinearDiscriminant( VectorFactory.getDefault().createUniformRandom(3, -1, 1, random) );
+        LinearRegression.Statistic instance = this.createStatisticInstance( f1, f2 );
 
         double v = instance.getRootMeanSquaredError();
         assertTrue( v > 0.0 );
@@ -359,9 +323,9 @@ public class LinearRegressionTest
     {
         System.out.println( "Statistic.clone" );
 
-        LinearRegression<Double> lr1 = LinearRegressionTest.createInstance();
-        LinearRegression<Double> lr2 = LinearRegressionTest.createInstance();
-        LinearRegression.Statistic instance = this.createStatisticInstance( lr1, lr2 );
+        LinearDiscriminant f1 = new LinearDiscriminant( VectorFactory.getDefault().createUniformRandom(3, -1, 1, random) );
+        LinearDiscriminant f2 = new LinearDiscriminant( VectorFactory.getDefault().createUniformRandom(3, -1, 1, random) );
+        LinearRegression.Statistic instance = this.createStatisticInstance( f1, f2 );
         LinearRegression.Statistic clone = instance.clone();
         assertNotNull( clone );
         assertNotSame( instance, clone );
@@ -382,8 +346,9 @@ public class LinearRegressionTest
     {
         System.out.println( "Statistic.getTargetEstimateCorrelation" );
 
-        LinearRegression.Statistic instance = this.createStatisticInstance(
-            LinearRegressionTest.createInstance(), LinearRegressionTest.createInstance() );
+        LinearDiscriminant f1 = new LinearDiscriminant( VectorFactory.getDefault().createUniformRandom(3, -1, 1, random) );
+        LinearDiscriminant f2 = new LinearDiscriminant( VectorFactory.getDefault().createUniformRandom(3, -1, 1, random) );
+        LinearRegression.Statistic instance = this.createStatisticInstance( f1, f2 );
 
         double v = instance.getTargetEstimateCorrelation();
         assertTrue( v != 0.0 );
@@ -397,8 +362,9 @@ public class LinearRegressionTest
     {
         System.out.println( "Statistic.getUnpredictedErrorFraction" );
 
-        LinearRegression.Statistic instance = this.createStatisticInstance(
-            LinearRegressionTest.createInstance(), LinearRegressionTest.createInstance() );
+        LinearDiscriminant f1 = new LinearDiscriminant( VectorFactory.getDefault().createUniformRandom(3, -1, 1, random) );
+        LinearDiscriminant f2 = new LinearDiscriminant( VectorFactory.getDefault().createUniformRandom(3, -1, 1, random) );
+        LinearRegression.Statistic instance = this.createStatisticInstance( f1, f2 );
 
         double v = instance.getUnpredictedErrorFraction();
         assertTrue( 0.0 < v );
@@ -414,8 +380,9 @@ public class LinearRegressionTest
     {
         System.out.println( "Statistic.getNumSamples" );
 
-        LinearRegression.Statistic instance = this.createStatisticInstance(
-            LinearRegressionTest.createInstance(), LinearRegressionTest.createInstance() );
+        LinearDiscriminant f1 = new LinearDiscriminant( VectorFactory.getDefault().createUniformRandom(3, -1, 1, random) );
+        LinearDiscriminant f2 = new LinearDiscriminant( VectorFactory.getDefault().createUniformRandom(3, -1, 1, random) );
+        LinearRegression.Statistic instance = this.createStatisticInstance( f1, f2 );
         assertTrue( instance.getNumSamples() > 0.0 );
     }
 
@@ -426,8 +393,9 @@ public class LinearRegressionTest
     {
         System.out.println( "Statistic.getDegreesOfFreedom" );
 
-        LinearRegression.Statistic instance = this.createStatisticInstance(
-            LinearRegressionTest.createInstance(), LinearRegressionTest.createInstance() );
+        LinearDiscriminant f1 = new LinearDiscriminant( VectorFactory.getDefault().createUniformRandom(3, -1, 1, random) );
+        LinearDiscriminant f2 = new LinearDiscriminant( VectorFactory.getDefault().createUniformRandom(3, -1, 1, random) );
+        LinearRegression.Statistic instance = this.createStatisticInstance( f1, f2 );
 
         double v = instance.getDegreesOfFreedom();
         assertTrue( v > 0.0 );
@@ -441,8 +409,9 @@ public class LinearRegressionTest
     {
         System.out.println( "Statistic.getMeanL1Error" );
 
-        LinearRegression.Statistic instance = this.createStatisticInstance(
-            LinearRegressionTest.createInstance(), LinearRegressionTest.createInstance() );
+        LinearDiscriminant f1 = new LinearDiscriminant( VectorFactory.getDefault().createUniformRandom(3, -1, 1, random) );
+        LinearDiscriminant f2 = new LinearDiscriminant( VectorFactory.getDefault().createUniformRandom(3, -1, 1, random) );
+        LinearRegression.Statistic instance = this.createStatisticInstance( f1, f2 );
         assertTrue( instance.getMeanL1Error() > 0.0 );
 
     }

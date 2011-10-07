@@ -16,7 +16,7 @@ package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.collection.IntegerCollection;
+import gov.sandia.cognition.collection.IntegerSpan;
 import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
@@ -146,12 +146,12 @@ public class PoissonDistribution
     }
 
     @Override
-    public IntegerCollection getDomain()
+    public IntegerSpan getDomain()
     {
         // The actual support is the entire set of nonnegative integers, but
         // that would crush us... So let's just go out far enough where
         // the PMF values are almost zero (and the CDF is almost 1.0).
-        return new IntegerCollection(0, (int) Math.round(this.getRate()*10)+5 );
+        return new IntegerSpan(0, (int) Math.round(this.getRate()*10)+5 );
     }
 
     @Override

@@ -103,7 +103,7 @@ public abstract class PrincipalComponentsAnalysisTestHarness extends TestCase
 
         assertEquals(dataCopy, data);
 
-        System.out.println( "Uhat:\n" + f.getDimensionReducer().getInternalMatrix().transpose() );
+        System.out.println( "Uhat:\n" + f.getDimensionReducer().getDiscriminant().transpose() );
         System.out.println( "U:\n" + svd.getU() );
 
         System.out.println( "Time taken: SVD = " + (stopsvd - startsvd) + ", PCA = " + (stop - start) );
@@ -127,10 +127,10 @@ public abstract class PrincipalComponentsAnalysisTestHarness extends TestCase
         int nc = instance.getNumComponents() * INPUT_DIM;
         for (int i = 0; i < instance.getNumComponents(); i++)
         {
-            Vector uihat = f.getDimensionReducer().getInternalMatrix().getRow( i );
+            Vector uihat = f.getDimensionReducer().getDiscriminant().getRow( i );
             for (int j = 0; j < i; j++)
             {
-                Vector ujhat = f.getDimensionReducer().getInternalMatrix().getRow( j );
+                Vector ujhat = f.getDimensionReducer().getDiscriminant().getRow( j );
                 assertEquals( "Dot product between " + i + " and " + j + " is too large!", 0.0, uihat.dotProduct( ujhat ), 1e-2 );
             }
             assertEquals( 1.0, uihat.norm2(), 1e-5 );

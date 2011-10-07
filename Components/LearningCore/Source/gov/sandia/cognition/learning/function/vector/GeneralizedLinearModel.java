@@ -1,5 +1,5 @@
 /*
- * File:                SquashedMatrixMultiplyVectorFunction.java
+ * File:                GeneralizedLinearModel.java
  * Authors:             Kevin R. Dixon
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
@@ -14,6 +14,8 @@
 
 package gov.sandia.cognition.learning.function.vector;
 
+import gov.sandia.cognition.annotation.PublicationReference;
+import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.learning.function.scalar.AtanFunction;
 import gov.sandia.cognition.math.UnivariateScalarFunction;
 import gov.sandia.cognition.math.matrix.Vector;
@@ -32,7 +34,14 @@ import gov.sandia.cognition.util.ObjectUtil;
  * @since  1.0
  *
  */
-public class SquashedMatrixMultiplyVectorFunction
+@PublicationReference(
+    author="Wikipedia",
+    title="Generalized linear model",
+    type=PublicationType.WebPage,
+    year=2011,
+    url="http://en.wikipedia.org/wiki/Generalized_linear_model"
+)
+public class GeneralizedLinearModel
     extends AbstractCloneableSerializable
     implements VectorizableVectorFunction,
     VectorInputEvaluator<Vector,Vector>,
@@ -42,7 +51,7 @@ public class SquashedMatrixMultiplyVectorFunction
     /**
      * GradientDescendable that multiplies an input by the internal matrix
      */
-    private MatrixMultiplyVectorFunction matrixMultiply;
+    private MultivariateDiscriminant discriminant;
 
     /**
      * VectorFunction that is applied to the output of the matrix multiply
@@ -52,13 +61,13 @@ public class SquashedMatrixMultiplyVectorFunction
     /**
      * Default constructor.
      */
-    public SquashedMatrixMultiplyVectorFunction()
+    public GeneralizedLinearModel()
     {
         this( 1, 1, new AtanFunction() );
     }
 
     /**
-     * Creates a new instance of SquashedMatrixMultiplyVectorFunction
+     * Creates a new instance of GeneralizedLinearModel
      * 
      * @param numInputs
      * Number of inputs of the function (number of matrix columns)
@@ -67,59 +76,59 @@ public class SquashedMatrixMultiplyVectorFunction
      * @param scalarFunction 
      * Function to apply to each output
      */
-    public SquashedMatrixMultiplyVectorFunction(
+    public GeneralizedLinearModel(
         int numInputs,
         int numOutputs,
         UnivariateScalarFunction scalarFunction )
     {
-        this( new MatrixMultiplyVectorFunction( numInputs, numOutputs ),
+        this( new MultivariateDiscriminant( numInputs, numOutputs ),
             new ElementWiseVectorFunction( scalarFunction ) );
     }
     
     /**
-     * Creates a new instance of SquashedMatrixMultiplyVectorFunction
-     * @param matrixMultiply 
+     * Creates a new instance of GeneralizedLinearModel
+     * @param discriminant
      * GradientDescendable that multiplies an input by the internal matrix
      * @param squashingFunction 
      * VectorFunction that is applied to the output of the matrix multiply
      */
-    public SquashedMatrixMultiplyVectorFunction(
-        MatrixMultiplyVectorFunction matrixMultiply,
+    public GeneralizedLinearModel(
+        MultivariateDiscriminant discriminant,
         VectorFunction squashingFunction )
     {
-        this.setMatrixMultiply( matrixMultiply );
+        this.setDiscriminant( discriminant );
         this.setSquashingFunction( squashingFunction );
     }
 
     /**
-     * Creates a new instance of SquashedMatrixMultiplyVectorFunction
-     * @param other SquashedMatrixMultiplyVectorFunction to copy
+     * Creates a new instance of GeneralizedLinearModel
+     * @param other GeneralizedLinearModel to copy
      */
-    public SquashedMatrixMultiplyVectorFunction(
-        SquashedMatrixMultiplyVectorFunction other )
+    public GeneralizedLinearModel(
+        GeneralizedLinearModel other )
     {
-        this( other.getMatrixMultiply().clone(), other.getSquashingFunction() );
+        this( other.getDiscriminant().clone(), other.getSquashingFunction() );
     }
 
     /**
-     * Getter for matrixMultiply
+     * Getter for discriminant
      * @return 
      * GradientDescendable that multiplies an input by the internal matrix
      */
-    public MatrixMultiplyVectorFunction getMatrixMultiply()
+    public MultivariateDiscriminant getDiscriminant()
     {
-        return this.matrixMultiply;
+        return this.discriminant;
     }
 
     /**
-     * Setter for matrixMultiply
-     * @param matrixMultiply 
+     * Setter for discriminant
+     * @param discriminant
      * GradientDescendable that multiplies an input by the internal matrix
      */
-    public void setMatrixMultiply(
-        MatrixMultiplyVectorFunction matrixMultiply )
+    public void setDiscriminant(
+        MultivariateDiscriminant discriminant )
     {
-        this.matrixMultiply = matrixMultiply;
+        this.discriminant = discriminant;
     }
 
     /**
@@ -145,29 +154,29 @@ public class SquashedMatrixMultiplyVectorFunction
 
     public Vector convertToVector()
     {
-        return this.getMatrixMultiply().convertToVector();
+        return this.getDiscriminant().convertToVector();
     }
 
     public void convertFromVector(
         Vector parameters )
     {
-        this.getMatrixMultiply().convertFromVector( parameters );
+        this.getDiscriminant().convertFromVector( parameters );
     }
 
     public Vector evaluate(
         Vector input )
     {
         return this.squashingFunction.evaluate(
-            this.matrixMultiply.evaluate( input ) );
+            this.discriminant.evaluate( input ) );
     }
 
     @Override
-    public SquashedMatrixMultiplyVectorFunction clone()
+    public GeneralizedLinearModel clone()
     {
-        SquashedMatrixMultiplyVectorFunction clone =
-            (SquashedMatrixMultiplyVectorFunction) super.clone();
-        clone.setMatrixMultiply( 
-            ObjectUtil.cloneSafe(this.getMatrixMultiply()) );
+        GeneralizedLinearModel clone =
+            (GeneralizedLinearModel) super.clone();
+        clone.setDiscriminant(
+            ObjectUtil.cloneSafe(this.getDiscriminant()) );
         return clone;
     }
 
@@ -175,18 +184,18 @@ public class SquashedMatrixMultiplyVectorFunction
     public String toString()
     {
         String retval = "Squashing: " + this.getSquashingFunction().getClass()
-            + "Weights:\n" + this.getMatrixMultiply().getInternalMatrix();
+            + "Weights:\n" + this.getDiscriminant().getDiscriminant();
         return retval;
     }
 
     public int getInputDimensionality()
     {
-        return this.getMatrixMultiply().getInputDimensionality();
+        return this.getDiscriminant().getInputDimensionality();
     }
 
     public int getOutputDimensionality()
     {
-        return this.getMatrixMultiply().getOutputDimensionality();
+        return this.getDiscriminant().getOutputDimensionality();
     }
 
 }

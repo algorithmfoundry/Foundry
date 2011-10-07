@@ -16,7 +16,7 @@ package gov.sandia.cognition.statistics.bayesian;
 
 import gov.sandia.cognition.statistics.bayesian.conjugate.BernoulliBayesianEstimator;
 import gov.sandia.cognition.statistics.ProbabilityFunction;
-import gov.sandia.cognition.statistics.PointMassDistribution;
+import gov.sandia.cognition.statistics.DataDistribution;
 import gov.sandia.cognition.statistics.distribution.BernoulliDistribution;
 import gov.sandia.cognition.statistics.distribution.BetaDistribution;
 import gov.sandia.cognition.statistics.distribution.GammaDistribution;
@@ -115,12 +115,12 @@ public class ImportanceSamplingTest
         assertNotNull( updater.getConjuctive() );
         instance.setUpdater( updater );
 
-        PointMassDistribution<Double> result = instance.learn(samples);
+        DataDistribution<Double> result = instance.learn(samples);
         ArrayList<WeightedValue<Double>> ps =
             new ArrayList<WeightedValue<Double>>( result.getDomain().size() );
         for( Double pvalue : result.getDomain() )
         {
-            ps.add( new DefaultWeightedValue<Double>( pvalue, result.getMass(pvalue) ) );
+            ps.add( new DefaultWeightedValue<Double>( pvalue, result.get(pvalue) ) );
         }
 
         System.out.println( "Nonzero = " + result.getDomain().size() );
@@ -154,7 +154,7 @@ public class ImportanceSamplingTest
         instance.setNumSamples(1000);
         instance.setUpdater(new GammaUpdater() );
 
-        PointMassDistribution<GammaDistribution.PDF> result =
+        DataDistribution<GammaDistribution.PDF> result =
             instance.learn(samples);
 
         ArrayList<WeightedValue<Double>> shapes =
@@ -163,8 +163,8 @@ public class ImportanceSamplingTest
             new ArrayList<WeightedValue<Double>>( result.getDomain().size() );
         for( GammaDistribution.PDF gamma : result.getDomain() )
         {
-            shapes.add( new DefaultWeightedValue<Double>( gamma.getShape(), result.getMass(gamma) ) );
-            scales.add( new DefaultWeightedValue<Double>( gamma.getScale(), result.getMass(gamma) ) );
+            shapes.add( new DefaultWeightedValue<Double>( gamma.getShape(), result.get(gamma) ) );
+            scales.add( new DefaultWeightedValue<Double>( gamma.getScale(), result.get(gamma) ) );
         }
 
         System.out.println( "Nonzero = " + result.getDomain().size() );

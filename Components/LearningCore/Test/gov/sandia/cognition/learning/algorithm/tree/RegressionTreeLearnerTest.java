@@ -18,7 +18,6 @@ import gov.sandia.cognition.learning.algorithm.regression.KernelBasedIterativeRe
 import gov.sandia.cognition.learning.algorithm.regression.LinearRegression;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.learning.function.vector.VectorizableVectorConverterWithBias;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
 import gov.sandia.cognition.util.CloneableSerializable;
@@ -98,10 +97,9 @@ public class RegressionTreeLearnerTest
     {
         VectorThresholdVarianceLearner deciderLearner = 
             new VectorThresholdVarianceLearner();
-        
-        LinearRegression<Vectorizable> regressionLearner = 
-            new LinearRegression<Vectorizable>(
-                new VectorizableVectorConverterWithBias());
+
+        LinearRegression regressionLearner =
+            new LinearRegression();
 
         RegressionTreeLearner<Vectorizable> instance = 
             new RegressionTreeLearner<Vectorizable>(deciderLearner,

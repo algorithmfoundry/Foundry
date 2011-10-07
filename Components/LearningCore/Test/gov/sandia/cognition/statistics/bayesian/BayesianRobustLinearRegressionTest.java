@@ -41,24 +41,19 @@ public class BayesianRobustLinearRegressionTest
     /**
      * Tests the constructors of class BayesianRobustLinearRegressionTest.
      */
+    @Override
     public void testConstructors()
     {
         System.out.println( "Constructors" );
         int dim = 10;
-        BayesianRobustLinearRegression<Double> instance =
-            new BayesianRobustLinearRegression<Double>( dim );
-        assertNull( instance.getFeatureMap() );
+        BayesianRobustLinearRegression instance =
+            new BayesianRobustLinearRegression( dim );
         assertNotNull( instance.getOutputVariance() );
         assertEquals( dim, instance.getWeightPrior().getInputDimensionality() );
-        instance.setFeatureMap( new RadialBasisVectorFunction(9) );
 
-        BayesianRobustLinearRegression<Double> i2 =
-            new BayesianRobustLinearRegression<Double>(
-                instance.getFeatureMap(),
-                instance.getOutputVariance(),
-                instance.getWeightPrior() );
-
-        assertSame( instance.getFeatureMap(), i2.getFeatureMap() );
+        BayesianRobustLinearRegression i2 = new BayesianRobustLinearRegression(
+            instance.getOutputVariance(),
+            instance.getWeightPrior() );
         assertSame( instance.getOutputVariance(), i2.getOutputVariance() );
         assertSame( instance.getWeightPrior(), i2.getWeightPrior() );
 
@@ -70,9 +65,9 @@ public class BayesianRobustLinearRegressionTest
     public void testGetWeightPrior()
     {
         System.out.println("getWeightPrior");
-        BayesianRobustLinearRegression<Double> instance = this.createInstance();
+        BayesianRobustLinearRegression instance = this.createInstance();
         MultivariateGaussian prior = instance.getWeightPrior();
-        assertNotNull( instance );
+        assertNotNull( prior );
     }
 
     /**
@@ -82,7 +77,7 @@ public class BayesianRobustLinearRegressionTest
     {
         System.out.println("setWeightPrior");
 
-        BayesianRobustLinearRegression<Double> instance = this.createInstance();
+        BayesianRobustLinearRegression instance = this.createInstance();
         MultivariateGaussian prior = instance.getWeightPrior();
         assertNotNull( instance );
         instance.setWeightPrior(null);
@@ -97,7 +92,7 @@ public class BayesianRobustLinearRegressionTest
     public void testGetOutputVariance()
     {
         System.out.println("getOutputVariance");
-        BayesianRobustLinearRegression<Double> instance = this.createInstance();
+        BayesianRobustLinearRegression instance = this.createInstance();
         InverseGammaDistribution ov = instance.getOutputVariance();
         assertNotNull( ov );
     }
@@ -108,7 +103,7 @@ public class BayesianRobustLinearRegressionTest
     public void testSetOutputVariance()
     {
         System.out.println("setOutputVariance");
-        BayesianRobustLinearRegression<Double> instance = this.createInstance();
+        BayesianRobustLinearRegression instance = this.createInstance();
         InverseGammaDistribution ov = instance.getOutputVariance();
         assertNotNull( ov );
         instance.setOutputVariance(null);
@@ -118,11 +113,10 @@ public class BayesianRobustLinearRegressionTest
     }
 
     @Override
-    public BayesianRobustLinearRegression<Double> createInstance()
+    public BayesianRobustLinearRegression createInstance()
     {
-        BayesianRobustLinearRegression<Double> instance =
-            new BayesianRobustLinearRegression<Double>(10);
-        instance.setFeatureMap( new RadialBasisVectorFunction(9) );
+        BayesianRobustLinearRegression instance =
+            new BayesianRobustLinearRegression(DEFAULT_DIM+1);
         return instance;
     }
 
@@ -132,11 +126,11 @@ public class BayesianRobustLinearRegressionTest
     public void testIncrementalAndBatch()
     {
 
-        BayesianRobustLinearRegression<Double> instance = this.createInstance();
+        BayesianRobustLinearRegression instance = this.createInstance();
 
-        BayesianRobustLinearRegression.IncrementalEstimator<Double> incremental =
-            new BayesianRobustLinearRegression.IncrementalEstimator<Double>(
-                instance.getFeatureMap(), instance.getOutputVariance(), instance.getWeightPrior() );
+        BayesianRobustLinearRegression.IncrementalEstimator incremental =
+            new BayesianRobustLinearRegression.IncrementalEstimator(
+                instance.getOutputVariance(), instance.getWeightPrior() );
 
         super.testIncrementalAndBatch(incremental);
     }

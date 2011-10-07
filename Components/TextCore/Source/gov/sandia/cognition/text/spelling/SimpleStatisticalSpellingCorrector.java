@@ -18,7 +18,7 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.algorithm.AbstractBatchAndIncrementalLearner;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.Collection;
 import java.util.HashSet;
@@ -54,7 +54,7 @@ public class SimpleStatisticalSpellingCorrector
     }
 
     /** Maps known words to the number of times they've been seen. */
-    protected MapBasedDataHistogram<String> wordCounts;
+    protected DefaultDataDistribution<String> wordCounts;
 
     /** The alphabet of lower case characters. */
     protected char[] alphabet;
@@ -78,7 +78,7 @@ public class SimpleStatisticalSpellingCorrector
     public SimpleStatisticalSpellingCorrector(
         final char[] alphabet)
     {
-        this(new MapBasedDataHistogram<String>(), alphabet);
+        this(new DefaultDataDistribution<String>(), alphabet);
     }
 
     /**
@@ -90,7 +90,7 @@ public class SimpleStatisticalSpellingCorrector
      *      The alphabet to use.
      */
     public SimpleStatisticalSpellingCorrector(
-        final MapBasedDataHistogram<String> wordCounts,
+        final DefaultDataDistribution<String> wordCounts,
         final char[] alphabet)
     {
         super();
@@ -108,7 +108,7 @@ public class SimpleStatisticalSpellingCorrector
     public void add(
         final String word)
     {
-        this.wordCounts.add(word.toLowerCase());
+        this.wordCounts.increment(word.toLowerCase());
     }
 
     /**
@@ -124,9 +124,10 @@ public class SimpleStatisticalSpellingCorrector
         final String word,
         final int count)
     {
-        this.wordCounts.add(word, count);
+        this.wordCounts.increment(word, count);
     }
 
+    @Override
     public String evaluate(
         final String word)
     {
@@ -137,7 +138,7 @@ public class SimpleStatisticalSpellingCorrector
         }
 
         final String input = word.toLowerCase();
-        if (input.isEmpty() || this.wordCounts.getCount(input) > 0)
+        if (input.isEmpty() || this.wordCounts.get(input) > 0)
         {
             // This is a known word, so nothing to correct.
             return input;
@@ -185,13 +186,13 @@ public class SimpleStatisticalSpellingCorrector
         final String defaultBestWord)
     {
         String bestWord = defaultBestWord;
-        int bestCount = 0;
+        double bestCount = 0;
 
         // Go through the words.
         for (String word : words)
         {
             // Get the count.
-            final int count = this.wordCounts.getCount(word);
+            final double count = this.wordCounts.get(word);
 
             if (count > bestCount)
             {
@@ -294,7 +295,7 @@ public class SimpleStatisticalSpellingCorrector
             for (String editedWord : possible)
             {
                 // See if this is a known word.
-                if (this.wordCounts.getCount(editedWord) > 0)
+                if (this.wordCounts.get(editedWord) > 0)
                 {
                     // This word is known.
                     result.add(editedWord);
@@ -312,7 +313,7 @@ public class SimpleStatisticalSpellingCorrector
      * @return
      *      The word counts.
      */
-    public MapBasedDataHistogram<String> getWordCounts()
+    public DefaultDataDistribution<String> getWordCounts()
     {
         return this.wordCounts;
     }
@@ -324,7 +325,7 @@ public class SimpleStatisticalSpellingCorrector
      *      The dictionary of word counts.
      */
     public void setWordCounts(
-        final MapBasedDataHistogram<String> wordCounts)
+        final DefaultDataDistribution<String> wordCounts)
     {
         this.wordCounts = wordCounts;
     }
@@ -388,11 +389,13 @@ public class SimpleStatisticalSpellingCorrector
             this.setAlphabet(alphabet);
         }
         
+        @Override
         public SimpleStatisticalSpellingCorrector createInitialLearnedObject()
         {
             return new SimpleStatisticalSpellingCorrector(this.getAlphabet());
         }
 
+        @Override
         public void update(
             final SimpleStatisticalSpellingCorrector target,
             final String word)

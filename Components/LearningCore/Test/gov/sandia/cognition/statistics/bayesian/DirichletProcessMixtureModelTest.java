@@ -18,10 +18,10 @@ import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.DataHistogram;
+import gov.sandia.cognition.statistics.DataDistribution;
 import gov.sandia.cognition.statistics.bayesian.conjugate.MultivariateGaussianMeanBayesianEstimator;
-import gov.sandia.cognition.statistics.distribution.MapBasedPointMassDistribution;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
+import gov.sandia.cognition.statistics.distribution.ScalarDataDistribution;
 import java.util.ArrayList;
 import java.util.Iterator;
 import junit.framework.TestCase;
@@ -132,13 +132,13 @@ public class DirichletProcessMixtureModelTest
         instance.setRandom(r1);
         clone.setRandom(r2);
 
-        DataHistogram<DirichletProcessMixtureModel.Sample<Vector>> d1 =
+        DataDistribution<DirichletProcessMixtureModel.Sample<Vector>> d1 =
             instance.learn(samples);
 
-        DataHistogram<DirichletProcessMixtureModel.Sample<Vector>> d2 =
+        DataDistribution<DirichletProcessMixtureModel.Sample<Vector>> d2 =
             clone.learn(samples);
 
-        assertEquals( d1.getTotalCount(), d2.getTotalCount() );
+        assertEquals( d1.getTotal(), d2.getTotal() );
 
         Iterator<? extends DirichletProcessMixtureModel.Sample<Vector>> i1 =
             d1.getDomain().iterator();
@@ -180,19 +180,19 @@ public class DirichletProcessMixtureModelTest
             samples.addAll( g.sample(RANDOM, NUM_SAMPLES ) );
         }
         long start = System.currentTimeMillis();
-        DataHistogram<DirichletProcessMixtureModel.Sample<Vector>> results =
+        DataDistribution<DirichletProcessMixtureModel.Sample<Vector>> results =
             instance.learn(samples);
         long stop = System.currentTimeMillis();
         System.out.println( "Time taken: " + (stop-start)/1000.0);
 
-        MapBasedPointMassDistribution.PMF<Double> ks = new MapBasedPointMassDistribution.PMF<Double>();
+        ScalarDataDistribution.PMF ks = new ScalarDataDistribution.PMF();
         DirichletProcessMixtureModel.Sample<Vector> bestSample = null;
         double maxLL = Double.NEGATIVE_INFINITY;
         int maxIndex = -1;
         int index = 0;
         for( DirichletProcessMixtureModel.Sample<Vector> result : results.getDomain() )
         {
-            ks.add( (double) result.getNumClusters() );
+            ks.increment( (double) result.getNumClusters() );
             Double ll = result.getPosteriorLogLikelihood();
             double actualLL = result.computePosteriorLogLikelihood(samples);
             if( ll != null )
@@ -255,19 +255,19 @@ public class DirichletProcessMixtureModelTest
             samples.addAll( g.sample(RANDOM, NUM_SAMPLES ) );
         }
         long start = System.currentTimeMillis();
-        DataHistogram<DirichletProcessMixtureModel.Sample<Vector>> results =
+        DataDistribution<DirichletProcessMixtureModel.Sample<Vector>> results =
             instance.learn(samples);
         long stop = System.currentTimeMillis();
         System.out.println( "Time taken: " + (stop-start)/1000.0);
 
-        MapBasedPointMassDistribution.PMF<Double> ks = new MapBasedPointMassDistribution.PMF<Double>();
+        ScalarDataDistribution.PMF ks = new ScalarDataDistribution.PMF();
         DirichletProcessMixtureModel.Sample<Vector> bestSample = null;
         double maxLL = Double.NEGATIVE_INFINITY;
         int maxIndex = -1;
         int index = 0;
         for( DirichletProcessMixtureModel.Sample<Vector> result : results.getDomain() )
         {
-            ks.add( (double) result.getNumClusters() );
+            ks.increment( (double) result.getNumClusters() );
             Double ll = result.getPosteriorLogLikelihood();
             if( (ll != null) && (maxLL < ll) )
             {

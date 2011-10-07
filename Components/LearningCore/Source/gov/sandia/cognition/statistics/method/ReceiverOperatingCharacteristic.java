@@ -17,12 +17,12 @@ package gov.sandia.cognition.statistics.method;
 import gov.sandia.cognition.learning.performance.categorization.DefaultBinaryConfusionMatrix;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.ScalarThresholdBinaryCategorizer;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
-import gov.sandia.cognition.learning.data.TargetEstimatePair;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
 import gov.sandia.cognition.util.Pair;
@@ -374,37 +374,52 @@ public class ReceiverOperatingCharacteristic
         public static double computeAreaUnderCurve(
             ReceiverOperatingCharacteristic roc )
         {
-            
-            // This assumes a "pessimistic" blocking of the ROC
-            // That is the y-axis maintains the previous value until we get
-            // a new sample that "ups" the y-axis to the new value.  This is a
-            // stairstep curve and we're adding up the rectangles (not trapezoids)
-            // using the y-value from the previous sample. Thus, the area for a
-            // rectangle is A = y[n-1]*(x[n]-x[n-1])
-            double auc = 0.0;
-            int N = roc.getSortedROCData().size();
-            double xn, xnm1, ynm1, area;
-            for( int n = 1; n <= N; n++ )
-            {
-                if( n < N )
-                {
-                    xn = roc.getSortedROCData().get(n).getFalsePositiveRate();
-                }
-                else
-                {
-                    xn = 1.0;
-                }
-                xnm1 = roc.getSortedROCData().get(n-1).getFalsePositiveRate();
-                ynm1 = roc.getSortedROCData().get(n-1).getTruePositiveRate();
-                area = ynm1*(xn-xnm1);
-                auc += area;
-            }
-            
-            return auc;
-            
+            return computeAreaUnderCurve( roc.getSortedROCData() );            
         }
-        
-        
+
+        /**
+         * Computes the Area Under Curve for an x-axis sorted Collection
+         * of ROC points
+         * @param points
+         * x-axis sorted collection of x-axis points
+         * @return
+         * Area underneath the ROC curve, on the interval [0,1].  A value of
+         * 0.5 means that the classifier is doing no better than chance and
+         * bigger is better
+         */
+        public static double computeAreaUnderCurve(
+            Collection<ReceiverOperatingCharacteristic.DataPoint> points )
+        {
+            ReceiverOperatingCharacteristic.DataPoint current =
+                CollectionUtil.getFirst(points);
+            double auc = 0.0;
+            double xnm1 = 0.0;
+            double ynm1 = 0.0;
+            double xn = 0.0;
+            for( ReceiverOperatingCharacteristic.DataPoint point : points )
+            {
+                // Technically, this wastes the computation of the first point,
+                // but since the delta is 0.0, it doesn't effect the AUC.
+                ReceiverOperatingCharacteristic.DataPoint previous = current;
+                previous = current;
+                current = point;
+
+                xnm1 = previous.getFalsePositiveRate();
+                ynm1 = previous.getTruePositiveRate();
+                xn = current.getFalsePositiveRate();
+
+                final double area = ynm1*(xn-xnm1);
+                auc += area;
+
+            }
+
+            // Assume that the final point is at xn=1.0
+            xn = 1.0;
+            final double area = ynm1*(xn-xnm1);
+            auc += area;
+            return auc;
+        }
+
         /**
          * Determines the DataPoint, and associated threshold, that
          * simultaneously maximizes the value of

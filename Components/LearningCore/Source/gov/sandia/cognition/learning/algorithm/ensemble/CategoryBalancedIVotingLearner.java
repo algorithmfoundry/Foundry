@@ -7,7 +7,8 @@
  * Copyright February 08, 2011, Sandia Corporation.
  * Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive 
  * license for use of this work by or on behalf of the U.S. Government. Export 
- * of this program may require a license from the United States Government. 
+ * of this program may require a license from the United States Government.
+ *
  */
 
 package gov.sandia.cognition.learning.algorithm.ensemble;
@@ -16,8 +17,8 @@ import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.factory.Factory;
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.statistics.DataHistogram;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.DataDistribution;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -74,7 +75,7 @@ public class CategoryBalancedIVotingLearner<InputType, CategoryType>
         this(learner, maxIterations, percentToSample,
             DEFAULT_PROPORTION_INCORRECT_IN_SAMPLE,
             DEFAULT_VOTE_OUT_OF_BAG_ONLY,
-            new MapBasedDataHistogram.DefaultFactory<CategoryType>(2),
+            new DefaultDataDistribution.DefaultFactory<CategoryType>(2),
             random);
     }
 
@@ -106,7 +107,7 @@ public class CategoryBalancedIVotingLearner<InputType, CategoryType>
         final double percentToSample,
         final double proportionIncorrectInSample,
         final boolean voteOutOfBagOnly,
-        final Factory<? extends DataHistogram<CategoryType>> counterFactory,
+        final Factory<? extends DataDistribution<CategoryType>> counterFactory,
         final Random random)
     {
         super(learner, maxIterations, percentToSample, proportionIncorrectInSample,

@@ -15,9 +15,9 @@
 package gov.sandia.cognition.learning.algorithm.gradient;
 
 import gov.sandia.cognition.learning.function.scalar.AtanFunction;
-import gov.sandia.cognition.learning.function.vector.DifferentiableSquashedMatrixMultiplyVectorFunction;
+import gov.sandia.cognition.learning.function.vector.DifferentiableGeneralizedLinearModel;
 import gov.sandia.cognition.learning.function.vector.ElementWiseDifferentiableVectorFunction;
-import gov.sandia.cognition.learning.function.vector.MatrixMultiplyVectorFunction;
+import gov.sandia.cognition.learning.function.vector.MultivariateDiscriminant;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.Matrix;
@@ -48,7 +48,7 @@ public class GradientDescendableApproximatorTest extends TestCase
     private Random random = new Random();
 
     public static class F1
-        extends MatrixMultiplyVectorFunction
+        extends MultivariateDiscriminant
     {
 
         public int evals = 0;
@@ -83,7 +83,7 @@ public class GradientDescendableApproximatorTest extends TestCase
     }
 
     public static class F2
-        extends DifferentiableSquashedMatrixMultiplyVectorFunction
+        extends DifferentiableGeneralizedLinearModel
     {
 
         public int evals = 0;
@@ -93,7 +93,7 @@ public class GradientDescendableApproximatorTest extends TestCase
             int numOutputs,
             Random random)
         {
-            super(new MatrixMultiplyVectorFunction(
+            super(new MultivariateDiscriminant(
                 MatrixFactory.getDefault().createUniformRandom(numOutputs, numInputs, -10.0, 10.0, random)),
                 new ElementWiseDifferentiableVectorFunction(new AtanFunction(1.0)));
 //            super( MatrixFactory.getDefault().createUniformRandom( numOutputs, numInputs, -10.0, 10.0 )

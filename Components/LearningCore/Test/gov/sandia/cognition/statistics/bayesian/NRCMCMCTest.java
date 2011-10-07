@@ -18,7 +18,7 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.statistics.AbstractDistribution;
-import gov.sandia.cognition.statistics.DataHistogram;
+import gov.sandia.cognition.statistics.DataDistribution;
 import gov.sandia.cognition.statistics.Distribution;
 import gov.sandia.cognition.statistics.distribution.GammaDistribution;
 import gov.sandia.cognition.statistics.distribution.LogNormalDistribution;
@@ -95,7 +95,7 @@ public class NRCMCMCTest
         mcmc.setRandom(RANDOM);
         mcmc.setUpdater( new StateProposer() );
         
-        DataHistogram<State> result = mcmc.learn( data );
+        DataDistribution<State> result = mcmc.learn( data );
         ArrayList<Double> lam1 = new ArrayList<Double>( result.getDomain().size() );
         ArrayList<Double> lam2 = new ArrayList<Double>( result.getDomain().size() );
         ArrayList<Double> k1 = new ArrayList<Double>( result.getDomain().size() );

@@ -14,7 +14,7 @@
 
 package gov.sandia.cognition.learning.algorithm.tree;
 
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import junit.framework.TestCase;
 
 /**
@@ -46,34 +46,34 @@ public class VectorThresholdGiniImpurityLearnerTest
         VectorThresholdGiniImpurityLearner<String> instance =
             new VectorThresholdGiniImpurityLearner<String>();
 
-        MapBasedDataHistogram<String> empty = new MapBasedDataHistogram<String>();
-        MapBasedDataHistogram<String> baseCounts = new MapBasedDataHistogram<String>();
-        baseCounts.add("a", 50);
-        baseCounts.add("b", 50);
+        DefaultDataDistribution<String> empty = new DefaultDataDistribution<String>();
+        DefaultDataDistribution<String> baseCounts = new DefaultDataDistribution<String>();
+        baseCounts.increment("a", 50);
+        baseCounts.increment("b", 50);
 
 
         assertEquals(0.0, instance.computeSplitGain(baseCounts, baseCounts, empty), epsilon);
         assertEquals(0.0, instance.computeSplitGain(baseCounts, empty, baseCounts), epsilon);
 
-        MapBasedDataHistogram<String> as = new MapBasedDataHistogram<String>();
-        as.add("a", 50);
-        MapBasedDataHistogram<String> bs = new MapBasedDataHistogram<String>();
-        bs.add("b", 50);
+        DefaultDataDistribution<String> as = new DefaultDataDistribution<String>();
+        as.increment("a", 50);
+        DefaultDataDistribution<String> bs = new DefaultDataDistribution<String>();
+        bs.increment("b", 50);
         assertEquals(0.5, instance.computeSplitGain(baseCounts, as, bs), epsilon);
         assertEquals(0.5, instance.computeSplitGain(baseCounts, bs, as), epsilon);
 
-        MapBasedDataHistogram<String> mixed = new MapBasedDataHistogram<String>();
-        mixed.add("a", 25);
-        mixed.add("b", 25);
+        DefaultDataDistribution<String> mixed = new DefaultDataDistribution<String>();
+        mixed.increment("a", 25);
+        mixed.increment("b", 25);
         assertEquals(0.0, instance.computeSplitGain(baseCounts, mixed, mixed), epsilon);
 
-        MapBasedDataHistogram<String> tenAs = new MapBasedDataHistogram<String>();
-        tenAs.add("a", 10);
+        DefaultDataDistribution<String> tenAs = new DefaultDataDistribution<String>();
+        tenAs.increment("a", 10);
 
 
-        MapBasedDataHistogram<String> moreBs = new MapBasedDataHistogram<String>();
-        moreBs.add("a", 15);
-        moreBs.add("b", 25);
+        DefaultDataDistribution<String> moreBs = new DefaultDataDistribution<String>();
+        moreBs.increment("a", 15);
+        moreBs.increment("b", 25);
         assertEquals(0.3125, instance.computeSplitGain(baseCounts, tenAs, moreBs), epsilon);
         assertEquals(0.3125, instance.computeSplitGain(baseCounts, moreBs, tenAs), epsilon);
 
@@ -85,27 +85,27 @@ public class VectorThresholdGiniImpurityLearnerTest
     public void testGiniImpurity()
     {
         final double epsilon = 0.00001;
-        MapBasedDataHistogram<String> empty = new MapBasedDataHistogram<String>();
+        DefaultDataDistribution<String> empty = new DefaultDataDistribution<String>();
         assertEquals(0.0, VectorThresholdGiniImpurityLearner.giniImpurity(empty), epsilon);
-        MapBasedDataHistogram<String> pure = new MapBasedDataHistogram<String>();
-        pure.add("a", 100);
+        DefaultDataDistribution<String> pure = new DefaultDataDistribution<String>();
+        pure.increment("a", 100);
         assertEquals(0.0, VectorThresholdGiniImpurityLearner.giniImpurity(pure), epsilon);
         
-        MapBasedDataHistogram<String> impure = new MapBasedDataHistogram<String>();
-        impure.add("a", 50);
-        impure.add("b", 50);
+        DefaultDataDistribution<String> impure = new DefaultDataDistribution<String>();
+        impure.increment("a", 50);
+        impure.increment("b", 50);
         assertEquals(0.5, VectorThresholdGiniImpurityLearner.giniImpurity(impure), epsilon);
 
-        MapBasedDataHistogram<String> almostPure = new MapBasedDataHistogram<String>();
-        almostPure.add("a", 1);
-        almostPure.add("b", 99);
+        DefaultDataDistribution<String> almostPure = new DefaultDataDistribution<String>();
+        almostPure.increment("a", 1);
+        almostPure.increment("b", 99);
         assertEquals(0.0198, VectorThresholdGiniImpurityLearner.giniImpurity(almostPure), epsilon);
         
         
-        MapBasedDataHistogram<Integer> lots = new MapBasedDataHistogram<Integer>();
+        DefaultDataDistribution<Integer> lots = new DefaultDataDistribution<Integer>();
         for (int i = 0; i < 100; i++)
         {
-            lots.add(i, 1);
+            lots.increment(i, 1);
         }
         assertEquals(0.99, VectorThresholdGiniImpurityLearner.giniImpurity(lots), epsilon);
 

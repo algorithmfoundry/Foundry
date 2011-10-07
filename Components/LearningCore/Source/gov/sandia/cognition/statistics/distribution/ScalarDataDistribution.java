@@ -3,42 +3,40 @@
  * Authors:             Kevin R. Dixon
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
- * 
+ *
  * Copyright Jan 27, 2009, Sandia Corporation.
  * Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
- * license for use of this work by or on behalf of the U.S. Government. 
+ * license for use of this work by or on behalf of the U.S. Government.
  * Export of this program may require a license from the United States
  * Government. See CopyrightHistory.txt for complete details.
- * 
+ *
  */
-
 package gov.sandia.cognition.statistics.distribution;
 
-import gov.sandia.cognition.collection.CollectionUtil;
-import gov.sandia.cognition.collection.NumberComparator;
+import gov.sandia.cognition.annotation.PublicationReference;
+import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.learning.algorithm.AbstractBatchAndIncrementalLearner;
+import gov.sandia.cognition.math.MutableDouble;
 import gov.sandia.cognition.statistics.CumulativeDistributionFunction;
-import gov.sandia.cognition.statistics.ProbabilityMassFunction;
-import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
+import gov.sandia.cognition.statistics.DataDistribution;
+import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.UnivariateDistribution;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
- * A data histogram that is based on scalar values (that is, Number).  This
- * class allows for the efficient sampling from both its PMF and CDF, but
- * the general use case is that the data are loaded into the data structure
- * once, and then repeatedly queried.
+ * A Data Distribution that uses Doubles as its keys, making it a univariate
+ * distribution
  * @author Kevin R. Dixon
- * @since 3.0
+ * @since 3.1
  */
 public class ScalarDataDistribution
-    extends MapBasedPointMassDistribution<Number>
-    implements UnivariateDistribution<Number>
+    extends DefaultDataDistribution<Double>
+    implements UnivariateDistribution<Double>
 {
 
-    /**
-     * Creates a new instance of ScalarDataDistribution2
+    /** 
+     * Creates a new instance of ScalarDataDistribution
      */
     public ScalarDataDistribution()
     {
@@ -46,205 +44,175 @@ public class ScalarDataDistribution
     }
 
     /**
-     * Creates a new instance of ScalarDataDistribution
-     * @param values
-     * Values to add to the distribution.
+     * Copy constructor
+     * @param other
+     * ScalarDataDistribution to copy
      */
     public ScalarDataDistribution(
-        Collection<? extends Number> values )
+        ScalarDataDistribution other)
     {
-        super( values );
+        super(other);
     }
 
     /**
-     * Copy constructor
-     * @param other
-     * MapBasedPointMassDistribution to copy
+     * Creates a new instance of ScalarDataDistribution
+     * @param data
+     * Data to create the distribution
      */
     public ScalarDataDistribution(
-        MapBasedPointMassDistribution<Number> other )
+        Iterable<? extends Number> data )
     {
-        super( other );
+        this();
+        // Can't use incrementAll, because that would require "? extends Double"
+        for( Number value : data )
+        {
+            this.increment(value.doubleValue());
+        }
+    }
+
+    /**
+     * Creates a new instance of ScalarDataDistribution
+     * @param map
+     * @param total
+     */
+    protected ScalarDataDistribution(
+        final Map<Double, MutableDouble> map,
+        final double total)
+    {
+        super(map, total);
     }
 
     @Override
     public ScalarDataDistribution clone()
     {
-        ScalarDataDistribution clone = (ScalarDataDistribution) super.clone();
-        return clone;
+        return (ScalarDataDistribution) super.clone();
     }
 
-    public CumulativeDistributionFunction<Number> getCDF()
+    @Override
+    public ScalarDataDistribution.PMF getProbabilityFunction()
     {
-        return new ScalarDataDistribution.CDF( this );
-    }
-
-    /**
-     * Gets the mean (first central moment) of a MapBasedPointMassDistribution
-     * over the set of Numbers.
-     * @param distribution
-     * Distribution to compute the mean of.
-     * @return
-     * Arithmetic mean of the given distribution.
-     */
-    public static double getMean(
-        MapBasedPointMassDistribution<Number> distribution )
-    {
-        double mean = 0.0;
-        for( Number value : distribution.getDomain() )
-        {
-            mean += value.doubleValue() * distribution.getMass(value);
-        }
-
-        double tm = distribution.getTotalMass();
-        if( tm <= 0.0 )
-        {
-            tm = 1.0;
-        }
-
-        mean /= tm;
-        return mean;
+        return new ScalarDataDistribution.PMF(this);
     }
 
     @Override
     public Double getMean()
     {
-        return ScalarDataDistribution.getMean(this);
+        double sum = 0.0;
+        for (Entry<Double> entry : this.entrySet())
+        {
+            final double weight = entry.getValue();
+            final double value = entry.getKey().doubleValue();
+            sum += weight * value;
+        }
+
+        final double totalWeight = this.getTotal();
+        return (totalWeight > 0.0) ? sum / totalWeight : 0.0;
     }
 
-    /**
-     * Gets the variance (second central moment) of a
-     * MapBasedPointMassDistribution over the set of Numbers.
-     * @param distribution
-     * Distribution to compute the variance of.
-     * @return
-     * Unbiased variance of the given distribution.
-     */
-    public static double getVariance(
-        MapBasedPointMassDistribution<Number> distribution )
+    @Override
+    public ScalarDataDistribution.Estimator getEstimator()
+    {
+        return new ScalarDataDistribution.Estimator();
+    }
+
+    @Override
+    public Double getMinSupport()
+    {
+        // Find the minimum key (not the key corresponding to the minimum value)
+        double minkey = Double.POSITIVE_INFINITY;
+        for (double key : this.keySet())
+        {
+            if (minkey > key)
+            {
+                minkey = key;
+            }
+        }
+        return minkey;
+    }
+
+    @Override
+    public Double getMaxSupport()
+    {
+        // Find the max key (not the key corresponding to the max value)
+        double maxkey = Double.NEGATIVE_INFINITY;
+        for (double key : this.keySet())
+        {
+            if (maxkey < key)
+            {
+                maxkey = key;
+            }
+        }
+        return maxkey;
+    }
+
+    @Override
+    public ScalarDataDistribution.CDF getCDF()
+    {
+        return new ScalarDataDistribution.CDF(this);
+    }
+
+    @Override
+    @PublicationReference(
+        title = "Algorithms for calculating variance",
+        type = PublicationType.WebPage,
+        year = 2010,
+        author = "Wikipedia",
+        url = "http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance")
+    public double getVariance()
     {
 
-        final double mean = distribution.getMean().doubleValue();
-        double variance = 0.0;
-        for( Number value : distribution.getDomain() )
+        // Largely copied from:
+        // UnivariateStatisticsUtil.computeWeightedMeanAndVariance();
+        // Note: This is more compilcated than a straight-forward algorithm
+        // that just computes the sum and sum-of-squares to get around
+        // numerical precision issues.
+        double mean = 0.0;
+        double weightSum = 0.0;
+        double m2 = 0.0;
+
+        for (Entry<Double> entry : this.entrySet())
         {
-            double delta = value.doubleValue() - mean;
-            double p = distribution.getMass(value);
-            variance += p * delta*delta;
+            final double x = entry.getKey();
+            double weight = entry.getValue();
+
+            if (weight != 0.0)
+            {
+                if (weight < 0.0)
+                {
+                    // Use the absolute value of weights.
+                    weight = -weight;
+                }
+
+                final double newWeightSum = weightSum + weight;
+                final double delta = x - mean;
+
+                final double update = delta * weight / newWeightSum;
+                m2 += weightSum * delta * update;
+                mean += update;
+                weightSum = newWeightSum;
+            }
         }
 
-        double tm = distribution.getTotalMass();
-        if( tm <= 0.0 )
+        double variance;
+        if (weightSum > 0.0)
         {
-            tm = 1.0;
+            variance = m2 / weightSum;
+        }
+        else
+        {
+            variance = 0.0;
         }
 
-        variance /= tm;
         return variance;
 
     }
 
-    public double getVariance()
-    {
-        return ScalarDataDistribution.getVariance(this);
-    }
-
-    public Double getMinSupport()
-    {
-        return Double.NEGATIVE_INFINITY;
-    }
-
-    public Double getMaxSupport()
-    {
-        return Double.POSITIVE_INFINITY;
-    }
-
-    @Override
-    public Collection<? extends Number> getDomain()
-    {
-        Collection<? extends Number> domain = super.getDomain();
-        ArrayList<? extends Number> sortedDomain =
-            CollectionUtil.asArrayList(domain);
-        Collections.sort(sortedDomain,NumberComparator.INSTANCE);
-        return sortedDomain;
-    }
-
     /**
-     * CDF of the ScalarDataDistribution
-     */
-    public static class CDF
-        extends ScalarDataDistribution
-        implements CumulativeDistributionFunction<Number>
-    {
-
-        /**
-         * Default constructor
-         */
-        public CDF()
-        {
-            super();
-        }
-
-        /**
-         * Creates a new instance of CDF
-         * @param values
-         * Values to add to the distribution.
-         */
-        public CDF(
-            Collection<? extends Number> values )
-        {
-            super( values );
-        }
-
-        /**
-         * Copy constructor
-         * @param other
-         * MapBasedPointMassDistribution to copy
-         */
-        public CDF(
-            MapBasedPointMassDistribution<Number> other )
-        {
-            super( other );
-        }
-
-        @Override
-        public Double evaluate(
-            Number input)
-        {
-
-            double sum = 0.0;
-            for( Number value : this.getDomain() )
-            {
-                if( NumberComparator.INSTANCE.compare(input,value) >= 0 )
-                {
-                    double p = this.getMass(value);
-                    sum += p;
-                }
-            }
-
-            double tm = this.getTotalMass();
-            if( tm <= 0.0 )
-            {
-                tm = 1.0;
-            }
-
-            return sum/tm;
-        }
-
-        @Override
-        public CumulativeDistributionFunction<Number> getCDF()
-        {
-            return this;
-        }
-
-    }
-
-    /**
-     * PMF of the ScalarDataDistribution2
+     * PMF of the ScalarDataDistribution
      */
     public static class PMF
         extends ScalarDataDistribution
-        implements ProbabilityMassFunction<Number>
+        implements DataDistribution.PMF<Double>
     {
 
         /**
@@ -256,47 +224,170 @@ public class ScalarDataDistribution
         }
 
         /**
-         * Creates a new instance of PMF
-         * @param values
-         * Values to add to the distribution.
+         * Copy constructor
+         * @param other
+         * ScalarDataDistribution to copy
          */
         public PMF(
-            Collection<? extends Number> values )
+            final ScalarDataDistribution other)
         {
-            super( values );
+            super(other);
+        }
+
+        /**
+         * Creates a new instance of PMF
+         * @param data
+         * Data used to create the PMF
+         */
+        public PMF(
+            final Iterable<? extends Number> data )
+        {
+            super( data );
+        }
+
+        @Override
+        public double logEvaluate(
+            final Double input)
+        {
+            return this.getLogFraction(input);
+        }
+
+        @Override
+        public Double evaluate(
+            final Double input)
+        {
+            return this.getFraction(input);
+        }
+
+        @Override
+        public ScalarDataDistribution.PMF getProbabilityFunction()
+        {
+            return this;
+        }
+
+    }
+
+    /**
+     * CDF of the ScalarDataDistribution, maintains the keys/domain in
+     * sorted order (TreeMap), so it's slower than it's peers.
+     */
+    public static class CDF
+        extends ScalarDataDistribution
+        implements CumulativeDistributionFunction<Double>
+    {
+
+        /**
+         * Default constructor
+         */
+        public CDF()
+        {
+            super(new TreeMap<Double, MutableDouble>(), 0.0);
         }
 
         /**
          * Copy constructor
          * @param other
-         * MapBasedPointMassDistribution to copy
+         * ScalarDataDistribution to copy
          */
-        public PMF(
-            MapBasedPointMassDistribution<Number> other )
+        public CDF(
+            ScalarDataDistribution other)
         {
-            super( other );
+            this();
+            this.incrementAll(other);
         }
 
-        public double getEntropy()
+        /**
+         * Creates a new instance of PMF
+         * @param data
+         * Data used to create the PMF
+         */
+        public CDF(
+            final Iterable<? extends Number> data )
         {
-            return ProbabilityMassFunctionUtil.getEntropy(this);
-        }
-
-        public Double evaluate(
-            Number input)
-        {
-            double tm = this.getTotalMass();
-            if( tm <= 0.0 )
+            this();
+            for( Number value : data )
             {
-                tm = 1.0;
+                this.increment(value.doubleValue());
             }
-            return this.getMass(input) / tm;
         }
 
-        public double logEvaluate(
-            Number input)
+        @Override
+        public ScalarDataDistribution.CDF clone()
         {
-            return Math.log( this.evaluate(input) );
+            // The copy constructor is more appropriate because
+            // super.clone will attempt to create a new LinkedHashMap
+            // instead of a TreeMap
+            ScalarDataDistribution.CDF clone =
+                new ScalarDataDistribution.CDF( this );
+            return clone;
+        }
+
+        @Override
+        public Double getMinSupport()
+        {
+            return ((TreeMap<Double, MutableDouble>) this.map).firstKey();
+        }
+
+        @Override
+        public Double getMaxSupport()
+        {
+            return ((TreeMap<Double, MutableDouble>) this.map).lastKey();
+        }
+
+        @Override
+        public ScalarDataDistribution.CDF getCDF()
+        {
+            return this;
+        }
+
+        @Override
+        public Double evaluate(
+            Double input)
+        {
+            final double x0 = input;
+            double sum = 0.0;
+            for (Entry<Double> entry : this.entrySet())
+            {
+                final double x = entry.getKey();
+                if (x <= x0)
+                {
+                    sum += entry.getValue();
+                }
+            }
+            final double t = this.getTotal();
+            return (t > 0.0) ? (sum / t) : 0.0;
+        }
+
+    }
+
+    /**
+     * Estimator for a ScalarDataDistribution
+     */
+    public static class Estimator
+        extends AbstractBatchAndIncrementalLearner<Double, ScalarDataDistribution>
+        implements DistributionEstimator<Double, ScalarDataDistribution>
+    {
+
+        /**
+         * Default constructor
+         */
+        public Estimator()
+        {
+            super();
+        }
+
+        @Override
+        public ScalarDataDistribution createInitialLearnedObject()
+        {
+            return new ScalarDataDistribution();
+        }
+
+        @Override
+        public void update(
+            ScalarDataDistribution target,
+            Double data)
+        {
+            target.increment(data, 1.0);
         }
 
     }

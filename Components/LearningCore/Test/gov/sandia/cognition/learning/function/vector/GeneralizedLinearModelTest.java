@@ -1,5 +1,5 @@
 /*
- * File:                SquashedMatrixMultiplyVectorFunctionTest.java
+ * File:                GeneralizedLinearModelTest.java
  * Authors:             Kevin R. Dixon
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
@@ -23,25 +23,25 @@ import java.util.Random;
 import junit.framework.TestCase;
 
 /**
- * Unit tests for SquashedMatrixMultiplyVectorFunctionTest
+ * Unit tests for GeneralizedLinearModelTest
  *
  * @author Kevin R. Dixon
  * @since  1.0
  */
-public class SquashedMatrixMultiplyVectorFunctionTest
+public class GeneralizedLinearModelTest
     extends TestCase
 {
 
     /** The random number generator for the tests. */
     public Random random = new Random(1);
     
-    public SquashedMatrixMultiplyVectorFunctionTest(
+    public GeneralizedLinearModelTest(
         String testName)
     {
         super(testName);
     }
 
-    public DifferentiableSquashedMatrixMultiplyVectorFunction createRandom()
+    public DifferentiableGeneralizedLinearModel createRandom()
     {
         double A = 1.0;
         int M = random.nextInt(10) + 1;
@@ -49,8 +49,8 @@ public class SquashedMatrixMultiplyVectorFunctionTest
 
         Matrix m = MatrixFactory.getDefault().createUniformRandom(M, N, -A, A, random);
 
-        return new DifferentiableSquashedMatrixMultiplyVectorFunction(
-            new MatrixMultiplyVectorFunction(m),
+        return new DifferentiableGeneralizedLinearModel(
+            new MultivariateDiscriminant(m),
             new AtanFunction());
 
     }
@@ -59,8 +59,8 @@ public class SquashedMatrixMultiplyVectorFunctionTest
     {
         System.out.println( "Constructors" );
 
-        SquashedMatrixMultiplyVectorFunction f =
-            new SquashedMatrixMultiplyVectorFunction();
+        GeneralizedLinearModel f =
+            new GeneralizedLinearModel();
         assertEquals( 1, f.getInputDimensionality() );
         assertEquals( 1, f.getOutputDimensionality() );
         assertNotNull( f.getSquashingFunction() );
@@ -68,59 +68,59 @@ public class SquashedMatrixMultiplyVectorFunctionTest
     }
 
     /**
-     * Test of getMatrixMultiply method, of class gov.sandia.isrc.learning.util.function.SquashedMatrixMultiplyVectorFunction.
+     * Test of getDiscriminant method, of class gov.sandia.isrc.learning.util.function.GeneralizedLinearModel.
      */
     public void testGetMatrixMultiply()
     {
         System.out.println("getMatrixMultiply");
 
-        SquashedMatrixMultiplyVectorFunction instance = this.createRandom();
+        GeneralizedLinearModel instance = this.createRandom();
 
-        assertNotNull(instance.getMatrixMultiply());
+        assertNotNull(instance.getDiscriminant());
 
     }
 
     /**
-     * Test of setMatrixMultiply method, of class gov.sandia.isrc.learning.util.function.SquashedMatrixMultiplyVectorFunction.
+     * Test of setDiscriminant method, of class gov.sandia.isrc.learning.util.function.GeneralizedLinearModel.
      */
     public void testSetMatrixMultiply()
     {
         System.out.println("setMatrixMultiply");
 
-        SquashedMatrixMultiplyVectorFunction instance = this.createRandom();
+        GeneralizedLinearModel instance = this.createRandom();
 
-        assertNotNull(instance.getMatrixMultiply());
+        assertNotNull(instance.getDiscriminant());
 
         Matrix m = MatrixFactory.getDefault().createUniformRandom(2, 3, -1, 1, random);
-        MatrixMultiplyVectorFunction mult =
-            new MatrixMultiplyVectorFunction(m);
+        MultivariateDiscriminant mult =
+            new MultivariateDiscriminant(m);
 
-        assertNotSame(mult, instance.getMatrixMultiply());
+        assertNotSame(mult, instance.getDiscriminant());
 
-        instance.setMatrixMultiply(mult);
-        assertSame(mult, instance.getMatrixMultiply());
+        instance.setDiscriminant(mult);
+        assertSame(mult, instance.getDiscriminant());
     }
 
     /**
-     * Test of getSquashingFunction method, of class gov.sandia.isrc.learning.util.function.SquashedMatrixMultiplyVectorFunction.
+     * Test of getSquashingFunction method, of class gov.sandia.isrc.learning.util.function.GeneralizedLinearModel.
      */
     public void testGetSquashingFunction()
     {
         System.out.println("getSquashingFunction");
 
-        SquashedMatrixMultiplyVectorFunction instance = this.createRandom();
+        GeneralizedLinearModel instance = this.createRandom();
         assertNotNull(instance.getSquashingFunction());
 
     }
 
     /**
-     * Test of setSquashingFunction method, of class gov.sandia.isrc.learning.util.function.SquashedMatrixMultiplyVectorFunction.
+     * Test of setSquashingFunction method, of class gov.sandia.isrc.learning.util.function.GeneralizedLinearModel.
      */
     public void testSetSquashingFunction()
     {
         System.out.println("setSquashingFunction");
 
-        SquashedMatrixMultiplyVectorFunction instance = this.createRandom();
+        GeneralizedLinearModel instance = this.createRandom();
 
         LinearVectorFunction f = new LinearVectorFunction(random.nextGaussian());
         assertNotSame(f, instance.getSquashingFunction());
@@ -131,28 +131,28 @@ public class SquashedMatrixMultiplyVectorFunctionTest
     }
 
     /**
-     * Test of convertToVector method, of class gov.sandia.isrc.learning.util.function.SquashedMatrixMultiplyVectorFunction.
+     * Test of convertToVector method, of class gov.sandia.isrc.learning.util.function.GeneralizedLinearModel.
      */
     public void testConvertToVector()
     {
         System.out.println("convertToVector");
 
-        SquashedMatrixMultiplyVectorFunction instance = this.createRandom();
+        GeneralizedLinearModel instance = this.createRandom();
 
         Vector result = instance.convertToVector();
-        Vector expected = instance.getMatrixMultiply().convertToVector();
+        Vector expected = instance.getDiscriminant().convertToVector();
         assertEquals(expected, result);
 
     }
 
     /**
-     * Test of convertFromVector method, of class gov.sandia.isrc.learning.util.function.SquashedMatrixMultiplyVectorFunction.
+     * Test of convertFromVector method, of class gov.sandia.isrc.learning.util.function.GeneralizedLinearModel.
      */
     public void testConvertFromVector()
     {
         System.out.println("convertFromVector");
 
-        SquashedMatrixMultiplyVectorFunction instance = this.createRandom();
+        GeneralizedLinearModel instance = this.createRandom();
 
         Vector p1 = instance.convertToVector();
 
@@ -165,23 +165,23 @@ public class SquashedMatrixMultiplyVectorFunctionTest
     }
 
     /**
-     * Test of evaluate method, of class gov.sandia.isrc.learning.util.function.SquashedMatrixMultiplyVectorFunction.
+     * Test of evaluate method, of class gov.sandia.isrc.learning.util.function.GeneralizedLinearModel.
      */
     public void testEvaluate()
     {
         System.out.println("evaluate");
 
-        SquashedMatrixMultiplyVectorFunction instance = this.createRandom();
+        GeneralizedLinearModel instance = this.createRandom();
 
-        int M = instance.getMatrixMultiply().getInternalMatrix().getNumRows();
-        int N = instance.getMatrixMultiply().getInternalMatrix().getNumColumns();
+        int M = instance.getDiscriminant().getDiscriminant().getNumRows();
+        int N = instance.getDiscriminant().getDiscriminant().getNumColumns();
 
         Vector input = VectorFactory.getDefault().createUniformRandom(N, -10.0, 10.0, random);
 
         Vector result = instance.evaluate(input);
         assertEquals(M, result.getDimensionality());
 
-        Vector expected = instance.getSquashingFunction().evaluate(instance.getMatrixMultiply().getInternalMatrix().times(input));
+        Vector expected = instance.getSquashingFunction().evaluate(instance.getDiscriminant().getDiscriminant().times(input));
         assertEquals(expected.getDimensionality(), result.getDimensionality());
 
         assertEquals(expected, result);
@@ -189,25 +189,25 @@ public class SquashedMatrixMultiplyVectorFunctionTest
     }
 
     /**
-     * Test of clone method, of class gov.sandia.isrc.learning.util.function.SquashedMatrixMultiplyVectorFunction.
+     * Test of clone method, of class gov.sandia.isrc.learning.util.function.GeneralizedLinearModel.
      */
     public void testClone()
     {
         System.out.println("clone");
 
-        SquashedMatrixMultiplyVectorFunction instance = this.createRandom();
+        GeneralizedLinearModel instance = this.createRandom();
 
-        SquashedMatrixMultiplyVectorFunction clone = instance.clone();
+        GeneralizedLinearModel clone = instance.clone();
 
-        assertEquals(instance.getMatrixMultiply().getInternalMatrix(), instance.getMatrixMultiply().getInternalMatrix());
+        assertEquals(instance.getDiscriminant().getDiscriminant(), instance.getDiscriminant().getDiscriminant());
 
-        int N = instance.getMatrixMultiply().getInternalMatrix().getNumColumns();
+        int N = instance.getDiscriminant().getDiscriminant().getNumColumns();
         Vector input = VectorFactory.getDefault().createUniformRandom(N, -1.0, 1.0, random);
 
         Vector v1 = instance.evaluate(input);
         assertEquals(v1, clone.evaluate(input));
 
-        clone.getMatrixMultiply().getInternalMatrix().setElement(0, 0, random.nextGaussian());
+        clone.getDiscriminant().getDiscriminant().setElement(0, 0, random.nextGaussian());
         assertEquals(v1, instance.evaluate(input));
 
         assertFalse(v1.equals(clone.evaluate(input)));
@@ -217,9 +217,9 @@ public class SquashedMatrixMultiplyVectorFunctionTest
     public void testDimensionality()
     {
 
-        SquashedMatrixMultiplyVectorFunction instance = this.createRandom();
-        assertEquals( instance.getMatrixMultiply().getInputDimensionality(), instance.getInputDimensionality() );
-        assertEquals( instance.getMatrixMultiply().getOutputDimensionality(), instance.getOutputDimensionality() );
+        GeneralizedLinearModel instance = this.createRandom();
+        assertEquals( instance.getDiscriminant().getInputDimensionality(), instance.getInputDimensionality() );
+        assertEquals( instance.getDiscriminant().getOutputDimensionality(), instance.getOutputDimensionality() );
 
         double r = 2.0;
         Vector x = VectorFactory.getDefault().createUniformRandom(

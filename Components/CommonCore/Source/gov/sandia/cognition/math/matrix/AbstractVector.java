@@ -16,7 +16,6 @@ package gov.sandia.cognition.math.matrix;
 
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.CodeReviews;
-import gov.sandia.cognition.math.AbstractRing;
 import java.text.NumberFormat;
 
 /**
@@ -48,96 +47,15 @@ import java.text.NumberFormat;
     }
 )
 public abstract class AbstractVector
-    extends AbstractRing<Vector>
+    extends AbstractVectorSpace<Vector,VectorEntry>
     implements Vector
 {
     /** The default delimiter for a vector. */
     public static final String DEFAULT_DELIMITER = " ";
 
-    public double sum()
-    {
-        double sum = 0.0;
-        for (VectorEntry entry : this)
-        {
-            sum += entry.getValue();
-        }
-        return sum;
-    }
-    
-    public double norm1()
-    {
-        double sum = 0.0;
-        for (VectorEntry e : this)
-        {
-            sum += Math.abs( e.getValue() );
-        }
-
-        return sum;
-    }
-
-    public double norm2()
-    {
-        return Math.sqrt( this.norm2Squared() );
-    }
-
-    public double normInfinity()
-    {
-        double max = 0.0;
-        for( VectorEntry e : this )
-        {
-            double v = Math.abs(e.getValue());
-            if( max < v )
-            {
-                max = v;
-            }
-        }
-        return max;
-    }
-
-    public double euclideanDistanceSquared(
-        final Vector other )
-    {
-        return this.minus( other ).norm2Squared();
-    }
-
-    public double euclideanDistance(
-        final Vector other )
-    {
-        return Math.sqrt( this.euclideanDistanceSquared( other ) );
-    }
-
-    public double angle(
-        final Vector other)
-    {
-        return Math.acos(this.cosine(other));
-    }
-
-    public double cosine(
-        final Vector other )
-    {
-
-        /*
-         * Computing cosine as:
-         *      cosine = (x' * y) / (||x|| * ||y||)
-         */
-        double dotproduct = this.dotProduct( other );
-
-        if (dotproduct == 0.0)
-        {
-            return 0.0;
-        }
-        else
-        {
-            double norm1 = this.norm2Squared();
-            double norm2 = other.norm2Squared();
-            return dotproduct / Math.sqrt( norm1 * norm2 );
-        }
-
-    }
-
     @Override
     public boolean equals(
-        Object other )
+        final Object other )
     {
         if (other == null)
         {
@@ -157,25 +75,19 @@ public abstract class AbstractVector
         }
     }
 
+    @Override
     public boolean equals(
         final Vector other,
-        double effectiveZero)
+        final double effectiveZero)
     {
-        VectorUnionIterator iterator = new VectorUnionIterator(this, other);
-
-        while ( iterator.hasNext() )
+        if( !this.checkSameDimensionality(other) )
         {
-            TwoVectorEntry entry = iterator.next();
-
-            double difference = entry.getFirstValue() - entry.getSecondValue();
-
-            if ( Math.abs( difference ) > effectiveZero )
-            {
-                return false;
-            }
+            return false;
         }
-
-        return true;
+        else
+        {
+            return super.equals( other, effectiveZero );
+        }
     }
 
     @Override
@@ -203,18 +115,21 @@ public abstract class AbstractVector
         return result;
     }
     
+    @Override
     public boolean checkSameDimensionality(
-        Vector other )
+        final Vector other )
     {
         return (this.getDimensionality() == other.getDimensionality());
     }
 
+    @Override
     public void assertSameDimensionality(
-        Vector other)
+        final Vector other)
     {
         assertEqualDimensionality(this, other);
     }
     
+    @Override
     public void assertDimensionalityEquals(
         final int otherDimensionality)
     {
@@ -236,29 +151,10 @@ public abstract class AbstractVector
      *          second vector to consider
      */
     public static void assertEqualDimensionality(
-        Vector first,
-        Vector second )
+        final Vector first,
+        final Vector second )
     {
         first.assertDimensionalityEquals( second.getDimensionality() );
-    }
-
-    public Vector unitVector()
-    {
-        final Vector result = this.clone();
-        result.unitVectorEquals();
-        return result;
-    }
-
-    public void unitVectorEquals()
-    {
-        final double norm2 = this.norm2();
-
-        if (norm2 != 0.0)
-        {
-            this.scaleEquals( 1.0 / norm2 );
-        }
-        // else - The only way the norm2 can be zero is if the vector is all
-        //        zeros. In this case the vector is to remain all zeros.
     }
 
     /**
@@ -283,12 +179,14 @@ public abstract class AbstractVector
 
         return builder.toString();    }
     
+    @Override
     public String toString(
         final NumberFormat format)
     {
         return this.toString(format, DEFAULT_DELIMITER);
     }
     
+    @Override
     public String toString(
         final NumberFormat format,
         final String delimiter)
@@ -313,6 +211,7 @@ public abstract class AbstractVector
      *
      * @return This.
      */
+    @Override
     public Vector convertToVector()
     {
         return this;
@@ -323,8 +222,9 @@ public abstract class AbstractVector
      *
      * @param parameters The vector to convert.
      */
+    @Override
     public void convertFromVector(
-        Vector parameters )
+        final Vector parameters )
     {
         this.assertSameDimensionality( parameters );
 
@@ -334,28 +234,4 @@ public abstract class AbstractVector
         }
     }
 
-    public boolean isZero(
-        final double effectiveZero)
-    {
-        for (VectorEntry e : this)
-        {
-            if (Math.abs(e.getValue()) > effectiveZero)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public boolean isUnitVector()
-    {
-        return this.isUnitVector(0.0);
-    }
-
-    public boolean isUnitVector(
-        final double tolerance)
-    {
-        return Math.abs(this.norm2() - 1.0) <= tolerance;
-    }
 }

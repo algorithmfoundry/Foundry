@@ -26,6 +26,7 @@ import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.statistics.AbstractSufficientStatistic;
 import gov.sandia.cognition.statistics.distribution.InverseGammaDistribution;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
@@ -48,8 +49,6 @@ import java.util.Collection;
  * data is a Student-t distribution, resulting from the assumption that
  * the variance of the outputs is unknown.  Consequently, the algorithm is
  * more robust against outliers than fix-variance regression.
- * @param <InputType>
- * Type of inputs to map through the feature map onto a Vector.
  * @author Kevin R. Dixon
  * @since 3.0
  */
@@ -72,8 +71,9 @@ import java.util.Collection;
         )
     }
 )
-public class BayesianRobustLinearRegression<InputType>
-    extends AbstractBayesianRegression<InputType,Double,MultivariateGaussianInverseGammaDistribution>
+public class BayesianRobustLinearRegression
+    extends AbstractCloneableSerializable
+    implements BayesianRegression<Double,MultivariateGaussianInverseGammaDistribution>
 {
 
     /**
@@ -101,15 +101,13 @@ public class BayesianRobustLinearRegression<InputType>
     public BayesianRobustLinearRegression(
         int dimensionality )
     {
-        this( null, new InverseGammaDistribution(),
+        this( new InverseGammaDistribution(),
             new MultivariateGaussian( VectorFactory.getDefault().createVector(dimensionality),
                 MatrixFactory.getDefault().createIdentity(dimensionality,dimensionality).scale( DEFAULT_WEIGHT_VARIANCE ) ) );
     }
 
     /**
      * Creates a new instance of BayesianRobustLinearRegression
-     * @param featureMap
-     * Function that maps the input space onto a Vector.
      * @param outputVariance
      * Distribution of the output (measurement) variance
      * @param weightPrior
@@ -117,21 +115,19 @@ public class BayesianRobustLinearRegression<InputType>
      * diagonal-variance distribution.
      */
     public BayesianRobustLinearRegression(
-        Evaluator<? super InputType, Vector> featureMap,
         InverseGammaDistribution outputVariance,
         MultivariateGaussian weightPrior )
     {
-        super( featureMap );
         this.setWeightPrior(weightPrior);
         this.setOutputVariance(outputVariance);
     }
 
     @Override
-    public BayesianRobustLinearRegression<InputType> clone()
+    public BayesianRobustLinearRegression clone()
     {
         @SuppressWarnings("unchecked")
-        BayesianRobustLinearRegression<InputType> clone =
-            (BayesianRobustLinearRegression<InputType>) super.clone();
+        BayesianRobustLinearRegression clone =
+            (BayesianRobustLinearRegression) super.clone();
         clone.setWeightPrior( ObjectUtil.cloneSafe( this.getWeightPrior() ) );
         clone.setOutputVariance( ObjectUtil.cloneSafe( this.getOutputVariance() ) );
         return clone;
@@ -162,7 +158,7 @@ public class BayesianRobustLinearRegression<InputType>
 
     @Override
     public MultivariateGaussianInverseGammaDistribution learn(
-        Collection<? extends InputOutputPair<? extends InputType, Double>> data)
+        Collection<? extends InputOutputPair<? extends Vectorizable, Double>> data)
     {
         MultivariateGaussian g = this.weightPrior;
         RingAccumulator<Matrix> Cin = new RingAccumulator<Matrix>();
@@ -176,9 +172,9 @@ public class BayesianRobustLinearRegression<InputType>
         double an = ig.getShape();
         double bn = ig.getScale();
         double sy2 = 0.0;
-        for (InputOutputPair<? extends InputType, Double> pair : data)
+        for (InputOutputPair<? extends Vectorizable, Double> pair : data)
         {
-            Vector x1 = this.featureMap.evaluate(pair.getInput());
+            Vector x1 = pair.getInput().convertToVector();
             Vector x2 = x1.clone();
             final double beta = DatasetUtil.getWeight(pair);
             if( beta != 1.0 )
@@ -243,16 +239,16 @@ public class BayesianRobustLinearRegression<InputType>
      */
     @Override
     public UnivariateGaussian createConditionalDistribution(
-        InputType input,
+        Vectorizable input,
         Vector weights )
     {
-        double mean = this.featureMap.evaluate(input).dotProduct(weights);
+        double mean = input.convertToVector().dotProduct(weights);
         double variance = this.getOutputVariance().getMean();
         return new UnivariateGaussian( mean, variance );
     }
 
     @Override
-    public BayesianRobustLinearRegression<InputType>.PredictiveDistribution createPredictiveDistribution(
+    public BayesianRobustLinearRegression.PredictiveDistribution createPredictiveDistribution(
         MultivariateGaussianInverseGammaDistribution posterior)
     {
         return new PredictiveDistribution(posterior);
@@ -264,7 +260,7 @@ public class BayesianRobustLinearRegression<InputType>
      */
     public class PredictiveDistribution
         extends AbstractCloneableSerializable
-        implements Evaluator<InputType,StudentTDistribution>
+        implements Evaluator<Vectorizable,StudentTDistribution>
     {
 
         /**
@@ -285,9 +281,9 @@ public class BayesianRobustLinearRegression<InputType>
 
         @Override
         public StudentTDistribution evaluate(
-            InputType input)
+            Vectorizable input)
         {
-            Vector x = featureMap.evaluate(input);
+            Vector x = input.convertToVector();
             double mean = x.dotProduct( this.posterior.getMean() );
             double dofs = this.posterior.getInverseGamma().getShape() * 2.0;
             double v = x.times( this.posterior.getGaussian().getCovariance() ).dotProduct(x);
@@ -300,11 +296,10 @@ public class BayesianRobustLinearRegression<InputType>
 
     /**
      * Incremental estimator for BayesianRobustLinearRegression
-     * @param <InputType>
      */
-    public static class IncrementalEstimator<InputType>
-        extends BayesianRobustLinearRegression<InputType>
-        implements IncrementalLearner<InputOutputPair<? extends InputType,Double>, IncrementalEstimator<InputType>.SufficientStatistic>
+    public static class IncrementalEstimator
+        extends BayesianRobustLinearRegression
+        implements IncrementalLearner<InputOutputPair<? extends Vectorizable,Double>, IncrementalEstimator.SufficientStatistic>
     {
 
         /**
@@ -320,28 +315,7 @@ public class BayesianRobustLinearRegression<InputType>
         }
 
         /**
-         * Creates a new instance of IncrementalEstimator with the given
-         * dimensionality and feature map.
-         *
-         * @param dimensionality
-         * Sets up the parameters (except featureMap) for the given dimensionality
-         * of objects in feature space.
-         * @param featureMap
-         * Function that maps the input space onto a Vector.
-         */
-        public IncrementalEstimator(
-            int dimensionality,
-            Evaluator<? super InputType, Vector> featureMap)
-        {
-            this(dimensionality);
-
-            this.setFeatureMap(featureMap);
-        }
-
-        /**
          * Creates a new instance of IncrementalEstimator
-         * @param featureMap
-         * Function that maps the input space onto a Vector.
          * @param outputVariance
          * Distribution of the output (measurement) variance
          * @param weightPrior
@@ -349,15 +323,14 @@ public class BayesianRobustLinearRegression<InputType>
          * diagonal-variance distribution.
          */
         public IncrementalEstimator(
-            Evaluator<? super InputType, Vector> featureMap,
             InverseGammaDistribution outputVariance,
             MultivariateGaussian weightPrior )
         {
-            super( featureMap, outputVariance, weightPrior);
+            super( outputVariance, weightPrior);
         }
 
         @Override
-        public IncrementalEstimator<InputType>.SufficientStatistic createInitialLearnedObject()
+        public IncrementalEstimator.SufficientStatistic createInitialLearnedObject()
         {
             return new SufficientStatistic(
                 new MultivariateGaussianInverseGammaDistribution(
@@ -366,17 +339,18 @@ public class BayesianRobustLinearRegression<InputType>
 
         @Override
         public MultivariateGaussianInverseGammaDistribution learn(
-            Collection<? extends InputOutputPair<? extends InputType, Double>> data)
+            Collection<? extends InputOutputPair<? extends Vectorizable, Double>> data)
         {
-            IncrementalEstimator<InputType>.SufficientStatistic target = this.createInitialLearnedObject();
+            IncrementalEstimator.SufficientStatistic target =
+                this.createInitialLearnedObject();
             this.update(target, data);
             return target.create();
         }
 
         @Override
         public void update(
-            IncrementalEstimator<InputType>.SufficientStatistic target,
-            InputOutputPair<? extends InputType, Double> data)
+            IncrementalEstimator.SufficientStatistic target,
+            InputOutputPair<? extends Vectorizable, Double> data)
         {
             target.update(data);
         }
@@ -384,7 +358,7 @@ public class BayesianRobustLinearRegression<InputType>
         @Override
         public void update(
             SufficientStatistic target,
-            Iterable<? extends InputOutputPair<? extends InputType, Double>> data)
+            Iterable<? extends InputOutputPair<? extends Vectorizable, Double>> data)
         {
             target.update(data);
         }
@@ -393,7 +367,7 @@ public class BayesianRobustLinearRegression<InputType>
          * SufficientStatistic for incremental Bayesian linear regression
          */
         public class SufficientStatistic
-            extends AbstractSufficientStatistic<InputOutputPair<? extends InputType, Double>, MultivariateGaussianInverseGammaDistribution>
+            extends AbstractSufficientStatistic<InputOutputPair<? extends Vectorizable, Double>, MultivariateGaussianInverseGammaDistribution>
         {
 
             /**
@@ -444,10 +418,10 @@ public class BayesianRobustLinearRegression<InputType>
 
             @Override
             public void update(
-                InputOutputPair<? extends InputType, Double> value)
+                InputOutputPair<? extends Vectorizable, Double> value)
             {
                 this.count++;
-                Vector v = featureMap.evaluate(value.getInput());
+                Vector v = value.getInput().convertToVector();
 
                 Vector x1 = v;
                 Vector x2 = v.clone();

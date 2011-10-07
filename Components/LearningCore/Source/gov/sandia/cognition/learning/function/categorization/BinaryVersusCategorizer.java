@@ -23,7 +23,7 @@ import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.DefaultWeightedValueDiscriminant;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.DefaultPair;
 import gov.sandia.cognition.util.ObjectUtil;
 import gov.sandia.cognition.util.Pair;
@@ -114,6 +114,7 @@ public class BinaryVersusCategorizer<InputType, CategoryType>
         return result;
     }
 
+    @Override
     public DefaultWeightedValueDiscriminant<CategoryType> evaluateWithDiscriminant(
         final InputType input)
     {
@@ -132,8 +133,8 @@ public class BinaryVersusCategorizer<InputType, CategoryType>
         }
 
         // We are going to count the number of votes for each category.
-        final MapBasedDataHistogram<CategoryType> results =
-            new MapBasedDataHistogram<CategoryType>(categoryCount);
+        final DefaultDataDistribution<CategoryType> results =
+            new DefaultDataDistribution<CategoryType>(categoryCount);
 
         // Go through all the pairs of evaluators.
         for (Map.Entry<Pair<CategoryType, CategoryType>, Evaluator<? super InputType, Boolean>> entry
@@ -150,17 +151,17 @@ public class BinaryVersusCategorizer<InputType, CategoryType>
             else if (!category)
             {
                 // This belongs to the false (first) category.
-                results.add(entry.getKey().getFirst());
+                results.increment(entry.getKey().getFirst());
             }
             else
             {
                 // This belongs to the true (second) category.
-                results.add(entry.getKey().getSecond());
+                results.increment(entry.getKey().getSecond());
             }
         }
 
         // The one with the most votes is the category we use.
-        final CategoryType bestCategory = results.getMaximumValue();
+        final CategoryType bestCategory = results.getMaxValueKey();
         final double bestFraction = results.getFraction(bestCategory);
         return DefaultWeightedValueDiscriminant.create(
             bestCategory, bestFraction);
@@ -228,6 +229,7 @@ public class BinaryVersusCategorizer<InputType, CategoryType>
             super(learner);
         }
                 
+        @Override
         public BinaryVersusCategorizer<InputType, CategoryType> learn(
             final Collection<? extends InputOutputPair<? extends InputType, CategoryType>> data)
         {

@@ -13,9 +13,10 @@
  */
 package gov.sandia.cognition.statistics.distribution;
 
+import gov.sandia.cognition.collection.CollectionUtil;
+import gov.sandia.cognition.collection.IntegerSpan;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistributionTestHarness;
-import java.util.List;
 
 /**
  * JUnit tests for class BernoulliDistributionTest
@@ -63,14 +64,15 @@ public class BernoulliDistributionTest
     /**
      * Test of getDomain method, of class BernoulliDistribution.
      */
+    @Override
     public void testKnownGetDomain()
     {
         System.out.println( "getDomain" );
         BernoulliDistribution instance = this.createInstance();
-        List<Integer> result = instance.getDomain();
+        IntegerSpan result = instance.getDomain();
         assertEquals( 2, result.size() );
-        assertEquals( 0, result.get(0).intValue() );
-        assertEquals( 1, result.get(1).intValue() );
+        assertEquals( 0, CollectionUtil.getElement(result,0).intValue() );
+        assertEquals( 1, CollectionUtil.getElement(result,1).intValue() );
     }
 
     /**

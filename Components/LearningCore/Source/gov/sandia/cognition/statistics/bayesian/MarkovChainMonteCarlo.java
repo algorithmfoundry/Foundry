@@ -18,7 +18,7 @@ import gov.sandia.cognition.algorithm.AnytimeAlgorithm;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationReferences;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.statistics.DataHistogram;
+import gov.sandia.cognition.statistics.DataDistribution;
 import gov.sandia.cognition.util.Randomized;
 
 /**
@@ -70,8 +70,8 @@ import gov.sandia.cognition.util.Randomized;
 
 )
 public interface MarkovChainMonteCarlo<ObservationType,ParameterType>
-    extends BayesianEstimator<ObservationType,ParameterType,DataHistogram<ParameterType>>,
-    AnytimeAlgorithm<DataHistogram<ParameterType>>,
+    extends BayesianEstimator<ObservationType,ParameterType,DataDistribution<ParameterType>>,
+    AnytimeAlgorithm<DataDistribution<ParameterType>>,
     Randomized
 {
 

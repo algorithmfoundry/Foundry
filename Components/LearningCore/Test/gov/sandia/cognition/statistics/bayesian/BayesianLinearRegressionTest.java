@@ -39,25 +39,22 @@ public class BayesianLinearRegressionTest
     /**
      * Tests the constructors of class BayesianLinearRegressionTest.
      */
+    @Override
     public void testConstructors()
     {
         System.out.println( "Constructors" );
 
         final int dim = 2;
-        BayesianLinearRegression<Double> instance =
-            new BayesianLinearRegression<Double>( dim );
-        assertNull( instance.getFeatureMap() );
+        BayesianLinearRegression instance = new BayesianLinearRegression( dim );
         assertEquals( dim, instance.getWeightPrior().getMean().getDimensionality() );
         assertEquals( BayesianLinearRegression.DEFAULT_OUTPUT_VARIANCE, instance.getOutputVariance() );
     }
 
     @Override
-    public BayesianLinearRegression<Double> createInstance()
+    public BayesianLinearRegression createInstance()
     {
-        BayesianLinearRegression<Double> instance =
-            new BayesianLinearRegression<Double>( 10 );
+        BayesianLinearRegression instance = new BayesianLinearRegression( DEFAULT_DIM+1 );
         instance.setOutputVariance(0.1);
-        instance.setFeatureMap( new RadialBasisVectorFunction(9) );
         return instance;
     }
 
@@ -67,7 +64,7 @@ public class BayesianLinearRegressionTest
     public void testGetWeightPrior()
     {
         System.out.println("getWeightPrior");
-        BayesianLinearRegression<Double> instance = this.createInstance();
+        BayesianLinearRegression instance = this.createInstance();
         assertNotNull( instance.getWeightPrior() );
     }
 
@@ -77,7 +74,7 @@ public class BayesianLinearRegressionTest
     public void testSetWeightPrior()
     {
         System.out.println("setWeightPrior");
-        BayesianLinearRegression<Double> instance = this.createInstance();
+        BayesianLinearRegression instance = this.createInstance();
         MultivariateGaussian prior = instance.getWeightPrior();
         instance.setWeightPrior(null);
         assertNull( instance.getWeightPrior() );
@@ -91,7 +88,7 @@ public class BayesianLinearRegressionTest
     public void testGetOutputVariance()
     {
         System.out.println("getOutputVariance");
-        BayesianLinearRegression<Double> instance = this.createInstance();
+        BayesianLinearRegression instance = this.createInstance();
         assertTrue( instance.getOutputVariance() > 0.0 );
     }
 
@@ -101,7 +98,7 @@ public class BayesianLinearRegressionTest
     public void testSetOutputVariance()
     {
         System.out.println("setOutputVariance");
-        BayesianLinearRegression<Double> instance = this.createInstance();
+        BayesianLinearRegression instance = this.createInstance();
         double variance = RANDOM.nextDouble() * 10.0;
         instance.setOutputVariance(variance);
         assertEquals( variance, instance.getOutputVariance() );
@@ -123,11 +120,11 @@ public class BayesianLinearRegressionTest
     public void testIncrementalAndBatch()
     {
         
-        BayesianLinearRegression<Double> instance = this.createInstance();
+        BayesianLinearRegression instance = this.createInstance();
 
-        BayesianLinearRegression.IncrementalEstimator<Double> incremental =
-            new BayesianLinearRegression.IncrementalEstimator<Double>(
-                instance.getFeatureMap(), instance.getOutputVariance(), instance.getWeightPrior() );
+        BayesianLinearRegression.IncrementalEstimator incremental =
+            new BayesianLinearRegression.IncrementalEstimator(
+                instance.getOutputVariance(), instance.getWeightPrior() );
 
         super.testIncrementalAndBatch(incremental);
     }

@@ -89,6 +89,7 @@ public abstract class AbstractMatrix
         }
     }
 
+    @Override
     public boolean equals(
         Matrix other,
         double effectiveZero)
@@ -141,11 +142,13 @@ public abstract class AbstractMatrix
         return result;
     }
 
+    @Override
     public boolean isSymmetric()
     {
         return this.isSymmetric( 0.0 );
     }
 
+    @Override
     public boolean checkSameDimensions(
         Matrix otherMatrix )
     {
@@ -153,6 +156,7 @@ public abstract class AbstractMatrix
             (this.getNumColumns() == otherMatrix.getNumColumns());
     }
 
+    @Override
     public void assertSameDimensions(
         Matrix other )
     {
@@ -165,12 +169,14 @@ public abstract class AbstractMatrix
         }
     }
 
+    @Override
     public boolean checkMultiplicationDimensions(
         Matrix postMultiplicationMatrix )
     {
         return this.getNumColumns() == postMultiplicationMatrix.getNumRows();
     }
 
+    @Override
     public double trace()
     {
 
@@ -194,6 +200,7 @@ public abstract class AbstractMatrix
         return diagonal_sum;
     }
 
+    @Override
     public void setSubMatrix(
         final int minRow,
         final int minColumn,
@@ -207,25 +214,25 @@ public abstract class AbstractMatrix
             final int setRow = minRow+i;
             for (int j = 0; j < N; j++)
             {
-                double v = submatrix.getElement( i, j );
-                if( v != 0.0 )
-                {
-                   this.setElement( setRow, minColumn + j, v );
-                }
+                final double v = submatrix.getElement( i, j );
+                this.setElement( setRow, minColumn + j, v );
             }
         }
     }
 
+    @Override
     public int rank()
     {
         return this.rank( 0.0 );
     }
 
+    @Override
     public Matrix pseudoInverse()
     {
         return this.pseudoInverse( 0.0 );
     }
 
+    @Override
     public void setColumn(
         int columnIndex,
         Vector columnVector )
@@ -244,6 +251,7 @@ public abstract class AbstractMatrix
         }
     }
 
+    @Override
     public void setRow(
         int rowIndex,
         Vector rowVector )
@@ -316,6 +324,7 @@ public abstract class AbstractMatrix
         }
     }
 
+    @Override
     public Vector sumOfRows()
     {
         final RingAccumulator<Vector> accumulator = new RingAccumulator<Vector>();
@@ -329,6 +338,7 @@ public abstract class AbstractMatrix
         return accumulator.getSum();
     }
 
+    @Override
     public Vector sumOfColumns()
     {
         final RingAccumulator<Vector> accumulator = new RingAccumulator<Vector>();
@@ -342,6 +352,7 @@ public abstract class AbstractMatrix
     }
 
 
+    @Override
     public boolean isZero(
         final double effectiveZero)
     {

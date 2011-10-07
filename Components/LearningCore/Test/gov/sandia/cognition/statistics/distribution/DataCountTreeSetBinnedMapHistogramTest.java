@@ -54,108 +54,94 @@ public class DataCountTreeSetBinnedMapHistogramTest
 
         DataCountTreeSetBinnedMapHistogram<String> instance =
             new DataCountTreeSetBinnedMapHistogram<String>("q", "c", "b", "j");
-        assertEquals(0, instance.getTotalCount());
-        assertEquals(0, instance.getCount("b"));
-        assertEquals(0, instance.getCount("c"));
-        assertEquals(0, instance.getCount("j"));
+        assertEquals(0.0, instance.getTotal());
+        assertEquals(0.0, instance.get("b"));
+        assertEquals(0.0, instance.get("c"));
+        assertEquals(0.0, instance.get("j"));
         assertEquals(0, instance.getDomain().size());
         assertFalse(instance.getDomain().contains("b"));
 
-        instance.add("a");
-        assertEquals(0, instance.getTotalCount());
-        assertEquals(0, instance.getCount("b"));
-        assertEquals(0, instance.getCount("c"));
-        assertEquals(0, instance.getCount("j"));
+        instance.increment("a");
+        assertEquals(0.0, instance.getTotal());
+        assertEquals(0.0, instance.get("b"));
+        assertEquals(0.0, instance.get("c"));
+        assertEquals(0.0, instance.get("j"));
         assertEquals(0, instance.getDomain().size());
         assertFalse(instance.getDomain().contains("b"));
 
-        instance.add("b");
-        assertEquals(1, instance.getTotalCount());
-        assertEquals(1, instance.getCount("b"));
-        assertEquals(0, instance.getCount("c"));
-        assertEquals(0, instance.getCount("j"));
+        instance.increment("b");
+        assertEquals(1.0, instance.getTotal());
+        assertEquals(1.0, instance.get("b"));
+        assertEquals(0.0, instance.get("c"));
+        assertEquals(0.0, instance.get("j"));
         assertEquals(1, instance.getDomain().size());
         assertTrue(instance.getDomain().contains("b"));
 
-        instance.add("b");
-        assertEquals(2, instance.getTotalCount());
-        assertEquals(2, instance.getCount("b"));
-        assertEquals(0, instance.getCount("c"));
-        assertEquals(0, instance.getCount("j"));
+        instance.increment("b");
+        assertEquals(2.0, instance.getTotal());
+        assertEquals(2.0, instance.get("b"));
+        assertEquals(0.0, instance.get("c"));
+        assertEquals(0.0, instance.get("j"));
         assertEquals(1, instance.getDomain().size());
         assertTrue(instance.getDomain().contains("b"));
 
-        instance.add("c");
-        assertEquals(3, instance.getTotalCount());
-        assertEquals(2, instance.getCount("b"));
-        assertEquals(1, instance.getCount("c"));
-        assertEquals(0, instance.getCount("j"));
+        instance.increment("c");
+        assertEquals(3.0, instance.getTotal());
+        assertEquals(2.0, instance.get("b"));
+        assertEquals(1.0, instance.get("c"));
+        assertEquals(0.0, instance.get("j"));
         assertEquals(2, instance.getDomain().size());
         assertTrue(instance.getDomain().contains("b"));
         assertTrue(instance.getDomain().contains("c"));
 
-        instance.add("b");
-        assertEquals(4, instance.getTotalCount());
-        assertEquals(3, instance.getCount("b"));
-        assertEquals(1, instance.getCount("c"));
-        assertEquals(0, instance.getCount("j"));
+        instance.increment("b");
+        assertEquals(4.0, instance.getTotal());
+        assertEquals(3.0, instance.get("b"));
+        assertEquals(1.0, instance.get("c"));
+        assertEquals(0.0, instance.get("j"));
         assertEquals(2, instance.getDomain().size());
         assertTrue(instance.getDomain().contains("b"));
         assertTrue(instance.getDomain().contains("c"));
 
-        instance.add("d", 7);
-        assertEquals(11, instance.getTotalCount());
-        assertEquals(3, instance.getCount("b"));
-        assertEquals(8, instance.getCount("c"));
-        assertEquals(0, instance.getCount("j"));
+        instance.increment("d", 7);
+        assertEquals(11.0, instance.getTotal());
+        assertEquals(3.0, instance.get("b"));
+        assertEquals(8.0, instance.get("c"));
+        assertEquals(0.0, instance.get("j"));
         assertEquals(2, instance.getDomain().size());
         assertTrue(instance.getDomain().contains("b"));
         assertTrue(instance.getDomain().contains("c"));
 
-        instance.add("m", 3);
-        assertEquals(14, instance.getTotalCount());
-        assertEquals(3, instance.getCount("b"));
-        assertEquals(8, instance.getCount("c"));
-        assertEquals(3, instance.getCount("j"));
+        instance.increment("m", 3);
+        assertEquals(14.0, instance.getTotal());
+        assertEquals(3.0, instance.get("b"));
+        assertEquals(8.0, instance.get("c"));
+        assertEquals(3.0, instance.get("j"));
         assertEquals(3, instance.getDomain().size());
         assertTrue(instance.getDomain().contains("b"));
         assertTrue(instance.getDomain().contains("c"));
         assertTrue(instance.getDomain().contains("j"));
 
-        instance.add("j", 14);
-        assertEquals(28, instance.getTotalCount());
-        assertEquals(3, instance.getCount("b"));
-        assertEquals(8, instance.getCount("c"));
-        assertEquals(17, instance.getCount("j"));
+        instance.increment("j", 14);
+        assertEquals(28.0, instance.getTotal());
+        assertEquals(3.0, instance.get("b"));
+        assertEquals(8.0, instance.get("c"));
+        assertEquals(17.0, instance.get("j"));
         assertEquals(3, instance.getDomain().size());
         assertTrue(instance.getDomain().contains("b"));
         assertTrue(instance.getDomain().contains("c"));
         assertTrue(instance.getDomain().contains("j"));
 
-        instance.add("z", 123);
-        assertEquals(28, instance.getTotalCount());
-        assertEquals(3, instance.getCount("b"));
-        assertEquals(8, instance.getCount("c"));
-        assertEquals(17, instance.getCount("j"));
+        instance.increment("z", 123);
+        assertEquals(28.0, instance.getTotal());
+        assertEquals(3.0, instance.get("b"));
+        assertEquals(8.0, instance.get("c"));
+        assertEquals(17.0, instance.get("j"));
         assertEquals(3, instance.getDomain().size());
         assertTrue(instance.getDomain().contains("b"));
         assertTrue(instance.getDomain().contains("c"));
         assertTrue(instance.getDomain().contains("j"));
         assertFalse(instance.getDomain().contains("z"));
-
-        boolean exceptionThrown = false;
-        try
-        {
-            instance.add("d", -1);
-        }
-        catch (IllegalArgumentException e)
-        {
-            exceptionThrown = true;
-        }
-        finally
-        {
-            assertTrue(exceptionThrown);
-        }
     }
 
     /**
@@ -168,109 +154,102 @@ public class DataCountTreeSetBinnedMapHistogramTest
 
         DataCountTreeSetBinnedMapHistogram<String> instance =
             new DataCountTreeSetBinnedMapHistogram<String>("c", "j", "b", "q");
-        assertEquals(0, instance.getTotalCount());
-        assertEquals(0, instance.getCount("b"));
-        assertEquals(0, instance.getCount("c"));
-        assertEquals(0, instance.getCount("j"));
+        assertEquals(0.0, instance.getTotal());
+        assertEquals(0.0, instance.get("b"));
+        assertEquals(0.0, instance.get("c"));
+        assertEquals(0.0, instance.get("j"));
         assertEquals(0, instance.getDomain().size());
 
-        instance.remove("a");
-        instance.remove("d", 7);
+        instance.decrement("a");
+        instance.decrement("d", 7);
 
-        assertEquals(0, instance.getTotalCount());
-        assertEquals(0, instance.getCount("b"));
-        assertEquals(0, instance.getCount("c"));
-        assertEquals(0, instance.getCount("j"));
+        assertEquals(0.0, instance.getTotal());
+        assertEquals(0.0, instance.get("b"));
+        assertEquals(0.0, instance.get("c"));
+        assertEquals(0.0, instance.get("j"));
         assertEquals(0, instance.getDomain().size());
 
-        instance.add("b");
-        instance.add("b");
-        instance.add("f");
-        instance.add("b");
-        instance.add("m", 7);
-        instance.add("c");
-        assertEquals(12, instance.getTotalCount());
-        assertEquals(3, instance.getCount("b"));
-        assertEquals(2, instance.getCount("c"));
-        assertEquals(7, instance.getCount("j"));
+        instance.increment("b");
+        instance.increment("b");
+        instance.increment("f");
+        instance.increment("b");
+        instance.increment("m", 7);
+        instance.increment("c");
+        assertEquals(12.0, instance.getTotal());
+        assertEquals(3.0, instance.get("b"));
+        assertEquals(2.0, instance.get("c"));
+        assertEquals(7.0, instance.get("j"));
         assertEquals(3, instance.getDomain().size());
         assertTrue(instance.getDomain().contains("b"));
         assertTrue(instance.getDomain().contains("c"));
         assertTrue(instance.getDomain().contains("j"));
 
-        instance.remove("e");
-        assertEquals(11, instance.getTotalCount());
-        assertEquals(3, instance.getCount("b"));
-        assertEquals(1, instance.getCount("c"));
-        assertEquals(7, instance.getCount("j"));
+        instance.decrement("e");
+        assertEquals(11.0, instance.getTotal());
+        assertEquals(3.0, instance.get("b"));
+        assertEquals(1.0, instance.get("c"));
+        assertEquals(7.0, instance.get("j"));
         assertEquals(3, instance.getDomain().size());
         assertTrue(instance.getDomain().contains("b"));
         assertTrue(instance.getDomain().contains("c"));
         assertTrue(instance.getDomain().contains("j"));
 
-        instance.remove("c");
-        assertEquals(10, instance.getTotalCount());
-        assertEquals(3, instance.getCount("b"));
-        assertEquals(0, instance.getCount("c"));
-        assertEquals(7, instance.getCount("j"));
-        assertEquals(2, instance.getDomain().size());
+        instance.decrement("c");
+        assertEquals(10.0, instance.getTotal());
+        assertEquals(3.0, instance.get("b"));
+        assertEquals(0.0, instance.get("c"));
+        assertEquals(7.0, instance.get("j"));
+        assertEquals(3, instance.getDomain().size());
         assertTrue(instance.getDomain().contains("b"));
-        assertFalse(instance.getDomain().contains("c"));
+        assertTrue(instance.getDomain().contains("c"));
         assertTrue(instance.getDomain().contains("j"));
 
-        instance.remove("h");
-        assertEquals(10, instance.getTotalCount());
-        assertEquals(3, instance.getCount("b"));
-        assertEquals(0, instance.getCount("c"));
-        assertEquals(7, instance.getCount("j"));
-        assertEquals(2, instance.getDomain().size());
+        instance.decrement("h");
+        assertEquals(10.0, instance.getTotal());
+        assertEquals(3.0, instance.get("b"));
+        assertEquals(0.0, instance.get("c"));
+        assertEquals(7.0, instance.get("j"));
+        assertEquals(3, instance.getDomain().size());
         assertTrue(instance.getDomain().contains("b"));
-        assertFalse(instance.getDomain().contains("c"));
+        assertTrue(instance.getDomain().contains("c"));
         assertTrue(instance.getDomain().contains("j"));
 
-        instance.remove("j", 4);
-        assertEquals(6, instance.getTotalCount());
-        assertEquals(3, instance.getCount("b"));
-        assertEquals(0, instance.getCount("c"));
-        assertEquals(3, instance.getCount("j"));
-        assertEquals(2, instance.getDomain().size());
+        instance.decrement("j", 4);
+        assertEquals(6.0, instance.getTotal());
+        assertEquals(3.0, instance.get("b"));
+        assertEquals(0.0, instance.get("c"));
+        assertEquals(3.0, instance.get("j"));
+        assertEquals(3, instance.getDomain().size());
         assertTrue(instance.getDomain().contains("b"));
-        assertFalse(instance.getDomain().contains("c"));
+        assertTrue(instance.getDomain().contains("c"));
         assertTrue(instance.getDomain().contains("j"));
 
-        instance.remove("b", 100);
-        assertEquals(3, instance.getTotalCount());
-        assertEquals(0, instance.getCount("b"));
-        assertEquals(0, instance.getCount("c"));
-        assertEquals(3, instance.getCount("j"));
+        instance.decrement("b", 100);
+        assertEquals(3.0, instance.getTotal());
+        assertEquals(0.0, instance.get("b"));
+        assertEquals(0.0, instance.get("c"));
+        assertEquals(3.0, instance.get("j"));
+        assertEquals(3, instance.getDomain().size());
+        assertTrue(instance.getDomain().contains("b"));
+        assertTrue(instance.getDomain().contains("c"));
+        assertTrue(instance.getDomain().contains("j"));
+        instance.compact();
         assertEquals(1, instance.getDomain().size());
         assertFalse(instance.getDomain().contains("b"));
         assertFalse(instance.getDomain().contains("c"));
         assertTrue(instance.getDomain().contains("j"));
 
-        instance.remove("z", 123123);
-        assertEquals(3, instance.getTotalCount());
-        assertEquals(0, instance.getCount("b"));
-        assertEquals(0, instance.getCount("c"));
-        assertEquals(3, instance.getCount("j"));
+
+        instance.decrement("z", 123123);
+        assertEquals(3.0, instance.getTotal());
+        assertEquals(0.0, instance.get("b"));
+        assertEquals(0.0, instance.get("c"));
+        assertEquals(3.0, instance.get("j"));
         assertEquals(1, instance.getDomain().size());
         assertFalse(instance.getDomain().contains("b"));
         assertFalse(instance.getDomain().contains("c"));
         assertTrue(instance.getDomain().contains("j"));
 
-        boolean exceptionThrown = false;
-        try
-        {
-            instance.remove("d", -1);
-        }
-        catch (IllegalArgumentException e)
-        {
-            exceptionThrown = true;
-        }
-        finally
-        {
-            assertTrue(exceptionThrown);
-        }
     }
 
     /**

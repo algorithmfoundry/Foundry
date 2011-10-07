@@ -227,8 +227,8 @@ public class TukeyKramerConfidence
 
             Matrix P = MatrixFactory.getDefault().createMatrix(K, K);
             StudentizedRangeDistribution.CDF cdf =
-                new StudentizedRangeDistribution.CDF( K, N-1 );
-//                new StudentizedRangeDistribution.CDF( K, N-K );
+//                new StudentizedRangeDistribution.CDF( K, N-1 );
+                new StudentizedRangeDistribution.CDF( K, N-K );
             for( int i = 0; i < K; i++ )
             {
                 // A classifier is equal to itself.

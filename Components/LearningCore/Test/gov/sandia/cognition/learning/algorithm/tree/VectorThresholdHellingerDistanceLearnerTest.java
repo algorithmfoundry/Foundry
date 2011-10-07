@@ -18,7 +18,7 @@ import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.VectorElementThresholdCategorizer;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.DefaultPair;
 import java.util.LinkedList;
 import junit.framework.TestCase;
@@ -108,7 +108,7 @@ public class VectorThresholdHellingerDistanceLearnerTest
     {
         VectorThresholdHellingerDistanceLearner<Boolean> instance =
             new VectorThresholdHellingerDistanceLearner<Boolean>();
-        MapBasedDataHistogram<Boolean> baseCounts = null;
+        DefaultDataDistribution<Boolean> baseCounts = null;
         DefaultPair<Double, Double> result = null;
 
         LinkedList<InputOutputPair<Vector3, Boolean>> data =
@@ -169,9 +169,9 @@ public class VectorThresholdHellingerDistanceLearnerTest
         VectorThresholdHellingerDistanceLearner<Boolean> instance =
             new VectorThresholdHellingerDistanceLearner<Boolean>();
 
-        MapBasedDataHistogram<Boolean> positiveCounts = new MapBasedDataHistogram<Boolean>();
-        MapBasedDataHistogram<Boolean> negativeCounts = new MapBasedDataHistogram<Boolean>();
-        MapBasedDataHistogram<Boolean> baseCounts = new MapBasedDataHistogram<Boolean>();
+        DefaultDataDistribution<Boolean> positiveCounts = new DefaultDataDistribution<Boolean>();
+        DefaultDataDistribution<Boolean> negativeCounts = new DefaultDataDistribution<Boolean>();
+        DefaultDataDistribution<Boolean> baseCounts = new DefaultDataDistribution<Boolean>();
         double result = 0.0;
 
         // Test case: Zeros
@@ -187,12 +187,12 @@ public class VectorThresholdHellingerDistanceLearnerTest
         // T   1   0   1
         // F   0   1   1
         // Mean Hellinger distance = 1.141 = sqrt(2)
-        positiveCounts.add(true, 1);
-        positiveCounts.add(false, 0);
-        negativeCounts.add(true, 0);
-        negativeCounts.add(false, 1);
-        baseCounts.add(true, 1);
-        baseCounts.add(false, 1);
+        positiveCounts.increment(true, 1);
+        positiveCounts.increment(false, 0);
+        negativeCounts.increment(true, 0);
+        negativeCounts.increment(false, 1);
+        baseCounts.increment(true, 1);
+        baseCounts.increment(false, 1);
         result = instance.computeSplitGain(baseCounts, positiveCounts, negativeCounts);
         assertEquals(Math.sqrt(2.0), result, 0.001);
 
@@ -201,15 +201,15 @@ public class VectorThresholdHellingerDistanceLearnerTest
         // T   1   1   2
         // F   1   1   2
         // Mean Hellinger distance = 0.000
-        baseCounts = new MapBasedDataHistogram<Boolean>();
-        positiveCounts = new MapBasedDataHistogram<Boolean>();
-        negativeCounts = new MapBasedDataHistogram<Boolean>();
-        positiveCounts.add(true, 1);
-        positiveCounts.add(false, 1);
-        negativeCounts.add(true, 1);
-        negativeCounts.add(false, 1);
-        baseCounts.add(true, 2);
-        baseCounts.add(false, 2);
+        baseCounts = new DefaultDataDistribution<Boolean>();
+        positiveCounts = new DefaultDataDistribution<Boolean>();
+        negativeCounts = new DefaultDataDistribution<Boolean>();
+        positiveCounts.increment(true, 1);
+        positiveCounts.increment(false, 1);
+        negativeCounts.increment(true, 1);
+        negativeCounts.increment(false, 1);
+        baseCounts.increment(true, 2);
+        baseCounts.increment(false, 2);
         result = instance.computeSplitGain(baseCounts, positiveCounts, negativeCounts);
         assertEquals(0.0, result, 0.001);
 
@@ -218,15 +218,15 @@ public class VectorThresholdHellingerDistanceLearnerTest
         // T   2   2   4
         // F   6   0   6
         // Mean Hellinger distance = 0.765
-        baseCounts = new MapBasedDataHistogram<Boolean>();
-        positiveCounts = new MapBasedDataHistogram<Boolean>();
-        negativeCounts = new MapBasedDataHistogram<Boolean>();
-        positiveCounts.add(true, 2);
-        positiveCounts.add(false, 6);
-        negativeCounts.add(true, 2);
-        negativeCounts.add(false, 0);
-        baseCounts.add(true, 4);
-        baseCounts.add(false, 6);
+        baseCounts = new DefaultDataDistribution<Boolean>();
+        positiveCounts = new DefaultDataDistribution<Boolean>();
+        negativeCounts = new DefaultDataDistribution<Boolean>();
+        positiveCounts.increment(true, 2);
+        positiveCounts.increment(false, 6);
+        negativeCounts.increment(true, 2);
+        negativeCounts.increment(false, 0);
+        baseCounts.increment(true, 4);
+        baseCounts.increment(false, 6);
         result = instance.computeSplitGain(baseCounts, positiveCounts, negativeCounts);
         assertEquals(0.765, result, 0.001);
 
@@ -235,15 +235,15 @@ public class VectorThresholdHellingerDistanceLearnerTest
         // T   0   4   4
         // F   3   3   6
         // Mean Hellinger distance = 0.765
-        positiveCounts = new MapBasedDataHistogram<Boolean>();
-        negativeCounts = new MapBasedDataHistogram<Boolean>();
-        baseCounts = new MapBasedDataHistogram<Boolean>();
-        positiveCounts.add(true, 0);
-        positiveCounts.add(false, 3);
-        negativeCounts.add(true, 4);
-        negativeCounts.add(false, 3);
-        baseCounts.add(true, 4);
-        baseCounts.add(false, 6);
+        positiveCounts = new DefaultDataDistribution<Boolean>();
+        negativeCounts = new DefaultDataDistribution<Boolean>();
+        baseCounts = new DefaultDataDistribution<Boolean>();
+        positiveCounts.increment(true, 0);
+        positiveCounts.increment(false, 3);
+        negativeCounts.increment(true, 4);
+        negativeCounts.increment(false, 3);
+        baseCounts.increment(true, 4);
+        baseCounts.increment(false, 6);
         result = instance.computeSplitGain(baseCounts, positiveCounts, negativeCounts);
         assertEquals(0.765, result, 0.001);
 
@@ -252,15 +252,15 @@ public class VectorThresholdHellingerDistanceLearnerTest
         // T   1   2   3
         // F   6   0   6
         // Mean Hellinger distance = 0.919
-        positiveCounts = new MapBasedDataHistogram<Boolean>();
-        negativeCounts = new MapBasedDataHistogram<Boolean>();
-        baseCounts = new MapBasedDataHistogram<Boolean>();
-        positiveCounts.add(true, 1);
-        positiveCounts.add(false, 6);
-        negativeCounts.add(true, 2);
-        negativeCounts.add(false, 0);
-        baseCounts.add(true, 3);
-        baseCounts.add(false, 6);
+        positiveCounts = new DefaultDataDistribution<Boolean>();
+        negativeCounts = new DefaultDataDistribution<Boolean>();
+        baseCounts = new DefaultDataDistribution<Boolean>();
+        positiveCounts.increment(true, 1);
+        positiveCounts.increment(false, 6);
+        negativeCounts.increment(true, 2);
+        negativeCounts.increment(false, 0);
+        baseCounts.increment(true, 3);
+        baseCounts.increment(false, 6);
         result = instance.computeSplitGain(baseCounts, positiveCounts, negativeCounts);
         assertEquals(0.919, result, 0.001);
 
@@ -269,15 +269,15 @@ public class VectorThresholdHellingerDistanceLearnerTest
         // T   0   3   3
         // F   3   3   6
         // Mean Hellinger distance = 0.765
-        positiveCounts = new MapBasedDataHistogram<Boolean>();
-        negativeCounts = new MapBasedDataHistogram<Boolean>();
-        baseCounts = new MapBasedDataHistogram<Boolean>();
-        positiveCounts.add(true, 0);
-        positiveCounts.add(false, 3);
-        negativeCounts.add(true, 3);
-        negativeCounts.add(false, 3);
-        baseCounts.add(true, 3);
-        baseCounts.add(false, 6);
+        positiveCounts = new DefaultDataDistribution<Boolean>();
+        negativeCounts = new DefaultDataDistribution<Boolean>();
+        baseCounts = new DefaultDataDistribution<Boolean>();
+        positiveCounts.increment(true, 0);
+        positiveCounts.increment(false, 3);
+        negativeCounts.increment(true, 3);
+        negativeCounts.increment(false, 3);
+        baseCounts.increment(true, 3);
+        baseCounts.increment(false, 6);
         result = instance.computeSplitGain(baseCounts, positiveCounts, negativeCounts);
         assertEquals(0.765, result, 0.001);
 
@@ -287,15 +287,15 @@ public class VectorThresholdHellingerDistanceLearnerTest
         // T   0   1   2
         // F   1  10   11
         // Mean Hellinger distance = 0.474
-        positiveCounts = new MapBasedDataHistogram<Boolean>();
-        negativeCounts = new MapBasedDataHistogram<Boolean>();
-        baseCounts = new MapBasedDataHistogram<Boolean>();
-        positiveCounts.add(true, 1);
-        positiveCounts.add(false, 1);
-        negativeCounts.add(true, 1);
-        negativeCounts.add(false, 10);
-        baseCounts.add(true, 2);
-        baseCounts.add(false, 11);
+        positiveCounts = new DefaultDataDistribution<Boolean>();
+        negativeCounts = new DefaultDataDistribution<Boolean>();
+        baseCounts = new DefaultDataDistribution<Boolean>();
+        positiveCounts.increment(true, 1);
+        positiveCounts.increment(false, 1);
+        negativeCounts.increment(true, 1);
+        negativeCounts.increment(false, 10);
+        baseCounts.increment(true, 2);
+        baseCounts.increment(false, 11);
         result = instance.computeSplitGain(baseCounts, positiveCounts, negativeCounts);
         assertEquals(0.474, result, 0.001);
 
@@ -304,15 +304,15 @@ public class VectorThresholdHellingerDistanceLearnerTest
         // T  11   1   11
         // F   1   1   2
         // Mean Hellinger distance = 0.474
-        positiveCounts = new MapBasedDataHistogram<Boolean>();
-        negativeCounts = new MapBasedDataHistogram<Boolean>();
-        baseCounts = new MapBasedDataHistogram<Boolean>();
-        positiveCounts.add(true, 10);
-        positiveCounts.add(false, 1);
-        negativeCounts.add(true, 1);
-        negativeCounts.add(false, 1);
-        baseCounts.add(true, 11);
-        baseCounts.add(false, 2);
+        positiveCounts = new DefaultDataDistribution<Boolean>();
+        negativeCounts = new DefaultDataDistribution<Boolean>();
+        baseCounts = new DefaultDataDistribution<Boolean>();
+        positiveCounts.increment(true, 10);
+        positiveCounts.increment(false, 1);
+        negativeCounts.increment(true, 1);
+        negativeCounts.increment(false, 1);
+        baseCounts.increment(true, 11);
+        baseCounts.increment(false, 2);
         result = instance.computeSplitGain(baseCounts, positiveCounts, negativeCounts);
         assertEquals(0.474, result, 0.001);
     }

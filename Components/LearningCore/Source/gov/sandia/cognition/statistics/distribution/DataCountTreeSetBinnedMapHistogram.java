@@ -21,7 +21,7 @@ import java.util.Collection;
 
 /**
  * The {@code DataCountTreeSetBinnedMapHistogram} class extends a
- * {@code MapBasedDataHistogram} by mapping values to user defined bins
+ * {@code DefaultDataDistribution} by mapping values to user defined bins
  * using a {@code TreeSetBinner}.  The values in a given bin are inclusive
  * of the lower bound of the bin and exclusive of the upper bound of the bin.
  *
@@ -38,7 +38,7 @@ import java.util.Collection;
     comments = "Cleaned up the formatting and javadoc."
 )
 public class DataCountTreeSetBinnedMapHistogram<ValueType extends Comparable<? super ValueType>>
-    extends MapBasedDataHistogram<ValueType>
+    extends DefaultDataDistribution<ValueType>
 {
 
     /** The binner used to map values to bins */
@@ -91,89 +91,39 @@ public class DataCountTreeSetBinnedMapHistogram<ValueType extends Comparable<? s
         this(Arrays.asList(binBoundaries));
     }
 
-    /**
-     * Adds one to the bin corresponding to the given value; does
-     * nothing if given value does not have a corresponding bin.
-     * 
-     * @param   value
-     *      {@inheritDoc}
-     */
     @Override
-    public void add(
-        final ValueType value)
+    public double increment(
+        final ValueType key,
+        final double value)
     {
         // Check for invalid value indicated by null bin.
-        final ValueType bin = this.getBinner().findBin(value);
+        final ValueType bin = this.getBinner().findBin(key);
 
         if (bin != null)
         {
-            super.add(bin);
+            return super.increment(bin, value);
+        }
+        else
+        {
+            return 0.0;
         }
     }
 
-    /**
-     * Ads the given number to the bin corresponding to the given value; does
-     * nothing if given value does not have a corresponding bin.
-     * 
-     * @param   value
-     *      {@inheritDoc}
-     * @param   number
-     *      {@inheritDoc}
-     */
     @Override
-    public void add(
-        final ValueType value,
-        final int number)
+    public double decrement(
+        final ValueType key,
+        final double value)
     {
         // Check for invalid value indicated by null bin.
-        final ValueType bin = this.getBinner().findBin(value);
+        final ValueType bin = this.getBinner().findBin(key);
 
         if (bin != null)
         {
-            super.add(bin, number);
+            return super.decrement(bin, value);
         }
-    }
-
-    /**
-     * Removes one from the bin corresponding to the given value; does
-     * nothing if given value does not have a corresponding bin.
-     * 
-     * @param   value
-     *      {@inheritDoc}
-     */
-    @Override
-    public void remove(
-        final ValueType value)
-    {
-        // Check for invalid value indicated by null bin.
-        ValueType bin = this.getBinner().findBin(value);
-
-        if (bin != null)
+        else
         {
-            super.remove(bin);
-        }
-    }
-
-    /**
-     * Removes the given number from the bin corresponding to the given value;
-     * does nothing if given value does not have a corresponding bin.
-     * 
-     * @param   value
-     *      {@inheritDoc}
-     * @param   number
-     *      {@inheritDoc}
-     */
-    @Override
-    public void remove(
-        final ValueType value,
-        final int number)
-    {
-        // Check for invalid value indicated by null bin.
-        final ValueType bin = this.getBinner().findBin(value);
-
-        if (bin != null)
-        {
-            super.remove(bin, number);
+            return 0.0;
         }
     }
 

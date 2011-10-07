@@ -26,10 +26,10 @@ import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorInputEvaluator;
 import gov.sandia.cognition.math.matrix.Vectorizable;
-import gov.sandia.cognition.statistics.DataHistogram;
+import gov.sandia.cognition.statistics.DataDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
@@ -61,7 +61,7 @@ public class VectorNaiveBayesCategorizer<CategoryType, DistributionType extends 
 {
 
     /** The prior distribution for the categorizer. */
-    protected DataHistogram<CategoryType> priors;
+    protected DataDistribution<CategoryType> priors;
 
     /** The mapping of category to the conditional distribution for the category
      *  with one probability density function for each dimension. */
@@ -73,7 +73,7 @@ public class VectorNaiveBayesCategorizer<CategoryType, DistributionType extends 
      */
     public VectorNaiveBayesCategorizer()
     {
-        this(new MapBasedDataHistogram<CategoryType>(),
+        this(new DefaultDataDistribution<CategoryType>(),
             new LinkedHashMap<CategoryType, List<DistributionType>>());
     }
 
@@ -87,7 +87,7 @@ public class VectorNaiveBayesCategorizer<CategoryType, DistributionType extends 
      *      The conditional distribution.
      */
     public VectorNaiveBayesCategorizer(
-        final DataHistogram<CategoryType> priors,
+        final DataDistribution<CategoryType> priors,
         final Map<CategoryType, List<DistributionType>> conditionals)
     {
         super();
@@ -262,7 +262,7 @@ public class VectorNaiveBayesCategorizer<CategoryType, DistributionType extends 
      * @return
      *      The prior distribution over the categories.
      */
-    public DataHistogram<CategoryType> getPriors()
+    public DataDistribution<CategoryType> getPriors()
     {
         return this.priors;
     }
@@ -274,7 +274,7 @@ public class VectorNaiveBayesCategorizer<CategoryType, DistributionType extends 
      *      The prior distribution over the categories.
      */
     public void setPriors(
-        final DataHistogram<CategoryType> priors)
+        final DataDistribution<CategoryType> priors)
     {
         this.priors = priors;
     }
@@ -391,7 +391,7 @@ public class VectorNaiveBayesCategorizer<CategoryType, DistributionType extends 
                 }
 
                 // Add the category to the priors and its conditional.
-                result.priors.add(category, count);
+                result.priors.increment(category, count);
                 result.conditionals.put(category, conditionals);
             }
 
@@ -510,7 +510,7 @@ public class VectorNaiveBayesCategorizer<CategoryType, DistributionType extends 
                 }
 
                 // Add the category to the priors and its conditional.
-                result.priors.add(category, count);
+                result.priors.increment(category, count);
                 result.conditionals.put(category, conditionals);
             }
 
@@ -579,7 +579,7 @@ public class VectorNaiveBayesCategorizer<CategoryType, DistributionType extends 
             final CategoryType category = data.getOutput();
 
             // Increment the priors for the category.
-            target.getPriors().add(category);
+            target.getPriors().increment(category);
 
             List<DistributionType> conditionals =
                 target.getConditionals().get(category);

@@ -26,9 +26,9 @@ import gov.sandia.cognition.framework.SemanticLabel;
 import gov.sandia.cognition.framework.lite.ArrayBasedCognitiveModelInput;
 import gov.sandia.cognition.framework.lite.ArrayBasedPerceptionModuleFactory;
 import gov.sandia.cognition.framework.lite.CognitiveModelLiteFactory;
+import gov.sandia.cognition.learning.algorithm.regression.MultivariateLinearRegression;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.learning.function.vector.MatrixMultiplyVectorFunction;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
@@ -60,8 +60,7 @@ public class EvaluatorBasedCognitiveModuleFactoryLearnerTest
     {
         SemanticLabel a = new DefaultSemanticLabel("a");
         SemanticLabel b = new DefaultSemanticLabel("b");
-        MatrixMultiplyVectorFunction.ClosedFormSolver learner =
-            new MatrixMultiplyVectorFunction.ClosedFormSolver();
+        MultivariateLinearRegression learner = new MultivariateLinearRegression();
         CogxelVectorConverter inputConverter = new CogxelVectorConverter(a);
         CogxelVectorConverter outputConverter = new CogxelVectorConverter(b);
         CogxelInputOutputPairConverter<Vector, Vector> learningDataConverter =
@@ -151,8 +150,7 @@ public class EvaluatorBasedCognitiveModuleFactoryLearnerTest
 
         EvaluatorBasedCognitiveModuleFactoryLearner<Vector, Vector, InputOutputPair<Vector, Vector>> instance = new EvaluatorBasedCognitiveModuleFactoryLearner<Vector, Vector, InputOutputPair<Vector, Vector>>();
 
-        MatrixMultiplyVectorFunction.ClosedFormSolver learner =
-            new MatrixMultiplyVectorFunction.ClosedFormSolver();
+        MultivariateLinearRegression learner = new MultivariateLinearRegression();
         instance.setLearner(learner);
 
         CogxelVectorConverter inputConverter = new CogxelVectorConverter(inputLabels);
@@ -256,8 +254,7 @@ public class EvaluatorBasedCognitiveModuleFactoryLearnerTest
         EvaluatorBasedCognitiveModuleFactoryLearner<Vector, Vector, InputOutputPair<Vector, Vector>> instance = new EvaluatorBasedCognitiveModuleFactoryLearner<Vector, Vector, InputOutputPair<Vector, Vector>>();
         assertNull(instance.getLearner());
 
-        MatrixMultiplyVectorFunction.ClosedFormSolver learner =
-            new MatrixMultiplyVectorFunction.ClosedFormSolver();
+        MultivariateLinearRegression learner = new MultivariateLinearRegression();
         instance.setLearner(learner);
         assertSame(learner, instance.getLearner());
 

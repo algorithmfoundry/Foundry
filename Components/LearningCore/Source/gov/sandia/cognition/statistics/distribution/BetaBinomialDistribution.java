@@ -16,7 +16,7 @@ package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.collection.IntegerCollection;
+import gov.sandia.cognition.collection.IntegerSpan;
 import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
@@ -266,9 +266,9 @@ public class BetaBinomialDistribution
     }
 
     @Override
-    public Collection<Integer> getDomain()
+    public IntegerSpan getDomain()
     {
-        return new IntegerCollection(0, (int) Math.ceil(this.n) );
+        return new IntegerSpan(0, (int) Math.ceil(this.n) );
     }
 
     @Override

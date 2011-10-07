@@ -46,7 +46,7 @@ public class VectorFunctionLinearDiscriminantTest
     {
         return new VectorFunctionLinearDiscriminant<Double>(
             new ScalarBasisSet<Double>( PolynomialFunction.createPolynomials( 0.0, 1.0, 2.0, 3.0 ) ),
-            VectorFactory.getDefault().createUniformRandom( 4, -1.0, 1.0, random ) );
+            new LinearDiscriminant( VectorFactory.getDefault().createUniformRandom( 4, -1.0, 1.0, random ) ) );
     }
 
     /**
@@ -60,37 +60,35 @@ public class VectorFunctionLinearDiscriminantTest
         assertNotSame( instance, clone );
         assertNotNull( clone.getVectorFunction() );
         assertNotSame( instance.getVectorFunction(), clone.getVectorFunction() );
-        assertNotSame( instance.getWeightVector(), clone.getWeightVector() );
-        assertEquals( instance.getWeightVector(), clone.getWeightVector() );
+        assertNotSame( instance.getDiscriminant(), clone.getDiscriminant() );
     }
 
     /**
-     * Test of getWeightVector method, of class VectorFunctionLinearDiscriminant.
+     * Test of getDiscriminant method, of class VectorFunctionLinearDiscriminant.
      */
     public void testGetWeightVector()
     {
         System.out.println( "getWeightVector" );
         VectorFunctionLinearDiscriminant instance = this.createInstance();
-        Vector w = instance.getWeightVector();
-        assertNotNull( w );
+        assertNotNull( instance.getDiscriminant() );
 
     }
 
     /**
-     * Test of setWeightVector method, of class VectorFunctionLinearDiscriminant.
+     * Test of setDiscriminant method, of class VectorFunctionLinearDiscriminant.
      */
     public void testSetWeightVector()
     {
         System.out.println( "setWeightVector" );
         VectorFunctionLinearDiscriminant instance = this.createInstance();
-        Vector w = instance.getWeightVector();
+        LinearDiscriminant w = instance.getDiscriminant();
         assertNotNull( w );
 
-        instance.setWeightVector( null );
-        assertNull( instance.getWeightVector() );
+        instance.setDiscriminant( null );
+        assertNull( instance.getDiscriminant() );
 
-        instance.setWeightVector( w );
-        assertSame( w, instance.getWeightVector() );
+        instance.setDiscriminant( w );
+        assertSame( w, instance.getDiscriminant() );
     }
 
     /**
@@ -133,7 +131,7 @@ public class VectorFunctionLinearDiscriminantTest
         Double yhat = instance.evaluate( x );
 
         Vector v = instance.getVectorFunction().evaluate( x );
-        double y = instance.getWeightVector().dotProduct( v );
+        double y = instance.getDiscriminant().evaluate(v);
         assertEquals( y, yhat, 1e-5 );
 
     }
@@ -147,7 +145,7 @@ public class VectorFunctionLinearDiscriminantTest
         VectorFunctionLinearDiscriminant instance = this.createInstance();
         Vector v = instance.convertToVector();
         assertNotNull( v );
-        assertSame( v, instance.getWeightVector() );
+        assertSame( v, instance.getDiscriminant().convertToVector() );
         assertEquals( 4, v.getDimensionality() );
 
     }
@@ -161,7 +159,7 @@ public class VectorFunctionLinearDiscriminantTest
         VectorFunctionLinearDiscriminant instance = this.createInstance();
         Vector v = instance.convertToVector();
         assertNotNull( v );
-        assertSame( v, instance.getWeightVector() );
+        assertSame( v, instance.getDiscriminant().convertToVector() );
 
         Vector v2 = v.scale( random.nextGaussian() );
         instance.convertFromVector( v2 );

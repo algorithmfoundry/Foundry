@@ -15,8 +15,8 @@
 package gov.sandia.cognition.statistics.bayesian;
 
 import gov.sandia.cognition.learning.algorithm.AbstractAnytimeBatchLearner;
-import gov.sandia.cognition.statistics.DataHistogram;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.DataDistribution;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.Collection;
 import java.util.Random;
@@ -31,7 +31,7 @@ import java.util.Random;
  * Type of parameters to infer.
  */
 public abstract class AbstractMarkovChainMonteCarlo<ObservationType,ParameterType>
-    extends AbstractAnytimeBatchLearner<Collection<? extends ObservationType>,DataHistogram<ParameterType>>
+    extends AbstractAnytimeBatchLearner<Collection<? extends ObservationType>,DataDistribution<ParameterType>>
     implements MarkovChainMonteCarlo<ObservationType,ParameterType>
 {
 
@@ -70,7 +70,7 @@ public abstract class AbstractMarkovChainMonteCarlo<ObservationType,ParameterTyp
     /**
      * Resulting parameters to return.
      */
-    private transient MapBasedDataHistogram<ParameterType> result;
+    private transient DefaultDataDistribution<ParameterType> result;
 
     /**
      * Creates a new instance of AbstractMarkovChainMonteCarlo
@@ -83,7 +83,7 @@ public abstract class AbstractMarkovChainMonteCarlo<ObservationType,ParameterTyp
 
     @Override
     @SuppressWarnings("unchecked")
-    public AbstractMarkovChainMonteCarlo clone()
+    public AbstractMarkovChainMonteCarlo<ObservationType,ParameterType> clone()
     {
         AbstractMarkovChainMonteCarlo<ObservationType,ParameterType> clone =
             (AbstractMarkovChainMonteCarlo<ObservationType,ParameterType>) super.clone();
@@ -93,13 +93,15 @@ public abstract class AbstractMarkovChainMonteCarlo<ObservationType,ParameterTyp
         return clone;
     }
 
+    @Override
     public int getBurnInIterations()
     {
         return this.burnInIterations;
     }
 
+    @Override
     public void setBurnInIterations(
-        int burnInIterations)
+        final int burnInIterations)
     {
         if( burnInIterations < 0 )
         {
@@ -108,13 +110,15 @@ public abstract class AbstractMarkovChainMonteCarlo<ObservationType,ParameterTyp
         this.burnInIterations = burnInIterations;
     }
 
+    @Override
     public int getIterationsPerSample()
     {
         return this.iterationsPerSample;
     }
 
+    @Override
     public void setIterationsPerSample(
-        int iterationsPerSample)
+        final int iterationsPerSample)
     {
         if( iterationsPerSample < 1 )
         {
@@ -124,7 +128,8 @@ public abstract class AbstractMarkovChainMonteCarlo<ObservationType,ParameterTyp
         this.iterationsPerSample = iterationsPerSample;
     }
 
-    public MapBasedDataHistogram<ParameterType> getResult()
+    @Override
+    public DefaultDataDistribution<ParameterType> getResult()
     {
         return this.result;
     }
@@ -135,11 +140,12 @@ public abstract class AbstractMarkovChainMonteCarlo<ObservationType,ParameterTyp
      * Results to return.
      */
     protected void setResult(
-        MapBasedDataHistogram<ParameterType> result)
+        final DefaultDataDistribution<ParameterType> result)
     {
         this.result = result;
     }
 
+    @Override
     public ParameterType getCurrentParameter()
     {
         return this.currentParameter;
@@ -151,18 +157,20 @@ public abstract class AbstractMarkovChainMonteCarlo<ObservationType,ParameterTyp
      * The current location in the random walk.
      */
     protected void setCurrentParameter(
-        ParameterType currentParameter )
+        final ParameterType currentParameter )
     {
         this.currentParameter = currentParameter;
     }
 
+    @Override
     public Random getRandom()
     {
         return this.random;
     }
 
+    @Override
     public void setRandom(
-        Random random)
+        final Random random)
     {
         this.random = random;
     }
@@ -192,7 +200,7 @@ public abstract class AbstractMarkovChainMonteCarlo<ObservationType,ParameterTyp
             this.mcmcUpdate();
         }
 
-        this.setResult( new MapBasedDataHistogram<ParameterType>(
+        this.setResult( new DefaultDataDistribution<ParameterType>(
             this.getMaxIterations() ) );
 
         return true;
@@ -210,7 +218,7 @@ public abstract class AbstractMarkovChainMonteCarlo<ObservationType,ParameterTyp
 
         // Put a clone of the current parameter into the array list.
         this.previousParameter = ObjectUtil.cloneSmart(this.currentParameter);
-        this.result.add( this.previousParameter );
+        this.result.increment( this.previousParameter );
         return true;
     }
 

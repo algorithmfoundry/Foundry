@@ -16,7 +16,6 @@ package gov.sandia.cognition.math.matrix;
 
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.CodeReviews;
-import gov.sandia.cognition.math.Ring;
 import java.text.NumberFormat;
 
 /**
@@ -52,9 +51,11 @@ import java.text.NumberFormat;
     }
 )
 public interface Vector
-    extends Ring<Vector>, Iterable<VectorEntry>, Vectorizable
+    extends VectorSpace<Vector,VectorEntry>,
+    Vectorizable
 {
     
+    @Override
     public Vector clone();
 
     /**
@@ -72,7 +73,7 @@ public interface Vector
      * @return zero-based indexed element in the Vector
      */
     public double getElement(
-        int index );
+        final int index );
 
     /**
      * Sets the zero-based indexed element in the Vector from the specified value 
@@ -83,19 +84,8 @@ public interface Vector
      *          value to set the element in the Vector
      */
     public void setElement(
-        int index,
-        double value );
-
-    /**
-     * Inner Vector product between two Vectors 
-     *
-     * @param other
-     *          the Vector with which to compute the dot product with this,
-     *          must be the same dimension as this
-     * @return dot product, (0,\infty)
-     */
-    public double dotProduct(
-        final Vector other );
+        final int index,
+        final double value );
 
     /**
      * Computes the outer matrix product between the two vectors 
@@ -110,91 +100,6 @@ public interface Vector
         final Vector other );
 
     /**
-     * Computes the angle between two Vectors.
-     *
-     * @param   other
-     *      Another vector with which to compute the angle. Must be the same
-     *      dimensionality.
-     * @return
-     *      The angle between the two vectors in [0, PI].
-     */
-    public double angle(
-        final Vector other);
-    
-    /**
-     * Computes the cosine between two Vectors 
-     *
-     * @param other
-     *          another vector with which to compute the cosine, must be the
-     *          same dimension as this
-     * @return cosine between the vectors, [0,1]
-     */
-    public double cosine(
-        final Vector other );
-
-    /**
-     * Computes the sum of the elements in the vector.
-     *
-     * @return  The sum of the elements in the vector.
-     * @since   3.0
-     */
-    public double sum();
-
-    /**
-     * 1-norm of the vector (sum of absolute values in the vector)
-     * @return 1-norm of the vector, [0,\infty)
-     */
-    public double norm1();
-
-    /**
-     * 2-norm of the vector (aka Euclidean distance of the vector) 
-     *
-     * @return 2-norm of the vector, [0,\infty)
-     */
-    public double norm2();
-
-    /**
-     * Squared 2-norm of the vector (aka squared Euclidean distance of the
-     * vector) 
-     *
-     * @return Squared 2-norm of the vector, [0,\infty)
-     */
-    public double norm2Squared();
-
-    /**
-     * Returns the infinity norm of the Vector, which is the maximum 
-     * absolute value of an element in the Vector.
-     * @return
-     * Maximum absolute value of any element in the Vector.
-     */
-    public double normInfinity();
-    
-    /**
-     * Euclidean distance between <code>this</code> and <code>other</code>,
-     * which is the 2-norm between the difference of the Vectors
-     *
-     * @param other
-     *          Vector to which to compute the distance, must be the same
-     *          dimension as this
-     * @return this.minus( other ).norm2(), which is [0,\infty)
-     */
-    public double euclideanDistance(
-        final Vector other );
-
-    /**
-     * Squared Euclidean distance between <code>this</code> and
-     * <code>other</code>, which is the 2-norm between the difference of the
-     * Vectors
-     *
-     * @param other
-     *          Vector to which to compute the squared distance, must be the
-     *          same dimension as this
-     * @return this.minus( other ).norm2Squared(), which is [0,\infty)
-     */
-    public double euclideanDistanceSquared(
-        final Vector other );
-    
-    /**
      * Premultiplies the matrix by the vector "this"
      * @param matrix
      * Matrix to premultiply by "this", must have the same number of rows as
@@ -203,25 +108,7 @@ public interface Vector
      * Vector of dimension equal to the number of columns of "matrix"
      */
     public Vector times(
-        Matrix matrix );
-    /**
-     * Returns the unit vector of this vector. That is, a vector in the same 
-     * "direction" where the length (norm2) is 1.0. This is computed by 
-     * dividing each element buy the length (norm2). If this vector is all 
-     * zeros, then the vector returned will be all zeros.
-     *
-     * @return The unit vector of this vector.
-     */
-    Vector unitVector();
-
-    /**
-     * Modifies this vector to be a the unit vector. That is, a vector in the 
-     * same "direction" where the length (norm2) is 1.0. This is computed by 
-     * dividing each element buy the length (norm2). If this vector is all 
-     * zeros, then this vector will all zeros.
-     */
-    void unitVectorEquals();
-
+        final Matrix matrix );
     /**
      * Determines if <code>this</code> and <code>other</code> have the same
      * number of dimensions (size)
@@ -231,8 +118,8 @@ public interface Vector
      * @return true iff this.getDimensionality() == other.getDimensionality(),
      *          false otherwise
      */
-    boolean checkSameDimensionality(
-        Vector other );
+    public boolean checkSameDimensionality(
+        final Vector other );
     
     /**
      * Asserts that this vector has the same dimensionality as the given 
@@ -241,7 +128,7 @@ public interface Vector
      * 
      * @param   other The other vector to compare to.
      */
-    void assertSameDimensionality(
+    public void assertSameDimensionality(
         final Vector other);
     
     /**
@@ -251,7 +138,7 @@ public interface Vector
      * 
      * @param   otherDimensionality The dimensionality of the.
      */
-    void assertDimensionalityEquals(
+    public void assertDimensionalityEquals(
         final int otherDimensionality);
 
     /**
@@ -261,7 +148,7 @@ public interface Vector
      *          Vector to stack below "this"
      * @return stacked Vector
      */
-    Vector stack(
+    public Vector stack(
         Vector other );
 
     /**
@@ -271,9 +158,10 @@ public interface Vector
      * @return vector of dimension (maxIndex-minIndex+1)
      */
     public Vector subVector(
-        int minIndex,
-        int maxIndex );    
+        final int minIndex,
+        final int maxIndex );
     
+    @Override
     public String toString();
     
     /**
@@ -296,26 +184,5 @@ public interface Vector
     public String toString(
         final NumberFormat format,
         final String delimiter);
-
-    /**
-     * Determines if this vector is a unit vector (norm2 = 1.0).
-     *
-     * @return
-     *      True if this vector is a unit vector; otherwise, false.
-     */
-    public boolean isUnitVector();
-
-    /**
-     * Determines if this vector is a unit vector within some tolerance for the
-     * 2-norm.
-     *
-     * @param   tolerance
-     *      The tolerance around 1.0 to allow the length.
-     * @return
-     *      True if this is a unit vector within the given tolerance; otherwise,
-     *      false.
-     */
-    public boolean isUnitVector(
-        final double tolerance);
 
 }

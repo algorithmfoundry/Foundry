@@ -15,7 +15,6 @@
 package gov.sandia.cognition.math.matrix;
 
 import gov.sandia.cognition.annotation.CodeReview;
-import gov.sandia.cognition.util.CloneableSerializable;
 
 /**
  * Interface the specifies the functionality that a VectorEntry should have
@@ -33,7 +32,7 @@ import gov.sandia.cognition.util.CloneableSerializable;
     }
 )
 public interface VectorEntry
-    extends CloneableSerializable
+    extends VectorSpace.Entry
 {
 
     /**
@@ -41,7 +40,7 @@ public interface VectorEntry
      *
      * @return current zero-based index
      */
-    int getIndex();
+    public int getIndex();
     
     /**
      * Sets the current index into the Vector to which this entry points 
@@ -50,22 +49,6 @@ public interface VectorEntry
      *          zero-based index into the Vector
      */
     public void setIndex(
-        int index );
-    
-    /**
-     * Gets the value to which this entry points 
-     *
-     * @return value of the Vector entry
-     */
-    public double getValue();
-    
-    /**
-     * Sets the value to which this entry points 
-     *
-     * @param value
-     *          new value for the Vector at the current index
-     */
-    public void setValue(
-        double value );
-    
+        final int index );
+
 }

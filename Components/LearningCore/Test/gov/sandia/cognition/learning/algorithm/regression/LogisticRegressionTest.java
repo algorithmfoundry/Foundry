@@ -15,6 +15,7 @@
 package gov.sandia.cognition.learning.algorithm.regression;
 
 import gov.sandia.cognition.learning.algorithm.regression.LogisticRegression.Function;
+import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.DefaultWeightedInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.math.matrix.VectorFactory;
@@ -63,24 +64,24 @@ public class LogisticRegressionTest
         LinkedList<InputOutputPair<Vector,Double>> data =
             new LinkedList<InputOutputPair<Vector, Double>>();
         data.add( new DefaultWeightedInputOutputPair<Vector, Double>(
-            VectorFactory.getDefault().copyValues( 1.0, 28.0 ), 1.0/3.0, 6 ) );
+            VectorFactory.getDefault().copyValues( 28.0 ), 1.0/3.0, 6 ) );
         data.add( new DefaultWeightedInputOutputPair<Vector, Double>(
-            VectorFactory.getDefault().copyValues( 1.0, 29.0 ), 2.0/5.0, 5 ) );
+            VectorFactory.getDefault().copyValues( 29.0 ), 2.0/5.0, 5 ) );
         data.add( new DefaultWeightedInputOutputPair<Vector, Double>(
-            VectorFactory.getDefault().copyValues( 1.0, 30.0 ), 7.0/9.0, 9 ) );
+            VectorFactory.getDefault().copyValues( 30.0 ), 7.0/9.0, 9 ) );
         data.add( new DefaultWeightedInputOutputPair<Vector, Double>(
-            VectorFactory.getDefault().copyValues( 1.0, 31.0 ), 7.0/9.0, 9 ) );
+            VectorFactory.getDefault().copyValues( 31.0 ), 7.0/9.0, 9 ) );
         data.add( new DefaultWeightedInputOutputPair<Vector, Double>(
-            VectorFactory.getDefault().copyValues( 1.0, 32.0 ), 16.0/20.0, 20 ) );
+            VectorFactory.getDefault().copyValues( 32.0 ), 16.0/20.0, 20 ) );
         data.add( new DefaultWeightedInputOutputPair<Vector, Double>(
-            VectorFactory.getDefault().copyValues( 1.0, 33.0 ), 14.0/15.0, 15 ) );
-        
+            VectorFactory.getDefault().copyValues( 33.0 ), 14.0/15.0, 15 ) );
 
         LogisticRegression.Function f = instance.learn( data );
         Vector w = f.convertToVector();
+        assertEquals( 2, w.getDimensionality() );
         
-        assertEquals( -16.7198, w.getElement(0), TOLERANCE );
-        assertEquals( 0.5769, w.getElement(1), TOLERANCE );
+        assertEquals( 0.5769, f.getFirst().getWeightVector().getElement(0), TOLERANCE );
+        assertEquals( -16.7198, f.getFirst().getBias(), TOLERANCE );
         
         assertSame( f, instance.getResult() );
         assertNotSame( instance.getObjectToOptimize(), instance.getResult() );
@@ -108,6 +109,58 @@ public class LogisticRegressionTest
         
     }
 
+    /**
+     * Learn
+     */
+    public void testLearn2()
+    {
+        System.out.println( "learn2" );
+
+        // http://luna.cas.usf.edu/~mbrannic/files/regression/Logistic.html
+        LinkedList<InputOutputPair<Vector,Double>> data =
+            new LinkedList<InputOutputPair<Vector, Double>>();
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 70), 1.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 80), 1.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 50), 1.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 60), 1.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 40), 1.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 65), 1.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 75), 1.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 80), 1.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 70), 1.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 60), 1.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 65), 0.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 50), 0.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 45), 0.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 35), 0.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 40), 0.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 50), 0.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 55), 0.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 45), 0.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 50), 0.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 60), 0.0 ) );
+
+        final double r1 = 0.1;
+        LogisticRegression instance = new LogisticRegression(r1);
+        assertEquals( r1, instance.getRegularization() );
+        LogisticRegression.Function f = instance.learn( data );
+        Vector w1 = f.convertToVector();
+        System.out.println( "R1: " + w1 );
+
+        // As we increase the regularization term, that will decrease the
+        // L2 norm of the resulting weight vector.
+        final double r2 = 1.0;
+        instance.setRegularization(r2);
+        assertEquals( r2, instance.getRegularization() );
+        f = instance.learn(data);
+        Vector w2 = f.convertToVector();
+        System.out.println( "R2: " + w2 );
+
+        assertTrue( w2.norm2() < w1.norm1() );
+
+        
+        
+    }
 
     /**
      * Test of getObjectToOptimize method, of class LogisticRegression.

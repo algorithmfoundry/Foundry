@@ -15,7 +15,7 @@
 package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.collection.CollectionUtil;
-import gov.sandia.cognition.collection.IntegerCollection;
+import gov.sandia.cognition.collection.IntegerSpan;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistributionTestHarness;
 import java.util.Collection;
@@ -215,7 +215,7 @@ public class PoissonDistributionTest
 
         double rate = Math.abs( RANDOM.nextGaussian() ) + 10;
         PoissonDistribution d = new PoissonDistribution( rate );
-        IntegerCollection domain = d.getDomain();
+        IntegerSpan domain = d.getDomain();
         assertTrue( domain.size() > rate*10 );
         assertEquals( 0, CollectionUtil.getFirst(domain).intValue() );
     }

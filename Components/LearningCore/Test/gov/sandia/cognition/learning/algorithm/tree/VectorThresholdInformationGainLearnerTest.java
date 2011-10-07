@@ -19,8 +19,11 @@ import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.VectorElementThresholdCategorizer;
 import gov.sandia.cognition.math.matrix.mtj.Vector2;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.DefaultPair;
+import java.lang.reflect.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import junit.framework.TestCase;
 
@@ -107,7 +110,7 @@ public class VectorThresholdInformationGainLearnerTest
         VectorThresholdInformationGainLearner<Boolean> instance = 
             new VectorThresholdInformationGainLearner<Boolean>();
         
-        MapBasedDataHistogram<Boolean> baseCounts = null;
+        DefaultDataDistribution<Boolean> baseCounts = null;
         DefaultPair<Double, Double> result = null;
         
         LinkedList<InputOutputPair<Vector3, Boolean>> data = 
@@ -161,6 +164,128 @@ public class VectorThresholdInformationGainLearnerTest
     }
 
     /**
+     * Test computeSplitGain() when manual priors are used.
+     */
+    public void testManualPriors()
+    {
+        VectorThresholdInformationGainLearner<Integer> instance = 
+            new VectorThresholdInformationGainLearner<Integer>();
+        
+        // Make dummy data set w/ imbalanced class frequencies.
+        HashMap<Integer, Integer> trainCounts = new HashMap<Integer, Integer>();
+        trainCounts.put(0, 50);
+        trainCounts.put(1, 25);
+        trainCounts.put(2, 20);
+        trainCounts.put(3, 5);
+        int numKlass = trainCounts.size();
+
+        // Manually assign priors so examples each class has equal
+        // prior probability.
+        HashMap<Integer, Double> equalPrior = new HashMap<Integer, Double>();
+        for (int i = 0; i < numKlass; ++i) {
+            equalPrior.put(i, 0.25);
+        }
+
+        instance.configure(equalPrior, trainCounts);
+
+        DefaultDataDistribution<Integer> baseCounts = new DefaultDataDistribution<Integer>();
+        baseCounts.set(0, 10);
+        baseCounts.set(1, 10);
+        baseCounts.set(2, 8);
+        baseCounts.set(3, 2);
+        DefaultDataDistribution<Integer> leftCounts = new DefaultDataDistribution<Integer>();
+        leftCounts.set(0, 10);
+        leftCounts.set(1, 0);
+        leftCounts.set(2, 0);
+        leftCounts.set(3, 2);
+        DefaultDataDistribution<Integer> rightCounts = new DefaultDataDistribution<Integer>();
+        rightCounts.set(0, 0);
+        rightCounts.set(1, 10);
+        rightCounts.set(2, 8);
+        rightCounts.set(3, 0);
+        double gain = instance.computeSplitGain(baseCounts, rightCounts, leftCounts);
+        assertEquals(0.98522, gain, 1e-3);
+    }
+
+    /**
+     * Test configure() method.
+     */
+    public void testConfigure()
+    {
+        VectorThresholdInformationGainLearner<Integer> instance = 
+            new VectorThresholdInformationGainLearner<Integer>();
+        
+        // Make dummy data set w/ imbalanced class frequencies.
+        HashMap<Integer, Integer> trainCounts = new HashMap<Integer, Integer>();
+        trainCounts.put(0, 50);
+        trainCounts.put(1, 25);
+        trainCounts.put(2, 20);
+        trainCounts.put(3, 5);
+        int numKlass = trainCounts.size();
+
+        // Make sure configure() assigns proper defaults.  
+        instance.configure(null, trainCounts);
+        double[] expected = {0.5, 0.25, 0.2, 0.05};
+        ArrayList<Integer> index = readKlassIndex(instance);
+        double[] priors = (double[])readPrivateField(instance, "klassPriors");        
+        for (int i = 0; i < numKlass; ++i) {
+            int klass = index.get(i);
+            assertEquals(expected[klass], priors[i], 1e-5);
+        }
+
+        // Make sure configure() assigns manual priors.
+        HashMap<Integer, Double> inversePriors = new HashMap<Integer, Double>();
+        double mass = 0;
+        for (int i = 0; i < numKlass; ++i) {
+            expected[i] = 1.0 / expected[i];
+            mass += expected[i];
+        }
+        for (int i = 0; i < numKlass; ++i) {
+            expected[i] /= mass;
+            inversePriors.put(i, expected[i]);
+        }
+        instance.configure(inversePriors, trainCounts);
+        index = readKlassIndex(instance);
+        priors = (double[])readPrivateField(instance, "klassPriors");                
+        for (int i = 0; i < numKlass; ++i) {
+            int klass = index.get(i);
+            assertEquals(expected[klass], priors[i], 1e-5);
+        }
+    }
+
+    private ArrayList<Integer> readKlassIndex(VectorThresholdInformationGainLearner<Integer> instance)
+    {
+        @SuppressWarnings("unchecked")
+        ArrayList<Integer> index = (ArrayList<Integer>)readPrivateField(instance, "klasses");
+        return index;
+    }
+
+    private Object readPrivateField(Object instance, String fieldName)
+    {
+        Class c = instance.getClass();
+        Object value = null;
+        String err = null;
+
+        try {
+            Field f = c.getDeclaredField(fieldName);
+            f.setAccessible(true);
+            value = f.get(instance);
+        }
+        catch (NoSuchFieldException nsfe) {
+            err = nsfe.toString();
+        }
+        catch (IllegalAccessException iae) {
+            err = iae.toString();
+        }
+
+        if (err != null) {
+            fail(err);
+        }
+
+        return value;
+    }
+
+    /**
      * Tests a corner-case of creating a threshold where the first split is
      * the result.
      */
@@ -169,7 +294,7 @@ public class VectorThresholdInformationGainLearnerTest
         VectorThresholdInformationGainLearner<Boolean> instance =
             new VectorThresholdInformationGainLearner<Boolean>();
 
-        MapBasedDataHistogram<Boolean> baseCounts = null;
+        DefaultDataDistribution<Boolean> baseCounts = null;
         DefaultPair<Double, Double> result = null;
 
         LinkedList<InputOutputPair<Vector2, Boolean>> data =

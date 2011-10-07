@@ -1,5 +1,5 @@
 /*
- * File:                IntegerCollectionTest.java
+ * File:                IntegerSpanTest.java
  * Authors:             Kevin R. Dixon
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
@@ -19,18 +19,18 @@ import java.util.Iterator;
 import junit.framework.TestCase;
 
 /**
- * JUnit tests for class IntegerCollectionTest
+ * JUnit tests for class IntegerSpanTest
  * @author Kevin R. Dixon
  */
-public class IntegerCollectionTest
+public class IntegerSpanTest
     extends TestCase
 {
 
     /**
-     * Entry point for JUnit tests for class IntegerCollectionTest
+     * Entry point for JUnit tests for class IntegerSpanTest
      * @param testName name of this test
      */
-    public IntegerCollectionTest(
+    public IntegerSpanTest(
         String testName )
     {
         super( testName );
@@ -43,13 +43,13 @@ public class IntegerCollectionTest
     {
         System.out.println( "constructors" );
 
-        IntegerCollection i;
-        i = new IntegerCollection( 0, 1 );
-        i = new IntegerCollection( 1, 1 );
+        IntegerSpan i;
+        i = new IntegerSpan( 0, 1 );
+        i = new IntegerSpan( 1, 1 );
 
         try
         {
-            i = new IntegerCollection( 1, 0 );
+            i = new IntegerSpan( 1, 0 );
             fail( "minValue must be <= maxValue" );
         }
         catch (Exception e)
@@ -59,7 +59,7 @@ public class IntegerCollectionTest
     }
 
     /**
-     * Test of getMinValue method, of class IntegerCollection.
+     * Test of getMinValue method, of class IntegerSpan.
      */
     public void testGetMinValue()
     {
@@ -67,20 +67,20 @@ public class IntegerCollectionTest
 
         int minValue = 1;
         int maxValue = 2;
-        IntegerCollection i = new IntegerCollection( minValue, maxValue );
+        IntegerSpan i = new IntegerSpan( minValue, maxValue );
         assertEquals( minValue, i.getMinValue() );
 
     }
 
     /**
-     * Test of setMinValue method, of class IntegerCollection.
+     * Test of setMinValue method, of class IntegerSpan.
      */
     public void testSetMinValue()
     {
         System.out.println( "setMinValue" );
         int minValue = 1;
         int maxValue = 2;
-        IntegerCollection i = new IntegerCollection( minValue, maxValue );
+        IntegerSpan i = new IntegerSpan( minValue, maxValue );
         assertEquals( minValue, i.getMinValue() );
 
         int m2 = minValue - 1;
@@ -89,26 +89,26 @@ public class IntegerCollectionTest
     }
 
     /**
-     * Test of getMaxValue method, of class IntegerCollection.
+     * Test of getMaxValue method, of class IntegerSpan.
      */
     public void testGetMaxValue()
     {
         System.out.println( "getMaxValue" );
         int minValue = 1;
         int maxValue = 2;
-        IntegerCollection i = new IntegerCollection( minValue, maxValue );
+        IntegerSpan i = new IntegerSpan( minValue, maxValue );
         assertEquals( maxValue, i.getMaxValue() );
     }
 
     /**
-     * Test of setMaxValue method, of class IntegerCollection.
+     * Test of setMaxValue method, of class IntegerSpan.
      */
     public void testSetMaxValue()
     {
         System.out.println( "setMaxValue" );
         int minValue = 1;
         int maxValue = 2;
-        IntegerCollection i = new IntegerCollection( minValue, maxValue );
+        IntegerSpan i = new IntegerSpan( minValue, maxValue );
         assertEquals( maxValue, i.getMaxValue() );
 
         int m2 = maxValue + 1;
@@ -117,14 +117,14 @@ public class IntegerCollectionTest
     }
 
     /**
-     * Test of iterator method, of class IntegerCollection.
+     * Test of iterator method, of class IntegerSpan.
      */
     public void testIterator()
     {
         System.out.println( "iterator" );
         int minValue = 1;
         int maxValue = 2;
-        IntegerCollection i = new IntegerCollection( minValue, maxValue );
+        IntegerSpan i = new IntegerSpan( minValue, maxValue );
         Iterator<Integer> iter = i.iterator();
 
         assertNotNull( iter );
@@ -152,25 +152,25 @@ public class IntegerCollectionTest
     }
 
     /**
-     * Test of clone method, of class IntegerCollection.
+     * Test of clone method, of class IntegerSpan.
      */
     public void testClone()
     {
         System.out.println( "clone" );
-        IntegerCollection instance = new IntegerCollection( 2, 3 );
-        IntegerCollection clone = instance.clone();
+        IntegerSpan instance = new IntegerSpan( 2, 3 );
+        IntegerSpan clone = instance.clone();
         assertNotSame( instance, clone );
         assertEquals( instance.getMinValue(), clone.getMinValue() );
         assertEquals( instance.getMaxValue(), clone.getMaxValue() );
     }
 
     /**
-     * Test of size method, of class IntegerCollection.
+     * Test of size method, of class IntegerSpan.
      */
     public void testSize()
     {
         System.out.println( "size" );
-        IntegerCollection instance = new IntegerCollection( 10, 20 );
+        IntegerSpan instance = new IntegerSpan( 10, 20 );
         int expected = instance.size();
         int num = 0;
         for (Integer v : instance)
@@ -180,19 +180,19 @@ public class IntegerCollectionTest
 
         assertEquals( num, expected );
 
-        instance = new IntegerCollection( 5, 5 );
+        instance = new IntegerSpan( 5, 5 );
         assertEquals( 1, instance.size() );
     }
 
     /**
-     * Test of contains method, of class IntegerCollection.
+     * Test of contains method, of class IntegerSpan.
      */
     public void testContains()
     {
         System.out.println( "contains" );
         int minValue = 10;
         int maxValue = 20;
-        IntegerCollection instance = new IntegerCollection(minValue, maxValue);
+        IntegerSpan instance = new IntegerSpan(minValue, maxValue);
         assertTrue( instance.contains(minValue) );
         assertTrue( instance.contains(maxValue) );
         assertTrue( instance.contains(minValue+1) );

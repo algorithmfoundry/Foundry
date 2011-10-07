@@ -58,7 +58,7 @@ public class DifferentiableFeedforwardNeuralNetworkTest
         for (int i = 0; i < 10; i++)
         {
             DifferentiableFeedforwardNeuralNetwork instance = this.createRandom();
-            int N = instance.getLayers().get(0).getMatrixMultiply().getInternalMatrix().getNumColumns();
+            int N = instance.getLayers().get(0).getDiscriminant().getDiscriminant().getNumColumns();
             Vector input = VectorFactory.getDefault().createUniformRandom(N, -A, A, random);
             GradientDescendableTestHarness.testGradient(instance, input);
         }
@@ -77,7 +77,7 @@ public class DifferentiableFeedforwardNeuralNetworkTest
         assertNotNull(instance.getLayers());
         for (int i = 0; i < instance.getLayers().size(); i++)
         {
-            DifferentiableSquashedMatrixMultiplyVectorFunction layer =
+            DifferentiableGeneralizedLinearModel layer =
                 instance.getLayers().get(i);
         }
     }

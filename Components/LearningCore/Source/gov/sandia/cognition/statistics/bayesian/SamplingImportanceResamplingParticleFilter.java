@@ -17,7 +17,7 @@ package gov.sandia.cognition.statistics.bayesian;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.ProbabilityUtil;
-import gov.sandia.cognition.statistics.PointMassDistribution;
+import gov.sandia.cognition.statistics.DataDistribution;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import java.util.ArrayList;
 
@@ -83,8 +83,9 @@ public class SamplingImportanceResamplingParticleFilter<ObservationType,Paramete
         this.particlePctThreadhold = particlePctThreadhold;
     }
 
+    @Override
     public void update(
-        PointMassDistribution<ParameterType> particles,
+        DataDistribution<ParameterType> particles,
         ObservationType value)
     {
 
@@ -100,7 +101,7 @@ public class SamplingImportanceResamplingParticleFilter<ObservationType,Paramete
         {
             ParameterType updatedParticle =
                 this.getUpdater().update( sampledParticle );
-            double previousWeight = particles.getMass(sampledParticle);
+            double previousWeight = particles.get(sampledParticle);
             double weight = previousWeight * Math.exp(
                 this.getUpdater().computeLogLikelihood( updatedParticle, value) );
 
@@ -114,7 +115,7 @@ public class SamplingImportanceResamplingParticleFilter<ObservationType,Paramete
         for( DefaultWeightedValue<ParameterType> updatedParticle : updatedParticles )
         {
             final double weight = updatedParticle.getWeight();
-            particles.add( updatedParticle.getValue(), weight/weightSum );
+            particles.set( updatedParticle.getValue(), weight/weightSum );
         }
 
         // Now make sure we've got enough effective particles.
@@ -133,7 +134,7 @@ public class SamplingImportanceResamplingParticleFilter<ObservationType,Paramete
             {
                 ParameterType resampledParticle =
                     this.getUpdater().update( sampledParticle );
-                particles.add( resampledParticle, uniformWeight );
+                particles.set( resampledParticle, uniformWeight );
             }
         }
     }

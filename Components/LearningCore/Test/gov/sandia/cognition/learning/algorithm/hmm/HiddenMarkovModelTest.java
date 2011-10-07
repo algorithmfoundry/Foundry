@@ -14,8 +14,6 @@
 
 package gov.sandia.cognition.learning.algorithm.hmm;
 
-import gov.sandia.cognition.math.MultivariateStatisticsUtil;
-import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
@@ -25,10 +23,8 @@ import gov.sandia.cognition.math.matrix.mtj.decomposition.EigenDecompositionRigh
 import gov.sandia.cognition.statistics.ComputableDistribution;
 import gov.sandia.cognition.statistics.MultivariateDistributionTestHarness;
 import gov.sandia.cognition.statistics.distribution.BinomialDistribution;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
-import gov.sandia.cognition.statistics.distribution.MapBasedPointMassDistribution;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
-import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -495,11 +491,11 @@ public class HiddenMarkovModelTest
 
         HiddenMarkovModel<String> hmm3 = new HiddenMarkovModel<String>();
         k = hmm3.getNumStates();
-        ArrayList<MapBasedDataHistogram.PMF<String>> sf =
-            new ArrayList<MapBasedDataHistogram.PMF<String>>( k );
+        ArrayList<DefaultDataDistribution.PMF<String>> sf =
+            new ArrayList<DefaultDataDistribution.PMF<String>>( k );
         for( int i = 0; i < k; i++ )
         {
-            MapBasedDataHistogram.PMF<String> f = new MapBasedDataHistogram.PMF<String>();
+            DefaultDataDistribution.PMF<String> f = new DefaultDataDistribution.PMF<String>();
             f.add( "a" );
             sf.add( f );
         }
@@ -554,8 +550,8 @@ public class HiddenMarkovModelTest
         System.out.println( "createRandom" );
 
         Collection<String> data = Arrays.asList( "a", "b", "c", "d", "a" );
-        MapBasedPointMassDistribution.Learner<String> learner =
-            new MapBasedPointMassDistribution.Learner<String>();
+        DefaultDataDistribution.WeightedEstimator<String> learner =
+            new DefaultDataDistribution.WeightedEstimator<String>();
         HiddenMarkovModel<String> hmm = HiddenMarkovModel.createRandom(
             5, learner, data, RANDOM );
         System.out.println( "HMM:\n" + hmm );

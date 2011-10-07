@@ -16,6 +16,7 @@ package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.collection.IntegerSpan;
 import gov.sandia.cognition.math.ProbabilityUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
@@ -25,8 +26,6 @@ import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -157,9 +156,9 @@ public class BernoulliDistribution
     }
 
     @Override
-    public List<Integer> getDomain()
+    public IntegerSpan getDomain()
     {
-        return Arrays.asList( 0, 1 );
+        return new IntegerSpan(0, 1);
     }
 
     @Override

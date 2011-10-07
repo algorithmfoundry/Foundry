@@ -316,8 +316,9 @@ public class FriedmanConfidence
             final ArrayList<Double> treatmentRankMeans )
         {
             final double rankMean = UnivariateStatisticsUtil.computeMean(treatmentRankMeans);
-            final double treatmentSumSquared = subjectCount * UnivariateStatisticsUtil.computeSumSquaredDifference(treatmentRankMeans, rankMean);
-            final double chiSquare = treatmentSumSquared / (treatmentCount*(treatmentCount+1.0)/12.0);
+            final double treatmentSumSquared = UnivariateStatisticsUtil.computeSumSquaredDifference(treatmentRankMeans, 0.0);
+            final double delta = treatmentSumSquared - treatmentCount*rankMean*rankMean;
+            final double chiSquare = 12.0*subjectCount/(treatmentCount*(treatmentCount+1.0)) * delta;
             return chiSquare;
         }
 

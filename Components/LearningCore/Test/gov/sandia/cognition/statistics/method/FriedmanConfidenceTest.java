@@ -14,6 +14,10 @@
 
 package gov.sandia.cognition.statistics.method;
 
+import gov.sandia.cognition.collection.CollectionUtil;
+import gov.sandia.cognition.statistics.distribution.ChiSquareDistribution;
+import gov.sandia.cognition.statistics.distribution.SnedecorFDistribution;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
@@ -59,6 +63,23 @@ public class FriedmanConfidenceTest
         System.out.println("Constructors");
         FriedmanConfidence instance = new FriedmanConfidence();
         assertNotNull( instance );
+    }
+
+    @Test
+    public void testCreateStatistic()
+    {
+        System.out.println( "Create statistic" );
+
+        // Demsar's paper, p. 13
+        ArrayList<Double> treatmentRankMeans = CollectionUtil.asArrayList(
+            Arrays.asList( 3.143, 2.000, 2.893, 1.964 ) );
+        FriedmanConfidence.Statistic instance =
+            new FriedmanConfidence.Statistic( 4, 14, treatmentRankMeans );
+        assertEquals( 9.28, instance.getChiSquare(), 0.01 );
+        assertEquals( 3.69, instance.getF(), 0.01 );
+        assertEquals( 1.0-SnedecorFDistribution.CDF.evaluate(instance.getF(),3.0, 39.0), instance.getNullHypothesisProbability(), TOLERANCE );
+        assertEquals( 1.0-ChiSquareDistribution.CDF.evaluate(instance.getChiSquare(),3.0), instance.getChiSquareNullHypothesisProbability(), TOLERANCE );
+
     }
 
     /**
@@ -131,11 +152,11 @@ public class FriedmanConfidenceTest
         System.out.println( "Result: " + result );
 
         assertEquals( 3.884892407768348E-5, result.getNullHypothesisProbability(), TOLERANCE );
+        assertEquals( 0.0021874911181828383, result.getChiSquareNullHypothesisProbability(), TOLERANCE );
         assertEquals( 12.25, result.getChiSquare(), TOLERANCE );
         assertEquals( 2.0, result.getDegreesOfFreedom(), TOLERANCE );
         assertEquals( 3, result.getTreatmentCount() );
         assertEquals( 8, result.getSubjectCount() );
-        assertEquals( 0.0021874911181828383, result.getChiSquareNullHypothesisProbability(), TOLERANCE );
         assertEquals( 22.866666666666667, result.getF(), TOLERANCE );
         assertEquals( 1.375, result.getTreatmentRankMeans().get(0), TOLERANCE );
         assertEquals( 1.625, result.getTreatmentRankMeans().get(1), TOLERANCE );

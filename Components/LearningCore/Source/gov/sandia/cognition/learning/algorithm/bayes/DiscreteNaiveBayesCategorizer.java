@@ -20,9 +20,8 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.DefaultWeightedValueDiscriminant;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.learning.data.ValueDiscriminantPair;
 import gov.sandia.cognition.learning.function.categorization.DiscriminantCategorizer;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
@@ -92,12 +91,12 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
     /**
      * Class conditional probability table.
      */
-    private Map<CategoryType,List<MapBasedDataHistogram<InputType>>> conditionalProbabilities;
+    private Map<CategoryType,List<DefaultDataDistribution<InputType>>> conditionalProbabilities;
 
     /**
      * Table of category priors.
      */
-    private MapBasedDataHistogram<CategoryType> priorProbabilities;
+    private DefaultDataDistribution<CategoryType> priorProbabilities;
 
     /**
      * Assumed dimensionality of the inputs.
@@ -118,7 +117,7 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
      * Assumed dimensionality of the inputs.
      */
     public DiscreteNaiveBayesCategorizer(
-        int inputDimensionality )
+        final int inputDimensionality )
     {
         this.setInputDimensionality(inputDimensionality);
     }
@@ -133,9 +132,9 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
      * Class conditional probability table.
      */
     protected DiscreteNaiveBayesCategorizer(
-        int inputDimensionality,
-        MapBasedDataHistogram<CategoryType> priorProbabilities,
-        Map<CategoryType,List<MapBasedDataHistogram<InputType>>> conditionalProbabilities )
+        final int inputDimensionality,
+        final DefaultDataDistribution<CategoryType> priorProbabilities,
+        final Map<CategoryType,List<DefaultDataDistribution<InputType>>> conditionalProbabilities )
     {
         this.setInputDimensionality(inputDimensionality);
         this.priorProbabilities = priorProbabilities;
@@ -149,7 +148,7 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
         DiscreteNaiveBayesCategorizer<InputType,CategoryType> clone =
             (DiscreteNaiveBayesCategorizer<InputType,CategoryType>) super.clone();
         clone.conditionalProbabilities =
-            new LinkedHashMap<CategoryType,List<MapBasedDataHistogram<InputType>>>();
+            new LinkedHashMap<CategoryType,List<DefaultDataDistribution<InputType>>>();
         for( CategoryType category : this.getCategories() )
         {
             clone.conditionalProbabilities.put( category,
@@ -161,11 +160,11 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
         return clone;
     }
 
+    @Override
     public Set<CategoryType> getCategories()
     {
         return this.priorProbabilities.getDomain();
     }
-
 
     /**
      * Computes the probability of the given inputs. In other words,
@@ -176,7 +175,7 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
      * Probability of the inputs, P(X=inputs).
      */
     public double computeEvidenceProbabilty(
-        Collection<InputType> inputs )
+        final Collection<InputType> inputs )
     {
 
         double prob = 0.0;
@@ -206,8 +205,8 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
      * Posterior probability, P(C=category|X=inputs).
      */
     public double computePosterior(
-        Collection<InputType> inputs,
-        CategoryType category )
+        final Collection<InputType> inputs,
+        final CategoryType category )
     {
 
         // This is REALLY expensive, as it computes the proporationate
@@ -239,8 +238,8 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
      * Class conditional probability, P(X=inputs|C=category)
      */
     public double computeConditionalProbability(
-        Collection<InputType> inputs,
-        CategoryType category )
+        final Collection<InputType> inputs,
+        final CategoryType category )
     {
 
         if( inputs.size() != this.getInputDimensionality() )
@@ -249,13 +248,13 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
                 "Input dimensionality doesn't match " + this.getInputDimensionality() );
         }
 
-        Iterator<MapBasedDataHistogram<InputType>> conditionalPMFIterator =
+        Iterator<DefaultDataDistribution<InputType>> conditionalPMFIterator =
             this.conditionalProbabilities.get( category ).iterator();
 
         double conditionalProbability = 1.0;
         for( InputType input : inputs )
         {
-            MapBasedDataHistogram<InputType> conditionalPMF =
+            DefaultDataDistribution<InputType> conditionalPMF =
                 conditionalPMFIterator.next();
             if( input != null )
             {
@@ -281,8 +280,8 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
      * Category to update.
      */
     public void update(
-        Collection<InputType> inputs,
-        CategoryType category )
+        final Collection<InputType> inputs,
+        final CategoryType category )
     {
 
         // If we have no expected input dimensionality, then assume that
@@ -303,25 +302,25 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
         // Need to make a new conditional probability table for this category
         if( !this.getCategories().contains( category ) )
         {
-            ArrayList<MapBasedDataHistogram<InputType>> conditional =
-                new ArrayList<MapBasedDataHistogram<InputType>>( this.getInputDimensionality() );
+            ArrayList<DefaultDataDistribution<InputType>> conditional =
+                new ArrayList<DefaultDataDistribution<InputType>>( this.getInputDimensionality() );
             for( int i = 0; i < this.getInputDimensionality(); i++ )
             {
-                conditional.add( new MapBasedDataHistogram<InputType>() );
+                conditional.add( new DefaultDataDistribution<InputType>() );
             }
             this.conditionalProbabilities.put( category, conditional );
         }
 
-        this.priorProbabilities.add( category );
-        Iterator<MapBasedDataHistogram<InputType>> conditionalPMFIterator =
+        this.priorProbabilities.increment( category );
+        Iterator<DefaultDataDistribution<InputType>> conditionalPMFIterator =
             this.conditionalProbabilities.get(category).iterator();
         for( InputType input : inputs )
         {
-            MapBasedDataHistogram<InputType> conditionalPMF =
+            DefaultDataDistribution<InputType> conditionalPMF =
                 conditionalPMFIterator.next();
             if( input != null )
             {
-                conditionalPMF.add( input );
+                conditionalPMF.increment( input );
             }
         }
 
@@ -351,8 +350,8 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
      * The conjunctive probability, which is the numerator of Bayes rule.
      */
     public double computeConjuctiveProbability(
-        Collection<InputType> inputs,
-        CategoryType category )
+        final Collection<InputType> inputs,
+        final CategoryType category )
     {
 
         double categoryPrior = this.getPriorProbability(category);
@@ -369,8 +368,9 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
 
     }
 
+    @Override
     public CategoryType evaluate(
-        Collection<InputType> inputs )
+        final Collection<InputType> inputs )
     {
         return this.evaluateWithDiscriminant(inputs).getValue();
     }
@@ -414,9 +414,9 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
      * Class conditional probability of the given input and category.
      */
     public double getConditionalProbability(
-        int index,
-        InputType input,
-        CategoryType category )
+        final int index,
+        final InputType input,
+        final CategoryType category )
     {
         return this.conditionalProbabilities.get(category).get(index).getFraction(input);
     }
@@ -431,7 +431,7 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
      * Prior probability of the given category.
      */
     public double getPriorProbability(
-        CategoryType category )
+        final CategoryType category )
     {
         return this.priorProbabilities.getFraction(category);
     }
@@ -452,11 +452,11 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
      * Assumed dimensionality of the inputs.
      */
     public void setInputDimensionality(
-        int inputDimensionality)
+        final int inputDimensionality)
     {
         this.conditionalProbabilities =
-            new LinkedHashMap<CategoryType, List<MapBasedDataHistogram<InputType>>>();
-        this.priorProbabilities = new MapBasedDataHistogram<CategoryType>();
+            new LinkedHashMap<CategoryType, List<DefaultDataDistribution<InputType>>>();
+        this.priorProbabilities = new DefaultDataDistribution<CategoryType>();
 
         this.inputDimensionality = inputDimensionality;
     }
@@ -479,8 +479,9 @@ public class DiscreteNaiveBayesCategorizer<InputType,CategoryType>
         {
         }
 
+        @Override
         public DiscreteNaiveBayesCategorizer<InputType, CategoryType> learn(
-            Collection<? extends InputOutputPair<? extends Collection<InputType>, CategoryType>> data)
+            final Collection<? extends InputOutputPair<? extends Collection<InputType>, CategoryType>> data)
         {
             DiscreteNaiveBayesCategorizer<InputType,CategoryType> nbc =
                 new DiscreteNaiveBayesCategorizer<InputType, CategoryType>();

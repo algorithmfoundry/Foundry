@@ -2,14 +2,13 @@
  * File:                VectorUnionIterator.java
  * Authors:             Kevin R. Dixon
  * Company:             Sandia National Laboratories
- * Project:             Cognitive Framework Lite
+ * Project:             Cognitive Foundry
  *
  * Copyright March 20, 2006, Sandia Corporation.  Under the terms of Contract
  * DE-AC04-94AL85000, there is a non-exclusive license for use of this work by
  * or on behalf of the U.S. Government. Export of this program may require a
  * license from the United States Government. See CopyrightHistory.txt for
  * complete details.
- *
  *
  */
 
@@ -65,8 +64,8 @@ public class VectorUnionIterator
      * @param  second The second Vector.
      */
     public VectorUnionIterator(
-        Vector first,
-        Vector second)
+        final Vector first,
+        final Vector second)
     {
         this(first.iterator(), second.iterator(), 
             new DefaultTwoVectorEntry(first, second));
@@ -79,9 +78,9 @@ public class VectorUnionIterator
      * @param internalEntry TwoVectorEntry that represents entries from both Vectors
      */
     public VectorUnionIterator(
-        Iterator<VectorEntry> firstIterator,
-        Iterator<VectorEntry> secondIterator,
-        TwoVectorEntry internalEntry)
+        final Iterator<VectorEntry> firstIterator,
+        final Iterator<VectorEntry> secondIterator,
+        final TwoVectorEntry internalEntry)
     {
         this.setFirstIterator( firstIterator );
         this.setSecondIterator( secondIterator );
@@ -223,7 +222,7 @@ public class VectorUnionIterator
      * @param firstIterator Iterator from the first Vector
      */
     public void setFirstIterator(
-        Iterator<VectorEntry> firstIterator)
+        final Iterator<VectorEntry> firstIterator)
     {
         this.firstIterator = firstIterator;
     }
@@ -242,7 +241,7 @@ public class VectorUnionIterator
      * @param secondIterator Iterator from the second Vector
      */
     public void setSecondIterator(
-        Iterator<VectorEntry> secondIterator)
+        final Iterator<VectorEntry> secondIterator)
     {
         this.secondIterator = secondIterator;
     }
@@ -261,7 +260,7 @@ public class VectorUnionIterator
      * @param internalEntry TwoVectorEntry that represents entries from both Vectors
      */
     public void setInternalEntry(
-        TwoVectorEntry internalEntry)
+        final TwoVectorEntry internalEntry)
     {
         this.internalEntry = internalEntry;
     }
@@ -280,7 +279,7 @@ public class VectorUnionIterator
      * @param firstInternalEntry VectorEntry from the first Vector
      */
     public void setFirstInternalEntry(
-        VectorEntry firstInternalEntry)
+        final VectorEntry firstInternalEntry)
     {
         this.firstInternalEntry = firstInternalEntry;
     }
@@ -299,26 +298,19 @@ public class VectorUnionIterator
      * @param secondInternalEntry VectorEntry from the second Vector
      */
     public void setSecondInternalEntry(
-        VectorEntry secondInternalEntry)
+        final VectorEntry secondInternalEntry)
     {
         this.secondInternalEntry = secondInternalEntry;
     }
     
-    
-    /**
-     * {@inheritDoc}
-     * @return {@inheritDoc}
-     */
+    @Override
     public boolean hasNext()
     {
         return (this.getFirstIterator().hasNext() == true) ||
             (this.getSecondIterator().hasNext() == true);
     }
 
-    /**
-     * {@inheritDoc}
-     * @return {@inheritDoc}
-     */
+    @Override
     public TwoVectorEntry next()
     {
         
@@ -362,14 +354,11 @@ public class VectorUnionIterator
         
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void remove()
     {
         this.getInternalEntry().setFirstValue( 0.0 );
         this.getInternalEntry().setSecondValue( 0.0 );
     }
-    
     
 }

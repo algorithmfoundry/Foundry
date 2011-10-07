@@ -199,7 +199,7 @@ public class CategorizationTreeNodeTest
     {
         CategorizationTreeNode<Vector3, String, Boolean> instance =
             new CategorizationTreeNode<Vector3, String, Boolean>(null, "a");
-        assertEquals(1, instance.getDepth());
+        assertEquals(0, instance.getDepth());
 
         CategorizationTreeNode<Vector3, String, Boolean> child1 =
             new CategorizationTreeNode<Vector3, String, Boolean>(
@@ -210,14 +210,14 @@ public class CategorizationTreeNodeTest
         instance.addChild(false, child1);
         instance.addChild(true, child2);
 
-        assertEquals(2, child1.getDepth());
-        assertEquals(2, child2.getDepth());
+        assertEquals(1, child1.getDepth());
+        assertEquals(1, child2.getDepth());
 
         CategorizationTreeNode<Vector3, String, Boolean> child21 =
             new CategorizationTreeNode<Vector3, String, Boolean>(
                 child2, "child21");
         child2.addChild(true, child21);
-        assertEquals(3, child21.getDepth());
+        assertEquals(2, child21.getDepth());
     }
 
     /**

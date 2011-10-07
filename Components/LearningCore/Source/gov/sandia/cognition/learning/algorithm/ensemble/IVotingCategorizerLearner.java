@@ -28,8 +28,8 @@ import gov.sandia.cognition.learning.algorithm.BatchLearnerContainer;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
-import gov.sandia.cognition.statistics.DataHistogram;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.DataDistribution;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
 import gov.sandia.cognition.util.Randomized;
@@ -102,7 +102,7 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
     protected boolean voteOutOfBagOnly;
 
     /** Factory for counting votes. */
-    protected Factory<? extends DataHistogram<CategoryType>> counterFactory;
+    protected Factory<? extends DataDistribution<CategoryType>> counterFactory;
 
     /** The random number generator to use. */
     protected Random random;
@@ -119,12 +119,12 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
      *  that each ensemble member is only evaluated once on each training
      *  example.
      */
-    protected transient ArrayList<DataHistogram<CategoryType>> dataFullEstimates;
+    protected transient ArrayList<DataDistribution<CategoryType>> dataFullEstimates;
 
     /** The running estimate of the ensemble for each example where an ensemble
      *  member can only vote on elements that were not in the bag used to train
      * it. */
-    protected transient ArrayList<DataHistogram<CategoryType>> dataOutOfBagEstimates;
+    protected transient ArrayList<DataDistribution<CategoryType>> dataOutOfBagEstimates;
 
     /** A boolean for each example indicating if the ensemble currently gets the
      *  example correct or incorrect.
@@ -193,7 +193,7 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
         this(learner, maxIterations, percentToSample,
             DEFAULT_PROPORTION_INCORRECT_IN_SAMPLE,
             DEFAULT_VOTE_OUT_OF_BAG_ONLY,
-            new MapBasedDataHistogram.DefaultFactory<CategoryType>(2),
+            new DefaultDataDistribution.DefaultFactory<CategoryType>(2),
             random);
     }
 
@@ -225,7 +225,7 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
         final double percentToSample,
         final double proportionIncorrectInSample,
         final boolean voteOutOfBagOnly,
-        final Factory<? extends DataHistogram<CategoryType>> counterFactory,
+        final Factory<? extends DataDistribution<CategoryType>> counterFactory,
         final Random random)
     {
         super(maxIterations);
@@ -265,9 +265,9 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
         // We keep a running estimate of the output of the ensemble by
         // evaluating each member once.
         this.dataFullEstimates =
-            new ArrayList<DataHistogram<CategoryType>>(dataSize);
+            new ArrayList<DataDistribution<CategoryType>>(dataSize);
         this.dataOutOfBagEstimates =
-            new ArrayList<DataHistogram<CategoryType>>(dataSize);
+            new ArrayList<DataDistribution<CategoryType>>(dataSize);
 
         // We keep track of whether or not the current ensemble gets each
         // example correct.
@@ -282,8 +282,8 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
         // examples are incorrect to start.
         for (int i = 0; i < dataSize; i++)
         {
-            this.dataFullEstimates.add(new MapBasedDataHistogram<CategoryType>(2));
-            this.dataOutOfBagEstimates.add(new MapBasedDataHistogram<CategoryType>(2));
+            this.dataFullEstimates.add(new DefaultDataDistribution<CategoryType>(2));
+            this.dataOutOfBagEstimates.add(new DefaultDataDistribution<CategoryType>(2));
             this.dataOutOfBagEstimates.add(this.counterFactory.create());
             this.currentIncorrectIndices.add(i);
         }
@@ -381,22 +381,22 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
             this.currentMemberEstimates.set(i, memberGuess);
 
             // Get the full ensemble estimate for the current item.
-            final DataHistogram<CategoryType> fullEstimate =
+            final DataDistribution<CategoryType> fullEstimate =
                 this.dataFullEstimates.get(i);
 
             // Get the out-of-bag estimate for the current item.
-            final DataHistogram<CategoryType> outOfBagEstimate =
+            final DataDistribution<CategoryType> outOfBagEstimate =
                 this.dataOutOfBagEstimates.get(i);
             
             if (memberGuess != null)
             {
                 // Update the full estimate.
-                fullEstimate.add(memberGuess);
+                fullEstimate.increment(memberGuess);
 
                 if (this.dataInBag[i] <= 0)
                 {
                     // Add to the out-of-bag estimate for the item.
-                    outOfBagEstimate.add(memberGuess);
+                    outOfBagEstimate.increment(memberGuess);
                 }
             }
             // else - The member had nothing to contribute for the estimate.
@@ -405,15 +405,15 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
             CategoryType ensembleGuess = null;
 
             // See if we're guessing based on out-of-bag only.
-            if (this.voteOutOfBagOnly && outOfBagEstimate.getTotalCount() > 0)
+            if (this.voteOutOfBagOnly && outOfBagEstimate.getTotal() > 0)
             {
-                ensembleGuess = outOfBagEstimate.getMaximumValue();
+                ensembleGuess = outOfBagEstimate.getMaxValueKey();
             }
             else
             {
                 // Either we're not doing out-of-bag or there are no out-of-bag
                 // votes for this item, so we use the full ensemble estimate.
-                ensembleGuess = fullEstimate.getMaximumValue();
+                ensembleGuess = fullEstimate.getMaxValueKey();
             }
 
             // We assume that the ensemble member is correct in the case that
@@ -655,7 +655,7 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
      * @return
      *      The factory used to create the vote counting objects.
      */
-    public Factory<? extends DataHistogram<CategoryType>> getCounterFactory()
+    public Factory<? extends DataDistribution<CategoryType>> getCounterFactory()
     {
         return this.counterFactory;
     }
@@ -668,16 +668,18 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
      *      The factory used to create the vote counting objects.
      */
     public void setCounterFactory(
-        final Factory<? extends DataHistogram<CategoryType>> counterFactory)
+        final Factory<? extends DataDistribution<CategoryType>> counterFactory)
     {
         this.counterFactory = counterFactory;
     }
 
+    @Override
     public Random getRandom()
     {
         return this.random;
     }
 
+    @Override
     public void setRandom(
         final Random random)
     {
@@ -691,7 +693,7 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
      * @return
      *      The current estimates for each data point.
      */
-    public List<DataHistogram<CategoryType>> getDataFullEstimates()
+    public List<DataDistribution<CategoryType>> getDataFullEstimates()
     {
         return Collections.unmodifiableList(this.dataFullEstimates);
     }
@@ -703,7 +705,7 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
      * @return
      *      The current out-of-bag estimates for each data point.
      */
-    public List<DataHistogram<CategoryType>> getDataOutOfBagEstimates()
+    public List<DataDistribution<CategoryType>> getDataOutOfBagEstimates()
     {
         return Collections.unmodifiableList(this.dataOutOfBagEstimates);
     }
@@ -796,6 +798,7 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
         }
 
         @SuppressWarnings("unchecked")
+        @Override
         public void algorithmStarted(
             final IterativeAlgorithm algorithm)
         {
@@ -811,6 +814,7 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
             this.previousSmoothedErrorRate = Double.MAX_VALUE;
         }
 
+        @Override
         public void algorithmEnded(
             final IterativeAlgorithm algorithm)
         {
@@ -821,12 +825,14 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
             this.smoothingBuffer = null;
         }
 
+        @Override
         public void stepStarted(
             final IterativeAlgorithm algorithm)
         {
             // Ignored.
         }
 
+        @Override
         public void stepEnded(
             final IterativeAlgorithm algorithm)
         {
@@ -843,10 +849,10 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
                     
                     // Get the out-of-bag-votes to determine the ensemble's
                     // guess.
-                    final DataHistogram<CategoryType> outOfBagVotes =
+                    final DataDistribution<CategoryType> outOfBagVotes =
                         learner.dataOutOfBagEstimates.get(i);
                     final CategoryType ensembleGuess =
-                        outOfBagVotes.getMaximumValue();
+                        outOfBagVotes.getMaxValueKey();
 
                     // Update whether or not the ensemble is getting this item
                     // correct.

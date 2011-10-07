@@ -15,7 +15,7 @@
 package gov.sandia.cognition.statistics.bayesian;
 
 import gov.sandia.cognition.statistics.bayesian.conjugate.BernoulliBayesianEstimator;
-import gov.sandia.cognition.statistics.DataHistogram;
+import gov.sandia.cognition.statistics.DataDistribution;
 import gov.sandia.cognition.statistics.distribution.BernoulliDistribution;
 import gov.sandia.cognition.statistics.distribution.BetaDistribution;
 import gov.sandia.cognition.statistics.distribution.UniformDistribution;
@@ -110,7 +110,7 @@ public class RejectionSamplingTest
             new DefaultBayesianParameter<Double,BernoulliDistribution.PMF,UniformDistribution.PDF>( conditional, "p", prior ) ) );
         instance.setRandom(RANDOM);
 
-        DataHistogram<Double> berns = instance.learn(samples);
+        DataDistribution<Double> berns = instance.learn(samples);
         ArrayList<Double> ps = new ArrayList<Double>( berns.getDomain().size() );
         for( Double b : berns.getDomain() )
         {
@@ -158,7 +158,7 @@ public class RejectionSamplingTest
         instance.setUpdater(updater);
         instance.setRandom(RANDOM);
 
-        DataHistogram<Double> berns = instance.learn(samples);
+        DataDistribution<Double> berns = instance.learn(samples);
         ArrayList<Double> ps = new ArrayList<Double>( berns.getDomain().size() );
         for( Double b : berns.getDomain() )
         {

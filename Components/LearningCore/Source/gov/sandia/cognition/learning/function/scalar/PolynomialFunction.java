@@ -16,14 +16,18 @@ package gov.sandia.cognition.learning.function.scalar;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.algorithm.gradient.ParameterGradientEvaluator;
 import gov.sandia.cognition.learning.algorithm.minimization.line.InputOutputSlopeTriplet;
 import gov.sandia.cognition.learning.algorithm.regression.LinearRegression;
+import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
+import gov.sandia.cognition.learning.function.vector.ScalarBasisSet;
 import gov.sandia.cognition.math.AbstractDifferentiableUnivariateScalarFunction;
 import gov.sandia.cognition.math.DifferentiableUnivariateScalarFunction;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -52,7 +56,7 @@ public class PolynomialFunction
      * Real-valued exponent of this polynomial
      */
     public PolynomialFunction(
-        double exponent )
+        final double exponent )
     {
         this.setExponent( exponent );
     }
@@ -63,7 +67,7 @@ public class PolynomialFunction
      * PolynomialFunction to copy
      */
     public PolynomialFunction(
-        PolynomialFunction other )
+        final PolynomialFunction other )
     {
         this( other.getExponent() );
     }
@@ -79,6 +83,7 @@ public class PolynomialFunction
      * @return
      * Exponent of this polynomial
      */
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().copyValues( this.getExponent() );
@@ -89,14 +94,16 @@ public class PolynomialFunction
      * @param parameters
      * Exponent of this polynomial
      */
+    @Override
     public void convertFromVector(
-        Vector parameters )
+        final Vector parameters )
     {
         this.setExponent( parameters.getElement( 0 ) );
     }
 
+    @Override
     public double differentiate(
-        double input )
+        final double input )
     {
 
         // d[x^a]/dx = a*x^{a-1}
@@ -113,8 +120,9 @@ public class PolynomialFunction
      * @return
      * Math.pow(input,exponent)
      */
+    @Override
     public double evaluate(
-        double input )
+        final double input )
     {
         // Note that this will fail if "input" is less than zero AND
         // "exponent" is negative AND "exponent" isn't an integer:
@@ -122,8 +130,9 @@ public class PolynomialFunction
         return Math.pow( input, this.exponent );
     }
 
+    @Override
     public Vector computeParameterGradient(
-        Double input )
+        final Double input )
     {
 
         // We're computing the derivative of:
@@ -169,7 +178,7 @@ public class PolynomialFunction
      * Real-valued exponent of this polynomial
      */
     public void setExponent(
-        double exponent )
+        final double exponent )
     {
         this.exponent = exponent;
     }
@@ -182,7 +191,7 @@ public class PolynomialFunction
      * Array of PolynomialFunctions from the given exponents
      */
     public static ArrayList<PolynomialFunction> createPolynomials(
-        double... polynomialExponents )
+        final double... polynomialExponents )
     {
         int num = polynomialExponents.length;
         ArrayList<PolynomialFunction> functions =
@@ -253,8 +262,8 @@ public class PolynomialFunction
          * Linear (first-order) coefficient
          */
         public Linear(
-            double q0,
-            double q1 )
+            final double q0,
+            final double q1 )
         {
             this.setQ0( q0 );
             this.setQ1( q1 );
@@ -266,18 +275,21 @@ public class PolynomialFunction
             return (Linear) super.clone();
         }
 
+        @Override
         public double evaluate(
             double input )
         {
             return this.getQ0() + this.getQ1()*input;
         }
 
+        @Override
         public double differentiate(
             double input )
         {
             return this.getQ1();
         }
 
+        @Override
         public Double[] roots()
         {            
             if( Math.abs(this.getQ1()) <= COLLINEAR_TOLERANCE )
@@ -290,6 +302,7 @@ public class PolynomialFunction
             }
         }
 
+        @Override
         public Double[] stationaryPoints()
         {
             // No stationary points
@@ -307,8 +320,8 @@ public class PolynomialFunction
          * closed-form Linear function representing the data points
          */
         public static PolynomialFunction.Linear fit(
-            InputOutputPair<Double,Double> p0,
-            InputOutputPair<Double,Double> p1 )
+            final InputOutputPair<Double,Double> p0,
+            final InputOutputPair<Double,Double> p1 )
         {
             
             double x0 = p0.getInput();
@@ -352,7 +365,7 @@ public class PolynomialFunction
          * closed-form Linear function representing the data points
          */
         public static PolynomialFunction.Linear fit(
-            InputOutputSlopeTriplet p0 )
+            final InputOutputSlopeTriplet p0 )
         {
             double x0 = p0.getInput();
             double y0 = p0.getOutput();
@@ -380,7 +393,7 @@ public class PolynomialFunction
          * Zeroth order coefficient
          */
         public void setQ0(
-            double q0 )
+            final double q0 )
         {
             this.q0 = q0;
         }
@@ -401,7 +414,7 @@ public class PolynomialFunction
          * First-order coefficient
          */
         public void setQ1(
-            double q1 )
+            final double q1 )
         {
             this.q1 = q1;
         }
@@ -437,9 +450,9 @@ public class PolynomialFunction
          * Quadratic (second-order) coefficient
          */
         public Quadratic(
-            double q0,
-            double q1,
-            double q2 )
+            final double q0,
+            final double q1,
+            final double q2 )
         {
             super( q0, q1 );
             this.setQ2( q2 );
@@ -477,7 +490,7 @@ public class PolynomialFunction
 
         @Override
         public double differentiate(
-            double input )
+            final double input )
         {
             // dy/dx = q1 + 2*q2*x
             return this.getQ1() + 2.0*this.getQ2()*input;
@@ -523,10 +536,10 @@ public class PolynomialFunction
          * Value of the polynomial at "x"
          */
         public static double evaluate(
-            double x,
-            double q0,
-            double q1,
-            double q2 )
+            final double x,
+            final double q0,
+            final double q1,
+            final double q2 )
         {
             return q0 + x*(q1 + x*q2);
         }
@@ -543,9 +556,9 @@ public class PolynomialFunction
          * Quadratic fitting the three points
          */
         public static Quadratic fit(
-            InputOutputPair<Double,Double> p0,
-            InputOutputPair<Double,Double> p1,        
-            InputOutputPair<Double,Double> p2 )
+            final InputOutputPair<Double,Double> p0,
+            final InputOutputPair<Double,Double> p1,
+            final InputOutputPair<Double,Double> p2 )
         {
             
             double x0 = p0.getInput();
@@ -599,8 +612,8 @@ public class PolynomialFunction
          * @return The quadratic fit.
          */
         public static Quadratic fit(
-            InputOutputSlopeTriplet p0,
-            InputOutputPair<Double, Double> p1 )
+            final InputOutputSlopeTriplet p0,
+            final InputOutputPair<Double, Double> p1 )
         {
             
             // These are from the MATLAB command:
@@ -674,9 +687,9 @@ public class PolynomialFunction
             url="http://en.wikipedia.org/wiki/Quadratic_formula#Quadratic_formula"
         )
         public static Double[] roots(
-            double q0,
-            double q1,
-            double q2 )
+            final double q0,
+            final double q1,
+            final double q2 )
         {
             
             // If there's no quadratic term, then just solve the linear quation
@@ -739,9 +752,9 @@ public class PolynomialFunction
          * Value of "x" when the derivative is zero, null when none is found
          */
         public static Double[] stationaryPoints(
-            double q0,
-            double q1,
-            double q2 )
+            final double q0,
+            final double q1,
+            final double q2 )
         {
             
             // The derivative of the quadratic is
@@ -807,10 +820,10 @@ public class PolynomialFunction
          * Cubic (third-order) coefficient
          */
         public Cubic(
-            double q0,
-            double q1,
-            double q2,
-            double q3 )
+            final double q0,
+            final double q1,
+            final double q2,
+            final double q3 )
         {
             super( q0, q1, q2 );
             this.setQ3( q3 );
@@ -822,7 +835,7 @@ public class PolynomialFunction
          * Cubic to copy
          */
         public Cubic(
-            Cubic other )
+            final Cubic other )
         {
             super( other );
             this.setQ3( other.getQ3() );
@@ -842,14 +855,14 @@ public class PolynomialFunction
         
         @Override
         public double evaluate(
-            double input )
+            final double input )
         {
             return Cubic.evaluate( input, this.getQ0(), this.getQ1(), this.getQ2(), this.getQ3() );
         }
 
         @Override
         public double differentiate(
-            double input )
+            final double input )
         {
             return Quadratic.evaluate( input, this.getQ1(), 2.0*this.getQ2(), 3.0*this.getQ3());
         }
@@ -884,11 +897,11 @@ public class PolynomialFunction
          * Value of the polynomial at "x"
          */
         public static double evaluate(
-            double x,
-            double q0,
-            double q1,
-            double q2,
-            double q3 )
+            final double x,
+            final double q0,
+            final double q1,
+            final double q2,
+            final double q3 )
         {
             return q0 + x*(q1 + x*(q2 + x*q3));
         }
@@ -909,10 +922,10 @@ public class PolynomialFunction
          * Value of "x" when the derivative is zero, null when none is found
          */
         public static Double[] stationaryPoints(
-            double q0,
-            double q1,
-            double q2,
-            double q3 )
+            final double q0,
+            final double q1,
+            final double q2,
+            final double q3 )
         {
             // The derivative is given as:
             // f'(x) = q1 + 2.0*q2*x + 3.0*q3*x^2
@@ -939,7 +952,7 @@ public class PolynomialFunction
          * Cubic (third-order) coefficient
          */
         public void setQ3(
-            double q3 )
+            final double q3 )
         {
             this.q3 = q3;
         }
@@ -955,8 +968,8 @@ public class PolynomialFunction
          * Cubic fitting the points
          */
         public static Cubic fit(
-            InputOutputSlopeTriplet p0,
-            InputOutputSlopeTriplet p1 )
+            final InputOutputSlopeTriplet p0,
+            final InputOutputSlopeTriplet p1 )
         {
             
             // From the MATLAB symbolic toolbox command sequence:
@@ -1012,8 +1025,14 @@ public class PolynomialFunction
      * PolynomialFunction basis functions
      */
     public static class Regression
-        extends LinearRegression<Double>
+        extends AbstractCloneableSerializable
+        implements SupervisedBatchLearner<Double, Double, VectorFunctionLinearDiscriminant<Double>>
     {
+
+        /**
+         * Polynomials to use in the regression
+         */
+        private ScalarBasisSet<Double> polynomials;
 
         /**
          * Creates a new instance of Regression
@@ -1021,9 +1040,10 @@ public class PolynomialFunction
          * Set of polynomial exponents to use during the regression
          */
         public Regression(
-            double... polynomialExponents )
+            final double... polynomialExponents )
         {
-            super( PolynomialFunction.createPolynomials( polynomialExponents ) );
+            this.setPolynomials( new ScalarBasisSet<Double>(
+                PolynomialFunction.createPolynomials( polynomialExponents ) ) );
         }
 
         /**
@@ -1039,18 +1059,61 @@ public class PolynomialFunction
          * the LinearRegression algorithm
          */
         public static VectorFunctionLinearDiscriminant<Double> learn(
-            int maxOrder,
-            Collection<? extends InputOutputPair<Double, Double>> data )
+            final int maxOrder,
+            final Collection<? extends InputOutputPair<Double, Double>> data )
         {
-            double[] polynomialExponents = new double[maxOrder + 1];
+            // We don't need to include a polynomial with exponent 0 because
+            // LinearRegression already estimates a bias
+            double[] polynomialExponents = new double[maxOrder];
             for (int i = 0; i < polynomialExponents.length; i++)
             {
-                polynomialExponents[i] = i;
+                polynomialExponents[i] = i+1;
             }
 
             PolynomialFunction.Regression r =
                 new PolynomialFunction.Regression( polynomialExponents );
             return r.learn( data );
+        }
+
+        @Override
+        public VectorFunctionLinearDiscriminant<Double> learn(
+            final Collection<? extends InputOutputPair<? extends Double, Double>> data)
+        {
+
+            // The first task is to create the Vector-space representation
+            ArrayList<InputOutputPair<Vector,Double>> vectorData =
+                new ArrayList<InputOutputPair<Vector, Double>>( data.size() );
+            for( InputOutputPair<? extends Double,Double> pair : data )
+            {
+                Vector phi = this.polynomials.evaluate( pair.getInput() );
+                vectorData.add( DefaultInputOutputPair.create( phi, pair.getOutput() ) );
+            }
+
+            LinearRegression regression = new LinearRegression();
+            LinearDiscriminantWithBias linearResult = regression.learn(vectorData);
+            return new VectorFunctionLinearDiscriminant<Double>(
+                this.getPolynomials(), linearResult );
+        }
+
+        /**
+         * Getter for polynomials
+         * @return
+         * Polynomials to use in the regression
+         */
+        public ScalarBasisSet<Double> getPolynomials()
+        {
+            return this.polynomials;
+        }
+
+        /**
+         * Setter for polynomials
+         * @param polynomials
+         * Polynomials to use in the regression
+         */
+        public void setPolynomials(
+            ScalarBasisSet<Double> polynomials)
+        {
+            this.polynomials = polynomials;
         }
 
     }

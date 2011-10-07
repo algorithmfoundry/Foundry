@@ -20,7 +20,7 @@ import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
 import org.junit.Test;
@@ -79,8 +79,8 @@ public class CategoryBalancedIVotingLearnerTest
 
         proportionIncorrectInSample = random.nextDouble();
         voteOutOfBagOnly = !voteOutOfBagOnly;
-        Factory<MapBasedDataHistogram<Boolean>> counterFactory =
-            new MapBasedDataHistogram.DefaultFactory<Boolean>();
+        Factory<DefaultDataDistribution<Boolean>> counterFactory =
+            new DefaultDataDistribution.DefaultFactory<Boolean>();
         instance = new CategoryBalancedIVotingLearner<Vector, Boolean>(learner,
             maxIterations, percentToSample, proportionIncorrectInSample,
             voteOutOfBagOnly, counterFactory, random);

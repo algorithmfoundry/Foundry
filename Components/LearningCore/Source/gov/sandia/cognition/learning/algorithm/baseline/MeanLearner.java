@@ -20,7 +20,6 @@ import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.ConstantEvaluator;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
-import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -60,6 +59,7 @@ public class MeanLearner
      * @param   data The dataset of input-output pairs to use.
      * @return  A constant evaluator for the mean output value.
      */
+    @Override
     public ConstantEvaluator<Double> learn(
         final Collection<? extends InputOutputPair<?, Double>> data)
     {

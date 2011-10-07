@@ -16,7 +16,7 @@ package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.collection.IntegerCollection;
+import gov.sandia.cognition.collection.IntegerSpan;
 import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.ProbabilityUtil;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
@@ -33,6 +33,7 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * Binomial distribution, which is a collection of Bernoulli trials
@@ -208,9 +209,9 @@ public class BinomialDistribution
     }
 
     @Override
-    public Collection<Integer> getDomain()
+    public IntegerSpan getDomain()
     {
-        return new IntegerCollection( 0, this.getN() );
+        return new IntegerSpan( 0, this.getN() );
     }
 
     @Override

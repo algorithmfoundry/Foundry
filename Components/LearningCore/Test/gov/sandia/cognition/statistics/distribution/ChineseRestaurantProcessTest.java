@@ -14,11 +14,11 @@
 
 package gov.sandia.cognition.statistics.distribution;
 
-import gov.sandia.cognition.collection.MultiCollection;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.MultivariateClosedFormComputableDiscreteDistributionTestHarness;
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * Unit tests for ChineseRestaurantProcessTest.
@@ -244,13 +244,13 @@ public class ChineseRestaurantProcessTest
         ChineseRestaurantProcess.PMF instance =
             this.createInstance().getProbabilityFunction();
         instance.setAlpha(2.0);
-        MultiCollection<Vector> domain = instance.getDomain();
+        Set<Vector> domain = instance.getDomain();
         
         ArrayList<Vector> samples = instance.sample(RANDOM, 1000);
-        MapBasedDataHistogram<Vector> hist = new MapBasedDataHistogram<Vector>( instance.getNumCustomers() );
+        DefaultDataDistribution<Vector> hist = new DefaultDataDistribution<Vector>( instance.getNumCustomers() );
         for( Vector sample : samples )
         {
-            hist.add( sample );
+            hist.increment( sample );
         }
 
         double sum = 0.0;

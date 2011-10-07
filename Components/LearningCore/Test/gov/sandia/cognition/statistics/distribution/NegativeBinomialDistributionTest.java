@@ -15,7 +15,7 @@
 package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.collection.CollectionUtil;
-import gov.sandia.cognition.collection.IntegerCollection;
+import gov.sandia.cognition.collection.IntegerSpan;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistributionTestHarness;
@@ -157,7 +157,7 @@ public class NegativeBinomialDistributionTest
         System.out.println( "Known getDomain" );
 
         NegativeBinomialDistribution.CDF cdf = this.createInstance().getCDF();
-        IntegerCollection domain = cdf.getDomain();
+        IntegerSpan domain = cdf.getDomain();
         assertEquals( 0, CollectionUtil.getFirst(domain).intValue() );
         assertEquals( 1.0, cdf.evaluate( CollectionUtil.getElement(domain, domain.size()-1) ), TOLERANCE );
     }

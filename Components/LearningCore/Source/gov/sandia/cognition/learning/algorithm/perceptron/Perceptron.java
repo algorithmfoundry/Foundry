@@ -22,7 +22,6 @@ import gov.sandia.cognition.learning.algorithm.AbstractAnytimeSupervisedBatchLea
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.math.matrix.DimensionalityMismatchException;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.VectorFactoryContainer;
@@ -135,7 +134,7 @@ public class Perceptron
         final int maxIterations,
         final double marginPositive,
         final double marginNegative,
-        final VectorFactory vectorFactory)
+        final VectorFactory<?> vectorFactory)
     {
         super(maxIterations);
 
@@ -153,6 +152,7 @@ public class Perceptron
         return clone;
     }
 
+    @Override
     protected boolean initializeAlgorithm()
     {
         if (this.getData() == null)
@@ -179,6 +179,7 @@ public class Perceptron
         return true;
     }
 
+    @Override
     protected boolean step()
     {
         // Reset the number of errors for the new iteration.
@@ -235,6 +236,7 @@ public class Perceptron
         return this.getErrorCount() > 0;
     }
 
+    @Override
     protected void cleanupAlgorithm()
     {
         // Nothing to clean up.
@@ -294,11 +296,7 @@ public class Perceptron
         this.marginNegative = marginNegative;
     }
 
-    /**
-     * Gets the VectorFactory used to create the weight vector.
-     *
-     * @return The VectorFactory used to create the weight vector.
-     */
+    @Override
     public VectorFactory<?> getVectorFactory()
     {
         return this.vectorFactory;
@@ -315,6 +313,7 @@ public class Perceptron
         this.vectorFactory = vectorFactory;
     }
 
+    @Override
     public LinearBinaryCategorizer getResult()
     {
         return this.result;
@@ -352,11 +351,7 @@ public class Perceptron
         this.errorCount = errorCount;
     }
 
-    /**
-     * Gets the performance, which is the error count on the last iteration.
-     * 
-     * @return The performance of the algorithm.
-     */
+    @Override
     public NamedValue<Integer> getPerformance()
     {
         return new DefaultNamedValue<Integer>("error count", this.getErrorCount());

@@ -16,7 +16,7 @@ package gov.sandia.cognition.learning.algorithm.tree;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 
 /**
  * A categorization tree decision function learner on vector data that learns a
@@ -25,21 +25,21 @@ import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
  * well known information gain method. It also behaves about the same as
  * information gain on balanced data. Thus, it is thought that the Hellinger
  * method may be superior to information gain.
- *
+ * <BR><BR>
  * For a given split (sets X and Y) for two categories (a and b)
- *
+ * <BR>
  *    d(X, Y) = sqrt(   (sqrt(Xa / Na) - sqrt(Xb / Nb))^2
- *                    + (sqrt(Ya / Na) - sqrt(Yb / Nb))^2)
- * where
- *    Xa = number of a's in X,
- *    Xb = number of b's in X,
- *    Ya = number of a's in Y,
- *    Yb = number of b's in Y,
- *    Na = total number of a's (= Xa + Ya), and
- *    Nb = total number of b's (= Xb + Yb).
- *
+ * <BR>               + (sqrt(Ya / Na) - sqrt(Yb / Nb))^2)
+ * <BR> where
+ * <BR>    Xa = number of a's in X,
+ * <BR>    Xb = number of b's in X,
+ * <BR>    Ya = number of a's in Y,
+ * <BR>    Yb = number of b's in Y,
+ * <BR>    Na = total number of a's (= Xa + Ya), and
+ * <BR>    Nb = total number of b's (= Xb + Yb).
+ * <BR><BR>
  * The Hellinger distance ranges between 0 and sqrt(2), inclusive.
- *
+ * <BR><BR>
  * In a problem where there are more than two categories, the Hellinger
  * distance is computed for each unique pair of categories and averaged to
  * compute the Hellinger distance for that split.
@@ -84,10 +84,11 @@ public class VectorThresholdHellingerDistanceLearner<OutputType>
      *      The split gain by computing the mean Hellinger distance for
      *      the given split.
      */
+    @Override
     public double computeSplitGain(
-        final MapBasedDataHistogram<OutputType> baseCounts,
-        final MapBasedDataHistogram<OutputType> positiveCounts,
-        final MapBasedDataHistogram<OutputType> negativeCounts)
+        final DefaultDataDistribution<OutputType> baseCounts,
+        final DefaultDataDistribution<OutputType> positiveCounts,
+        final DefaultDataDistribution<OutputType> negativeCounts)
     {
         // Get the number of categories.
         final int categoryCount = baseCounts.getDomain().size();
@@ -116,17 +117,15 @@ public class VectorThresholdHellingerDistanceLearner<OutputType>
         for (OutputType category : baseCounts.getDomain())
         {
             // Get the counts for the category.
-            final int total    = baseCounts.getCount(category);
-            final int positive = positiveCounts.getCount(category);
-            final int negative = negativeCounts.getCount(category);
+            final double total    = baseCounts.get(category);
+            final double positive = positiveCounts.get(category);
+            final double negative = negativeCounts.get(category);
 
             // We use these two values to compute the category-to-category
             // Hellinger distance. Its the square root of the proportion of the
             // instances of the label that are positive or negative.
-            sqrtPositiveProportions[categoryIndex] =
-                Math.sqrt((double) positive / total);
-            sqrtNegativeProportions[categoryIndex] = 
-                Math.sqrt((double) negative / total);
+            sqrtPositiveProportions[categoryIndex] = Math.sqrt(positive / total);
+            sqrtNegativeProportions[categoryIndex] = Math.sqrt(negative / total);
             
             categoryIndex++;
         }

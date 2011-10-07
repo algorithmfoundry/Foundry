@@ -26,7 +26,7 @@ import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
-import java.util.AbstractCollection;
+import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
@@ -90,8 +90,8 @@ public class MultinomialDistribution
      * Number of trials in the distribution, must be greater than 0.
      */
     public MultinomialDistribution(
-        int numClasses,
-        int numTrials )
+        final int numClasses,
+        final int numTrials )
     {
         this( VectorFactory.getDefault().createVector(numClasses, 1.0),
             numTrials );
@@ -106,8 +106,8 @@ public class MultinomialDistribution
      * 2-dimensional and each element must be nonnegative.
      */
     public MultinomialDistribution(
-        Vector parameters,
-        int numTrials )
+        final Vector parameters,
+        final int numTrials )
     {
         this.setNumTrials(numTrials);
         this.setParameters(parameters);
@@ -119,7 +119,7 @@ public class MultinomialDistribution
      * MultinomialDistribution to copy
      */
     public MultinomialDistribution(
-        MultinomialDistribution other )
+        final MultinomialDistribution other )
     {
         this( ObjectUtil.cloneSafe(other.getParameters()), other.getNumTrials() );
     }
@@ -150,7 +150,7 @@ public class MultinomialDistribution
      * 2-dimensional and each element must be nonnegative.
      */
     public void setParameters(
-        Vector parameters)
+        final Vector parameters)
     {
 
         final int N = parameters.getDimensionality();
@@ -172,13 +172,15 @@ public class MultinomialDistribution
         this.parameters = parameters;
     }
 
+    @Override
     public Vector convertToVector()
     {
         return ObjectUtil.cloneSafe(this.getParameters());
     }
 
+    @Override
     public void convertFromVector(
-        Vector parameters)
+        final Vector parameters)
     {
         parameters.assertSameDimensionality( this.getParameters() );
         this.setParameters( ObjectUtil.cloneSafe(parameters) );
@@ -200,7 +202,7 @@ public class MultinomialDistribution
      * Number of trials in the distribution, must be greater than 0.
      */
     public void setNumTrials(
-        int numTrials)
+        final int numTrials)
     {
         if( numTrials <= 0 )
         {
@@ -209,14 +211,16 @@ public class MultinomialDistribution
         this.numTrials = numTrials;
     }
 
+    @Override
     public Vector getMean()
     {
         return this.parameters.scale( this.numTrials/this.parameters.norm1() );
     }
 
+    @Override
     public ArrayList<Vector> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
     {
 
         final int numClasses = this.parameters.getDimensionality();
@@ -250,6 +254,7 @@ public class MultinomialDistribution
         return samples;
     }
 
+    @Override
     public MultinomialDistribution.Domain getDomain()
     {
         return new Domain(
@@ -262,9 +267,10 @@ public class MultinomialDistribution
         return this.getDomain().size();
     }
 
+    @Override
     public MultinomialDistribution.PMF getProbabilityFunction()
     {
-        return new PMF( this );
+        return new MultinomialDistribution.PMF( this );
     }
 
     /**
@@ -292,8 +298,8 @@ public class MultinomialDistribution
          * Number of trials in the distribution, must be greater than 0.
          */
         public PMF(
-            int numClasses,
-            int numTrials )
+            final int numClasses,
+            final int numTrials )
         {
             super( numClasses, numTrials );
         }
@@ -307,8 +313,8 @@ public class MultinomialDistribution
          * 2-dimensional and each element must be nonnegative.
          */
         public PMF(
-            Vector parameters,
-            int numTrials )
+            final Vector parameters,
+            final int numTrials )
         {
             super( parameters, numTrials );
         }
@@ -325,19 +331,22 @@ public class MultinomialDistribution
         }
 
 
+        @Override
         public int getInputDimensionality()
         {
             return this.getParameters().getDimensionality();
         }
 
+        @Override
         public Double evaluate(
-            Vector input)
+            final Vector input)
         {
             return Math.exp( this.logEvaluate(input) );
         }
 
+        @Override
         public double logEvaluate(
-            Vector input)
+            final Vector input)
         {
 
             final int N = this.getInputDimensionality();
@@ -385,6 +394,7 @@ public class MultinomialDistribution
             return logCoeff + logProb;
         }
 
+        @Override
         public double getEntropy()
         {
             return ProbabilityMassFunctionUtil.getEntropy(this);
@@ -405,7 +415,7 @@ public class MultinomialDistribution
      * grows as a factorial!!!  (See the size() method for the exact size.)
      */
     public static class Domain
-        extends AbstractCollection<Vector>
+        extends AbstractSet<Vector>
     {
 
         /**
@@ -426,8 +436,8 @@ public class MultinomialDistribution
          * Number of times to sample from the classes.
          */
         public Domain(
-            int numClasses,
-            int numTrials )
+            final int numClasses,
+            final int numTrials )
         {
             this.numClasses = numClasses;
             this.numTrials = numTrials;
@@ -494,8 +504,8 @@ public class MultinomialDistribution
              * Number of times to sample from the classes.
              */
             public MultinomialIterator(
-                int numClasses,
-                int numTrials )
+                final int numClasses,
+                final int numTrials )
             {
                 if( numClasses <= 0 )
                 {
@@ -525,7 +535,7 @@ public class MultinomialDistribution
 
             }
 
-
+            @Override
             public boolean hasNext()
             {
 
@@ -544,6 +554,7 @@ public class MultinomialDistribution
 
             }
 
+            @Override
             public Vector next()
             {
 
@@ -568,6 +579,7 @@ public class MultinomialDistribution
 
             }
 
+            @Override
             public void remove()
             {
                 throw new UnsupportedOperationException(

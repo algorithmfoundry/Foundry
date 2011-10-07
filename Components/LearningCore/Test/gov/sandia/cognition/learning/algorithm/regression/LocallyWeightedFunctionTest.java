@@ -9,7 +9,6 @@
  * or on behalf of the U.S. Government. Export of this program may require a
  * license from the United States Government. See CopyrightHistory.txt for
  * complete details.
- *  
  * 
  */
 
@@ -22,9 +21,9 @@ import gov.sandia.cognition.learning.data.DefaultWeightedInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.kernel.Kernel;
 import gov.sandia.cognition.learning.function.kernel.RadialBasisKernel;
-import gov.sandia.cognition.learning.function.scalar.PolynomialFunction;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.math.matrix.Vectorizable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
@@ -39,7 +38,7 @@ public class LocallyWeightedFunctionTest
 {
 
     /** The random number generator for the tests. */
-    private Random random = new Random();
+    private Random random = new Random(1);
 
     /**
      * Entry point for JUnit tests for class LocallyWeightedFunctionTest
@@ -62,8 +61,9 @@ public class LocallyWeightedFunctionTest
      */
     public LocallyWeightedFunction.Learner<Vector, Vector> createLearnerInstance()
     {
-        DecoupledVectorLinearRegression learner = new DecoupledVectorLinearRegression(
-            NUM_DIM, PolynomialFunction.createPolynomials( 0.0, 1.0, 2.0 ) );
+        MultivariateLinearRegression learner = new MultivariateLinearRegression();
+//        DecoupledVectorLinearRegression learner = new DecoupledVectorLinearRegression(
+//            NUM_DIM, PolynomialFunction.createPolynomials( 0.0, 1.0, 2.0 ) );
 
         return new LocallyWeightedFunction.Learner<Vector, Vector>(
             new RadialBasisKernel(), learner );
@@ -209,18 +209,18 @@ public class LocallyWeightedFunctionTest
     {
         System.out.println( "testKnownResult" );
         
-        LinkedList<InputOutputPair<Double,Double>> data =
-            new LinkedList<InputOutputPair<Double,Double>>();
-        data.add( new DefaultInputOutputPair<Double, Double>( 1.0, 0.0 ) );
-        data.add( new DefaultInputOutputPair<Double, Double>( 2.0, 1.0 ) );
-        data.add( new DefaultInputOutputPair<Double, Double>( 3.0, 4.0 ) );
+        LinkedList<InputOutputPair<Vector,Double>> data =
+            new LinkedList<InputOutputPair<Vector,Double>>();
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0), 0.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(2.0), 1.0 ) );
+        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(3.0), 4.0 ) );
+
+        LocallyWeightedFunction.Learner<Vectorizable,Double> learner =
+            new LocallyWeightedFunction.Learner<Vectorizable, Double>(
+                new RadialBasisKernel(),
+                new LinearRegression() );
         
-        LocallyWeightedFunction.Learner<Double,Double> learner =
-            new LocallyWeightedFunction.Learner<Double,Double>(
-                new RadialBasisScalarKernel(),
-                new LinearRegression<Double>( PolynomialFunction.createPolynomials(0.0,1.0) ) );
-        
-        LocallyWeightedFunction<Double,Double> f = learner.learn(data);
+        LocallyWeightedFunction<Vectorizable,Double> f = learner.learn(data);
         
         double y1 = f.evaluate(data.get(0).getInput());
         System.out.println( "Y1: " + y1 + ", approximator: " + f.getLocalApproximator() );
@@ -237,29 +237,5 @@ public class LocallyWeightedFunctionTest
         assertEquals(  1.4238831152, y2, EPS );
         assertEquals(  3.9699118164, y3, EPS );
     }
-
-    public static class RadialBasisScalarKernel
-        implements Kernel<Double>
-    {
-
-        public final RadialBasisKernel rbf = new RadialBasisKernel(1.0);
-        
-        public double evaluate(
-            Double x,
-            Double y )
-        {
-            Vector v1 = VectorFactory.getDefault().copyValues(x);
-            Vector v2 = VectorFactory.getDefault().copyValues(y);
-            double weight = rbf.evaluate(v1, v2);
-            System.out.println( "X: " + x + ", y: " + y + " weight: " + weight );
-            return weight;
-        }
-
-        @Override
-        public RadialBasisScalarKernel clone()
-        {
-            return new RadialBasisScalarKernel();
-        }
-    }
-    
+ 
 }

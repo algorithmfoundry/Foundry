@@ -23,13 +23,13 @@ import java.util.Set;
  * object that can take an input and evaluate what category out of a fixed
  * set of categories it belongs to. The categories are represented as values
  * of type CategoryType.
- *
+ * <BR><BR>
  * The term "categorizer" is used here instead of synonymous "classifier" for 
  * two reasons:
- *
- *     1) Java uses the term "class" itself to mean something different.
- *     2) At Sandia "classified" has yet another meaning.
- *
+ * <BR>
+ * <BR>    1) Java uses the term "class" itself to mean something different.
+ * <BR>    2) At Sandia "classified" has yet another meaning.
+ * <BR><BR>
  * Thus we use "categorizer" because using other words from the same stem is
  * does not have these problems: "category", "categorized", "categorization", 
  * etc.

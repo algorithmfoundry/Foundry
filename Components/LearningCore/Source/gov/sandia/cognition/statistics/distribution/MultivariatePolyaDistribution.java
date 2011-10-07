@@ -90,8 +90,8 @@ public class MultivariatePolyaDistribution
      * Number of trials in the distribution, must be greater than 0.
      */
     public MultivariatePolyaDistribution(
-        int dimensionality,
-        int numTrials )
+        final int dimensionality,
+        final int numTrials )
     {
         this( VectorFactory.getDefault().createVector(dimensionality,1.0), numTrials );
     }
@@ -105,8 +105,8 @@ public class MultivariatePolyaDistribution
      * Number of trials in the distribution, must be greater than 0.
      */
     public MultivariatePolyaDistribution(
-        Vector parameters,
-        int numTrials )
+        final Vector parameters,
+        final int numTrials )
     {
         this.setParameters(parameters);
         this.setNumTrials(numTrials);
@@ -140,8 +140,8 @@ public class MultivariatePolyaDistribution
 
     @Override
     public ArrayList<Vector> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
     {
         DirichletDistribution prior =
             new DirichletDistribution( this.parameters );
@@ -177,7 +177,7 @@ public class MultivariatePolyaDistribution
      * Number of trials in the distribution, must be greater than 0.
      */
     public void setNumTrials(
-        int numTrials)
+        final int numTrials)
     {
         if( numTrials <= 0 )
         {
@@ -200,7 +200,7 @@ public class MultivariatePolyaDistribution
 
     @Override
     public void convertFromVector(
-        Vector parameters)
+        final Vector parameters)
     {
         parameters.assertSameDimensionality( this.getParameters() );
         this.setParameters( ObjectUtil.cloneSafe(parameters) );
@@ -234,7 +234,7 @@ public class MultivariatePolyaDistribution
      * and each element must be positive.
      */
     public void setParameters(
-        Vector parameters)
+        final Vector parameters)
     {
 
         final int N = parameters.getDimensionality();
@@ -299,8 +299,8 @@ public class MultivariatePolyaDistribution
          * Number of trials in the distribution, must be greater than 0.
          */
         public PMF(
-            int dimensionality,
-            int numTrials )
+            final int dimensionality,
+            final int numTrials )
         {
             super( dimensionality, numTrials );
         }
@@ -315,8 +315,8 @@ public class MultivariatePolyaDistribution
          *
          */
         public PMF(
-            Vector parameters,
-            int numTrials )
+            final Vector parameters,
+            final int numTrials )
         {
             super( parameters, numTrials );
         }
@@ -340,7 +340,7 @@ public class MultivariatePolyaDistribution
 
         @Override
         public double logEvaluate(
-            Vector input)
+            final Vector input)
         {
             final int dim = this.getInputDimensionality();
             input.assertDimensionalityEquals(dim);
@@ -370,7 +370,7 @@ public class MultivariatePolyaDistribution
 
         @Override
         public Double evaluate(
-            Vector input)
+            final Vector input)
         {
             return Math.exp( this.logEvaluate(input) );
         }

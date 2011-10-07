@@ -16,7 +16,6 @@ package gov.sandia.cognition.learning.algorithm.clustering;
 
 import gov.sandia.cognition.algorithm.AnytimeAlgorithmWrapper;
 import gov.sandia.cognition.algorithm.MeasurablePerformanceAlgorithm;
-import gov.sandia.cognition.algorithm.ParallelUtil;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationReferences;
 import gov.sandia.cognition.annotation.PublicationType;
@@ -24,7 +23,7 @@ import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.learning.algorithm.AnytimeBatchLearner;
 import gov.sandia.cognition.learning.algorithm.clustering.cluster.GaussianCluster;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.DataHistogram;
+import gov.sandia.cognition.statistics.DataDistribution;
 import gov.sandia.cognition.statistics.bayesian.DirichletProcessMixtureModel;
 import gov.sandia.cognition.statistics.bayesian.DirichletProcessMixtureModel.Sample;
 import gov.sandia.cognition.statistics.bayesian.ParallelDirichletProcessMixtureModel;
@@ -35,9 +34,6 @@ import gov.sandia.cognition.util.Randomized;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Clustering algorithm that wraps Dirichlet Process Mixture Model.  DPMM
@@ -126,7 +122,7 @@ public class DirichletProcessClustering
      * Dimensionality of the observations
      */
     public DirichletProcessClustering(
-        int dimensionality )
+        final int dimensionality )
     {
         this( new ParallelDirichletProcessMixtureModel<Vector>() );
         this.setMaxIterations( DEFAULT_SAMPLES );
@@ -147,7 +143,7 @@ public class DirichletProcessClustering
      * Dirichlet Process Mixture model that is being wrapped
      */
     public DirichletProcessClustering(
-        DirichletProcessMixtureModel<Vector> algorithm )
+        final DirichletProcessMixtureModel<Vector> algorithm )
     {
         super( algorithm );
         this.result = null;
@@ -159,13 +155,15 @@ public class DirichletProcessClustering
         return (DirichletProcessClustering) super.clone();
     }
 
+    @Override
     public ArrayList<GaussianCluster> getResult()
     {
         return this.result;
     }
 
+    @Override
     public ArrayList<GaussianCluster> learn(
-        Collection<? extends Vector> data)
+        final Collection<? extends Vector> data)
     {
         this.result = null;
 
@@ -176,7 +174,7 @@ public class DirichletProcessClustering
                 new DirichletProcessMixtureModel.MultivariateMeanCovarianceUpdater( dim ) );
         }
 
-        DataHistogram<DirichletProcessMixtureModel.Sample<Vector>> dpmm =
+        DataDistribution<DirichletProcessMixtureModel.Sample<Vector>> dpmm =
             this.getAlgorithm().learn(data);
 
         int maxIndex = -1;
@@ -211,17 +209,20 @@ public class DirichletProcessClustering
 
     }
 
+    @Override
     public Random getRandom()
     {
         return this.getAlgorithm().getRandom();
     }
 
+    @Override
     public void setRandom(
-        Random random)
+        final Random random)
     {
         this.getAlgorithm().setRandom(random);
     }
    
+    @Override
     public NamedValue<Integer> getPerformance()
     {
 
@@ -239,12 +240,14 @@ public class DirichletProcessClustering
         return new DefaultNamedValue<Integer>( PERFORMANCE_DESCRIPTION, numClusters );
     }
 
+    @Override
     public boolean getKeepGoing()
     {
         return (this.getAlgorithm() != null) ? this.getAlgorithm().getKeepGoing() : false;
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public Collection<? extends Vector> getData()
     {
         return (this.getAlgorithm() != null) ? (Collection<? extends Vector>) this.getAlgorithm().getData() : null;

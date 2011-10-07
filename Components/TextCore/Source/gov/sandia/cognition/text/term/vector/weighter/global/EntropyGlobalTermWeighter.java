@@ -89,8 +89,8 @@ public class EntropyGlobalTermWeighter
     @Override
     public EntropyGlobalTermWeighter clone()
     {
-        final EntropyGlobalTermWeighter clone = (EntropyGlobalTermWeighter)
-            super.clone();
+        final EntropyGlobalTermWeighter clone =
+            (EntropyGlobalTermWeighter) super.clone();
         clone.entropy = ObjectUtil.cloneSafe(this.entropy);
         return clone;
     }
@@ -142,8 +142,8 @@ public class EntropyGlobalTermWeighter
             // Need to update the entropy. Start by creating an empty vector to
             // hold it.
             final int dimensionality = this.getDimensionality();
-            final Vector newEntropy = this.getVectorFactory().createVector(
-                dimensionality);
+            final Vector newEntropy =
+                this.getVectorFactory().createVector(dimensionality);
             final double logDocumentCount = Math.log(this.documentCount);
             for (VectorEntry entry : this.termGlobalFrequencies)
             {
@@ -154,12 +154,10 @@ public class EntropyGlobalTermWeighter
 
                 // Calculate the actual entropy values.
                 double value = 1.0;
-                if (termOccurrences != 0.0)
+                if( (termOccurrences != 0.0) && (logDocumentCount != 0.0) )
                 {
-                    value +=
-                        (termEntropySum / termOccurrences
-                            - Math.log(termOccurrences))
-                        / logDocumentCount;
+                    value += (termEntropySum / termOccurrences - Math.log(termOccurrences))/
+                        logDocumentCount;
                 }
 
                 newEntropy.setElement(index, value);

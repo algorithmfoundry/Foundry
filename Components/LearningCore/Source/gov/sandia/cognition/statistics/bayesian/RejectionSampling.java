@@ -19,10 +19,10 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.algorithm.minimization.line.LineMinimizerDerivativeFree;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.statistics.DataHistogram;
+import gov.sandia.cognition.statistics.DataDistribution;
 import gov.sandia.cognition.statistics.ProbabilityFunction;
 import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.AbstractRandomized;
@@ -54,7 +54,7 @@ import java.util.Random;
 )
 public class RejectionSampling<ObservationType,ParameterType>
     extends AbstractRandomized
-    implements BayesianEstimator<ObservationType,ParameterType,DataHistogram<ParameterType>>
+    implements BayesianEstimator<ObservationType,ParameterType,DataDistribution<ParameterType>>
 {
 
     /**
@@ -92,11 +92,11 @@ public class RejectionSampling<ObservationType,ParameterType>
     }
 
     @Override
-    public DataHistogram<ParameterType> learn(
+    public DataDistribution<ParameterType> learn(
         final Collection<? extends ObservationType> data)
     {
-        DataHistogram<ParameterType> retval =
-            new MapBasedDataHistogram<ParameterType>( this.getNumSamples() );
+        DataDistribution<ParameterType> retval =
+            new DefaultDataDistribution<ParameterType>( this.getNumSamples() );
 
         for( int n = 0; n < numSamples; n++ )
         {
@@ -114,7 +114,7 @@ public class RejectionSampling<ObservationType,ParameterType>
                     break;
                 }
             }
-            retval.add(parameter);
+            retval.increment(parameter);
         }
 
         return retval;

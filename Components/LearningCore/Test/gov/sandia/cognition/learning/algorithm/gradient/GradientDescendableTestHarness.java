@@ -48,7 +48,7 @@ public class GradientDescendableTestHarness extends TestCase
         Vector input )
     {
         
-        System.out.print( "testGradient: " + instance.getClass() );
+        System.out.print( "testGradient: " + instance.getClass().getSimpleName() );
 
         // Test the (presumed) gradient against the first-order approximation
         GradientDescendableApproximator approx = 

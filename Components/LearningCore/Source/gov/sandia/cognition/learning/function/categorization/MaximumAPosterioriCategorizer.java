@@ -23,9 +23,9 @@ import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.math.Ring;
 import gov.sandia.cognition.statistics.AbstractDistribution;
 import gov.sandia.cognition.statistics.ComputableDistribution;
-import gov.sandia.cognition.statistics.PointMassDistribution;
+import gov.sandia.cognition.statistics.DataDistribution;
 import gov.sandia.cognition.statistics.ProbabilityFunction;
-import gov.sandia.cognition.statistics.distribution.MapBasedPointMassDistribution;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.ObjectUtil;
@@ -63,7 +63,7 @@ public class MaximumAPosterioriCategorizer<ObservationType,CategoryType>
     /**
      * PMF of the various categories
      */
-    PointMassDistribution.PMF<CategoryType> categoryPriors;
+    DataDistribution.PMF<CategoryType> categoryPriors;
 
     /**
      * Map that contains the probability functions for the observations
@@ -76,7 +76,7 @@ public class MaximumAPosterioriCategorizer<ObservationType,CategoryType>
      */
     public MaximumAPosterioriCategorizer()
     {
-        this.categoryPriors = new MapBasedPointMassDistribution.PMF<CategoryType>( 2 );
+        this.categoryPriors = new DefaultDataDistribution.PMF<CategoryType>( 2 );
         this.categoryConditionals =
             new HashMap<CategoryType, ProbabilityFunction<ObservationType>>( 2 );
     }
@@ -100,11 +100,11 @@ public class MaximumAPosterioriCategorizer<ObservationType,CategoryType>
      * Conditional probability function of observations for the category
      */
     public void addCategory(
-        CategoryType category,
-        double mass,
-        ProbabilityFunction<ObservationType> conditional )
+        final CategoryType category,
+        final double mass,
+        final ProbabilityFunction<ObservationType> conditional )
     {
-        this.categoryPriors.add(category, mass);
+        this.categoryPriors.increment(category, mass);
         this.categoryConditionals.put( category, conditional );
     }
 
@@ -118,7 +118,7 @@ public class MaximumAPosterioriCategorizer<ObservationType,CategoryType>
      * the given category.
      */
     public WeightedValue<ProbabilityFunction<ObservationType>> getCategory(
-        CategoryType category )
+        final CategoryType category )
     {
         ProbabilityFunction<ObservationType> conditional =
             this.categoryConditionals.get(category);
@@ -127,20 +127,22 @@ public class MaximumAPosterioriCategorizer<ObservationType,CategoryType>
             conditional, prior );
     }
 
+    @Override
     public Set<? extends CategoryType> getCategories()
     {
         return this.categoryConditionals.keySet();
     }
 
+    @Override
     public CategoryType evaluate(
-        ObservationType input)
+        final ObservationType input)
     {
         return this.evaluateWithDiscriminant(input).getValue();
     }
     
     @Override
     public DefaultWeightedValueDiscriminant<CategoryType> evaluateWithDiscriminant(
-        ObservationType input)
+        final ObservationType input)
     {
         CategoryType maxCategory = null;
         double maxPosterior = Double.NEGATIVE_INFINITY;
@@ -171,8 +173,8 @@ public class MaximumAPosterioriCategorizer<ObservationType,CategoryType>
      * Posterior likelihood of the observation given the category.
      */
     public double computePosterior(
-        ObservationType observation,
-        CategoryType category )
+        final ObservationType observation,
+        final CategoryType category )
     {
 
         ProbabilityFunction<ObservationType> categoryConditional =
@@ -242,6 +244,7 @@ public class MaximumAPosterioriCategorizer<ObservationType,CategoryType>
 
     }
 
+    @Override
     public ArrayList<? extends ObservationType> sample(
         Random random,
         int numSamples)
@@ -258,7 +261,6 @@ public class MaximumAPosterioriCategorizer<ObservationType,CategoryType>
         }
         return observations;
     }
-
 
     /**
      * Learner for the MAP categorizer
@@ -291,7 +293,7 @@ public class MaximumAPosterioriCategorizer<ObservationType,CategoryType>
          * category.
          */
         public Learner(
-            BatchLearner<Collection<? extends ObservationType>, ? extends ComputableDistribution<ObservationType>> conditionalLearner)
+            final BatchLearner<Collection<? extends ObservationType>, ? extends ComputableDistribution<ObservationType>> conditionalLearner)
         {
             this.conditionalLearner = conditionalLearner;
         }
@@ -307,16 +309,17 @@ public class MaximumAPosterioriCategorizer<ObservationType,CategoryType>
             return clone;
         }
 
+        @Override
         public MaximumAPosterioriCategorizer<ObservationType, CategoryType> learn(
-            Collection<? extends InputOutputPair<? extends ObservationType, CategoryType>> data)
+            final Collection<? extends InputOutputPair<? extends ObservationType, CategoryType>> data)
         {
-            PointMassDistribution.PMF<CategoryType> categoryPrior =
-                new MapBasedPointMassDistribution.PMF<CategoryType>();
+            DataDistribution.PMF<CategoryType> categoryPrior =
+                new DefaultDataDistribution.PMF<CategoryType>();
             Map<CategoryType,LinkedList<ObservationType>> categoryData =
                 new HashMap<CategoryType, LinkedList<ObservationType>>();
             for( InputOutputPair<? extends ObservationType,CategoryType> pair : data )
             {
-                categoryPrior.add( pair.getOutput(), 1.0 );
+                categoryPrior.increment( pair.getOutput() );
                 LinkedList<ObservationType> categoryValues = categoryData.get( pair.getOutput() );
                 if( categoryValues == null )
                 {
@@ -340,7 +343,7 @@ public class MaximumAPosterioriCategorizer<ObservationType,CategoryType>
                     distribution.getProbabilityFunction();
 
                 categorizer.addCategory(
-                    category, categoryPrior.getMass(category), conditional );
+                    category, categoryPrior.get(category), conditional );
             }
 
             return categorizer;

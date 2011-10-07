@@ -16,7 +16,7 @@ package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.collection.IntegerCollection;
+import gov.sandia.cognition.collection.IntegerSpan;
 import gov.sandia.cognition.math.ProbabilityUtil;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
@@ -174,11 +174,11 @@ public class GeometricDistribution
     }
 
     @Override
-    public IntegerCollection getDomain()
+    public IntegerSpan getDomain()
     {
         final double std = Math.sqrt( this.getVariance() );
         final int max = (int) Math.ceil( std*10.0 + 10.0 );
-        return new IntegerCollection( this.getMinSupport(), max);
+        return new IntegerSpan( this.getMinSupport(), max);
     }
 
     @Override

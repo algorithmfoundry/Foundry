@@ -18,7 +18,7 @@ import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.learning.algorithm.AbstractAnytimeBatchLearner;
-import gov.sandia.cognition.learning.function.vector.MatrixMultiplyVectorFunction;
+import gov.sandia.cognition.learning.function.vector.MultivariateDiscriminant;
 import gov.sandia.cognition.math.MultivariateStatisticsUtil;
 import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.VectorFactory;
@@ -192,7 +192,7 @@ public class GeneralizedHebbianAlgorithm
         }
      
         this.setResult( new PrincipalComponentsAnalysisFunction(
-            this.mean, new MatrixMultiplyVectorFunction( Umatrix ) ) );
+            this.mean, new MultivariateDiscriminant( Umatrix ) ) );
         
     }
     

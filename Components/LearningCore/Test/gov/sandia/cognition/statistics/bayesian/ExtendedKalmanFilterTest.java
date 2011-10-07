@@ -16,8 +16,8 @@ package gov.sandia.cognition.statistics.bayesian;
 
 import gov.sandia.cognition.evaluator.AbstractStatefulEvaluator;
 import gov.sandia.cognition.learning.function.scalar.AtanFunction;
-import gov.sandia.cognition.learning.function.vector.MatrixMultiplyVectorFunction;
-import gov.sandia.cognition.learning.function.vector.SquashedMatrixMultiplyVectorFunction;
+import gov.sandia.cognition.learning.function.vector.MultivariateDiscriminant;
+import gov.sandia.cognition.learning.function.vector.GeneralizedLinearModel;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
@@ -60,8 +60,8 @@ public class ExtendedKalmanFilterTest
         int stateDim = 2;
         int outputDim = 1;
 
-        SquashedMatrixMultiplyVectorFunction observationModel =
-            new SquashedMatrixMultiplyVectorFunction(
+        GeneralizedLinearModel observationModel =
+            new GeneralizedLinearModel(
                 stateDim, outputDim, new AtanFunction() );
         StateSummer motionModel = new StateSummer(stateDim);
         Vector input = VectorFactory.getDefault().createVector(stateDim);
@@ -144,8 +144,8 @@ public class ExtendedKalmanFilterTest
         int stateDim = 2;
         int outputDim = 1;
 
-        SquashedMatrixMultiplyVectorFunction observationModel =
-            new SquashedMatrixMultiplyVectorFunction(
+        GeneralizedLinearModel observationModel =
+            new GeneralizedLinearModel(
                 stateDim, outputDim, new AtanFunction() );
         StateSummer motionModel = new StateSummer(stateDim);
         Vector input = VectorFactory.getDefault().createVector(stateDim);
@@ -178,8 +178,8 @@ public class ExtendedKalmanFilterTest
         Matrix B = MatrixFactory.getDefault().createIdentity(dim, dim);
         Matrix C = MatrixFactory.getDefault().createIdentity(dim, dim);
         LinearDynamicalSystem model = new LinearDynamicalSystem( A, B, C );
-        MatrixMultiplyVectorFunction outputModel =
-            new MatrixMultiplyVectorFunction( C );
+        MultivariateDiscriminant outputModel =
+            new MultivariateDiscriminant( C );
 
         Vector input = VectorFactory.getDefault().createVector(dim,0.1);
         Matrix modelCovariance = MatrixFactory.getDefault().createIdentity(dim,dim);

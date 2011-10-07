@@ -18,7 +18,7 @@ import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.DefaultWeightedTargetEstimatePair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.data.TargetEstimatePair;
-import gov.sandia.cognition.learning.function.vector.MatrixMultiplyVectorFunction;
+import gov.sandia.cognition.learning.function.vector.MultivariateDiscriminant;
 import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
@@ -57,7 +57,7 @@ public class SumSquaredErrorCostFunctionTest
     }
 
     @Override
-    public MatrixMultiplyVectorFunction createEvaluator()
+    public MultivariateDiscriminant createEvaluator()
     {
         return this.createVectorFunction();
     }
@@ -125,7 +125,7 @@ public class SumSquaredErrorCostFunctionTest
         
         RingAccumulator<Vector> actual = new RingAccumulator<Vector>();
         double weightSum = 0.0;
-        MatrixMultiplyVectorFunction fhat = this.createEvaluator();
+        MultivariateDiscriminant fhat = this.createEvaluator();
         for( InputOutputPair<? extends Vector,Vector> sample : instance.getCostParameters() )
         {
             Vector input = sample.getInput();
@@ -163,7 +163,7 @@ public class SumSquaredErrorCostFunctionTest
         System.out.println( "cache" );
 
         SumSquaredErrorCostFunction instance = this.createInstance();
-        MatrixMultiplyVectorFunction fhat = this.createEvaluator();
+        MultivariateDiscriminant fhat = this.createEvaluator();
         SumSquaredErrorCostFunction.Cache cache = 
             SumSquaredErrorCostFunction.Cache.compute( fhat, instance.getCostParameters() );
         

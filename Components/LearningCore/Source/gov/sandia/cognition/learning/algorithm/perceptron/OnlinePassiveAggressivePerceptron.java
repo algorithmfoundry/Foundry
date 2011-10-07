@@ -7,7 +7,8 @@
  * Copyright January 25, 2011, Sandia Corporation.
  * Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive 
  * license for use of this work by or on behalf of the U.S. Government. Export 
- * of this program may require a license from the United States Government. 
+ * of this program may require a license from the United States Government.
+ *
  */
 
 package gov.sandia.cognition.learning.algorithm.perceptron;
@@ -31,17 +32,17 @@ import gov.sandia.cognition.util.ArgumentChecker;
  * implement the soft-margin variants (PA-I and PA-II).
  * <br/><br/>
  * Solves the optimization problem: <br/>
- *      w_{t+1} = argmin_{w \in R^n} 0.5 ||w - w_t||^2
- *      such that
- *      l(w; (x_t, y_t)) = 0
- * where l(w; (x_t, y_t)) is the hinge loss (0 if y(w * x) >= 1) and
+ * <BR>     w_{t+1} = argmin_{w \in R^n} 0.5 ||w - w_t||^2
+ * <BR>     such that
+ * <BR>     l(w; (x_t, y_t)) = 0
+ * <BR> where l(w; (x_t, y_t)) is the hinge loss (0 if y(w * x) >= 1) and
  * 1 - y(w * x) otherwise.
  *
  * <br/><br/>
  * The actual update step of the PA algorithm is simple:
- *      w_{t+1} = w_t + \tau_t * y_t * x_t
- * where
- *      \tau_t = l_t / ||x_t||^2
+ * <BR>     w_{t+1} = w_t + \tau_t * y_t * x_t
+ * <BR>where
+ * <BR>     \tau_t = l_t / ||x_t||^2
  *
  * <br/><br/>
  *

@@ -18,7 +18,7 @@ import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.ConstantEvaluator;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.Collection;
 
@@ -60,24 +60,25 @@ public class MostFrequentLearner<OutputType>
      * @param   data The dataset of input-output pairs to use.
      * @return  A constant evaluator for the most frequent output value.
      */
+    @Override
     public ConstantEvaluator<OutputType> learn(
-        Collection<? extends InputOutputPair<? extends Object, OutputType>> data )
+        final Collection<? extends InputOutputPair<? extends Object, OutputType>> data )
     {
         // We are going to count up how many times each value occurs.
-        final MapBasedDataHistogram<OutputType> counts = 
-            new MapBasedDataHistogram<OutputType>();
+        final DefaultDataDistribution<OutputType> counts =
+            new DefaultDataDistribution<OutputType>();
         
         for (InputOutputPair<?, ? extends OutputType> example : data)
         {
-            counts.add(example.getOutput());
+            counts.increment(example.getOutput());
         }
         
         // Create the resulting evaluator.
         final ConstantEvaluator<OutputType> result = 
             new ConstantEvaluator<OutputType>();
-        if (counts.getTotalCount() > 0)
+        if (counts.getTotal() > 0)
         {
-            result.setValue(counts.getMaximumValue());
+            result.setValue(counts.getMaxValueKey());
         }
         // else - There is no most frequent output value.
         return result;

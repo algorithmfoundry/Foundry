@@ -10,7 +10,6 @@
  * license from the United States Government. See CopyrightHistory.txt for
  * complete details.
  *
- *
  */
 
 package gov.sandia.cognition.learning.algorithm.tree;
@@ -111,6 +110,7 @@ public class RegressionTreeLearner<InputType>
         this.setMaxDepth(maxDepth);
     }
 
+    @Override
     public RegressionTree<InputType> learn(
         Collection<? extends InputOutputPair<? extends InputType, Double>> data)
     {
@@ -135,6 +135,7 @@ public class RegressionTreeLearner<InputType>
      * @param  parent The parent node.
      * @return The regression tree node learned from the given data.
      */
+    @Override
     protected RegressionTreeNode<InputType, ?> learnNode(
         final Collection<? extends InputOutputPair<? extends InputType, Double>> data,
         final AbstractDecisionTreeNode<InputType, Double, ?> parent)

@@ -35,11 +35,11 @@ public class VectorFunctionLinearDiscriminant<InputType>
 {
 
     /**
-     * The dot product of the weightVector with the output of the
+     * The dot product of the discriminant with the output of the
      * vectorFunction is the output (scalar) value. Must have the
      * same dimensions as the outputDimensionality of vectorFunction.
      */
-    private Vector weightVector;
+    private LinearDiscriminant discriminant;
     
     /**
      * Maps the input space to a Vector
@@ -50,17 +50,17 @@ public class VectorFunctionLinearDiscriminant<InputType>
      * Creates a new instance of VectorFunctionLinearDiscriminant 
      * @param vectorFunction
      * Maps the input space to a Vector
-     * @param weightVector 
-     * The dot product of the weightVector with the output of the
+     * @param discriminant
+     * The dot product of the discriminant with the output of the
      * vectorFunction is the output (scalar) value. Must have the
      * same dimensions as the outputDimensionality of vectorFunction.
      */
     public VectorFunctionLinearDiscriminant(
         Evaluator<? super InputType,Vector> vectorFunction,
-        Vector weightVector )
+        LinearDiscriminant discriminant )
     {
         this.setVectorFunction(vectorFunction);
-        this.setWeightVector(weightVector);
+        this.setDiscriminant(discriminant);
     }
 
     @Override
@@ -71,33 +71,33 @@ public class VectorFunctionLinearDiscriminant<InputType>
             (VectorFunctionLinearDiscriminant<InputType>) super.clone();
         clone.setVectorFunction(
             ObjectUtil.cloneSmart( this.getVectorFunction() ) );
-        clone.setWeightVector( ObjectUtil.cloneSafe( this.getWeightVector() ) );
+        clone.setDiscriminant( ObjectUtil.cloneSafe( this.getDiscriminant() ) );
         return clone;
     }
 
     /**
-     * Getter for weightVector
+     * Getter for discriminant
      * @return
-     * The dot product of the weightVector with the output of the
+     * The dot product of the discriminant with the output of the
      * vectorFunction is the output (scalar) value. Must have the
      * same dimensions as the outputDimensionality of vectorFunction.
      */
-    public Vector getWeightVector()
+    public LinearDiscriminant getDiscriminant()
     {
-        return this.weightVector;
+        return this.discriminant;
     }
 
     /**
-     * Setter for weightVector
-     * @param weightVector
-     * The dot product of the weightVector with the output of the
+     * Setter for discriminant
+     * @param discriminant
+     * The dot product of the discriminant with the output of the
      * vectorFunction is the output (scalar) value. Must have the
      * same dimensions as the outputDimensionality of vectorFunction.
      */
-    public void setWeightVector(
-        Vector weightVector )
+    public void setDiscriminant(
+        LinearDiscriminant discriminant )
     {        
-        this.weightVector = weightVector;
+        this.discriminant = discriminant;
     }
 
     /**
@@ -125,18 +125,18 @@ public class VectorFunctionLinearDiscriminant<InputType>
         InputType input )
     {
         Vector vfOutput = this.getVectorFunction().evaluate(input);
-        return this.getWeightVector().dotProduct(vfOutput);
+        return this.getDiscriminant().evaluate(vfOutput);
     }
 
     public Vector convertToVector()
     {
-        return this.getWeightVector();
+        return this.getDiscriminant().convertToVector();
     }
 
     public void convertFromVector(
         Vector parameters )
     {
-        this.setWeightVector(parameters);
+        this.getDiscriminant().convertFromVector(parameters);
     }
 
 }

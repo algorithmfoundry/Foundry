@@ -14,6 +14,7 @@
 
 package gov.sandia.cognition.statistics.distribution;
 
+import gov.sandia.cognition.statistics.DataDistribution;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.WeightedValue;
@@ -56,13 +57,13 @@ public class MapBasedPointMassDistributionTest
      * @return
      * Instance.
      */
-    MapBasedPointMassDistribution<String> createInstance()
+    DefaultDataDistribution<String> createInstance()
     {
-        MapBasedPointMassDistribution<String> f =
-            new MapBasedPointMassDistribution<String>();
-        f.add( "a", 0.5 );
-        f.add( "b", 2.0 );
-        f.add( "c", 2.5 );
+        DefaultDataDistribution<String> f =
+            new DefaultDataDistribution<String>();
+        f.increment( "a", 0.5 );
+        f.increment( "b", 2.0 );
+        f.increment( "c", 2.5 );
         return f;
     }
 
@@ -74,306 +75,275 @@ public class MapBasedPointMassDistributionTest
     {
         System.out.println( "Constructors" );
 
-        MapBasedPointMassDistribution<String> instance =
-            new MapBasedPointMassDistribution<String>();
+        DefaultDataDistribution<String> instance =
+            new DefaultDataDistribution<String>();
         assertEquals( 0, instance.getDomain().size() );
-        assertEquals( 0.0, instance.getTotalMass() );
+        assertEquals( 0.0, instance.getTotal() );
 
-        instance = new MapBasedPointMassDistribution<String>(2);
+        instance = new DefaultDataDistribution<String>(2);
         assertEquals( 0, instance.getDomain().size() );
-        assertEquals( 0.0, instance.getTotalMass() );
+        assertEquals( 0.0, instance.getTotal() );
     }
 
     /**
-     * Test of clone method, of class MapBasedPointMassDistribution.
+     * Test of clone method, of class DefaultDataDistribution.
      */
     public void testClone()
     {
         System.out.println("clone");
-        MapBasedPointMassDistribution<String> f = this.createInstance();
+        DefaultDataDistribution<String> f = this.createInstance();
         @SuppressWarnings("unchecked")
-        MapBasedPointMassDistribution<String> clone = f.clone();
+        DefaultDataDistribution<String> clone = f.clone();
         assertNotSame( clone, f );
         assertNotNull( clone );
-        assertEquals( f.getTotalMass(), clone.getTotalMass() );
-        assertNotSame( f.getDataMap(), clone.getDataMap() );
-        assertEquals( f.getDomain().size(), clone.getDataMap().size() );
+        assertEquals( f.getTotal(), clone.getTotal() );
+        assertNotSame( f.asMap(), clone.asMap() );
+        assertEquals( f.getDomain().size(), clone.asMap().size() );
         for( String value : f.getDomain() )
         {
-            assertEquals( f.getMass(value), clone.getMass(value) );
+            assertEquals( f.get(value), clone.get(value) );
         }
 
     }
 
     /**
-     * Test of getMean method, of class MapBasedPointMassDistribution.
-     */
-    public void testGetMean()
-    {
-        System.out.println("getMean");
-        MapBasedPointMassDistribution<String> f = this.createInstance();
-        try
-        {
-            String mean = f.getMean();
-            fail( "Mean is not defined" );
-        }
-        catch (Exception e)
-        {
-            System.out.println( "Good: " + e );
-        }
-
-    }
-
-    /**
-     * Test of sample method, of class MapBasedPointMassDistribution.
+     * Test of sample method, of class DefaultDataDistribution.
      */
     public void testSample()
     {
         System.out.println("sample");
         int numSamples = 10;
-        MapBasedPointMassDistribution<String> f = this.createInstance();
+        DefaultDataDistribution<String> f = this.createInstance();
         Collection<String> samples = f.sample( RANDOM, numSamples );
         assertEquals( numSamples, samples.size() );
     }
 
     /**
-     * Test of add method, of class MapBasedPointMassDistribution.
+     * Test of add method, of class DefaultDataDistribution.
      */
     public void testAdd()
     {
         System.out.println("add");
 
-        MapBasedPointMassDistribution<String> f = this.createInstance();
+        DefaultDataDistribution<String> f = this.createInstance();
         double tm = 5.0;
         for( String value : f.getDomain() )
         {
-            double w1 = f.getMass(value);
-            f.add( value );
-            assertEquals( 1.0+w1, f.getMass(value) );
+            double w1 = f.get(value);
+            f.increment( value );
+            assertEquals( 1.0+w1, f.get(value) );
             tm += 1.0;
-            assertEquals( tm, f.getTotalMass() );
+            assertEquals( tm, f.getTotal() );
         }
 
         int n0 = f.getDomain().size();
         String z = "z";
-        assertEquals( 0.0, f.getMass(z) );
-        assertEquals( tm, f.getTotalMass() );
-        f.add( z );
-        assertEquals( 1.0, f.getMass(z) );
-        assertEquals( tm+1.0, f.getTotalMass() );
+        assertEquals( 0.0, f.get(z) );
+        assertEquals( tm, f.getTotal() );
+        f.increment( z );
+        assertEquals( 1.0, f.get(z) );
+        assertEquals( tm+1.0, f.getTotal() );
         assertEquals( n0+1, f.getDomain().size() );
 
     }
 
     /**
-     * Test of add method, of class MapBasedPointMassDistribution.
+     * Test of add method, of class DefaultDataDistribution.
      */
     public void testAdd_GenericType_double()
     {
         System.out.println("add");
 
-        MapBasedPointMassDistribution<String> f = this.createInstance();
+        DefaultDataDistribution<String> f = this.createInstance();
         double tm = 5.0;
         for( String value : f.getDomain() )
         {
-            double w1 = f.getMass(value);
+            double w1 = f.get(value);
             double mass = RANDOM.nextDouble();
             tm += mass;
-            f.add( value, mass );
-            assertEquals( w1+mass, f.getMass(value) );
-            assertEquals( tm, f.getTotalMass() );
+            f.increment( value, mass );
+            assertEquals( w1+mass, f.get(value) );
+            assertEquals( tm, f.getTotal() );
         }
 
         int n0 = f.getDomain().size();
         String z = "z";
-        assertEquals( 0.0, f.getMass(z) );
-        assertEquals( tm, f.getTotalMass() );
-        f.add( z, 0.0 );
-        assertEquals( 0.0, f.getMass(z) );
+        assertEquals( 0.0, f.get(z) );
+        assertEquals( tm, f.getTotal() );
+        f.increment( z, 0.0 );
+        assertEquals( 0.0, f.get(z) );
         assertEquals( n0, f.getDomain().size() );
 
         double mz = RANDOM.nextDouble();
         tm += mz;
-        f.add( z, mz );
-        assertEquals( mz, f.getMass(z) );
-        assertEquals( tm, f.getTotalMass() );
+        f.increment( z, mz );
+        assertEquals( mz, f.get(z) );
+        assertEquals( tm, f.getTotal() );
         assertEquals( n0+1, f.getDomain().size() );
 
-        try
-        {
-            f.add( z, -1.0 );
-            fail( "Weight must be >= 0.0" );
-        }
-        catch (Exception e)
-        {
-            System.out.println( "Good: " + e );
-        }
-
-        assertEquals( tm, f.getTotalMass() );
+        f.increment(z);
+        double before = f.get(z);
+        f.increment( z, -1.0 );
+        assertEquals( before-1.0, f.get(z) );
+        assertEquals( tm, f.getTotal() );
 
     }
 
     /**
-     * Test of remove method, of class MapBasedPointMassDistribution.
+     * Test of remove method, of class DefaultDataDistribution.
      */
     public void testRemove()
     {
         System.out.println("remove");
 
-        MapBasedPointMassDistribution<String> f = this.createInstance();
+        DefaultDataDistribution<String> f = this.createInstance();
         double tm = 5.0;
 
         String z = "z";
         int nz = f.getDomain().size();
-        f.add( z );
+        f.increment( z );
         assertEquals( nz+1, f.getDomain().size() );
-        assertEquals( 1.0, f.getMass(z) );
-        f.remove(z);
-        assertEquals( tm, f.getTotalMass() );
-        assertEquals( nz, f.getDomain().size() );
-        assertEquals( 0.0, f.getMass(z) );
-        f.add( z, 1.0 + RANDOM.nextDouble() );
+        assertEquals( 1.0, f.get(z) );
+        f.decrement(z);
+        assertEquals( tm, f.getTotal() );
         assertEquals( nz+1, f.getDomain().size() );
-        f.remove(z);
+        assertEquals( 0.0, f.get(z) );
+        f.compact();
         assertEquals( nz, f.getDomain().size() );
+        assertEquals( 0.0, f.get(z) );
+        f.increment( z, 1.0 + RANDOM.nextDouble() );
+        assertEquals( nz+1, f.getDomain().size() );
+        f.decrement(z);
+        assertEquals( nz+1, f.getDomain().size() );
+        f.compact();
+        assertEquals( nz+1, f.getDomain().size() );
 
     }
 
     /**
-     * Test of remove method, of class MapBasedPointMassDistribution.
+     * Test of remove method, of class DefaultDataDistribution.
      */
     public void testRemove_GenericType_double()
     {
         System.out.println("remove");
-        MapBasedPointMassDistribution<String> f = this.createInstance();
+        DefaultDataDistribution<String> f = this.createInstance();
         double tm = 5.0;
         for( String value : f.getDomain() )
         {
-            double w1 = f.getMass(value);
+            double w1 = f.get(value);
             double rm = RANDOM.nextDouble();
             if( w1 > rm )
             {
                 tm -= rm;
-                f.remove( value, rm );
+                f.decrement( value, rm );
                 double em = w1-rm;
-                assertEquals( em, f.getMass(value) );
-                assertEquals( tm, f.getTotalMass() );
+                assertEquals( em, f.get(value) );
+                assertEquals( tm, f.getTotal() );
             }
         }
 
         String z = "z";
         int nz = f.getDomain().size();
         double value = RANDOM.nextDouble();
-        f.add( z, value );
+        f.increment( z, value );
         assertEquals( nz+1, f.getDomain().size() );
-        assertEquals( value, f.getMass(z) );
+        assertEquals( value, f.get(z) );
 
-        f.remove( z, 0.0 );
+        f.decrement( z, 0.0 );
         assertEquals( nz+1, f.getDomain().size() );
-        assertEquals( value, f.getMass(z) );
+        assertEquals( value, f.get(z) );
 
-        f.remove(z, value*2.0);
+        f.decrement(z, value*2.0);
+        assertEquals( nz+1, f.getDomain().size() );
+        assertEquals( 0.0, f.get(z) );
+        f.compact();
         assertEquals( nz, f.getDomain().size() );
-        assertEquals( 0.0, f.getMass(z) );
-        assertEquals( tm, f.getTotalMass() );
-        f.add( z, value );
+        assertEquals( 0.0, f.get(z) );
+
+        assertEquals( tm, f.getTotal() );
+        f.increment( z, value );
         tm += value;
-        assertEquals( tm, f.getTotalMass() );
+        assertEquals( tm, f.getTotal() );
         assertEquals( nz+1, f.getDomain().size() );
         tm -= value/2.0;
-        f.remove(z, value/2.0);
+        f.decrement(z, value/2.0);
         assertEquals( nz+1, f.getDomain().size() );
-        assertEquals( value/2.0, f.getMass(z) );
-        assertEquals( tm, f.getTotalMass() );
+        assertEquals( value/2.0, f.get(z) );
+        assertEquals( tm, f.getTotal() );
 
-        try
-        {
-            f.remove( z, -1.0 );
-            fail( "Weight must be >= 0.0" );
-        }
-        catch (Exception e)
-        {
-            System.out.println( "Good: " + e );
-        }
-
-        assertEquals( tm, f.getTotalMass() );
+        f.increment(z,1.0);
+        double before = f.get(z);
+        f.decrement( z, -1.0 );
+        assertEquals( before+1.0, f.get(z) );
+        double expected = f.getTotal() - f.get(z);
+        f.decrement(z,1000.0);
+        assertEquals( 0.0, f.get(z) );
+        assertEquals( expected, f.getTotal() );
 
     }
 
     /**
-     * Test of setMass method, of class MapBasedPointMassDistribution.
+     * Test of setMass method, of class DefaultDataDistribution.
      */
     public void testSetMass()
     {
         System.out.println("add");
 
-        MapBasedPointMassDistribution<String> f = this.createInstance();
+        DefaultDataDistribution<String> f = this.createInstance();
         double tm = 5.0;
         for( String value : f.getDomain() )
         {
-            double w1 = f.getMass(value);
+            double w1 = f.get(value);
             double mass = RANDOM.nextDouble();
             tm += mass - w1;
-            f.setMass( value, mass );
-            assertEquals( mass, f.getMass(value) );
-            assertEquals( tm, f.getTotalMass() );
+            f.set( value, mass );
+            assertEquals( mass, f.get(value) );
+            assertEquals( tm, f.getTotal() );
         }
 
         int n0 = f.getDomain().size();
         String z = "z";
-        assertEquals( 0.0, f.getMass(z) );
-        assertEquals( tm, f.getTotalMass() );
-        f.setMass( z, 0.0 );
-        assertEquals( 0.0, f.getMass(z) );
+        assertEquals( 0.0, f.get(z) );
+        assertEquals( tm, f.getTotal() );
+        f.set( z, 0.0 );
+        assertEquals( 0.0, f.get(z) );
         assertEquals( n0, f.getDomain().size() );
 
         double mz = RANDOM.nextDouble();
         tm += mz;
-        f.setMass( z, mz );
-        assertEquals( mz, f.getMass(z) );
-        assertEquals( tm, f.getTotalMass() );
+        f.set( z, mz );
+        assertEquals( mz, f.get(z) );
+        assertEquals( tm, f.getTotal() );
         assertEquals( n0+1, f.getDomain().size() );
 
-        boolean exceptionThrown = false;
-        try
-        {
-            f.setMass( z, -0.1 );
-        }
-        catch (IllegalArgumentException e)
-        {
-            exceptionThrown = true;
-        }
-        finally
-        {
-            assertTrue(exceptionThrown);
-        }
-
-        assertEquals( tm, f.getTotalMass() );
+        f.set( z, -0.1 );
+        assertEquals( 0.0, f.get(z) );
+        assertEquals( tm, f.getTotal() );
 
     }
 
     /**
-     * Test of getMass method, of class MapBasedPointMassDistribution.
+     * Test of getMass method, of class DefaultDataDistribution.
      */
-    public void testGetMass()
+    public void testget()
     {
         System.out.println("getMass");
 
-        MapBasedPointMassDistribution<String> f = this.createInstance();
-        assertEquals( 0.5, f.getMass("a") );
-        assertEquals( 2.0, f.getMass("b") );
-        assertEquals( 2.5, f.getMass("c") );
-        assertEquals( 0.0, f.getMass("z") );
+        DefaultDataDistribution<String> f = this.createInstance();
+        assertEquals( 0.5, f.get("a") );
+        assertEquals( 2.0, f.get("b") );
+        assertEquals( 2.5, f.get("c") );
+        assertEquals( 0.0, f.get("z") );
 
     }
 
 /**
-     * Test of getFraction method, of class MapBasedPointMassDistribution.
+     * Test of getFraction method, of class DefaultDataDistribution.
      */
     public void testGetFraction()
     {
-        MapBasedPointMassDistribution<String> instance =
-            new MapBasedPointMassDistribution<String>();
+        DefaultDataDistribution<String> instance =
+            new DefaultDataDistribution<String>();
         assertEquals(0.0, instance.getFraction("a"));
         assertEquals(0.0, instance.getFraction("b"));
         assertEquals(0.0, instance.getFraction("c"));
@@ -381,42 +351,42 @@ public class MapBasedPointMassDistributionTest
         
         double epsilon = 0.000000001;
 
-        instance.add("a");
+        instance.increment("a");
         assertEquals(1 / 1.0, instance.getFraction("a"), epsilon);
 
-        instance.add("a");
+        instance.increment("a");
         assertEquals(2 / 2.0, instance.getFraction("a"), epsilon);
 
-        instance.add("b");
+        instance.increment("b");
         assertEquals(2 / 3.0, instance.getFraction("a"), epsilon);
         assertEquals(1 / 3.0, instance.getFraction("b"), epsilon);
 
-        instance.add("c", 4.7);
+        instance.increment("c", 4.7);
         assertEquals(2 / 7.7, instance.getFraction("a"), epsilon);
         assertEquals(1 / 7.7, instance.getFraction("b"), epsilon);
         assertEquals(4.7 / 7.7, instance.getFraction("c"), epsilon);
 
-        instance.add("a", 2);
+        instance.increment("a", 2);
         assertEquals(4 / 9.7, instance.getFraction("a"), epsilon);
         assertEquals(1 / 9.7, instance.getFraction("b"), epsilon);
         assertEquals(4.7 / 9.7, instance.getFraction("c"), epsilon);
 
-        instance.remove("a", 1.0);
+        instance.decrement("a", 1.0);
         assertEquals(3 / 8.7, instance.getFraction("a"), epsilon);
         assertEquals(1 / 8.7, instance.getFraction("b"), epsilon);
         assertEquals(4.7 / 8.7, instance.getFraction("c"), epsilon);
 
-        instance.remove("c", 3);
+        instance.decrement("c", 3);
         assertEquals(3 / 5.7, instance.getFraction("a"), epsilon);
         assertEquals(1 / 5.7, instance.getFraction("b"), epsilon);
         assertEquals(1.7 / 5.7, instance.getFraction("c"), epsilon);
 
-        instance.remove("b", 1);
+        instance.decrement("b", 1);
         assertEquals(3 / 4.7, instance.getFraction("a"), epsilon);
         assertEquals(0 / 4.7, instance.getFraction("b"), epsilon);
         assertEquals(1.7 / 4.7, instance.getFraction("c"), epsilon);
 
-        instance.add("d");
+        instance.increment("d");
         assertEquals(3 / 5.7, instance.getFraction("a"), epsilon);
         assertEquals(0 / 5.7, instance.getFraction("b"), epsilon);
         assertEquals(1.7 / 5.7, instance.getFraction("c"), epsilon);
@@ -424,102 +394,89 @@ public class MapBasedPointMassDistributionTest
     }
 
     /**
-     * Test of getMaximumMass method, of class MapBasedPointMassDistribution.
+     * Test of getMaxValue method, of class DefaultDataDistribution.
      */
-    public void testGetMaximumMass()
+    public void testGetMaxValue()
     {
-        MapBasedPointMassDistribution<String> instance =
-            new MapBasedPointMassDistribution<String>();
-        assertEquals(0.0, instance.getMaximumMass());
+        DefaultDataDistribution<String> instance =
+            new DefaultDataDistribution<String>();
+        assertEquals(0.0, instance.getMaxValue());
 
-        instance.add("a");
-        assertEquals(1.0, instance.getMaximumMass());
-        instance.add("b");
-        assertEquals(1.0, instance.getMaximumMass());
-        instance.add("b");
-        assertEquals(2.0, instance.getMaximumMass());
-        instance.add("c", 7.4);
-        assertEquals(7.4, instance.getMaximumMass());
+        instance.increment("a");
+        assertEquals(1.0, instance.getMaxValue());
+        instance.increment("b");
+        assertEquals(1.0, instance.getMaxValue());
+        instance.increment("b");
+        assertEquals(2.0, instance.getMaxValue());
+        instance.increment("c", 7.4);
+        assertEquals(7.4, instance.getMaxValue());
     }
         
     /**
-     * Test of getMaximumValue method, of class MapBasedPointMassDistribution.
+     * Test of getMaxValueKey method, of class DefaultDataDistribution.
      */
-    public void testGetMaximumValue()
+    public void testgetMaxValueKey()
     {
-        MapBasedPointMassDistribution<String> instance =
-            new MapBasedPointMassDistribution<String>();
-        assertNull(instance.getMaximumValue());
+        DefaultDataDistribution<String> instance =
+            new DefaultDataDistribution<String>();
+        assertNull(instance.getMaxValueKey());
         
-        instance.add("a");
-        assertEquals("a", instance.getMaximumValue());
-        instance.add("b");
-        assertTrue("a".equals(instance.getMaximumValue())); // a should be the first value encountered.
-        instance.add("b");
-        assertEquals("b", instance.getMaximumValue());
-        instance.add("c", 7.4);
-        assertEquals("c", instance.getMaximumValue());
+        instance.increment("a");
+        assertEquals("a", instance.getMaxValueKey());
+        instance.increment("b");
+        assertTrue("a".equals(instance.getMaxValueKey())); // a should be the first value encountered.
+        instance.increment("b");
+        assertEquals("b", instance.getMaxValueKey());
+        instance.increment("c", 7.4);
+        assertEquals("c", instance.getMaxValueKey());
     }
 
     /**
-     * Test of getMaximumValue method, of class MapBasedPointMassDistribution.
+     * Test of getMaxValueKey method, of class DefaultDataDistribution.
      */
-    public void testGetMaximumValues()
+    public void testgetMaxValueKeys()
     {
-        MapBasedPointMassDistribution<String> instance =
-            new MapBasedPointMassDistribution<String>();
-        assertTrue(instance.getMaximumValues().isEmpty());
+        DefaultDataDistribution<String> instance =
+            new DefaultDataDistribution<String>();
+        assertTrue(instance.getMaxValueKeys().isEmpty());
 
-        instance.add("a");
-        assertEquals(1, instance.getMaximumValues().size());
-        assertTrue(instance.getMaximumValues().contains("a"));
-        assertTrue(instance.getMaximumValues(0.01).contains("a"));
+        instance.increment("a");
+        assertEquals(1, instance.getMaxValueKeys().size());
+        assertTrue(instance.getMaxValueKeys().contains("a"));
 
-        instance.add("b");
-        assertEquals(2, instance.getMaximumValues().size());
-        assertTrue(instance.getMaximumValues().contains("a"));
-        assertTrue(instance.getMaximumValues().contains("b"));
+        instance.increment("b");
+        assertEquals(2, instance.getMaxValueKeys().size());
+        assertTrue(instance.getMaxValueKeys().contains("a"));
+        assertTrue(instance.getMaxValueKeys().contains("b"));
 
-        assertEquals(2, instance.getMaximumValues(0.01).size());
-        assertTrue(instance.getMaximumValues(0.01).contains("a"));
-        assertTrue(instance.getMaximumValues(0.01).contains("b"));
+        instance.increment("b");
+        assertEquals(1, instance.getMaxValueKeys().size());
+        assertTrue(instance.getMaxValueKeys().contains("b"));
 
-        instance.add("b", 0.01);
-        assertEquals(2, instance.getMaximumValues(0.01).size());
-        assertTrue(instance.getMaximumValues(0.01).contains("a"));
-        assertTrue(instance.getMaximumValues(0.01).contains("b"));
-
-        instance.add("b");
-        assertEquals(1, instance.getMaximumValues().size());
-        assertTrue(instance.getMaximumValues().contains("b"));
-
-        instance.add("c", 7.4);
-        assertEquals(1, instance.getMaximumValues().size());
-        assertTrue(instance.getMaximumValues().contains("c"));
-        assertEquals(1, instance.getMaximumValues(0.01).size());
-        assertTrue(instance.getMaximumValues(0.01).contains("c"));
+        instance.increment("c", 7.4);
+        assertEquals(1, instance.getMaxValueKeys().size());
+        assertTrue(instance.getMaxValueKeys().contains("c"));
     }
 
     /**
-     * Test of getDomain method, of class MapBasedPointMassDistribution.
+     * Test of getDomain method, of class DefaultDataDistribution.
      */
     public void testGetDomain()
     {
         System.out.println("getDomain");
-        MapBasedPointMassDistribution<String> instance = this.createInstance();
+        DefaultDataDistribution<String> instance = this.createInstance();
         assertEquals( 3, instance.getDomain().size() );
 
     }
 
     /**
-     * Test of getDistributionFunction method, of class MapBasedPointMassDistribution.
+     * Test of getDistributionFunction method, of class DefaultDataDistribution.
      */
     public void testGetDistributionFunction()
     {
         System.out.println("getDistributionFunction");
-        MapBasedPointMassDistribution<String> instance = this.createInstance();
-        MapBasedPointMassDistribution.PMF<String> pmf =
-            instance.getProbabilityFunction();
+        DefaultDataDistribution<String> instance = this.createInstance();
+        DataDistribution.PMF<String> pmf = instance.getProbabilityFunction();
         assertNotNull( pmf );
         assertNotSame( instance, pmf );
     }
@@ -530,65 +487,65 @@ public class MapBasedPointMassDistributionTest
     public void testPMFGetDistributionFunction()
     {
         System.out.println("PMF.getDistributionFunction");
-        MapBasedPointMassDistribution.PMF<String> instance =
-            this.createInstance().getProbabilityFunction();
+        DefaultDataDistribution.PMF<String> instance =
+            (DefaultDataDistribution.PMF<String>) this.createInstance().getProbabilityFunction();
         assertSame( instance, instance.getProbabilityFunction() );
     }
 
     /**
-     * Test of getEntropy method, of class MapBasedPointMassDistribution.
+     * Test of getEntropy method, of class DefaultDataDistribution.
      */
     public void testPMFGetEntropy()
     {
         System.out.println("getEntropy");
-        MapBasedPointMassDistribution.PMF<String> instance =
+        DataDistribution.PMF<String> instance =
             this.createInstance().getProbabilityFunction();
         assertEquals( ProbabilityMassFunctionUtil.getEntropy( instance ), instance.getEntropy() );
     }
 
     /**
-     * Test of evaluate method, of class MapBasedPointMassDistribution.
+     * Test of evaluate method, of class DefaultDataDistribution.
      */
     public void testPMFEvaluate()
     {
         System.out.println("evaluate");
-        MapBasedPointMassDistribution.PMF<String> instance =
+        DataDistribution.PMF<String> instance =
             this.createInstance().getProbabilityFunction();
         for( String value : instance.getDomain() )
         {
-            assertEquals( instance.getMass(value)/instance.getTotalMass(), instance.evaluate(value) );
+            assertEquals( instance.get(value)/instance.getTotal(), instance.evaluate(value) );
         }
 
-        assertEquals( 0.0, instance.getMass("z") );
+        assertEquals( 0.0, instance.get("z") );
 
-        instance = new MapBasedPointMassDistribution.PMF<String>();
-        assertEquals( 0.0, instance.getMass("a") );
+        instance = new DefaultDataDistribution.PMF<String>();
+        assertEquals( 0.0, instance.get("a") );
 
-        instance = new MapBasedPointMassDistribution.PMF<String>();
-        assertEquals( 0.0, instance.getMass("z") );
-        assertEquals( 0.0, instance.getMass("z") );
-
-    }
-
-    /**
-     * Test of getDataMap method, of class MapBasedPointMassDistribution.
-     */
-    public void testGetDataMap()
-    {
-        System.out.println("getDataMap");
-        MapBasedPointMassDistribution<String> instance = this.createInstance();
-        assertNotNull( instance.getDataMap() );
+        instance = new DefaultDataDistribution.PMF<String>();
+        assertEquals( 0.0, instance.get("z") );
+        assertEquals( 0.0, instance.get("z") );
 
     }
 
     /**
-     * Test of getTotalMass method, of class MapBasedPointMassDistribution.
+     * Test of asMap method, of class DefaultDataDistribution.
      */
-    public void testGetTotalMass()
+    public void testasMap()
     {
-        System.out.println("getTotalMass");
-        MapBasedPointMassDistribution<String> instance = this.createInstance();
-        assertEquals( 5.0, instance.getTotalMass() );
+        System.out.println("asMap");
+        DefaultDataDistribution<String> instance = this.createInstance();
+        assertNotNull( instance.asMap() );
+
+    }
+
+    /**
+     * Test of getTotal method, of class DefaultDataDistribution.
+     */
+    public void testgetTotal()
+    {
+        System.out.println("getTotal");
+        DefaultDataDistribution<String> instance = this.createInstance();
+        assertEquals( 5.0, instance.getTotal() );
 
     }
 
@@ -599,16 +556,16 @@ public class MapBasedPointMassDistributionTest
     {
         System.out.println( "clear" );
 
-        MapBasedPointMassDistribution.PMF<String> instance =
+        DataDistribution.PMF<String> instance =
             this.createInstance().getProbabilityFunction();
-        assertEquals( 5.0, instance.getTotalMass() );
+        assertEquals( 5.0, instance.getTotal() );
         assertEquals( 3, instance.getDomain().size() );
         instance.clear();
-        assertEquals( 0.0, instance.getTotalMass() );
+        assertEquals( 0.0, instance.getTotal() );
         assertEquals( 0, instance.getDomain().size() );
 
         instance.clear();
-        assertEquals( 0.0, instance.getTotalMass() );
+        assertEquals( 0.0, instance.getTotal() );
         assertEquals( 0, instance.getDomain().size() );
         assertEquals( 0.0, instance.evaluate("z") );
 
@@ -620,7 +577,7 @@ public class MapBasedPointMassDistributionTest
     public void testToString()
     {
         System.out.println( "toString" );
-        MapBasedPointMassDistribution<String> instance = this.createInstance();
+        DefaultDataDistribution<String> instance = this.createInstance();
 
         String s = instance.toString();
         System.out.println( "Distribution:\n" + s );
@@ -635,24 +592,24 @@ public class MapBasedPointMassDistributionTest
     {
         System.out.println( "Learner" );
 
-        MapBasedPointMassDistribution<String> instance = this.createInstance();
+        DefaultDataDistribution<String> instance = this.createInstance();
 
         ArrayList<WeightedValue<String>> values =
             new ArrayList<WeightedValue<String>>( instance.getDomain().size() );
        for( String s : instance.getDomain() )
        {
-           values.add( new DefaultWeightedValue<String>( s, instance.getMass(s) ) );
+           values.add( new DefaultWeightedValue<String>( s, instance.get(s) ) );
        }
 
-        MapBasedPointMassDistribution.Learner<String> learner =
-            new MapBasedPointMassDistribution.Learner<String>();
+        DefaultDataDistribution.WeightedEstimator<String> learner =
+            new DefaultDataDistribution.WeightedEstimator<String>();
 
-        MapBasedPointMassDistribution.PMF<String> pmf = learner.learn(values);
+        DefaultDataDistribution<String> pmf = learner.learn(values);
 
         assertEquals( instance.getDomain().size(), pmf.getDomain().size() );
         for( String s : instance.getDomain() )
         {
-            assertEquals( instance.getMass(s), pmf.getMass(s) );
+            assertEquals( instance.get(s), pmf.get(s) );
         }
 
     }

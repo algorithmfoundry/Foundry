@@ -500,6 +500,9 @@ public class MultivariateGaussianTest
         MultivariateGaussian.IncrementalEstimator estimator =
             new MultivariateGaussian.IncrementalEstimator();
 
+        MultivariateGaussian.IncrementalEstimatorCovarianceInverse ei =
+            new MultivariateGaussian.IncrementalEstimatorCovarianceInverse();
+
         MultivariateGaussian target = new MultivariateGaussian( 3 );
         ArrayList<Vector> samples = target.sample(RANDOM,NUM_SAMPLES);
 
@@ -511,12 +514,16 @@ public class MultivariateGaussianTest
         assertTrue( MultivariateStatisticsUtil.computeVariance(samples, mean).equals( ss.getCovariance(), TOLERANCE ) );
         MultivariateGaussian result = ss.create();
 
+        MultivariateGaussian.SufficientStatisticCovarianceInverse ssi = ei.learn(samples);
+        MultivariateGaussian ri = ssi.create();
+
         MultivariateGaussian batch =
             MultivariateGaussian.MaximumLikelihoodEstimator.learn(samples, 0.0);
 
-        System.out.println( "Target: " + target );
-        System.out.println( "Result: " + result );
-        System.out.println( "Batch : " + batch );
+        System.out.println( "Target:  " + target );
+        System.out.println( "Result:  " + result );
+        System.out.println( "Inverse: " + ri );
+        System.out.println( "Batch :  " + batch );
 
         assertTrue( batch.getMean().equals( result.getMean(), TOLERANCE ) );
         assertTrue( batch.getCovariance().equals( result.getCovariance(), TOLERANCE ) );

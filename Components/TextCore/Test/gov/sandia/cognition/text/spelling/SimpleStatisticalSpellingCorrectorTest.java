@@ -14,7 +14,7 @@
 
 package gov.sandia.cognition.text.spelling;
 
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
@@ -44,17 +44,17 @@ public class SimpleStatisticalSpellingCorrectorTest
         char[] alphabet = SimpleStatisticalSpellingCorrector.createDefaultAlphabet();
         SimpleStatisticalSpellingCorrector instance = new SimpleStatisticalSpellingCorrector();
         assertNotNull(instance.getWordCounts());
-        assertEquals(0, instance.getWordCounts().getTotalCount());
+        assertEquals(0, instance.getWordCounts().getTotal(),0.0);
         assertArrayEquals(alphabet, instance.getAlphabet());
 
         alphabet = new char[] { 'a', 'b', 'c' };
         instance = new SimpleStatisticalSpellingCorrector(alphabet);
         assertNotNull(instance.getWordCounts());
-        assertEquals(0, instance.getWordCounts().getTotalCount());
+        assertEquals(0, instance.getWordCounts().getTotal(),0.0);
         assertSame(alphabet, instance.getAlphabet());
 
-        MapBasedDataHistogram<String> wordCounts = new MapBasedDataHistogram<String>();
-        wordCounts.add("awesome");
+        DefaultDataDistribution<String> wordCounts = new DefaultDataDistribution<String>();
+        wordCounts.increment("awesome");
         instance = new SimpleStatisticalSpellingCorrector(wordCounts, alphabet);
         assertSame(wordCounts, instance.getWordCounts());
         assertSame(alphabet, instance.getAlphabet());
@@ -86,13 +86,13 @@ public class SimpleStatisticalSpellingCorrectorTest
         SimpleStatisticalSpellingCorrector instance =
             new SimpleStatisticalSpellingCorrector();
         instance.add("a");
-        assertEquals(1, instance.getWordCounts().getCount("a"));
+        assertEquals(1, instance.getWordCounts().get("a"),0.0);
 
         instance.add("b", 4);
-        assertEquals(4, instance.getWordCounts().getCount("b"));
+        assertEquals(4, instance.getWordCounts().get("b"),0.0);
 
         instance.add("b", 7);
-        assertEquals(11, instance.getWordCounts().getCount("b"));
+        assertEquals(11, instance.getWordCounts().get("b"),0.0);
     }
 
     /**
@@ -167,14 +167,14 @@ public class SimpleStatisticalSpellingCorrectorTest
     {
         SimpleStatisticalSpellingCorrector instance = new SimpleStatisticalSpellingCorrector();
         assertNotNull(instance.getWordCounts());
-        assertEquals(0, instance.getWordCounts().getTotalCount());
+        assertEquals(0, instance.getWordCounts().getTotal(),0.0);
 
-        MapBasedDataHistogram<String> wordCounts = new MapBasedDataHistogram<String>();
-        wordCounts.add("awesome");
+        DefaultDataDistribution<String> wordCounts = new DefaultDataDistribution<String>();
+        wordCounts.increment("awesome");
         instance.setWordCounts(wordCounts);
         assertSame(wordCounts, instance.getWordCounts());
 
-        wordCounts = new MapBasedDataHistogram<String>();
+        wordCounts = new DefaultDataDistribution<String>();
         instance.setWordCounts(wordCounts);
         assertSame(wordCounts, instance.getWordCounts());
 
@@ -182,7 +182,7 @@ public class SimpleStatisticalSpellingCorrectorTest
         instance.setWordCounts(wordCounts);
         assertSame(wordCounts, instance.getWordCounts());
         
-        wordCounts = new MapBasedDataHistogram<String>();
+        wordCounts = new DefaultDataDistribution<String>();
         instance.setWordCounts(wordCounts);
         assertSame(wordCounts, instance.getWordCounts());
     }

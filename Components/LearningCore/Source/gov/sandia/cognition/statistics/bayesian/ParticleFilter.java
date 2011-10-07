@@ -16,7 +16,7 @@ package gov.sandia.cognition.statistics.bayesian;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationReferences;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.statistics.PointMassDistribution;
+import gov.sandia.cognition.statistics.DataDistribution;
 import gov.sandia.cognition.util.CloneableSerializable;
 import gov.sandia.cognition.util.Randomized;
 
@@ -59,7 +59,7 @@ import gov.sandia.cognition.util.Randomized;
     }
 )
 public interface ParticleFilter<ObservationType,ParameterType>
-    extends RecursiveBayesianEstimator<ObservationType,ParameterType,PointMassDistribution<ParameterType>>,
+    extends RecursiveBayesianEstimator<ObservationType,ParameterType,DataDistribution<ParameterType>>,
     Randomized
 {
 
@@ -93,7 +93,7 @@ public interface ParticleFilter<ObservationType,ParameterType>
      * Effective number of particles.
      */
     public double computeEffectiveParticles(
-        PointMassDistribution<ParameterType> particles );
+        DataDistribution<ParameterType> particles );
 
     /**
      * Updates the particles.
@@ -122,7 +122,7 @@ public interface ParticleFilter<ObservationType,ParameterType>
          * @return
          * Initial particle distribution.
          */
-        public PointMassDistribution<ParameterType> createInitialParticles(
+        public DataDistribution<ParameterType> createInitialParticles(
             int numParticles );
 
         /**

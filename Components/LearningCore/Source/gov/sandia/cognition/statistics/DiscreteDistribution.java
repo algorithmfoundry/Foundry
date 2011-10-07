@@ -14,7 +14,7 @@
 
 package gov.sandia.cognition.statistics;
 
-import java.util.Collection;
+import java.util.Set;
 
 /**
  * A Distribution with a countable domain (input) set.
@@ -32,7 +32,7 @@ public interface DiscreteDistribution<DataType>
      * @return
      * Collection that enumerates each value that the domain can take
      */
-    public Collection<? extends DataType> getDomain();
+    public Set<? extends DataType> getDomain();
 
     /**
      * Gets the size of the domain.

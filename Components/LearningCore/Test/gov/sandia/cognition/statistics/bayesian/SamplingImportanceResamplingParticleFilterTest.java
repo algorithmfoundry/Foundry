@@ -16,13 +16,13 @@ package gov.sandia.cognition.statistics.bayesian;
 
 import gov.sandia.cognition.statistics.bayesian.conjugate.BernoulliBayesianEstimator;
 import gov.sandia.cognition.statistics.Distribution;
-import gov.sandia.cognition.statistics.PointMassDistribution;
+import gov.sandia.cognition.statistics.DataDistribution;
 import gov.sandia.cognition.statistics.distribution.BernoulliDistribution;
 import gov.sandia.cognition.statistics.distribution.BernoulliDistribution.PMF;
 import gov.sandia.cognition.statistics.distribution.BetaDistribution;
 import gov.sandia.cognition.statistics.distribution.GammaDistribution;
 import gov.sandia.cognition.statistics.distribution.LogNormalDistribution;
-import gov.sandia.cognition.statistics.distribution.MapBasedPointMassDistribution;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.DefaultWeightedValue;
@@ -123,7 +123,7 @@ public class SamplingImportanceResamplingParticleFilterTest
         particleFilter.setParticlePctThreadhold(0.5);
         particleFilter.setUpdater(new GammaUpdater() );
 
-        PointMassDistribution<GammaDistribution.PDF> particles =
+        DataDistribution<GammaDistribution.PDF> particles =
             particleFilter.learn(samples);
 
         ArrayList<WeightedValue<Double>> shapes =
@@ -132,8 +132,8 @@ public class SamplingImportanceResamplingParticleFilterTest
             new ArrayList<WeightedValue<Double>>( particles.getDomain().size() );
         for( GammaDistribution.PDF gamma : particles.getDomain() )
         {
-            shapes.add( new DefaultWeightedValue<Double>( gamma.getShape(), particles.getMass(gamma) ) );
-            scales.add( new DefaultWeightedValue<Double>( gamma.getScale(), particles.getMass(gamma) ) );
+            shapes.add( new DefaultWeightedValue<Double>( gamma.getShape(), particles.get(gamma) ) );
+            scales.add( new DefaultWeightedValue<Double>( gamma.getScale(), particles.get(gamma) ) );
         }
 
         UnivariateGaussian shapeResult = UnivariateGaussian.WeightedMaximumLikelihoodEstimator.learn(shapes, 0.0);
@@ -186,15 +186,15 @@ public class SamplingImportanceResamplingParticleFilterTest
                 sf1 * previousParameter.getShape(), sf2 * previousParameter.getScale() );
         }
 
-        public PointMassDistribution<GammaDistribution.PDF> createInitialParticles(
+        public DataDistribution<GammaDistribution.PDF> createInitialParticles(
             int numParticles)
         {
-            PointMassDistribution<GammaDistribution.PDF> distribution =
-                new MapBasedPointMassDistribution<GammaDistribution.PDF>();
+            DataDistribution<GammaDistribution.PDF> distribution =
+                new DefaultDataDistribution<GammaDistribution.PDF>();
             final double uniformWeight = 1.0/numParticles;
             for( int i = 0; i < numParticles; i++ )
             {
-                distribution.add( this.update(this.initialDistribution), uniformWeight );
+                distribution.increment( this.update(this.initialDistribution), uniformWeight );
             }
 
             return distribution;
@@ -225,14 +225,14 @@ public class SamplingImportanceResamplingParticleFilterTest
         particleFilter.setParticlePctThreadhold(0.5);
         particleFilter.setUpdater(new BernoulliUpdater() );
 
-        PointMassDistribution<BernoulliDistribution.PMF> particles =
+        DataDistribution<BernoulliDistribution.PMF> particles =
             particleFilter.learn(samples);
 
         ArrayList<WeightedValue<Double>> ps =
             new ArrayList<WeightedValue<Double>>( particles.getDomain().size() );
         for( BernoulliDistribution.PMF b : particles.getDomain() )
         {
-            ps.add( new DefaultWeightedValue<Double>( b.getP(), particles.getMass(b) ) );
+            ps.add( new DefaultWeightedValue<Double>( b.getP(), particles.get(b) ) );
         }
 
         UnivariateGaussian presult =
@@ -261,14 +261,14 @@ public class SamplingImportanceResamplingParticleFilterTest
         particleFilter.setParticlePctThreadhold(1.0);
         particleFilter.setUpdater(new BernoulliUpdater() );
 
-        PointMassDistribution<BernoulliDistribution.PMF> particles =
+        DataDistribution<BernoulliDistribution.PMF> particles =
             particleFilter.learn(samples);
 
         ArrayList<WeightedValue<Double>> ps =
             new ArrayList<WeightedValue<Double>>( particles.getDomain().size() );
         for( BernoulliDistribution.PMF b : particles.getDomain() )
         {
-            ps.add( new DefaultWeightedValue<Double>( b.getP(), particles.getMass(b) ) );
+            ps.add( new DefaultWeightedValue<Double>( b.getP(), particles.get(b) ) );
         }
 
         UnivariateGaussian presult =
@@ -301,10 +301,10 @@ public class SamplingImportanceResamplingParticleFilterTest
             return tweaker.sample(RANDOM) + previousParameter;
         }
 
-        public PointMassDistribution<Double> createInitialParticles(
+        public DataDistribution<Double> createInitialParticles(
             int numParticles)
         {
-            return new MapBasedPointMassDistribution<Double>(
+            return new DefaultDataDistribution<Double>(
                 this.tweaker.sample(RANDOM, numParticles) );
         }
 
@@ -339,16 +339,16 @@ public class SamplingImportanceResamplingParticleFilterTest
             return new BernoulliDistribution.PMF( 1.0/(pinv+1.0) );
         }
 
-        public PointMassDistribution<BernoulliDistribution.PMF> createInitialParticles(
+        public DataDistribution<BernoulliDistribution.PMF> createInitialParticles(
             int numParticles)
         {
-            PointMassDistribution<BernoulliDistribution.PMF> particles =
-                new MapBasedPointMassDistribution<PMF>();
+            DataDistribution<BernoulliDistribution.PMF> particles =
+                new DefaultDataDistribution<PMF>();
             final double uniformMass = 1.0/numParticles;
             for( int i = 0; i < numParticles; i++ )
             {
                 double p = RANDOM.nextDouble();
-                particles.add( new BernoulliDistribution.PMF( p ), uniformMass );
+                particles.increment( new BernoulliDistribution.PMF( p ), uniformMass );
             }
             return particles;
         }

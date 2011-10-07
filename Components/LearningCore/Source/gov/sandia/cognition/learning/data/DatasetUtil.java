@@ -23,8 +23,8 @@ import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorUtil;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
-import gov.sandia.cognition.statistics.DataHistogram;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.DataDistribution;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.DefaultPair;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -457,19 +457,19 @@ public class DatasetUtil
      * @return
      *      The histogram of output values.
      */
-    public static <OutputType> DataHistogram<OutputType> countOutputValues(
+    public static <OutputType> DataDistribution<OutputType> countOutputValues(
         final Iterable<? extends InputOutputPair<?, ? extends OutputType>> data)
     {
         // Create the result set.
-        final DataHistogram<OutputType> outputs =
-            new MapBasedDataHistogram<OutputType>();
+        final DataDistribution<OutputType> outputs =
+            new DefaultDataDistribution<OutputType>();
 
         if (data != null)
         {
             // Go through and add each output.
             for (InputOutputPair<?, ? extends OutputType> example : data)
             {
-                outputs.add(example.getOutput());
+                outputs.increment(example.getOutput());
             }
         }
 

@@ -161,6 +161,7 @@ public class KernelPerceptron<InputType>
         this.setSupportsMap(null);
     }
 
+    @Override
     protected boolean initializeAlgorithm()
     {
         if (this.getData() == null)
@@ -194,6 +195,7 @@ public class KernelPerceptron<InputType>
         return true;
     }
 
+    @Override
     protected boolean step()
     {
         // Reset the number of errors for the new iteration.
@@ -275,6 +277,7 @@ public class KernelPerceptron<InputType>
         return this.getErrorCount() > 0;
     }
 
+    @Override
     protected void cleanupAlgorithm()
     {
         if (this.getSupportsMap() != null)
@@ -364,6 +367,7 @@ public class KernelPerceptron<InputType>
         this.marginNegative = marginNegative;
     }
 
+    @Override
     public DefaultKernelBinaryCategorizer<InputType> getResult()
     {
         return this.result;
@@ -422,11 +426,7 @@ public class KernelPerceptron<InputType>
         this.supportsMap = supportsMap;
     }
     
-    /**
-     * Gets the performance, which is the error count on the last iteration.
-     * 
-     * @return The performance of the algorithm.
-     */
+    @Override
     public NamedValue<Integer> getPerformance()
     {
         return new DefaultNamedValue<Integer>("error count", this.getErrorCount());

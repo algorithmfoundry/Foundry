@@ -21,19 +21,24 @@ import gov.sandia.cognition.evaluator.CompositeEvaluatorPair;
 import gov.sandia.cognition.learning.algorithm.AbstractAnytimeSupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.learning.function.scalar.LinearDiscriminant;
-import gov.sandia.cognition.learning.function.scalar.SigmoidFunction;
+import gov.sandia.cognition.learning.function.scalar.LinearDiscriminantWithBias;
+import gov.sandia.cognition.math.ProbabilityUtil;
 import gov.sandia.cognition.math.matrix.DiagonalMatrix;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vectorizable;
+import gov.sandia.cognition.statistics.distribution.LogisticDistribution;
+import gov.sandia.cognition.util.ArgumentChecker;
 import gov.sandia.cognition.util.ObjectUtil;
 
 /**
  * Performs Logistic Regression by means of the iterative reweighted least
- * squares (IRLS) algorithm.
+ * squares (IRLS) algorithm, where the logistic function has an explicit bias
+ * term, and a diagonal L2 regularization term.  When the regularization term
+ * is zero, this is equivalent to unregularized regression.  The targets for
+ * the data should be probabilities, [0,1].
  * 
  * @author Kevin R. Dixon
  * @since 2.0
@@ -71,7 +76,7 @@ import gov.sandia.cognition.util.ObjectUtil;
     }
 )
 public class LogisticRegression
-    extends AbstractAnytimeSupervisedBatchLearner<Vector,Double,LogisticRegression.Function>
+    extends AbstractAnytimeSupervisedBatchLearner<Vectorizable,Double,LogisticRegression.Function>
 {
 
     /**
@@ -84,6 +89,11 @@ public class LogisticRegression
      */
     public static final double DEFAULT_TOLERANCE = 1e-10;
     
+    /**
+     * Default regularization, {@value}.
+     */
+    public static final double DEFAULT_REGULARIZATION = 0.0;
+
     /**
      * The object to optimize, used as a factory on successive runs of the
      * algorithm.
@@ -99,38 +109,50 @@ public class LogisticRegression
      * Tolerance change in weights before stopping
      */
     private double tolerance;
-    
+
     /**
-     * Default constructor
+     * L2 ridge regularization term, must be nonnegative, a value of zero is
+     * equivalent to unregularized regression.
+     */
+    private double regularization;
+
+    /**
+     * Default constructor, with no regularization.
      */
     public LogisticRegression()
     {
-        this( DEFAULT_TOLERANCE );
+        this( DEFAULT_REGULARIZATION );
     }
     
     /**
      * Creates a new instance of LogisticRegression
-     * @param tolerance
-     * Tolerance change in weights before stopping
+     * @param regularization
+     * L2 ridge regularization term, must be nonnegative, a value of zero is
+     * equivalent to unregularized regression.
      */
     public LogisticRegression(
-        double tolerance )
+        double regularization )
     {
-        this( tolerance, DEFAULT_MAX_ITERATIONS );
+        this( regularization, DEFAULT_TOLERANCE, DEFAULT_MAX_ITERATIONS );
     }
     
     /**
      * Creates a new instance of LogisticRegression
-     * @param tolerance 
+     * @param regularization
+     * L2 ridge regularization term, must be nonnegative, a value of zero is
+     * equivalent to unregularized regression.
+     * @param tolerance
      * Tolerance change in weights before stopping
      * @param maxIterations
      * Maximum number of iterations before stopping
      */
     public LogisticRegression(
+        double regularization,
         double tolerance,
         int maxIterations )
     {
         super( maxIterations );
+        this.setRegularization(regularization);
         this.setTolerance( tolerance );
     }
     
@@ -143,7 +165,12 @@ public class LogisticRegression
      * Derivative of each sample's estimate
      */
     private transient DiagonalMatrix R;
-    
+
+    /**
+     * Inverse of R
+     */
+    private transient DiagonalMatrix Ri;
+
     /**
      * Data matrix where each column is an input sample
      */
@@ -174,7 +201,7 @@ public class LogisticRegression
     protected boolean initializeAlgorithm()
     {
         
-        int M = this.data.iterator().next().getInput().getDimensionality();
+        int M = this.data.iterator().next().getInput().convertToVector().getDimensionality();
         int N = this.data.size();
         
         if( this.getObjectToOptimize() == null )
@@ -185,14 +212,17 @@ public class LogisticRegression
         this.setResult( this.getObjectToOptimize().clone() );
         
         this.R = MatrixFactory.getDiagonalDefault().createMatrix( N, N );
-        this.X = MatrixFactory.getDefault().createMatrix( M, N );
+        this.Ri = MatrixFactory.getDiagonalDefault().createMatrix( N, N );
+        this.X = MatrixFactory.getDefault().createMatrix( M+1, N );
         this.err = VectorFactory.getDefault().createVector( N );
         this.W = MatrixFactory.getDiagonalDefault().createMatrix( N, N );
         
         int n = 0;
-        for( InputOutputPair<? extends Vector,Double> sample : this.data )
+        Vector one = VectorFactory.getDefault().copyValues(1.0);
+        for( InputOutputPair<? extends Vectorizable,Double> sample : this.data )
         {
-            this.X.setColumn( n, sample.getInput() );
+            ProbabilityUtil.assertIsProbability(sample.getOutput());
+            this.X.setColumn( n, sample.getInput().convertToVector().stack(one) );
             this.W.setElement( n, DatasetUtil.getWeight(sample) );
             n++;
         }
@@ -208,20 +238,35 @@ public class LogisticRegression
         
         int n = 0;
         LogisticRegression.Function f = this.getResult();
-        for( InputOutputPair<? extends Vector,Double> sample : this.data )
+        for( InputOutputPair<? extends Vectorizable,Double> sample : this.data )
         {
-            double yhat = f.evaluate( sample.getInput() );
-            double y = sample.getOutput();
+            final double y = sample.getOutput();
+            final double yhat = f.evaluate( sample.getInput() );
+            final double r = yhat*(1.0-yhat);
             this.err.setElement( n, (y - yhat) );
-            this.R.setElement( n, yhat*(1.0-yhat) );
+            this.R.setElement( n, r );
+            this.Ri.setElement( n, 1.0/r );
             n++;
         }
         
         Vector w = f.convertToVector();
-        Vector z = w.times( this.X ).plus( this.R.inverse().times( this.err ) );
-  
-        Matrix lhs = this.X.times( this.W.times( this.R.times( this.Xt ) ) );
-        Vector rhs = this.X.times( this.W.times( this.R.times( z ) ) );
+
+        Vector z = w.times( this.X );
+        z.plusEquals( this.Ri.times( this.err ) );
+
+        Matrix XWR = this.X.times( this.W.times( this.R ) );
+        Matrix lhs = XWR.times( this.Xt );
+        if( this.regularization != 0.0 )
+        {
+            final int N = this.X.getNumRows();
+            for( int i = 0; i < N; i++ )
+            {
+                double v = lhs.getElement(i, i);
+                lhs.setElement(i, i, v + this.regularization);
+            }
+        }
+
+        Vector rhs = XWR.times( z );
         
         Vector wnew = lhs.solve( rhs );        
         f.convertFromVector( wnew );
@@ -238,6 +283,7 @@ public class LogisticRegression
         this.Xt = null;
         this.err = null;
         this.R = null;
+        this.Ri = null;
         this.W = null;
     }
 
@@ -264,6 +310,7 @@ public class LogisticRegression
         this.objectToOptimize = objectToOptimize;
     }
 
+    @Override
     public LogisticRegression.Function getResult()
     {
         return this.result;
@@ -283,7 +330,7 @@ public class LogisticRegression
     /**
      * Getter for tolerance
      * @return
-     * Tolerance change in weights before stopping
+     * Tolerance change in weights before stopping, must be nonnegative.
      */
     public double getTolerance()
     {
@@ -293,19 +340,44 @@ public class LogisticRegression
     /**
      * Setter for tolerance
      * @param tolerance
-     * Tolerance change in weights before stopping
+     * Tolerance change in weights before stopping, must be nonnegative.
      */
     public void setTolerance(
         double tolerance )
     {
+        ArgumentChecker.assertIsNonNegative("tolerance", tolerance);
         this.tolerance = tolerance;
+    }
+
+    /**
+     * Getter for regularization
+     * @return 
+     * L2 ridge regularization term, must be nonnegative, a value of zero is
+     * equivalent to unregularized regression.
+     */
+    public double getRegularization()
+    {
+        return this.regularization;
+    }
+
+    /**
+     * Setter for regularization
+     * @param regularization
+     * L2 ridge regularization term, must be nonnegative, a value of zero is
+     * equivalent to unregularized regression.
+     */
+    public void setRegularization(
+        double regularization)
+    {
+        ArgumentChecker.assertIsNonNegative("regularization", regularization);
+        this.regularization = regularization;
     }
     
     /**
      * Class that is a linear discriminant, followed by a sigmoid function.
      */
     public static class Function
-        extends CompositeEvaluatorPair<Vector,Double,Double>
+        extends CompositeEvaluatorPair<Vectorizable,Double,Double>
         implements Vectorizable
     {
         
@@ -317,8 +389,9 @@ public class LogisticRegression
         public Function(
             int dimensionality )
         {   
-            super( new LinearDiscriminant( VectorFactory.getDefault().createVector( dimensionality ) ),
-                new SigmoidFunction() );
+            super( new LinearDiscriminantWithBias(
+                VectorFactory.getDefault().createVector( dimensionality ), 0.0 ),
+                new LogisticDistribution.CDF() );
         }
         
         @Override
@@ -327,15 +400,29 @@ public class LogisticRegression
             return (Function) super.clone();
         }
 
+        @Override
         public Vector convertToVector()
         {
-            return ((LinearDiscriminant) this.getFirst()).convertToVector();
+            return ((Vectorizable) this.getFirst()).convertToVector();
         }
 
+        @Override
         public void convertFromVector(
             Vector parameters )
         {
-            ((LinearDiscriminant) this.getFirst()).convertFromVector( parameters );
+            ((Vectorizable) this.getFirst()).convertFromVector( parameters );
+        }
+
+        @Override
+        public LinearDiscriminantWithBias getFirst()
+        {
+            return (LinearDiscriminantWithBias) super.getFirst();
+        }
+
+        @Override
+        public LogisticDistribution.CDF getSecond()
+        {
+            return (LogisticDistribution.CDF) super.getSecond();
         }
         
     }

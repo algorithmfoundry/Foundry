@@ -19,7 +19,7 @@ import gov.sandia.cognition.learning.data.DefaultTargetEstimatePair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.data.TargetEstimatePair;
 import gov.sandia.cognition.learning.function.vector.LinearVectorFunction;
-import gov.sandia.cognition.learning.function.vector.MatrixMultiplyVectorFunction;
+import gov.sandia.cognition.learning.function.vector.MultivariateDiscriminant;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
@@ -135,7 +135,7 @@ public class ParallelizedCostFunctionContainerTest
         int dim = 3;
         double r = 1.0;
         
-        MatrixMultiplyVectorFunction f = new MatrixMultiplyVectorFunction(
+        MultivariateDiscriminant f = new MultivariateDiscriminant(
             MatrixFactory.getDefault().createUniformRandom( dim, dim, -r, r, RANDOM ) );
             
             new LinearVectorFunction( RANDOM.nextDouble() );
@@ -198,7 +198,7 @@ public class ParallelizedCostFunctionContainerTest
         int dim = 3;
         double r = 1.0;
         
-        MatrixMultiplyVectorFunction f = new MatrixMultiplyVectorFunction(
+        MultivariateDiscriminant f = new MultivariateDiscriminant(
             MatrixFactory.getDefault().createUniformRandom( dim, dim, -r, r, RANDOM ) );
             
             new LinearVectorFunction( RANDOM.nextDouble() );

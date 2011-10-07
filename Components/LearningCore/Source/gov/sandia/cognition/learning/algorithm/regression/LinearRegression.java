@@ -16,24 +16,24 @@ package gov.sandia.cognition.learning.algorithm.regression;
 
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.PublicationReference;
+import gov.sandia.cognition.annotation.PublicationReferences;
 import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.DatasetUtil;
-import gov.sandia.cognition.learning.function.scalar.VectorFunctionLinearDiscriminant;
-import gov.sandia.cognition.learning.function.vector.ScalarBasisSet;
+import gov.sandia.cognition.learning.function.scalar.LinearDiscriminantWithBias;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
+import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.statistics.method.AbstractConfidenceStatistic;
 import gov.sandia.cognition.statistics.distribution.ChiSquareDistribution;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
-import gov.sandia.cognition.util.ObjectUtil;
+import gov.sandia.cognition.util.ArgumentChecker;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -42,13 +42,11 @@ import java.util.Iterator;
  * Computes the least-squares regression for a LinearCombinationFunction
  * given a dataset.  A LinearCombinationFunction is a weighted linear
  * combination of (potentially) nonlinear basis functions.  This looks like
- * y(x) = a0*f0(x) + a1*f1(x) + ... + an*fn(x) and so forth.
+ * y(x) = b + w'x, where "b" is a scalar bias and "w" is a weight vector.
  * The internal class LinearRegression.Statistic returns the goodness-of-fit
  * statistics for a set of target-estimate pairs, include a p-value for the
  * null hypothesis significance.
  *
- * @param   <InputType> Input class for the basis functions, for example, Double,
- *          Vector, String.
  * @author  Kevin R. Dixon
  * @since   2.0
  */
@@ -61,16 +59,29 @@ import java.util.Iterator;
         "Looks fine."
     }
 )
-@PublicationReference(
-    author="Wikipedia",
-    title="Linear regression",
-    type=PublicationType.WebPage,
-    year=2008,
-    url="http://en.wikipedia.org/wiki/Linear_regression"
+@PublicationReferences(
+    references={
+        @PublicationReference(
+            author="Wikipedia",
+            title="Linear regression",
+            type=PublicationType.WebPage,
+            year=2008,
+            url="http://en.wikipedia.org/wiki/Linear_regression"
+        )
+        ,
+        @PublicationReference(
+            author="Wikipedia",
+            title="Tikhonov regularization",
+            type=PublicationType.WebPage,
+            year=2011,
+            url="http://en.wikipedia.org/wiki/Tikhonov_regularization",
+            notes="Despite what Wikipedia says, this is always called Ridge Regression"
+        )
+    }
 )
-public class LinearRegression<InputType>
+public class LinearRegression
     extends AbstractCloneableSerializable
-    implements SupervisedBatchLearner<InputType, Double, VectorFunctionLinearDiscriminant<InputType>>
+    implements SupervisedBatchLearner<Vectorizable, Double, LinearDiscriminantWithBias>
 {
 
     /**
@@ -79,15 +90,10 @@ public class LinearRegression<InputType>
     public static final double DEFAULT_PSEUDO_INVERSE_TOLERANCE = 1e-10;
 
     /**
-     * Learned object
+     * Default regularization, {@value}.
      */
-    private VectorFunctionLinearDiscriminant<InputType> learned;
+    public static final double DEFAULT_REGULARIZATION = 0.0;
 
-    /**
-     * Function that maps the InputType to a Vector
-     */
-    private Evaluator<? super InputType, Vector> inputToVectorMap;
-    
     /**
      * Flag to use a pseudoinverse.  True to use the expensive, but more
      * accurate, pseudoinverse routine.  False uses a very fast, but
@@ -96,82 +102,41 @@ public class LinearRegression<InputType>
     private boolean usePseudoInverse;
 
     /**
-     * Creates a new instance of LinearRegression
-     * @param basisFunctions 
-     * Basis functions to create the ScalarBasisSet from
+     * L2 ridge regularization term, must be nonnegative, a value of zero is
+     * equivalent to unregularized regression.
      */
-    public LinearRegression(
-        Evaluator<? super InputType, Double>... basisFunctions )
+    private double regularization;
+
+    /**
+     * Creates a new instance of LinearRegression
+     */
+    public LinearRegression()
     {
-        this( Arrays.asList( basisFunctions ) );
+        this( DEFAULT_REGULARIZATION, true );
     }
 
     /**
      * Creates a new instance of LinearRegression
-     * @param basisFunctions 
-     * Basis functions to create the ScalarBasisSet from
+     * @param regularization
+     * L2 ridge regularization term, must be nonnegative, a value of zero is
+     * equivalent to unregularized regression.
+     * @param usePseudoInverse
+     * Flag to use a pseudoinverse.  True to use the expensive, but more
+     * accurate, pseudoinverse routine.  False uses a very fast, but
+     * numerically less stable LU solver.  Default value is "true".
      */
     public LinearRegression(
-        Collection<? extends Evaluator<? super InputType, Double>> basisFunctions )
+        double regularization,
+        boolean usePseudoInverse )
     {
-        this( new ScalarBasisSet<InputType>( basisFunctions ) );
-    }
-
-    /**
-     * Creates a new instance of LinearRegression
-     * @param inputToVectorMap 
-     * Function that maps the InputType to a Vector
-     */
-    public LinearRegression(
-        ScalarBasisSet<InputType> inputToVectorMap )
-    {
-        this( (Evaluator<? super InputType, Vector>) inputToVectorMap );
-    }
-
-    /**
-     * Creates a new instance of LinearRegression
-     * @param inputToVectorMap
-     * Function that maps the InputType to a Vector
-     */
-    public LinearRegression(
-        Evaluator<? super InputType, Vector> inputToVectorMap )
-    {
-        this.setInputToVectorMap( inputToVectorMap );
-        this.setUsePseudoInverse( true );
-        this.setLearned( null );
+        this.setRegularization(regularization);
+        this.setUsePseudoInverse(usePseudoInverse);
     }
 
     @Override
-    public LinearRegression<InputType> clone()
+    public LinearRegression clone()
     {
-        @SuppressWarnings("unchecked")
-        LinearRegression<InputType> clone =
-            (LinearRegression<InputType>) super.clone();
-        clone.setInputToVectorMap(
-            ObjectUtil.cloneSmart( this.getInputToVectorMap() ) );
-        clone.setLearned( ObjectUtil.cloneSafe( this.getLearned() ) );
-        return clone;
-    }
-
-    /**
-     * Getter for learned
-     * @return 
-     * Weighted linear combination of (potentially) nonlinear basis functions
-     */
-    public VectorFunctionLinearDiscriminant<InputType> getLearned()
-    {
-        return this.learned;
-    }
-
-    /**
-     * Setter for learned
-     * @param learned 
-     * Weighted linear combination of (potentially) nonlinear basis functions
-     */
-    protected void setLearned(
-        VectorFunctionLinearDiscriminant<InputType> learned )
-    {
-        this.learned = learned;
+        return (LinearRegression) super.clone();
     }
 
     /**
@@ -186,75 +151,65 @@ public class LinearRegression<InputType>
      * LinearCombinationFunction that minimizes the RMS error of the outputs.
      */
     @Override
-    public VectorFunctionLinearDiscriminant<InputType> learn(
-        Collection<? extends InputOutputPair<? extends InputType, Double>> data )
+    public LinearDiscriminantWithBias learn(
+        Collection<? extends InputOutputPair<? extends Vectorizable, Double>> data )
     {
-
-        this.setLearned( null );
 
         // We need to cheat to figure out how many coefficients we need...
         // So we'll push the first sample through... wasteful, but general
-        InputOutputPair<? extends InputType, Double> first = 
-            data.iterator().next();
-        Vector firstOutput = this.inputToVectorMap.evaluate( first.getInput() );
-        int numCoefficients = firstOutput.getDimensionality();
+        int numCoefficients = CollectionUtil.getFirst(data).getInput().convertToVector().getDimensionality();
         int numSamples = data.size();
 
-        Matrix X = MatrixFactory.getDefault().createMatrix( numSamples, numCoefficients );
+        Matrix X = MatrixFactory.getDefault().createMatrix( numCoefficients+1, numSamples );
+        Matrix Xt = MatrixFactory.getDefault().createMatrix( numSamples, numCoefficients+1 );
         Vector y = VectorFactory.getDefault().createVector( numSamples );
 
-        // The matrix equation looks like:
-        // y = C*[f0(x) f1(x) ... fn(x) ], fi() is the ith basis function
-        int i = 0;
-        for (InputOutputPair<? extends InputType, Double> pair : data)
+        Vector one = VectorFactory.getDefault().copyValues(1.0);
+        int n = 0;
+        for (InputOutputPair<? extends Vectorizable, Double> pair : data)
         {
-            double weight = DatasetUtil.getWeight(pair);
+            double output = pair.getOutput();
+            Vector input = pair.getInput().convertToVector().stack(one);
 
-            y.setElement( i, pair.getOutput() * weight );
-
-            InputType input = pair.getInput();
-            Vector xrow = this.inputToVectorMap.evaluate( input );
-            X.setRow( i, xrow.scale(weight) );
-            i++;
+            // We don't want Xt to have the weight factor too
+            final double weight = DatasetUtil.getWeight(pair);
+            if( weight != 1.0 )
+            {
+                // We can use scaleEquals() here because of the stack() method
+                input.scaleEquals(weight);
+                output *= weight;
+            }
+            Xt.setRow( n, input );
+            X.setColumn( n, input );
+            y.setElement( n, output );
+            n++;
         }
 
         // Solve for the coefficients
         Vector coefficients;
         if( this.getUsePseudoInverse() )
         {
-            Matrix psuedoInverse = X.pseudoInverse(DEFAULT_PSEUDO_INVERSE_TOLERANCE);
-            coefficients = psuedoInverse.times(y);
+            Matrix pseudoInverse = X.pseudoInverse(DEFAULT_PSEUDO_INVERSE_TOLERANCE);
+            coefficients = y.times( pseudoInverse );
         }
         else
         {
-            coefficients = X.solve( y );
+            Matrix lhs = X.times( Xt );
+            if( this.regularization > 0.0 )
+            {
+                for( int i = 0; i < numSamples; i++ )
+                {
+                    double v = lhs.getElement(i, i);
+                    lhs.setElement(i, i, v + this.regularization);
+                }
+            }
+            Vector rhs = y.times( Xt );
+            coefficients = lhs.solve( rhs );
         }
-        this.setLearned( new VectorFunctionLinearDiscriminant<InputType>(
-            this.inputToVectorMap, coefficients ) );
 
-        return this.getLearned();
-
-    }
-
-    /**
-     * Getter for inputToVectorMap
-     * @return
-     * Function that maps the InputType to a Vector
-     */
-    public Evaluator<? super InputType, Vector> getInputToVectorMap()
-    {
-        return this.inputToVectorMap;
-    }
-
-    /**
-     * Setter for inputToVectorMap
-     * @param inputToVectorMap
-     * Function that maps the InputType to a Vector
-     */
-    public void setInputToVectorMap(
-        Evaluator<? super InputType, Vector> inputToVectorMap )
-    {
-        this.inputToVectorMap = inputToVectorMap;
+        Vector w = coefficients.subVector(0, numCoefficients-1);
+        double bias = coefficients.getElement(numCoefficients);
+        return new LinearDiscriminantWithBias( w, bias );
     }
 
     /**
@@ -282,6 +237,30 @@ public class LinearRegression<InputType>
         this.usePseudoInverse = usePseudoInverse;
     }
 
+    /**
+     * Getter for regularization
+     * @return
+     * L2 ridge regularization term, must be nonnegative, a value of zero is
+     * equivalent to unregularized regression.
+     */
+    public double getRegularization()
+    {
+        return this.regularization;
+    }
+
+    /**
+     * Setter for regularization
+     * @param regularization
+     * L2 ridge regularization term, must be nonnegative, a value of zero is
+     * equivalent to unregularized regression.
+     */
+    public void setRegularization(
+        double regularization)
+    {
+        ArgumentChecker.assertIsNonNegative("regularization", regularization);
+        this.regularization = regularization;
+    }
+    
     /**
      * Computes regression statistics using a chi-square measure of the
      * statistical significance of the learned approximator

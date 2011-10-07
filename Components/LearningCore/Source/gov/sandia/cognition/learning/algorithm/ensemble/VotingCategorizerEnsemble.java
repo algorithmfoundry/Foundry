@@ -7,7 +7,8 @@
  * Copyright March 21, 2011, Sandia Corporation.
  * Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive 
  * license for use of this work by or on behalf of the U.S. Government. Export 
- * of this program may require a license from the United States Government. 
+ * of this program may require a license from the United States Government.
+ *
  */
 
 package gov.sandia.cognition.learning.algorithm.ensemble;
@@ -15,7 +16,7 @@ package gov.sandia.cognition.learning.algorithm.ensemble;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.data.DefaultWeightedValueDiscriminant;
 import gov.sandia.cognition.learning.function.categorization.AbstractDiscriminantCategorizer;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.ArgumentChecker;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -103,7 +104,7 @@ public class VotingCategorizerEnsemble<InputType, CategoryType, MemberType exten
         final InputType input)
     {
         // Get the maximum value of the votes.
-        return this.evaluateAsVotes(input).getMaximumValue();
+        return this.evaluateAsVotes(input).getMaxValueKey();
     }
 
     @Override
@@ -111,11 +112,11 @@ public class VotingCategorizerEnsemble<InputType, CategoryType, MemberType exten
         final InputType input)
     {
         // Get the vote distribution.
-        final MapBasedDataHistogram<CategoryType> votes =
+        final DefaultDataDistribution<CategoryType> votes =
             this.evaluateAsVotes(input);
 
         // Get the maximum value of the votes.
-        final CategoryType bestCategory = votes.getMaximumValue();
+        final CategoryType bestCategory = votes.getMaxValueKey();
         final double bestFraction = votes.getFraction(bestCategory);
         return DefaultWeightedValueDiscriminant.create(
             bestCategory, bestFraction);
@@ -129,12 +130,12 @@ public class VotingCategorizerEnsemble<InputType, CategoryType, MemberType exten
      * @return
      *      The counts of the votes of each ensemble member for each category.
      */
-    public MapBasedDataHistogram<CategoryType> evaluateAsVotes(
+    public DefaultDataDistribution<CategoryType> evaluateAsVotes(
         final InputType input)
     {
         // Create the counters to store the votes.
-        final MapBasedDataHistogram<CategoryType> votes =
-            new MapBasedDataHistogram<CategoryType>(
+        final DefaultDataDistribution<CategoryType> votes =
+            new DefaultDataDistribution<CategoryType>(
                 this.getCategories().size());
 
         // Compute the votes.
@@ -146,7 +147,7 @@ public class VotingCategorizerEnsemble<InputType, CategoryType, MemberType exten
             if (category != null)
             {
                 // Update the vote information for the voted category.
-                votes.add(category);
+                votes.increment(category);
             }
             // else - The member had no vote.
         }

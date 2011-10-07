@@ -19,7 +19,7 @@ import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.VectorElementThresholdCategorizer;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.Vectorizable;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.DefaultPair;
 import gov.sandia.cognition.util.DefaultWeightedValue;
@@ -56,6 +56,7 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
         super();
     }
 
+    @Override
     public VectorElementThresholdCategorizer learn(
         final Collection<? extends InputOutputPair<? extends Vectorizable, OutputType>> data)
     {
@@ -67,7 +68,7 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
         }
 
         // Compute the base count values for the node.
-        final MapBasedDataHistogram<OutputType> baseCounts =
+        final DefaultDataDistribution<OutputType> baseCounts =
             CategorizationTreeLearner.getOutputCounts(data);
 
         // Pre-allocate a workspace of data for computing the gain.
@@ -152,10 +153,9 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
      *      can happen if there is no data or every value is the same.
      */
     public DefaultPair<Double, Double> computeBestGainAndThreshold(
-        final Collection<? extends InputOutputPair<? extends Vectorizable, OutputType>>
-            data,
+        final Collection<? extends InputOutputPair<? extends Vectorizable, OutputType>> data,
         final int dimension,
-        final MapBasedDataHistogram<OutputType> baseCounts)
+        final DefaultDataDistribution<OutputType> baseCounts)
     {
         final int totalCount = data.size();
      
@@ -189,10 +189,9 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
      *      can happen if there is no data or every value is the same.
      */
     protected DefaultPair<Double, Double> computeBestGainAndThreshold(
-        final Collection<? extends InputOutputPair<? extends Vectorizable, OutputType>>
-            data,
+        final Collection<? extends InputOutputPair<? extends Vectorizable, OutputType>> data,
         final int dimension,
-        final MapBasedDataHistogram<OutputType> baseCounts,
+        final DefaultDataDistribution<OutputType> baseCounts,
         final ArrayList<DefaultWeightedValue<OutputType>> values)
     {
         // We can only compute thresholds for at least 1 value.
@@ -244,10 +243,10 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
         // To start with all of the examples are on the positive side of
         // the split, so we initialize the base counts (all the data points)
         // and the negative counts with nothing.
-        final MapBasedDataHistogram<OutputType> positiveCounts =
+        final DefaultDataDistribution<OutputType> positiveCounts =
             baseCounts.clone();
-        final MapBasedDataHistogram<OutputType> negativeCounts =
-            new MapBasedDataHistogram<OutputType>(baseCounts.getDomain().size());
+        final DefaultDataDistribution<OutputType> negativeCounts =
+            new DefaultDataDistribution<OutputType>(baseCounts.getDomain().size());
 
         // We are going to loop over all the values to compute the best
         // gain and the best threshold.
@@ -269,8 +268,8 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
         {
             // Move previous value to negative count bucket.
             final OutputType label = values.get(i - 1).getValue();
-            positiveCounts.remove(label);
-            negativeCounts.add(label);
+            positiveCounts.decrement(label);
+            negativeCounts.increment(label);
 
             final double value = values.get(i).getWeight();
 
@@ -285,9 +284,9 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
                 if (gain >= bestGain)
                 {
                     final double proportionPositive =
-                        (double) positiveCounts.getTotalCount() / totalCount;
+                        positiveCounts.getTotal() / totalCount;
                     final double proportionNegative =
-                        (double) negativeCounts.getTotalCount() / totalCount;
+                        negativeCounts.getTotal() / totalCount;
 
                     // This is our tiebreaker criteria for the case where the
                     // gains are equal. It means that we prefer ties that are
@@ -346,15 +345,17 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
      *      negative counts to the base counts.
      */
     public abstract double computeSplitGain(
-        final MapBasedDataHistogram<OutputType> baseCounts,
-        final MapBasedDataHistogram<OutputType> positiveCounts,
-        final MapBasedDataHistogram<OutputType> negativeCounts);
+        final DefaultDataDistribution<OutputType> baseCounts,
+        final DefaultDataDistribution<OutputType> positiveCounts,
+        final DefaultDataDistribution<OutputType> negativeCounts);
 
+    @Override
     public int[] getDimensionsToConsider()
     {
         return this.dimensionsToConsider;
     }
 
+    @Override
     public void setDimensionsToConsider(
         final int[] dimensionsToConsider)
     {

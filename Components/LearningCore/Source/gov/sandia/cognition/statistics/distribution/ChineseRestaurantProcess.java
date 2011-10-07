@@ -17,8 +17,6 @@ package gov.sandia.cognition.statistics.distribution;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationReferences;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.collection.DefaultMultiCollection;
-import gov.sandia.cognition.collection.MultiCollection;
 import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
@@ -28,7 +26,9 @@ import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * A Chinese Restaurant Process is a discrete stochastic processes that
@@ -276,16 +276,15 @@ public class ChineseRestaurantProcess
     }
 
     @Override
-    public MultiCollection<Vector> getDomain()
+    public Set<Vector> getDomain()
     {
-        ArrayList<MultinomialDistribution.Domain> domain =
-            new ArrayList<MultinomialDistribution.Domain>( this.getNumCustomers() );
+        LinkedHashSet<Vector> domain = new LinkedHashSet<Vector>(
+            this.getNumCustomers()*this.getNumCustomers() );
         for( int i = 1; i <= this.getNumCustomers(); i++ )
         {
-            domain.add( new MultinomialDistribution.Domain( i, this.getNumCustomers() ) );
+            domain.addAll( new MultinomialDistribution.Domain( i, this.getNumCustomers() ) );
         }
-        
-        return new DefaultMultiCollection<Vector>( domain );
+        return domain;
     }
 
     @Override

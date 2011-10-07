@@ -16,8 +16,8 @@ import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.math.matrix.mtj.Vector2;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
-import gov.sandia.cognition.statistics.DataHistogram;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.DataDistribution;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -53,10 +53,10 @@ public class VectorNaiveBayesCategorizerTest
     public void testConstructors()
     {
         VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF> instance = new VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF>();
-        assertTrue(instance.getPriors().getTotalCount() == 0);
+        assertEquals( 0.0, instance.getPriors().getTotal(), 0.0 );
         assertTrue(instance.getConditionals().isEmpty());
 
-        DataHistogram<String> priors = new MapBasedDataHistogram<String>();
+        DataDistribution<String> priors = new DefaultDataDistribution<String>();
         Map<String, List<UnivariateGaussian.PDF>> conditionals =
             new LinkedHashMap<String, List<UnivariateGaussian.PDF>>();
         instance = new VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF>(priors, conditionals);
@@ -84,13 +84,13 @@ public class VectorNaiveBayesCategorizerTest
         VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF> instance = new VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF>();
         assertNull(instance.evaluate(input));
 
-        instance.getPriors().add("a", 3);
+        instance.getPriors().increment("a", 3);
         instance.getConditionals().put("a", new ArrayList<UnivariateGaussian.PDF>());
         instance.getConditionals().get("a").add(new UnivariateGaussian.PDF(3.0, 10.0));
         instance.getConditionals().get("a").add(new UnivariateGaussian.PDF(5.0, 1.0));
         assertEquals("a", instance.evaluate(input));
 
-        instance.getPriors().add("b", 2);
+        instance.getPriors().increment("b", 2);
         instance.getConditionals().put("b", new ArrayList<UnivariateGaussian.PDF>());
         instance.getConditionals().get("b").add(new UnivariateGaussian.PDF(0.0, 1.0));
         instance.getConditionals().get("b").add(new UnivariateGaussian.PDF(1.0, 1.0));
@@ -106,12 +106,12 @@ public class VectorNaiveBayesCategorizerTest
         VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF> instance = new VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF>();
         assertTrue(instance.getCategories().isEmpty());
 
-        instance.getPriors().add("a", 1);
+        instance.getPriors().increment("a", 1);
         instance.getConditionals().put("a", new ArrayList<UnivariateGaussian.PDF>());
         assertEquals(1, instance.getCategories().size());
         assertTrue(instance.getCategories().contains("a"));
 
-        instance.getPriors().add("b", 1);
+        instance.getPriors().increment("b", 1);
         instance.getConditionals().put("b", new ArrayList<UnivariateGaussian.PDF>());
         assertEquals(2, instance.getCategories().size());
         assertTrue(instance.getCategories().contains("a"));
@@ -126,7 +126,7 @@ public class VectorNaiveBayesCategorizerTest
         VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF> instance = new VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF>();
         assertEquals(0, instance.getInputDimensionality());
 
-        instance.getPriors().add("a", 1);
+        instance.getPriors().increment("a", 1);
         instance.getConditionals().put("a", new ArrayList<UnivariateGaussian.PDF>());
         assertEquals(0, instance.getInputDimensionality());
 
@@ -151,9 +151,9 @@ public class VectorNaiveBayesCategorizerTest
     public void testSetPriors()
     {
         VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF> instance = new VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF>();
-        assertTrue(instance.getPriors().getTotalCount() == 0);
+        assertEquals( 0.0, instance.getPriors().getTotal(), 0.0 );
 
-        DataHistogram<String> priors = new MapBasedDataHistogram<String>();
+        DataDistribution<String> priors = new DefaultDataDistribution<String>();
         instance.setPriors(priors);
         assertSame(priors, instance.getPriors());
 
@@ -161,7 +161,7 @@ public class VectorNaiveBayesCategorizerTest
         instance.setPriors(priors);
         assertSame(priors, instance.getPriors());
 
-        priors = new MapBasedDataHistogram<String>();
+        priors = new DefaultDataDistribution<String>();
         instance.setPriors(priors);
         assertSame(priors, instance.getPriors());
     }
@@ -218,9 +218,9 @@ public class VectorNaiveBayesCategorizerTest
         assertEquals(2, instance.getCategories().size());
         assertTrue(instance.getCategories().contains("a"));
         assertTrue(instance.getCategories().contains("b"));
-        assertEquals(3, instance.getPriors().getCount("a"));
-        assertEquals(2, instance.getPriors().getCount("b"));
-        assertEquals(5, instance.getPriors().getTotalCount());
+        assertEquals(3.0, instance.getPriors().get("a"));
+        assertEquals(2.0, instance.getPriors().get("b"));
+        assertEquals(5.0, instance.getPriors().getTotal());
         assertEquals(2, instance.getConditionals().size());
         assertEquals(3, instance.getConditionals().get("a").size());
         assertEquals(3, instance.getConditionals().get("b").size());

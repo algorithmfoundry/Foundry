@@ -17,10 +17,12 @@ package gov.sandia.cognition.learning.algorithm.tree;
 import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.function.categorization.Categorizer;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.ArgumentChecker;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 /**
  * The {@code CategorizationTreeLearner} class implements a supervised learning 
@@ -49,6 +51,18 @@ public class CategorizationTreeLearner<InputType, OutputType>
     /** The maximum depth for the tree. Ignored if less than 1. */
     protected int maxDepth;
 
+    /** Prior probabilities for the different categories.  If null,
+     *  the priors default to the category frequencies of the training
+     *  data.
+     */
+    protected Map<OutputType,Double> priors;
+
+    /**
+     * How often each category appears in training data.
+     */
+    protected Map<OutputType,Integer> trainCounts;
+
+
     /**
      * Creates a new instance of CategorizationTreeLearner.
      */
@@ -65,7 +79,10 @@ public class CategorizationTreeLearner<InputType, OutputType>
     public CategorizationTreeLearner(
         final DeciderLearner<? super InputType, OutputType, ?, ?> deciderLearner)
     {
-        this(deciderLearner, DEFAULT_LEAF_COUNT_THRESHOLD, DEFAULT_MAX_DEPTH);
+        this(deciderLearner, 
+             DEFAULT_LEAF_COUNT_THRESHOLD, 
+             DEFAULT_MAX_DEPTH,
+             null);
     }
 
     /**
@@ -83,12 +100,36 @@ public class CategorizationTreeLearner<InputType, OutputType>
         final int leafCountThreshold,
         final int maxDepth)
     {
+        this(deciderLearner, leafCountThreshold, maxDepth, null);
+    }
+
+
+    /**
+     * Creates a new instance of CategorizationTreeLearner.
+     *
+     * @param   deciderLearner
+     *      The learner for the decision function.
+     * @param   leafCountThreshold
+     *      The leaf count threshold. Must be non-negative.
+     * @param   maxDepth
+     *      The maximum depth for the tree.
+     * @param   priors
+     *      Prior probabilities for categories.  (See setCategoryPriors().)
+     */
+    public CategorizationTreeLearner(
+        final DeciderLearner<? super InputType, OutputType, ?, ?> deciderLearner,
+        final int leafCountThreshold,
+        final int maxDepth,
+        final Map<OutputType,Double> priors)
+    {
         super(deciderLearner);
 
         this.setLeafCountThreshold(leafCountThreshold);
         this.setMaxDepth(maxDepth);
+        this.setCategoryPriors(priors);
     }
 
+    @Override
     public CategorizationTree<InputType, OutputType> learn(
         Collection<? extends InputOutputPair<? extends InputType, OutputType>>
             data)
@@ -98,16 +139,36 @@ public class CategorizationTreeLearner<InputType, OutputType>
             // Bad data.
             return null;
         }
-        else
+
+        final DefaultDataDistribution<OutputType> rootCounts =
+            getOutputCounts(data);
+
+        trainCounts = new HashMap<OutputType,Integer>();
+        for (OutputType category : rootCounts.getDomain()) 
         {
-            // Recursively learn the node.
-            final MapBasedDataHistogram<OutputType> rootCounts = 
-                getOutputCounts(data);
-	    
-            return new CategorizationTree<InputType, OutputType>(
+            int freq = (int)(rootCounts.get(category));
+            trainCounts.put(category, new Integer(freq));
+        }
+
+        // Configure prior weights if supported by split criterion.
+        if (deciderLearner instanceof PriorWeightedNodeLearner)
+        {
+            // The compiler is unable to figure out that this cast is
+            // safe.  Suppress the incorrect warning.
+            @SuppressWarnings("unchecked")
+            PriorWeightedNodeLearner<OutputType> criterion =
+                (PriorWeightedNodeLearner<OutputType>)(deciderLearner);
+            criterion.configure(priors, trainCounts);
+        }
+
+        // Recursively learn the node.
+	CategorizationTree<InputType, OutputType> tree = 
+            new CategorizationTree<InputType, OutputType>(
                 this.learnNode(data, null),
                 new HashSet<OutputType>(rootCounts.getDomain()));
-        }
+
+        trainCounts = null;
+        return tree;
     }
 
     /**
@@ -118,10 +179,9 @@ public class CategorizationTreeLearner<InputType, OutputType>
      * @param  parent The parent node.
      * @return The categorization tree node learned from the given data.
      */
+    @Override
     protected CategorizationTreeNode<InputType, OutputType, ?> learnNode(
-        final Collection
-            <? extends InputOutputPair<? extends InputType, OutputType>>
-            data,
+        final Collection<? extends InputOutputPair<? extends InputType, OutputType>> data,
         final AbstractDecisionTreeNode<InputType, OutputType, ?> parent)
     {
         if (data == null || data.size() <= 0)
@@ -142,22 +202,16 @@ public class CategorizationTreeLearner<InputType, OutputType>
 // need to scan through all the data.
 // -- mamunso (2010/11/18)
 
-        // We put the most common output category on every node in the
-        // tree, in case we get a bad decision function or leaf
+        // We put the most probable output category on every node in
+        // the tree, in case we get a bad decision function or leaf
         // node. This ensures That we can always make a
         // categorization.
+        OutputType mostProbOutput = computeMaxProbPrediction(data);
 
-        // Prediction at the leaf is the most common output category.
-        // (We know that mostCommonOutput is not null because we
-        // already checked that the data's sizes is greater than
-        // zero.)
-        final OutputType mostCommonOutput =
-            getOutputCounts(data).getMaximumValue();
-
-        // We give the node we are creating the most common output value.
+        // Give the node we are creating the most probable output.
         final CategorizationTreeNode<InputType, OutputType, Object> node =
             new CategorizationTreeNode<InputType, OutputType, Object>(
-                parent, mostCommonOutput);
+                parent, mostProbOutput);
 
         // Check for termination conditions that produce a leaf node.
         boolean isLeaf = this.areAllOutputsEqual(data)
@@ -200,14 +254,12 @@ public class CategorizationTreeLearner<InputType, OutputType>
      * @param  data The data to create the output count histogram for.
      * @return The output count histogram.
      */
-    public static <OutputType> MapBasedDataHistogram<OutputType> getOutputCounts(
-        final Collection
-            <? extends InputOutputPair<?, OutputType>> 
-            data)
+    public static <OutputType> DefaultDataDistribution<OutputType> getOutputCounts(
+        final Collection<? extends InputOutputPair<?, OutputType>> data)
     {
         // Create the histogram.
-        MapBasedDataHistogram<OutputType> counts =
-            new MapBasedDataHistogram<OutputType>();
+        DefaultDataDistribution<OutputType> counts =
+            new DefaultDataDistribution<OutputType>();
         
         if ( data == null )
         {
@@ -219,11 +271,55 @@ public class CategorizationTreeLearner<InputType, OutputType>
         {
             // Add the output.
             final OutputType output = example.getOutput();
-            counts.add(output);
+            counts.increment(output);
         }
         
         // Return the histogram.
         return counts;
+    }
+
+    /**
+     * Return the most probable output value, taking into
+     * consideration both the frequency counts in the data sample (at
+     * the current node) and the prior proabalities for possible
+     * output values.
+     *
+     * @param <OutputType> The type of outputs.
+     * @param data 
+     *    The data sample, with output labels for each data point.
+     *    The sample must contain at least 1 data point.
+     * @return The output value with highest conditional probability.
+     */
+    private OutputType computeMaxProbPrediction(
+        final Collection<? extends InputOutputPair<?, OutputType>> data)
+    {
+        DefaultDataDistribution<OutputType> nodeCounts = getOutputCounts(data);
+        if (priors == null) {
+            // With no explicit prior, the most probable prediction is
+            // the most common category.
+            return nodeCounts.getMaxValueKey();
+        }
+
+        // Iterate over possible predictions, and keep track of the
+        // prediction with highest probability.  Note that these
+        // probabilities are not normalized.  (It would be easy, just
+        // divide by sum of the unnormalized probs . . . but since
+        // that would be a constant scaling, the maximum probability
+        // prediction would be the same.)
+        double bestProb = -1.0;
+        OutputType bestVal = null;
+        for (OutputType category : nodeCounts.getDomain()) {
+            double likelihood = 
+                nodeCounts.get(category) / trainCounts.get(category);
+            double prior = priors.get(category);
+            double prob = prior * likelihood;
+            if (prob > bestProb) {
+                bestProb = prob;
+                bestVal = category;
+            }
+        }
+
+        return bestVal;
     }
 
 
@@ -275,5 +371,31 @@ public class CategorizationTreeLearner<InputType, OutputType>
         final int maxDepth)
     {
         this.maxDepth = maxDepth;
+    }
+
+    /**
+     * <P>Set prior category probabilities.  A higher prior
+     * probability for a category will cause the tree learner to
+     * weight examples from that category more highly.</P>
+     *
+     * <P>If the priors are not manually specified (through this
+     * method or passing priors into the constructor), prior
+     * probabilities default to the frequencies of the different
+     * categories in the training data.</P>
+     *
+     * @param priors 
+     *    If null, use default prior probabilities.  Otherwise, priors
+     *    becomes the new prior weights.  In the latter case,
+     *    priors.keySet() contain the same values as the possible
+     *    categories in data passed to the learn() method.
+     */
+    public void setCategoryPriors(Map<OutputType,Double> priors) 
+    {
+        if (priors == null) {
+            this.priors = null;
+        }
+        else {
+            this.priors = new HashMap<OutputType,Double>(priors);
+        }
     }
 }

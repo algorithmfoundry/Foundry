@@ -19,11 +19,9 @@ import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.ConstantEvaluator;
-import gov.sandia.cognition.statistics.distribution.MapBasedPointMassDistribution;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The {@code WeightedMostFrequentLearner} class implements a baseline learning
@@ -64,12 +62,13 @@ public class WeightedMostFrequentLearner<OutputType>
      * @param   data {@inheritDoc}
      * @return {@inheritDoc}
      */
+    @Override
     public ConstantEvaluator<OutputType> learn(
-        Collection<? extends InputOutputPair<? extends Object, OutputType>> data )
+        final Collection<? extends InputOutputPair<? extends Object, OutputType>> data )
     {
         // We are going to sum up the weight associated with each output value.
-        final MapBasedPointMassDistribution<OutputType> weightDistribution =
-            new MapBasedPointMassDistribution<OutputType>();
+        final DefaultDataDistribution<OutputType> weightDistribution =
+            new DefaultDataDistribution<OutputType>();
         
         // Go through all the examples and increment the weight sum for each
         // output value.
@@ -77,15 +76,15 @@ public class WeightedMostFrequentLearner<OutputType>
         {
             final double weight = DatasetUtil.getWeight(example);
             final OutputType output = example.getOutput();
-            weightDistribution.add(output, weight);
+            weightDistribution.increment(output, weight);
         }
         
         // Figure out the output with the highest weight.
         final ConstantEvaluator<OutputType> result =
             new ConstantEvaluator<OutputType>();
-        if (weightDistribution.getTotalMass() > 0.0)
+        if (weightDistribution.getTotal() > 0.0)
         {
-            result.setValue(weightDistribution.getMaximumValue());
+            result.setValue(weightDistribution.getMaxValueKey());
         }
         
         // Create the resulting evaluator.

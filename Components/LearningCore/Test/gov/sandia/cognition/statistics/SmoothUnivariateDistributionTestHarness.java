@@ -349,9 +349,10 @@ public abstract class SmoothUnivariateDistributionTestHarness
         System.out.println( "CDF.inverse" );
 
         SmoothCumulativeDistributionFunction cdf = this.createInstance().getCDF();
-        ArrayList<? extends Double> samples = cdf.sample(RANDOM, NUM_SAMPLES);
         if( cdf instanceof InvertibleCumulativeDistributionFunction )
         {
+            System.out.println( "Found InvertibleCumulativeDistributionFunction... testing." );
+            ArrayList<? extends Double> samples = cdf.sample(RANDOM, NUM_SAMPLES);
             InvertibleCumulativeDistributionFunction<Double> icdf =
                 (InvertibleCumulativeDistributionFunction<Double>) cdf;
             for( int n = 0; n < samples.size(); n++ )

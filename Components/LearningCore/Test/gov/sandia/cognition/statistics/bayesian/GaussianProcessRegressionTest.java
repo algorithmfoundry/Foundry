@@ -18,10 +18,11 @@ package gov.sandia.cognition.statistics.bayesian;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.algorithm.regression.LinearRegression;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.learning.function.kernel.Kernel;
-import gov.sandia.cognition.learning.function.scalar.VectorFunctionLinearDiscriminant;
+import gov.sandia.cognition.learning.function.kernel.RadialBasisKernel;
+import gov.sandia.cognition.learning.function.scalar.LinearDiscriminantWithBias;
+import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.statistics.ClosedFormDistribution;
-import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.ArrayList;
 import java.util.Random;
 import junit.framework.TestCase;
@@ -45,49 +46,49 @@ public class GaussianProcessRegressionTest
      */
     public final double TOLERANCE = 1e-5;
 
-    /**
-     * RadialBasisKernel
-     */
-    public static class RadialBasisKernel
-        extends AbstractCloneableSerializable
-        implements Kernel<Double>
-    {
-
-        /**
-         * Sigma
-         */
-        double sigma;
-
-        /**
-         * Default constructor
-         */
-        public RadialBasisKernel()
-        {
-            this( 1.0 );
-        }
-
-        /**
-         * Constructor
-         * @param sigma
-         * sigma
-         */
-        public RadialBasisKernel(
-            double sigma)
-        {
-            this.sigma = sigma;
-        }
-
-        @Override
-        public double evaluate(
-            Double x,
-            Double y)
-        {
-            final double delta = (x + y);
-            final double distance = delta*delta;
-            return Math.exp( -distance / (-this.sigma*this.sigma) );
-        }
-
-    }
+//    /**
+//     * RadialBasisKernel
+//     */
+//    public static class RadialBasisKernel
+//        extends AbstractCloneableSerializable
+//        implements Kernel<Double>
+//    {
+//
+//        /**
+//         * Sigma
+//         */
+//        double sigma;
+//
+//        /**
+//         * Default constructor
+//         */
+//        public RadialBasisKernel()
+//        {
+//            this( 1.0 );
+//        }
+//
+//        /**
+//         * Constructor
+//         * @param sigma
+//         * sigma
+//         */
+//        public RadialBasisKernel(
+//            double sigma)
+//        {
+//            this.sigma = sigma;
+//        }
+//
+//        @Override
+//        public double evaluate(
+//            Double x,
+//            Double y)
+//        {
+//            final double delta = (x + y);
+//            final double distance = delta*delta;
+//            return Math.exp( -distance / (-this.sigma*this.sigma) );
+//        }
+//
+//    }
 
     /**
      * Tests for class GaussianProcessRegressionTest.
@@ -104,11 +105,12 @@ public class GaussianProcessRegressionTest
      * @return
      * instance
      */
-    public GaussianProcessRegression<Double> createInstance()
+    public GaussianProcessRegression<Vectorizable> createInstance()
     {
-        GaussianProcessRegression<Double> instance =
-            new GaussianProcessRegression<Double>();
+        GaussianProcessRegression<Vectorizable> instance =
+            new GaussianProcessRegression<Vectorizable>();
         instance.setOutputVariance(0.1);
+
         instance.setKernel( new RadialBasisKernel() );
         return instance;
     }
@@ -133,8 +135,8 @@ public class GaussianProcessRegressionTest
     public void testClone()
     {
         System.out.println("clone");
-        GaussianProcessRegression<Double> instance = this.createInstance();
-        GaussianProcessRegression<Double> clone = instance.clone();
+        GaussianProcessRegression<Vectorizable> instance = this.createInstance();
+        GaussianProcessRegression<Vectorizable> clone = instance.clone();
         assertNotSame( instance, clone );
         assertNotSame( instance.getKernel(), clone.getKernel() );
         assertNotNull( clone.getKernel() );
@@ -147,7 +149,7 @@ public class GaussianProcessRegressionTest
     public void testGetOutputVariance()
     {
         System.out.println("getOutputVariance");
-        GaussianProcessRegression<Double> instance = this.createInstance();
+        GaussianProcessRegression<Vectorizable> instance = this.createInstance();
         assertTrue( instance.getOutputVariance() >= 0.0 );
     }
 
@@ -157,7 +159,7 @@ public class GaussianProcessRegressionTest
     public void testSetOutputVariance()
     {
         System.out.println("setOutputVariance");
-        GaussianProcessRegression<Double> instance = this.createInstance();
+        GaussianProcessRegression<Vectorizable> instance = this.createInstance();
         double outputVariance = RANDOM.nextDouble();
         instance.setOutputVariance(outputVariance);
         assertEquals( outputVariance, instance.getOutputVariance() );
@@ -185,14 +187,19 @@ public class GaussianProcessRegressionTest
         BayesianRegressionTestHarness.NUM_SAMPLES = 10;
         ArrayList<Double> inputs = BayesianRegressionTestHarness.createInputs(RANDOM);
         BayesianRegressionTestHarness.Model target = new BayesianRegressionTestHarness.Model(0.25);
-        ArrayList<InputOutputPair<Double,Double>> data =
+        ArrayList<InputOutputPair<Vector,Double>> data =
             BayesianRegressionTestHarness.createData(inputs, target, RANDOM);
-        GaussianProcessRegression<Double> instance = this.createInstance();
-        Evaluator<? super Double, ? extends ClosedFormDistribution<Double>> predictive =
-            instance.createPredictiveDistribution( instance.learn(data), inputs );
-        LinearRegression<Double> regression = new LinearRegression<Double>(
-            new BayesianRegressionTestHarness.RadialBasisVectorFunction(9) );
-        VectorFunctionLinearDiscriminant<Double> mle = regression.learn(data);
+        GaussianProcessRegression<Vectorizable> instance = this.createInstance();
+        ArrayList<Vectorizable> vs = new ArrayList<Vectorizable>( data.size() );
+        for( InputOutputPair<Vector,Double> v : data )
+        {
+            vs.add( v.getInput() );
+        }
+
+        Evaluator<? super Vectorizable, ? extends ClosedFormDistribution<Double>> predictive =
+            instance.createPredictiveDistribution( instance.learn(data), vs );
+        LinearRegression regression = new LinearRegression();
+        LinearDiscriminantWithBias mle = regression.learn(data);
 
         BayesianRegressionTestHarness.compareMethods(predictive, mle, target);
     }
@@ -207,14 +214,19 @@ public class GaussianProcessRegressionTest
         BayesianRegressionTestHarness.NUM_SAMPLES = 30;
         ArrayList<Double> inputs = BayesianRegressionTestHarness.createInputs(RANDOM);
         BayesianRegressionTestHarness.Model target = new BayesianRegressionTestHarness.Model(0.25);
-        ArrayList<InputOutputPair<Double,Double>> data =
+        ArrayList<InputOutputPair<Vector,Double>> data =
             BayesianRegressionTestHarness.createData(inputs, target, RANDOM);
-        GaussianProcessRegression<Double> instance = this.createInstance();
-        Evaluator<? super Double, ? extends ClosedFormDistribution<Double>> predictive =
-            instance.createPredictiveDistribution( instance.learn(data), inputs );
-        LinearRegression<Double> regression = new LinearRegression<Double>(
-            new BayesianRegressionTestHarness.RadialBasisVectorFunction(9) );
-        VectorFunctionLinearDiscriminant<Double> mle = regression.learn(data);
+        GaussianProcessRegression<Vectorizable> instance = this.createInstance();
+        ArrayList<Vectorizable> vs = new ArrayList<Vectorizable>( data.size() );
+        for( InputOutputPair<Vector,Double> v : data )
+        {
+            vs.add( v.getInput() );
+        }
+
+        Evaluator<? super Vectorizable, ? extends ClosedFormDistribution<Double>> predictive =
+            instance.createPredictiveDistribution( instance.learn(data), vs );
+        LinearRegression regression = new LinearRegression();
+        LinearDiscriminantWithBias mle = regression.learn(data);
 
         BayesianRegressionTestHarness.compareMethods(predictive, mle, target);
     }
@@ -228,15 +240,19 @@ public class GaussianProcessRegressionTest
         BayesianRegressionTestHarness.NUM_SAMPLES = 5;
         ArrayList<Double> inputs = BayesianRegressionTestHarness.createInputs(RANDOM);
         BayesianRegressionTestHarness.Model target = new BayesianRegressionTestHarness.Model(0.25);
-        ArrayList<InputOutputPair<Double,Double>> data =
+        ArrayList<InputOutputPair<Vector,Double>> data =
             BayesianRegressionTestHarness.createData(inputs, target, RANDOM);
-        GaussianProcessRegression<Double> instance = this.createInstance();
-        Evaluator<? super Double, ? extends ClosedFormDistribution<Double>> predictive =
-            instance.createPredictiveDistribution( instance.learn(data), inputs );
-        LinearRegression<Double> regression = new LinearRegression<Double>(
-            new BayesianRegressionTestHarness.RadialBasisVectorFunction(9) );
-        VectorFunctionLinearDiscriminant<Double> mle = regression.learn(data);
+        GaussianProcessRegression<Vectorizable> instance = this.createInstance();
+        ArrayList<Vectorizable> vs = new ArrayList<Vectorizable>( data.size() );
+        for( InputOutputPair<Vector,Double> v : data )
+        {
+            vs.add( v.getInput() );
+        }
 
+        Evaluator<? super Vectorizable, ? extends ClosedFormDistribution<Double>> predictive =
+            instance.createPredictiveDistribution( instance.learn(data), vs );
+        LinearRegression regression = new LinearRegression();
+        LinearDiscriminantWithBias mle = regression.learn(data);
         BayesianRegressionTestHarness.compareMethods(predictive, mle, target);
     }
 
@@ -249,14 +265,19 @@ public class GaussianProcessRegressionTest
         BayesianRegressionTestHarness.NUM_SAMPLES = 20;
         ArrayList<Double> inputs = BayesianRegressionTestHarness.createInputs(RANDOM);
         BayesianRegressionTestHarness.Model target = new BayesianRegressionTestHarness.Model(1.0);
-        ArrayList<InputOutputPair<Double,Double>> data =
+        ArrayList<InputOutputPair<Vector,Double>> data =
             BayesianRegressionTestHarness.createData(inputs, target, RANDOM);
-        GaussianProcessRegression<Double> instance = this.createInstance();
-        Evaluator<? super Double, ? extends ClosedFormDistribution<Double>> predictive =
-            instance.createPredictiveDistribution( instance.learn(data), inputs );
-        LinearRegression<Double> regression = new LinearRegression<Double>(
-            new BayesianRegressionTestHarness.RadialBasisVectorFunction(9) );
-        VectorFunctionLinearDiscriminant<Double> mle = regression.learn(data);
+        GaussianProcessRegression<Vectorizable> instance = this.createInstance();
+        ArrayList<Vectorizable> vs = new ArrayList<Vectorizable>( data.size() );
+        for( InputOutputPair<Vector,Double> v : data )
+        {
+            vs.add( v.getInput() );
+        }
+
+        Evaluator<? super Vectorizable, ? extends ClosedFormDistribution<Double>> predictive =
+            instance.createPredictiveDistribution( instance.learn(data), vs );
+        LinearRegression regression = new LinearRegression();
+        LinearDiscriminantWithBias mle = regression.learn(data);
 
         BayesianRegressionTestHarness.compareMethods(predictive, mle, target);
     }

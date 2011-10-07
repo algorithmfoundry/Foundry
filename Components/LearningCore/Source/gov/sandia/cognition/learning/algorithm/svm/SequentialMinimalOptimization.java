@@ -8,6 +8,7 @@
  * Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
  * license for use of this work by or on behalf of the U.S. Government. Export
  * of this program may require a license from the United States Government.
+ *
  */
 
 package gov.sandia.cognition.learning.algorithm.svm;
@@ -19,6 +20,7 @@ import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.KernelBinaryCategorizer;
 import gov.sandia.cognition.learning.function.kernel.Kernel;
 import gov.sandia.cognition.learning.function.kernel.KernelContainer;
+import gov.sandia.cognition.math.MutableDouble;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.Randomized;
 import java.util.ArrayList;
@@ -53,7 +55,7 @@ public class SequentialMinimalOptimization<InputType>
     // TODO: Add a better explanation of the SMO algorithm in the class
     // description.
     // -- jdbasil (2010-10-05)
-    
+
     /** The default maximum number of iterations is {@value}. */
     public static final int DEFAULT_MAX_ITERATIONS = 1000;
 
@@ -122,7 +124,7 @@ public class SequentialMinimalOptimization<InputType>
 
     /** A cache of the current error values for all points that have an error.
      */
-    private transient LinkedHashMap<Integer, Double> errorCache;
+    private transient LinkedHashMap<Integer, MutableDouble> errorCache;
 
     /** The kernel cache, indexed using a long that is the concatentation of
      *  the two indices of the values. */
@@ -264,7 +266,7 @@ public class SequentialMinimalOptimization<InputType>
         this.supportsMap =
             new LinkedHashMap<Integer, DefaultWeightedValue<InputType>>();
         this.nonBoundAlphaIndices = new LinkedHashSet<Integer>();
-        this.errorCache = new LinkedHashMap<Integer, Double>();
+        this.errorCache = new LinkedHashMap<Integer, MutableDouble>();
 
         // Create the kernel cache, if requested.
         if (this.kernelCacheSize > 1 && this.dataSize > 1)
@@ -614,6 +616,19 @@ public class SequentialMinimalOptimization<InputType>
     }
 
 
+    /**
+     * Updates the error cache
+     * @param i
+     * @param yI
+     * @param oldAlphaI
+     * @param newAlphaI
+     * @param j
+     * @param yJ
+     * @param oldAlphaJ
+     * @param newAlphaJ
+     * @param oldBias
+     * @param newBias
+     */
     private void updateErrorCache(
         final int i,
         final double yI,
@@ -629,13 +644,13 @@ public class SequentialMinimalOptimization<InputType>
         if (newAlphaI <= 0.0 || newAlphaI >= this.maxPenalty)
         {
             // Point i is no longer a non-bound error.
-            this.errorCache.remove(i);
+//            this.errorCache.remove(i);
         }
 
         if (newAlphaJ <= 0.0 || newAlphaJ >= this.maxPenalty)
         {
             // Point j is no longer a non-bound error.
-            this.errorCache.remove(j);
+//            this.errorCache.remove(j);
         }
 
         // Compute how much each weight ended up changing, pus how much
@@ -647,36 +662,37 @@ public class SequentialMinimalOptimization<InputType>
         // Update the error value for all the non-bound indices.
         for (Integer k : this.nonBoundAlphaIndices)
         {
-// TODO: This loop could benefit from not recreating a new Double each time it
-// is updated but instead having a mutable double value.
-// -- jdbasil (2010-09-29)
             // Get the old error.
-            final Double oldError = this.errorCache.get(k);
+            final MutableDouble oldError = this.errorCache.get(k);
 
             // Compute the new error.
-            final double newError;
             if (k == i || k == j)
             {
                 // Points i and j are no longer errors.
-                newError = 0.0;
+                if( oldError != null )
+                {
+                    oldError.value = 0.0;
+                }
+                else
+                {
+                    this.errorCache.put(k, new MutableDouble( 0.0 ));
+                }
             }
             else if (oldError == null)
             {
                 // Point k was not in the cache, so compute its error.
-                newError = this.getSVMOutput(k) - this.getTarget(k);
+                final double newError = this.getSVMOutput(k) - this.getTarget(k);
+                this.errorCache.put(k, new MutableDouble(newError) );
             }
             else
             {
                 // Update the cached error value for point k based on how much
                 // the weight changed.
-                newError = oldError
-                    + weightIChange * this.evaluateKernel(i, k)
+                oldError.value += weightIChange * this.evaluateKernel(i, k)
                     + weightJChange * this.evaluateKernel(j, k)
                     + biasChange;
             }
 
-            // Update the error cache.
-            this.errorCache.put(k, newError);
         }
     }
 
@@ -748,14 +764,14 @@ public class SequentialMinimalOptimization<InputType>
     private double getSVMOutput(
         final int i)
     {
-        double result = this.result.getBias();
+        double retval = this.result.getBias();
         for (Map.Entry<Integer, DefaultWeightedValue<InputType>> entry
             : this.supportsMap.entrySet())
         {
-            result += entry.getValue().getWeight()
+            retval += entry.getValue().getWeight()
                 * this.evaluateKernel(i, entry.getKey());
         }
-        return result;
+        return retval;
     }
 
     /**
@@ -771,10 +787,10 @@ public class SequentialMinimalOptimization<InputType>
         final int i)
     {
         // First check for the error in the error cache.
-        final Double cachedError = this.errorCache.get(i);
+        final MutableDouble cachedError = this.errorCache.get(i);
         if (cachedError != null)
         {
-            return cachedError;
+            return cachedError.value;
         }
         else
         {
@@ -1017,7 +1033,7 @@ public class SequentialMinimalOptimization<InputType>
     {
         return this.maxPenalty;
     }
-    
+
     /**
      * Sets the maximum penalty parameter for the algorithm, which is also known
      * as C in the paper and in other related literature.
@@ -1049,7 +1065,7 @@ public class SequentialMinimalOptimization<InputType>
     {
         return errorTolerance;
     }
-    
+
     /**
      * Sets the error tolerance for the algorithm. This is how close the output
      * of the SVM must be to the target values of +1.0 or -1.0. In the original
@@ -1135,11 +1151,13 @@ public class SequentialMinimalOptimization<InputType>
         this.kernelCacheSize = kernelCacheSize;
     }
 
+    @Override
     public Random getRandom()
     {
         return this.random;
     }
 
+    @Override
     public void setRandom(
         final Random random)
     {
@@ -1148,7 +1166,7 @@ public class SequentialMinimalOptimization<InputType>
 
     /**
      * Gets the number of changes made on the last iteration of the algorithm.
-     * 
+     *
      * @return
      *      The number of changes made on the last iteration of the algorithm.
      */

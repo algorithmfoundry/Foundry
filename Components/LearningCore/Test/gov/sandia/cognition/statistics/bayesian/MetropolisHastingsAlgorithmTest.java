@@ -15,7 +15,7 @@
 package gov.sandia.cognition.statistics.bayesian;
 
 import gov.sandia.cognition.statistics.bayesian.conjugate.BernoulliBayesianEstimator;
-import gov.sandia.cognition.statistics.DataHistogram;
+import gov.sandia.cognition.statistics.DataDistribution;
 import gov.sandia.cognition.statistics.Distribution;
 import gov.sandia.cognition.statistics.distribution.BernoulliDistribution;
 import gov.sandia.cognition.statistics.distribution.BetaDistribution;
@@ -111,7 +111,7 @@ public class MetropolisHastingsAlgorithmTest
         mcmc.setUpdater( new GammaUpdater() );
         mcmc.setRandom(RANDOM);
 
-        DataHistogram<GammaDistribution.PDF> gammas = mcmc.learn(samples);
+        DataDistribution<GammaDistribution.PDF> gammas = mcmc.learn(samples);
 
         ArrayList<Double> shapes = new ArrayList<Double>( gammas.getDomain().size() );
         ArrayList<Double> scales = new ArrayList<Double>( gammas.getDomain().size() );
@@ -149,7 +149,7 @@ public class MetropolisHastingsAlgorithmTest
         mcmc.setUpdater( new BernoulliUpdater() );
         mcmc.setRandom(RANDOM);
 
-        DataHistogram<BernoulliDistribution.PMF> berns = mcmc.learn(samples);
+        DataDistribution<BernoulliDistribution.PMF> berns = mcmc.learn(samples);
         ArrayList<Double> ps = new ArrayList<Double>( berns.getDomain().size() );
         for( BernoulliDistribution.PMF b : berns.getDomain() )
         {

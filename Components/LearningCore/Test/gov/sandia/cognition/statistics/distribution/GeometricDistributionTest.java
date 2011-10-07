@@ -14,7 +14,7 @@
 
 package gov.sandia.cognition.statistics.distribution;
 
-import gov.sandia.cognition.collection.IntegerCollection;
+import gov.sandia.cognition.collection.IntegerSpan;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistributionTestHarness;
 import java.util.Random;
@@ -145,7 +145,7 @@ public class GeometricDistributionTest
         System.out.println( "Known getDomain" );
 
         GeometricDistribution.CDF instance = this.createInstance().getCDF();
-        IntegerCollection domain = instance.getDomain();
+        IntegerSpan domain = instance.getDomain();
         assertEquals( 0, domain.getMinValue() );
         assertEquals( 1.0, instance.evaluate( domain.getMaxValue() ), TOLERANCE );
     }

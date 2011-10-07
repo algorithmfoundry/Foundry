@@ -16,16 +16,16 @@ package gov.sandia.cognition.learning.algorithm.tree;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.statistics.distribution.MapBasedDataHistogram;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 
 /**
  * Learns vector thresholds based on the Gini impurity measure. It attempts to
  * minimize the Gini impurity in splits. If f_i is the fraction of examples
  * belonging to category i in split f, then the Gini impurity measure is defined
  * as:
- *     sum_i f_i * (1 - f_i)
- * Notice that sum_i f_i = 1, so the value will range between 0 and 1.
- *
+ * <BR>     sum_i f_i * (1 - f_i)
+ * <BR> Notice that sum_i f_i = 1, so the value will range between 0 and 1.
+ * <BR><BR>
  * This measure is the one used in the Classification and Regression Tree
  * (CART) algorithm.
  *
@@ -66,10 +66,11 @@ public class VectorThresholdGiniImpurityLearner<OutputType>
      *      The split gain by computing the gain in Gini impurity for
      *      the given split. Will be between 0.0 and 1.0.
      */
+    @Override
     public double computeSplitGain(
-        final MapBasedDataHistogram<OutputType> baseCounts,
-        final MapBasedDataHistogram<OutputType> positiveCounts,
-        final MapBasedDataHistogram<OutputType> negativeCounts)
+        final DefaultDataDistribution<OutputType> baseCounts,
+        final DefaultDataDistribution<OutputType> positiveCounts,
+        final DefaultDataDistribution<OutputType> negativeCounts)
     {
 // TODO: This is almost the same as the code in the
 // InformationGainLearner. They should be merged.
@@ -81,11 +82,11 @@ public class VectorThresholdGiniImpurityLearner<OutputType>
         final double impurityNegative = giniImpurity(negativeCounts);
 
         // Compute the proportion positive and negative.
-        final int totalCount = baseCounts.getTotalCount();
+        final double totalCount = baseCounts.getTotal();
         final double proportionPositive =
-            (double) positiveCounts.getTotalCount() / totalCount;
+            positiveCounts.getTotal() / totalCount;
         final double proportionNegative =
-            (double) negativeCounts.getTotalCount() / totalCount;
+            negativeCounts.getTotal() / totalCount;
 
         // Compute the gain in impurity.
         final double gain = impurityBase
@@ -114,7 +115,7 @@ public class VectorThresholdGiniImpurityLearner<OutputType>
      *      The Gini impurity of the given distribution.
      */
     public static <DataType> double giniImpurity(
-        final MapBasedDataHistogram<DataType> counts)
+        final DefaultDataDistribution<DataType> counts)
     {
 
         double sum = 0.0;

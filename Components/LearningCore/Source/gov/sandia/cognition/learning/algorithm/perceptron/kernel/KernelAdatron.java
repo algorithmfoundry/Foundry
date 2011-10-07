@@ -120,6 +120,7 @@ public class KernelAdatron<InputType>
         this.setSupportsMap(null);
     }
 
+    @Override
     protected boolean initializeAlgorithm()
     {
         if (this.getData() == null)
@@ -153,6 +154,7 @@ public class KernelAdatron<InputType>
         return true;
     }
 
+    @Override
     protected boolean step()
     {
 // TODO: The current stopping criteria may have problems with numerical
@@ -227,6 +229,7 @@ public class KernelAdatron<InputType>
         return this.getErrorCount() > 0;
     }
 
+    @Override
     protected void cleanupAlgorithm()
     {
         if (this.getSupportsMap() != null)
@@ -262,6 +265,7 @@ public class KernelAdatron<InputType>
         this.kernel = kernel;
     }
 
+    @Override
     public KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>> getResult()
     {
         return this.result;
@@ -320,11 +324,7 @@ public class KernelAdatron<InputType>
         this.supportsMap = supportsMap;
     }
     
-    /**
-     * Gets the performance, which is the error count on the last iteration.
-     * 
-     * @return The performance of the algorithm.
-     */
+    @Override
     public NamedValue<Integer> getPerformance()
     {
         return new DefaultNamedValue<Integer>("error count", this.getErrorCount());

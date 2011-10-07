@@ -9,7 +9,6 @@
  * or on behalf of the U.S. Government. Export of this program may require a
  * license from the United States Government. See CopyrightHistory.txt for
  * complete details.
- *  
  * 
  */
 
@@ -21,7 +20,10 @@ import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.cost.MeanSquaredErrorCostFunction;
 import gov.sandia.cognition.learning.function.kernel.Kernel;
 import gov.sandia.cognition.learning.function.kernel.RadialBasisKernel;
+import gov.sandia.cognition.learning.function.scalar.LinearDiscriminant;
 import gov.sandia.cognition.learning.function.scalar.PolynomialFunction;
+import gov.sandia.cognition.learning.function.scalar.VectorFunctionLinearDiscriminant;
+import gov.sandia.cognition.learning.function.vector.ScalarBasisSet;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFunction;
@@ -49,11 +51,8 @@ public class KernelWeightedRobustRegressionTest
 
     public KernelWeightedRobustRegression<Vector, Vector> createInstance()
     {
-        DecoupledVectorLinearRegression learner = new DecoupledVectorLinearRegression(
-            1, PolynomialFunction.createPolynomials( 0.0, 1.0, 2.0 ) );
-
         return new KernelWeightedRobustRegression<Vector, Vector>(
-            learner, new RadialBasisKernel() );
+            new MultivariateLinearRegression(), new RadialBasisKernel() );
     }
 
     /**
@@ -82,18 +81,18 @@ public class KernelWeightedRobustRegressionTest
 
         LinkedList<InputOutputPair<Vector, Vector>> d =
             new LinkedList<InputOutputPair<Vector, Vector>>();
-        for (int i = 1; i <= 10; i++)
+        ScalarBasisSet<Double> polynomials = new ScalarBasisSet<Double>(
+            PolynomialFunction.createPolynomials( 0.0, 1.0, 2.0 ) );
+        VectorFunctionLinearDiscriminant<Double> f =
+            new VectorFunctionLinearDiscriminant<Double>( polynomials,
+                new LinearDiscriminant( VectorFactory.getDefault().copyValues(-5.0, 2.0, 0.0 ) ) );
+        for (double i = 1; i <= 10; i++)
         {
-            d.add( new DefaultInputOutputPair<Vector, Vector>( VectorFactory.getDefault().copyValues( i ),
-                VectorFactory.getDefault().copyValues( 2 * i - 5 ) ) );
+            d.add( DefaultInputOutputPair.create( polynomials.evaluate(i), VectorFactory.getDefault().copyValues(f.evaluate(i) ) ) );
         }
 
         double j = 2.5;
-        d.add( new DefaultInputOutputPair<Vector, Vector>( VectorFactory.getDefault().copyValues( j ),
-            //            VectorFactory.getDefault().copyValues( 10 * j + 10 ) ) );
-            VectorFactory.getDefault().copyValues( 30 ) ) );
-
-
+        d.add( DefaultInputOutputPair.create( polynomials.evaluate(j), VectorFactory.getDefault().copyValues(30+f.evaluate(j) )) );
         return d;
     }
 

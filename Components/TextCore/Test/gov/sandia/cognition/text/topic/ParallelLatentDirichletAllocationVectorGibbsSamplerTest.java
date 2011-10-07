@@ -1,6 +1,6 @@
 /*
- * File:                LatentDirichetAllocationVectorGibbsSamplerTest.java
- * Authors:             Justin Basilico
+ * File:                ParallelLatentDirichletAllocationVectorGibbsSamplerTest.java
+ * Authors:             Justin Basilico, Jason Shepherd
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
  * 
@@ -26,12 +26,12 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Unit tests for class LatentDirichetAllocationVectorGibbsSampler.
+ * Unit tests for class ParallelLatentDirichletAllocationVectorGibbsSampler.
  *
  * @author  Justin Basilico
  * @since   3.1
  */
-public class LatentDirichetAllocationVectorGibbsSamplerTest
+public class ParallelLatentDirichletAllocationVectorGibbsSamplerTest
 {
 
     protected Random random = new Random(211);
@@ -39,25 +39,25 @@ public class LatentDirichetAllocationVectorGibbsSamplerTest
     /**
      * Creates a new test.
      */
-    public LatentDirichetAllocationVectorGibbsSamplerTest()
+    public ParallelLatentDirichletAllocationVectorGibbsSamplerTest()
     {
     }
 
     /**
-     * Test of constructors of class LatentDirichetAllocationVectorGibbsSampler.
+     * Test of constructors of class ParallelLatentDirichletAllocationVectorGibbsSampler.
      */
     @Test
     public void testConstructors()
     {
-        int topicCount = LatentDirichetAllocationVectorGibbsSampler.DEFAULT_TOPIC_COUNT;
-        double alpha = LatentDirichetAllocationVectorGibbsSampler.DEFAULT_ALPHA;
-        double beta = LatentDirichetAllocationVectorGibbsSampler.DEFAULT_BETA;
-        int maxIterations = LatentDirichetAllocationVectorGibbsSampler.DEFAULT_MAX_ITERATIONS;
-        int burnInIterations = LatentDirichetAllocationVectorGibbsSampler.DEFAULT_BURN_IN_ITERATIONS;
-        int iterationsPerSample = LatentDirichetAllocationVectorGibbsSampler.DEFAULT_ITERATIONS_PER_SAMPLE;
+        int topicCount = ParallelLatentDirichletAllocationVectorGibbsSampler.DEFAULT_TOPIC_COUNT;
+        double alpha = ParallelLatentDirichletAllocationVectorGibbsSampler.DEFAULT_ALPHA;
+        double beta = ParallelLatentDirichletAllocationVectorGibbsSampler.DEFAULT_BETA;
+        int maxIterations = ParallelLatentDirichletAllocationVectorGibbsSampler.DEFAULT_MAX_ITERATIONS;
+        int burnInIterations = ParallelLatentDirichletAllocationVectorGibbsSampler.DEFAULT_BURN_IN_ITERATIONS;
+        int iterationsPerSample = ParallelLatentDirichletAllocationVectorGibbsSampler.DEFAULT_ITERATIONS_PER_SAMPLE;
 
-        LatentDirichetAllocationVectorGibbsSampler instance =
-            new LatentDirichetAllocationVectorGibbsSampler();
+        ParallelLatentDirichletAllocationVectorGibbsSampler instance =
+            new ParallelLatentDirichletAllocationVectorGibbsSampler();
         assertEquals(topicCount, instance.getTopicCount());
         assertEquals(alpha, instance.getAlpha(), 0.0);
         assertEquals(beta, instance.getBeta(), 0.0);
@@ -72,7 +72,7 @@ public class LatentDirichetAllocationVectorGibbsSamplerTest
         maxIterations = 1 + random.nextInt(100000);
         burnInIterations = random.nextInt(1000);
         iterationsPerSample = random.nextInt(100);
-        instance = new LatentDirichetAllocationVectorGibbsSampler(topicCount,
+        instance = new ParallelLatentDirichletAllocationVectorGibbsSampler(topicCount,
             alpha, beta, maxIterations, burnInIterations, iterationsPerSample,
             random);
         assertEquals(topicCount, instance.getTopicCount());
@@ -85,7 +85,7 @@ public class LatentDirichetAllocationVectorGibbsSamplerTest
     }
 
     /**
-     * Test of learn method, of class LatentDirichetAllocationVectorGibbsSampler.
+     * Test of learn method, of class ParallelLatentDirichletAllocationVectorGibbsSampler.
      */
     @Test
     public void testLearn()
@@ -100,16 +100,71 @@ public class LatentDirichetAllocationVectorGibbsSamplerTest
         data.add(factory.copyValues(1, 0, 0, 3, 2, 0, 3, 8, 0));
         data.add(factory.copyValues(3, 0, 5, 3, 0, 5, 6, 0, 0));
         data.add(factory.copyValues(0, 0, 0, 1, 3, 3, 3, 2, 0));
+        
         int termCount = 9;
-
+        
         int topicCount = 3;
-        LatentDirichetAllocationVectorGibbsSampler instance =
-            new LatentDirichetAllocationVectorGibbsSampler(
+        ParallelLatentDirichletAllocationVectorGibbsSampler instance =
+            new ParallelLatentDirichletAllocationVectorGibbsSampler(
                 topicCount, 2.0, 0.5, 50, 20, 10, random);
         assertNull(instance.learn(null));
         assertNull(instance.learn(new ArrayList<Vector>()));
 
-        LatentDirichetAllocationVectorGibbsSampler.Result result =
+        ParallelLatentDirichletAllocationVectorGibbsSampler.Result result =
+            instance.learn(data);
+
+        assertEquals(topicCount, result.getTopicCount());
+        assertEquals(topicCount, result.topicTermProbabilities.length);
+        assertEquals(data.size(), result.getDocumentCount());
+        assertEquals(data.size(), result.documentTopicProbabilities.length);
+        assertEquals(termCount, result.getTermCount());
+
+        for (int i = 0; i < topicCount; i++)
+        {
+            assertEquals(termCount, result.topicTermProbabilities[i].length);
+            for (int j = 0; j < termCount; j++)
+            {
+                assertIsProbability(result.topicTermProbabilities[i][j]);
+            }
+        }
+
+        for (int i = 0; i < data.size(); i++)
+        {
+            assertEquals(topicCount, result.documentTopicProbabilities[i].length);
+            for (int j = 0; j < topicCount; j++)
+            {
+                assertIsProbability(result.documentTopicProbabilities[i][j]);
+            }
+        }
+    }
+    
+    /**
+     * Test of learn method, of class ParallelLatentDirichletAllocationVectorGibbsSampler.
+     */
+    @Test
+    public void testLearnSmallTermCount()
+        throws Exception
+    {
+        final VectorFactory<?> factory = VectorFactory.getSparseDefault();
+        final ArrayList<Vector> data = new ArrayList<Vector>();
+        
+        data.add(factory.copyValues(1, 0));
+        data.add(factory.copyValues(1, 0));
+        data.add(factory.copyValues(0, 1));
+        data.add(factory.copyValues(0, 1));
+        data.add(factory.copyValues(1, 1));
+        data.add(factory.copyValues(1, 1));
+        
+        int termCount = 2;
+
+        int topicCount = 3;
+        ParallelLatentDirichletAllocationVectorGibbsSampler instance =
+            new ParallelLatentDirichletAllocationVectorGibbsSampler(
+                topicCount, 2.0, 0.5, 50, 20, 10, random);
+        assertNull(instance.learn(null));
+        assertNull(instance.learn(new ArrayList<Vector>()));
+
+        ParallelLatentDirichletAllocationVectorGibbsSampler.Result result =
             instance.learn(data);
 
         assertEquals(topicCount, result.getTopicCount());
@@ -244,18 +299,18 @@ public class LatentDirichetAllocationVectorGibbsSamplerTest
     }
 
     /**
-     * Test of getResult method, of class LatentDirichetAllocationVectorGibbsSampler.
+     * Test of getResult method, of class ParallelLatentDirichletAllocationVectorGibbsSampler.
      */
     @Test
     public void testGetResult()
     {
-        LatentDirichetAllocationVectorGibbsSampler instance =
-            new LatentDirichetAllocationVectorGibbsSampler();
+        ParallelLatentDirichletAllocationVectorGibbsSampler instance =
+            new ParallelLatentDirichletAllocationVectorGibbsSampler();
         assertNull(instance.getResult());
     }
 
     /**
-     * Test of getRandom method, of class LatentDirichetAllocationVectorGibbsSampler.
+     * Test of getRandom method, of class ParallelLatentDirichletAllocationVectorGibbsSampler.
      */
     @Test
     public void testGetRandom()
@@ -264,13 +319,13 @@ public class LatentDirichetAllocationVectorGibbsSamplerTest
     }
 
     /**
-     * Test of setRandom method, of class LatentDirichetAllocationVectorGibbsSampler.
+     * Test of setRandom method, of class ParallelLatentDirichletAllocationVectorGibbsSampler.
      */
     @Test
     public void testSetRandom()
     {
-        LatentDirichetAllocationVectorGibbsSampler instance =
-            new LatentDirichetAllocationVectorGibbsSampler();
+        ParallelLatentDirichletAllocationVectorGibbsSampler instance =
+            new ParallelLatentDirichletAllocationVectorGibbsSampler();
         assertNotNull(instance.getRandom());
 
         Random random = new Random();
@@ -291,7 +346,7 @@ public class LatentDirichetAllocationVectorGibbsSamplerTest
     }
 
     /**
-     * Test of getTopicCount method, of class LatentDirichetAllocationVectorGibbsSampler.
+     * Test of getTopicCount method, of class ParallelLatentDirichletAllocationVectorGibbsSampler.
      */
     @Test
     public void testGetTopicCount()
@@ -300,14 +355,14 @@ public class LatentDirichetAllocationVectorGibbsSamplerTest
     }
 
     /**
-     * Test of setTopicCount method, of class LatentDirichetAllocationVectorGibbsSampler.
+     * Test of setTopicCount method, of class ParallelLatentDirichletAllocationVectorGibbsSampler.
      */
     @Test
     public void testSetTopicCount()
     {
-        int topicCount = LatentDirichetAllocationVectorGibbsSampler.DEFAULT_TOPIC_COUNT;
-        LatentDirichetAllocationVectorGibbsSampler instance =
-            new LatentDirichetAllocationVectorGibbsSampler();
+        int topicCount = ParallelLatentDirichletAllocationVectorGibbsSampler.DEFAULT_TOPIC_COUNT;
+        ParallelLatentDirichletAllocationVectorGibbsSampler instance =
+            new ParallelLatentDirichletAllocationVectorGibbsSampler();
         assertEquals(topicCount, instance.getTopicCount());
 
         topicCount = 77;
@@ -347,7 +402,7 @@ public class LatentDirichetAllocationVectorGibbsSamplerTest
     }
 
     /**
-     * Test of getAlpha method, of class LatentDirichetAllocationVectorGibbsSampler.
+     * Test of getAlpha method, of class ParallelLatentDirichletAllocationVectorGibbsSampler.
      */
     @Test
     public void testGetAlpha()
@@ -356,14 +411,14 @@ public class LatentDirichetAllocationVectorGibbsSamplerTest
     }
 
     /**
-     * Test of setAlpha method, of class LatentDirichetAllocationVectorGibbsSampler.
+     * Test of setAlpha method, of class ParallelLatentDirichletAllocationVectorGibbsSampler.
      */
     @Test
     public void testSetAlpha()
     {
-        double alpha = LatentDirichetAllocationVectorGibbsSampler.DEFAULT_ALPHA;
-        LatentDirichetAllocationVectorGibbsSampler instance =
-            new LatentDirichetAllocationVectorGibbsSampler();
+        double alpha = ParallelLatentDirichletAllocationVectorGibbsSampler.DEFAULT_ALPHA;
+        ParallelLatentDirichletAllocationVectorGibbsSampler instance =
+            new ParallelLatentDirichletAllocationVectorGibbsSampler();
         assertEquals(alpha, instance.getAlpha(), 0.0);
 
         alpha = 1.1;
@@ -402,7 +457,7 @@ public class LatentDirichetAllocationVectorGibbsSamplerTest
     }
 
     /**
-     * Test of getBeta method, of class LatentDirichetAllocationVectorGibbsSampler.
+     * Test of getBeta method, of class ParallelLatentDirichletAllocationVectorGibbsSampler.
      */
     @Test
     public void testGetBeta()
@@ -411,14 +466,14 @@ public class LatentDirichetAllocationVectorGibbsSamplerTest
     }
 
     /**
-     * Test of setBeta method, of class LatentDirichetAllocationVectorGibbsSampler.
+     * Test of setBeta method, of class ParallelLatentDirichletAllocationVectorGibbsSampler.
      */
     @Test
     public void testSetBeta()
     {
-        double beta = LatentDirichetAllocationVectorGibbsSampler.DEFAULT_BETA;
-        LatentDirichetAllocationVectorGibbsSampler instance =
-            new LatentDirichetAllocationVectorGibbsSampler();
+        double beta = ParallelLatentDirichletAllocationVectorGibbsSampler.DEFAULT_BETA;
+        ParallelLatentDirichletAllocationVectorGibbsSampler instance =
+            new ParallelLatentDirichletAllocationVectorGibbsSampler();
         assertEquals(beta, instance.getBeta(), 0.0);
 
         beta = 1.1;
@@ -457,7 +512,7 @@ public class LatentDirichetAllocationVectorGibbsSamplerTest
     }
 
     /**
-     * Test of getBurnInIterations method, of class LatentDirichetAllocationVectorGibbsSampler.
+     * Test of getBurnInIterations method, of class ParallelLatentDirichletAllocationVectorGibbsSampler.
      */
     @Test
     public void testGetBurnInIterations()
@@ -466,14 +521,14 @@ public class LatentDirichetAllocationVectorGibbsSamplerTest
     }
 
     /**
-     * Test of setBurnInIterations method, of class LatentDirichetAllocationVectorGibbsSampler.
+     * Test of setBurnInIterations method, of class ParallelLatentDirichletAllocationVectorGibbsSampler.
      */
     @Test
     public void testSetBurnInIterations()
     {
-        int burnInIterations = LatentDirichetAllocationVectorGibbsSampler.DEFAULT_BURN_IN_ITERATIONS;
-        LatentDirichetAllocationVectorGibbsSampler instance =
-            new LatentDirichetAllocationVectorGibbsSampler();
+        int burnInIterations = ParallelLatentDirichletAllocationVectorGibbsSampler.DEFAULT_BURN_IN_ITERATIONS;
+        ParallelLatentDirichletAllocationVectorGibbsSampler instance =
+            new ParallelLatentDirichletAllocationVectorGibbsSampler();
         assertEquals(burnInIterations, instance.getBurnInIterations());
 
         burnInIterations = 0;
@@ -502,7 +557,7 @@ public class LatentDirichetAllocationVectorGibbsSamplerTest
     }
 
     /**
-     * Test of getIterationsPerSample method, of class LatentDirichetAllocationVectorGibbsSampler.
+     * Test of getIterationsPerSample method, of class ParallelLatentDirichletAllocationVectorGibbsSampler.
      */
     @Test
     public void testGetIterationsPerSample()
@@ -511,14 +566,14 @@ public class LatentDirichetAllocationVectorGibbsSamplerTest
     }
 
     /**
-     * Test of setIterationsPerSample method, of class LatentDirichetAllocationVectorGibbsSampler.
+     * Test of setIterationsPerSample method, of class ParallelLatentDirichletAllocationVectorGibbsSampler.
      */
     @Test
     public void testSetIterationsPerSample()
     {
-        int iterationsPerSample = LatentDirichetAllocationVectorGibbsSampler.DEFAULT_ITERATIONS_PER_SAMPLE;
-        LatentDirichetAllocationVectorGibbsSampler instance =
-            new LatentDirichetAllocationVectorGibbsSampler();
+        int iterationsPerSample = ParallelLatentDirichletAllocationVectorGibbsSampler.DEFAULT_ITERATIONS_PER_SAMPLE;
+        ParallelLatentDirichletAllocationVectorGibbsSampler instance =
+            new ParallelLatentDirichletAllocationVectorGibbsSampler();
         assertEquals(iterationsPerSample, instance.getIterationsPerSample());
 
         iterationsPerSample = 1;

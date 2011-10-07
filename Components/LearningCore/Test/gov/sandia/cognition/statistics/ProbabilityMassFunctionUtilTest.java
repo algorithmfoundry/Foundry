@@ -99,7 +99,7 @@ public class ProbabilityMassFunctionUtilTest
         ScalarDataDistribution.PMF s1a = new ScalarDataDistribution.PMF( r1a );
         for( Number x : pmf.getDomain() )
         {
-            assertEquals( pmf.evaluate( x ), s1a.evaluate( x ), Math.sqrt(numSamples/pmf.getVariance()) );
+            assertEquals( pmf.evaluate( x ), s1a.evaluate( x.doubleValue() ), Math.sqrt(numSamples/pmf.getVariance()) );
         }
         
     }

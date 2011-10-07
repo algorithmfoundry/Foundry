@@ -21,7 +21,7 @@ import gov.sandia.cognition.learning.data.DefaultWeightedTargetEstimatePair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.data.TargetEstimatePair;
 import gov.sandia.cognition.learning.data.WeightedInputOutputPair;
-import gov.sandia.cognition.learning.function.vector.MatrixMultiplyVectorFunction;
+import gov.sandia.cognition.learning.function.vector.MultivariateDiscriminant;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFunction;
@@ -99,9 +99,9 @@ public abstract class SupervisedCostFunctionTestHarness<InputType,TargetType>
      * Returns VectorFunction
      * @return VectorFunction
      */
-    protected MatrixMultiplyVectorFunction createVectorFunction()
+    protected MultivariateDiscriminant createVectorFunction()
     {
-        return new MatrixMultiplyVectorFunction(
+        return new MultivariateDiscriminant(
             MatrixFactory.getDefault().createUniformRandom(3, 3, -1.0, 1.0, RANDOM) );
     }
 

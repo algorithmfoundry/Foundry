@@ -16,7 +16,7 @@ package gov.sandia.cognition.learning.function.cost;
 
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.learning.data.DatasetUtil;
-import gov.sandia.cognition.learning.function.vector.MatrixMultiplyVectorFunction;
+import gov.sandia.cognition.learning.function.vector.MultivariateDiscriminant;
 import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Matrix;
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public class MeanSquaredErrorCostFunctionTest
     }
 
     @Override
-    public MatrixMultiplyVectorFunction createEvaluator()
+    public MultivariateDiscriminant createEvaluator()
     {
         return this.createVectorFunction();
     }
@@ -95,7 +95,7 @@ public class MeanSquaredErrorCostFunctionTest
         System.out.println("evaluate");
 
         MeanSquaredErrorCostFunction costFunction = this.createInstance();
-        MatrixMultiplyVectorFunction estimateFunction = this.createEvaluator();
+        MultivariateDiscriminant estimateFunction = this.createEvaluator();
         double totalSquaredError = 0.0;
         double weightSum = 0.0;
 
@@ -123,8 +123,8 @@ public class MeanSquaredErrorCostFunctionTest
     {
         System.out.println("differentiate");
         
-        MatrixMultiplyVectorFunction targetFunction = this.createEvaluator();
-        MatrixMultiplyVectorFunction estimateFunction = this.createEvaluator();
+        MultivariateDiscriminant targetFunction = this.createEvaluator();
+        MultivariateDiscriminant estimateFunction = this.createEvaluator();
         
         ArrayList<InputOutputPair<Vector,Vector>> dataset = 
             new ArrayList<InputOutputPair<Vector,Vector>>();

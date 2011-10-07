@@ -1,5 +1,5 @@
 /*
- * File:                IntegerCollection.java
+ * File:                IntegerSpan.java
  * Authors:             Kevin R. Dixon
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
@@ -14,14 +14,13 @@
 
 package gov.sandia.cognition.collection;
 
-import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.util.CloneableSerializable;
-import java.util.AbstractCollection;
+import java.util.AbstractSet;
 import java.util.Iterator;
 
 /**
  * An Iterable that starts at a given Integer and goes until another, inclusive.
- * For example, if I create an IntegerCollection foo = new IntegerCollection(8,9),
+ * For example, if I create an IntegerSpan foo = new IntegerSpan(8,9),
  * then the for each loop will create Integers of 8 then 9.  This is useful to
  * describe the bounds on a function, for example, without having to create
  * a List or Array that allocates memory.
@@ -29,11 +28,9 @@ import java.util.Iterator;
  * @author Kevin R. Dixon
  * @since 2.0
  */
-public class IntegerCollection
-    extends AbstractCollection<Integer>
+public class IntegerSpan
+    extends AbstractSet<Integer>
     implements CloneableSerializable
-// TODO: This class should be renamed to IntegerSpan or something. IntegerCollection
-// implies that it holds integers, rather than being a span of integers.
 {
 
     /**
@@ -47,16 +44,16 @@ public class IntegerCollection
     private int maxValue;
 
     /**
-     * Creates a new instance of IntegerCollection 
+     * Creates a new instance of IntegerSpan
      * 
      * @param minValue
      * Starting index, inclusive
      * @param maxValue
      * Stopping index, inclusive
      */
-    public IntegerCollection(
-        int minValue,
-        int maxValue )
+    public IntegerSpan(
+        final int minValue,
+        final int maxValue )
     {
         if (minValue > maxValue)
         {
@@ -67,11 +64,11 @@ public class IntegerCollection
     }
 
     @Override
-    public IntegerCollection clone()
+    public IntegerSpan clone()
     {
         try
         {
-            return (IntegerCollection) super.clone();
+            return (IntegerSpan) super.clone();
         }
         catch (CloneNotSupportedException ex)
         {
@@ -95,7 +92,7 @@ public class IntegerCollection
      * Starting index, inclusive
      */
     protected void setMinValue(
-        int minValue )
+        final int minValue )
     {
         this.minValue = minValue;
     }
@@ -116,16 +113,18 @@ public class IntegerCollection
      * Stopping index, inclusive
      */
     protected void setMaxValue(
-        int maxValue )
+        final int maxValue )
     {
         this.maxValue = maxValue;
     }
 
+    @Override
     public Iterator<Integer> iterator()
     {
         return new IntegerIterator();
     }
 
+    @Override
     public int size()
     {
         return this.maxValue - this.minValue + 1;
@@ -139,14 +138,14 @@ public class IntegerCollection
      * True if value is within the inclusive minValue/maxValue bounds
      */
     public boolean contains(
-        int value )
+        final int value )
     {
         return (this.minValue <= value) && (value <= this.maxValue);
     }
 
     @Override
     public boolean contains(
-        Object o )
+        final Object o )
     {
         if (o instanceof Integer)
         {
@@ -156,7 +155,7 @@ public class IntegerCollection
     }
 
     /**
-     * Iterator for an IntegerCollection
+     * Iterator for an IntegerSpan
      */
     private class IntegerIterator
         implements Iterator<Integer>
@@ -172,14 +171,16 @@ public class IntegerCollection
          */
         public IntegerIterator()
         {
-            this.currentIndex = IntegerCollection.this.getMinValue();
+            this.currentIndex = IntegerSpan.this.getMinValue();
         }
 
+        @Override
         public boolean hasNext()
         {
-            return (this.currentIndex <= IntegerCollection.this.getMaxValue());
+            return (this.currentIndex <= IntegerSpan.this.getMaxValue());
         }
 
+        @Override
         public Integer next()
         {
             int previousIndex = this.currentIndex;
@@ -187,6 +188,7 @@ public class IntegerCollection
             return previousIndex;
         }
 
+        @Override
         public void remove()
         {
             throw new UnsupportedOperationException( "Cannot remove." );

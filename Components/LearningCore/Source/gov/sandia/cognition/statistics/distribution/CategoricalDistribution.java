@@ -16,6 +16,7 @@ package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.VectorInputEvaluator;
@@ -25,7 +26,9 @@ import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * The Categorical Distribution is the multivariate generalization of the
@@ -154,7 +157,7 @@ public class CategoricalDistribution
         final Random random,
         final int numSamples)
     {
-        ArrayList<Vector> domain = this.getDomain();
+        ArrayList<Vector> domain = CollectionUtil.asArrayList(this.getDomain());
         final int N = domain.size();
 
         double[] cumulativeWeights = new double[N];
@@ -201,10 +204,10 @@ public class CategoricalDistribution
     }
 
     @Override
-    public ArrayList<Vector> getDomain()
+    public Set<Vector> getDomain()
     {
         final int N = this.getInputDimensionality();
-        ArrayList<Vector> domain = new ArrayList<Vector>( N );
+        LinkedHashSet<Vector> domain = new LinkedHashSet<Vector>( N );
         for( int n = 0; n < N; n++ )
         {
             Vector x = VectorFactory.getDefault().createVector(N);

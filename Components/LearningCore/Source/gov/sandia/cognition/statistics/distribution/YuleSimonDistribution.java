@@ -16,7 +16,7 @@ package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.collection.IntegerCollection;
+import gov.sandia.cognition.collection.IntegerSpan;
 import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
@@ -189,11 +189,11 @@ public class YuleSimonDistribution
     }
 
     @Override
-    public IntegerCollection getDomain()
+    public IntegerSpan getDomain()
     {
         double std = Math.sqrt( this.getVariance() );
         final int max = (int) Math.ceil(10.0*std + 100.0);
-        return new IntegerCollection( this.getMinSupport(), max );
+        return new IntegerSpan( this.getMinSupport(), max );
     }
 
     @Override

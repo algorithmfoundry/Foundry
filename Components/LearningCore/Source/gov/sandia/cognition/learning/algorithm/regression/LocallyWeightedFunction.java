@@ -219,6 +219,7 @@ public class LocallyWeightedFunction<InputType, OutputType>
      * Approximation at the given input using the Kernel weights, the original
      * (weighted) dataset, and the BatchLearner
      */
+    @Override
     public OutputType evaluate(
         InputType input )
     {
@@ -317,6 +318,7 @@ public class LocallyWeightedFunction<InputType, OutputType>
             this.setLearner( learner );
         }
 
+        @Override
         public LocallyWeightedFunction<InputType, OutputType> learn(
             Collection<? extends InputOutputPair<? extends InputType, OutputType>> data )
         {

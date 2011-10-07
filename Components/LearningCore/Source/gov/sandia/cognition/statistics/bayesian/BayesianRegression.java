@@ -20,17 +20,16 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.statistics.ClosedFormDistribution;
 import gov.sandia.cognition.statistics.Distribution;
 
 /**
- * A type of regression algorithm maps inputs onto a Vector space, and the
+ * A type of regression algorithm maps a Vector space, and the
  * weights of this Vector space are represented as a posterior distribution
  * given the observed InputOutputPairs.  The system can also estimate
  * the predictive distribution of future data given the weight posterior
  * for a desired input value.
- * @param <InputType>
- * Type of inputs to map onto a Vector
  * @param <OutputType>
  * Type of outputs to consider, typically a Double
  * @param <PosteriorType>
@@ -65,24 +64,9 @@ import gov.sandia.cognition.statistics.Distribution;
         )
     }
 )
-public interface BayesianRegression<InputType,OutputType,PosteriorType extends Distribution<? extends Vector>>
-    extends BayesianEstimator<InputOutputPair<? extends InputType, OutputType>, Vector, PosteriorType>
+public interface BayesianRegression<OutputType,PosteriorType extends Distribution<? extends Vector>>
+    extends BayesianEstimator<InputOutputPair<? extends Vectorizable, OutputType>, Vector, PosteriorType>
 {
-
-    /**
-     * Getter for featureMap
-     * @return the featureMap
-     * Function that maps the input space onto a Vector.
-     */
-    public Evaluator<? super InputType, Vector> getFeatureMap();
-
-    /**
-     * Setter for featureMap
-     * @param featureMap
-     * Function that maps the input space onto a Vector.
-     */
-    public void setFeatureMap(
-        Evaluator<? super InputType, Vector> featureMap);
 
     /**
      * Creates the distribution from which the outputs are generated, given
@@ -95,7 +79,7 @@ public interface BayesianRegression<InputType,OutputType,PosteriorType extends D
      * Conditional distribution from which outputs are generated.
      */
     public Distribution<OutputType> createConditionalDistribution(
-        final InputType input,
+        final Vectorizable input,
         final Vector weights );
 
     /**
@@ -105,7 +89,7 @@ public interface BayesianRegression<InputType,OutputType,PosteriorType extends D
      * @return
      * Predictive distribution of outputs given the posterior.
      */
-    public Evaluator<? super InputType,? extends ClosedFormDistribution<OutputType>> createPredictiveDistribution(
+    public Evaluator<? super Vectorizable,? extends ClosedFormDistribution<OutputType>> createPredictiveDistribution(
         final PosteriorType posterior );
     
 }

@@ -16,9 +16,9 @@ package gov.sandia.cognition.statistics.bayesian;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.statistics.PointMassDistribution;
+import gov.sandia.cognition.statistics.DataDistribution;
 import gov.sandia.cognition.statistics.ProbabilityFunction;
-import gov.sandia.cognition.statistics.distribution.MapBasedPointMassDistribution;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.AbstractRandomized;
 import gov.sandia.cognition.util.CloneableSerializable;
@@ -49,7 +49,7 @@ import java.util.Random;
 )
 public class ImportanceSampling<ObservationType,ParameterType>
     extends AbstractRandomized
-    implements BayesianEstimator<ObservationType, ParameterType, PointMassDistribution<ParameterType>>
+    implements BayesianEstimator<ObservationType, ParameterType, DataDistribution<ParameterType>>
 {
 
     /**
@@ -87,8 +87,9 @@ public class ImportanceSampling<ObservationType,ParameterType>
         return clone;
     }
 
-    public PointMassDistribution<ParameterType> learn(
-        Collection<? extends ObservationType> data)
+    @Override
+    public DataDistribution<ParameterType> learn(
+        final Collection<? extends ObservationType> data)
     {
 
         ArrayList<DefaultWeightedValue<ParameterType>> weightedSamples =
@@ -110,12 +111,12 @@ public class ImportanceSampling<ObservationType,ParameterType>
 
         maxWeight -= Math.log(Double.MAX_VALUE/ this.getNumSamples() / 2.0 );
 
-        PointMassDistribution<ParameterType> retval =
-            new MapBasedPointMassDistribution<ParameterType>( this.getNumSamples());
+        DataDistribution<ParameterType> retval =
+            new DefaultDataDistribution<ParameterType>( this.getNumSamples());
         for( DefaultWeightedValue<ParameterType> weightedSample : weightedSamples )
         {
             double mass = Math.exp(weightedSample.getWeight() - maxWeight);
-            retval.add( weightedSample.getValue(), mass );
+            retval.increment( weightedSample.getValue(), mass );
         }
 
         return retval;
@@ -138,7 +139,7 @@ public class ImportanceSampling<ObservationType,ParameterType>
      * Updater for the ImportanceSampling algorithm.
      */
     public void setUpdater(
-        ImportanceSampling.Updater<ObservationType, ParameterType> updater)
+        final ImportanceSampling.Updater<ObservationType, ParameterType> updater)
     {
         this.updater = updater;
     }
@@ -159,7 +160,7 @@ public class ImportanceSampling<ObservationType,ParameterType>
      * Number of samples.
      */
     public void setNumSamples(
-        int numSamples)
+        final int numSamples)
     {
         this.numSamples = numSamples;
     }
@@ -184,8 +185,8 @@ public class ImportanceSampling<ObservationType,ParameterType>
          * log likelihood of the data given the parameter
          */
         public double computeLogLikelihood(
-            ParameterType parameter,
-            Iterable<? extends ObservationType> data );
+            final ParameterType parameter,
+            final Iterable<? extends ObservationType> data );
 
         /**
          * Computes the parameter's importance weight.
@@ -195,7 +196,7 @@ public class ImportanceSampling<ObservationType,ParameterType>
          * Importance value
          */
         public double computeLogImportanceValue(
-            ParameterType parameter );
+            final ParameterType parameter );
 
         /**
          * Samples from the parameter prior
@@ -205,7 +206,7 @@ public class ImportanceSampling<ObservationType,ParameterType>
          * Location of the proposed sample
          */
         public ParameterType makeProposal(
-            Random random );
+            final Random random );
 
     }
 
@@ -241,28 +242,31 @@ public class ImportanceSampling<ObservationType,ParameterType>
          * distributions.
          */
         public DefaultUpdater(
-            BayesianParameter<ParameterType,? extends ProbabilityFunction<ObservationType>,? extends ProbabilityFunction<ParameterType>> conjuctive)
+            final BayesianParameter<ParameterType,? extends ProbabilityFunction<ObservationType>,? extends ProbabilityFunction<ParameterType>> conjuctive)
         {
             this.setConjuctive(conjuctive);
         }
 
+        @Override
         public double computeLogLikelihood(
-            ParameterType parameter,
-            Iterable<? extends ObservationType> data)
+            final ParameterType parameter,
+            final Iterable<? extends ObservationType> data)
         {
             this.conjuctive.setValue(parameter);
             return BayesianUtil.logLikelihood(
                 this.conjuctive.getConditionalDistribution(), data);
         }
 
+        @Override
         public double computeLogImportanceValue(
-            ParameterType parameter)
+            final ParameterType parameter)
         {
             return this.conjuctive.getParameterPrior().logEvaluate(parameter);
         }
 
+        @Override
         public ParameterType makeProposal(
-            Random random)
+            final Random random)
         {
             return this.conjuctive.getParameterPrior().sample(random);
         }
@@ -285,7 +289,7 @@ public class ImportanceSampling<ObservationType,ParameterType>
          * distributions.
          */
         public void setConjuctive(
-            BayesianParameter<ParameterType,? extends ProbabilityFunction<ObservationType>,? extends ProbabilityFunction<ParameterType>> conjuctive)
+            final BayesianParameter<ParameterType,? extends ProbabilityFunction<ObservationType>,? extends ProbabilityFunction<ParameterType>> conjuctive)
         {
             this.conjuctive = conjuctive;
         }
