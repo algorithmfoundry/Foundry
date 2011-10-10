@@ -31,12 +31,12 @@ abstract public class RingTestHarness<RingType extends Ring<RingType>>
     /**m
      * Random-number generator to use
      */
-    public static final Random RANDOM = new Random( 0 );
+    public final Random RANDOM = new Random( 0 );
 
     /**
      * Range of the RANDOM numbers
      */
-    protected static double RANGE = RANDOM.nextDouble() * 100.0;
+    protected double RANGE = RANDOM.nextDouble() * 100.0;
 
     /**
      * Default tolerance
@@ -381,7 +381,7 @@ abstract public class RingTestHarness<RingType extends Ring<RingType>>
         assertEquals( r1, r2 );
         r1.zero();
         assertFalse( r1.equals( r1clone ) );
-        assertEquals( r1, r2.scale( 0.0 ) );
+        assertEquals( r1, r2.scale( 0.0 ));
         assertEquals( r2, r2clone );
 
     }

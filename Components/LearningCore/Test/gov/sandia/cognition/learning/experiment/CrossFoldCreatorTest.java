@@ -97,7 +97,7 @@ public class CrossFoldCreatorTest
         }
         finally
         {
-            assert(exceptionThrown);
+            assertTrue(exceptionThrown);
         }
         
         data.add(random.nextDouble());
@@ -112,7 +112,7 @@ public class CrossFoldCreatorTest
         }
         finally
         {
-            assert(exceptionThrown);
+            assertTrue(exceptionThrown);
         }
     }
     
@@ -197,7 +197,7 @@ public class CrossFoldCreatorTest
         }
         finally
         {
-            assert(exceptionThrown);
+            assertTrue(exceptionThrown);
         }
         
         exceptionThrown = false;
@@ -211,7 +211,7 @@ public class CrossFoldCreatorTest
         }
         finally
         {
-            assert(exceptionThrown);
+            assertTrue(exceptionThrown);
         }
         
         exceptionThrown = false;
@@ -225,7 +225,7 @@ public class CrossFoldCreatorTest
         }
         finally
         {
-            assert(exceptionThrown);
+            assertTrue(exceptionThrown);
         }
     }
 }

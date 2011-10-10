@@ -89,7 +89,7 @@ public class RandomDataPartitionerTest
         }
         finally
         {
-            assert(exceptionThrown);
+            assertTrue(exceptionThrown);
         }
         
         data.add(Math.random());
@@ -104,7 +104,7 @@ public class RandomDataPartitionerTest
         }
         finally
         {
-            assert(exceptionThrown);
+            assertTrue(exceptionThrown);
         }
     }
     
@@ -166,7 +166,7 @@ public class RandomDataPartitionerTest
         }
         finally
         {
-            assert(exceptionThrown);
+            assertTrue(exceptionThrown);
         }
         
         exceptionThrown = false;
@@ -180,7 +180,7 @@ public class RandomDataPartitionerTest
         }
         finally
         {
-            assert(exceptionThrown);
+            assertTrue(exceptionThrown);
         }
     }
 }

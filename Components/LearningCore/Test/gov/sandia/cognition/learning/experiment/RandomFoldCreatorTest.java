@@ -32,7 +32,7 @@ public class RandomFoldCreatorTest
     extends TestCase
 {
 
-    public final static Random RANDOM = new Random(1);
+    private Random RANDOM = new Random(2347);
 
     public RandomFoldCreatorTest(
         String testName)
@@ -151,20 +151,6 @@ public class RandomFoldCreatorTest
         boolean exceptionThrown = false;
         try
         {
-            instance.setNumFolds(1);
-        }
-        catch ( IllegalArgumentException e )
-        {
-            exceptionThrown = true;
-        }
-        finally
-        {
-            assert(exceptionThrown);
-        }
-        
-        exceptionThrown = false;
-        try
-        {
             instance.setNumFolds(0);
         }
         catch ( IllegalArgumentException e )
@@ -173,7 +159,7 @@ public class RandomFoldCreatorTest
         }
         finally
         {
-            assert(exceptionThrown);
+            assertTrue(exceptionThrown);
         }
         
         exceptionThrown = false;
@@ -187,7 +173,7 @@ public class RandomFoldCreatorTest
         }
         finally
         {
-            assert(exceptionThrown);
+            assertTrue(exceptionThrown);
         }
     }
 
