@@ -27,6 +27,9 @@ public abstract class VectorSpaceTestHarness<VectorType extends VectorSpace<Vect
     extends RingTestHarness<VectorType>
 {
 
+    /**
+     * Num samples.
+     */
     public static int NUM_SAMPLES = 10;
 
     /**
@@ -184,6 +187,8 @@ public abstract class VectorSpaceTestHarness<VectorType extends VectorSpace<Vect
             }
             final double normp = Math.pow( sump, 1.0/power );
             assertEquals( normp, instance.norm(power), TOLERANCE );
+
+            assertEquals( instance.normInfinity(), instance.norm(Double.POSITIVE_INFINITY), TOLERANCE );
         }
 
         try
@@ -202,6 +207,28 @@ public abstract class VectorSpaceTestHarness<VectorType extends VectorSpace<Vect
             VectorType instance = this.createRandom();
             instance.norm(-1.0);
             fail( "power must be > 0.0" );
+        }
+        catch (Exception e)
+        {
+            System.out.println( "Good: " + e );
+        }
+
+        try
+        {
+            VectorType instance = this.createRandom();
+            instance.norm(Double.NEGATIVE_INFINITY);
+            fail( "power must be > 0.0" );
+        }
+        catch (Exception e)
+        {
+            System.out.println( "Good: " + e );
+        }
+
+        try
+        {
+            VectorType instance = this.createRandom();
+            instance.norm(Double.NaN);
+            fail( "power can't be NaN" );
         }
         catch (Exception e)
         {
@@ -298,8 +325,8 @@ public abstract class VectorSpaceTestHarness<VectorType extends VectorSpace<Vect
         {
             VectorType a = this.createRandom( 10, -RANGE, RANGE );
             VectorType b = this.createRandom( 10, -RANGE, RANGE );
-            assertEquals( a.minus(b).norm2Squared(), a.euclideanDistanceSquared(b) );
-            assertEquals( a.minus(b).norm2Squared(), b.euclideanDistanceSquared(a) );
+            assertEquals( a.minus(b).norm2Squared(), a.euclideanDistanceSquared(b), TOLERANCE );
+            assertEquals( a.minus(b).norm2Squared(), b.euclideanDistanceSquared(a), TOLERANCE );
             assertEquals( 0.0, a.euclideanDistanceSquared(a) );
             assertEquals( 0.0, b.euclideanDistanceSquared(b) );
         }

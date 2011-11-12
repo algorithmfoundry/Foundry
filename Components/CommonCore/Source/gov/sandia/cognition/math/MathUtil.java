@@ -1,6 +1,6 @@
 /*
  * File:                MathUtil.java
- * Authors:             Justin Basilico
+ * Authors:             Justin Basilico, Kevin Dixon, Zachary Benz
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
  *
@@ -23,7 +23,7 @@ import gov.sandia.cognition.math.matrix.Vector;
 /**
  * The {@code MathUtil} class implements mathematical utility functions.
  *
- * @author Justin Basilico
+ * @author Justin Basilico, Kevin Dixon, Zachary Benz
  * @since  2.0
  */
 @CodeReview(
@@ -91,7 +91,7 @@ public class MathUtil
         }
     )
     public static double logGammaFunction(
-        double input )
+        final double input )
     {
 
         if (input <= 0.0)
@@ -154,8 +154,8 @@ public class MathUtil
         }
     )
     public static double lowerIncompleteGammaFunction(
-        double a,
-        double x )
+        final double a,
+        final double x )
     {
 
         if (a <= 0.0)
@@ -211,8 +211,8 @@ public class MathUtil
         notes="Function gser()"
     )
     protected static double incompleteGammaSeriesExpansion(
-        double a,
-        double x )
+        final double a,
+        final double x )
     {
         final int MAX_ITERATIONS = 1000;
         final double EPS = 3e-7;
@@ -281,8 +281,8 @@ public class MathUtil
         url="http://www.nrbook.com/a/bookcpdf.php"
     )
     public static double incompleteGammaContinuedFraction(
-        double a,
-        double x )
+        final double a,
+        final double x )
     {
 
         LentzMethod lentz = new LentzMethod();
@@ -320,8 +320,8 @@ public class MathUtil
         url="http://en.wikipedia.org/wiki/Binomial_coefficient"
     )
     public static int binomialCoefficient(
-        int N,
-        int k )
+        final int N,
+        final int k )
     {
         return (int) Math.round( Math.exp( logBinomialCoefficient(N, k) ) );
     }
@@ -334,8 +334,8 @@ public class MathUtil
      * @return Natural logarithm of the binomial coefficient for N choose k
      */
     public static double logBinomialCoefficient(
-        int N,
-        int k )
+        final int N,
+        final int k )
     {
         return logFactorial( N ) - logFactorial( k ) - logFactorial( N - k );
     }
@@ -349,7 +349,7 @@ public class MathUtil
      * n factorial
      */
     public static double logFactorial(
-        int n )
+        final int n )
     {
         if (n < 0)
         {
@@ -383,8 +383,8 @@ public class MathUtil
         url="http://en.wikipedia.org/wiki/Beta_function"
     )
     public static double logBetaFunction(
-        double a,
-        double b )
+        final double a,
+        final double b )
     {
         double ga = logGammaFunction( a );
         double gb = logGammaFunction( b );
@@ -430,9 +430,9 @@ public class MathUtil
         }
     )
     public static double regularizedIncompleteBetaFunction(
-        double a,
-        double b,
-        double x )
+        final double a,
+        final double b,
+        final double x )
     {
 
         double bt;
@@ -493,9 +493,9 @@ public class MathUtil
 
     )
     protected static double incompleteBetaContinuedFraction(
-        double a,
-        double b,
-        double x )
+        final double a,
+        final double b,
+        final double x )
     {
 
         double apb = a+b;
@@ -559,7 +559,7 @@ public class MathUtil
         notes="Multinomial Beta Function found in the \"Probability density function\" section."
     )
     static public double logMultinomialBetaFunction(
-        Vector input)
+        final Vector input)
     {
         double logsum = 0.0;
         double inputSum = 0.0;
@@ -572,5 +572,121 @@ public class MathUtil
         logsum -= logGammaFunction(inputSum);
         return logsum;
     }
-
+      
+    /**
+     * Safely checks for underflow/overflow before adding two integers.  If an
+     * underflow or overflow would occur as a result of the addition, an
+     * {@code ArithmeticException} is thrown.
+     * 
+     * @param a
+     *      The first integer to add
+     * @param b
+     *      The second integer to add
+     * @return
+     *      The sum of integers a and b
+     * @throws ArithmeticException 
+     *      If an underflow or overflow will occur upon adding a and b
+     */
+    @PublicationReference(
+        author={
+            "Tov Are",
+            "Paul van Keep",
+            "Mike Cowlishaw",
+            "Pierre Baillargeon",
+            "Bill Wilkinson",
+            "Patricia Shanahan",
+            "Joseph Bowbeer",
+            "Charles Thomas",
+            "Joel Crisp",
+            "Eric Nagler",
+            "Daniel Leuck",
+            "William Brogden",
+            "Yves Bossu",
+            "Chad Loder"
+        },
+        title="Java Gotchas",
+        type=PublicationType.WebPage,
+        year=2011,
+        url="http://202.38.93.17/bookcd/285/1.iso/faq/gloss/gotchas.html#OVERFLOW",
+        notes="")
+    static public int checkedAdd(
+        final int a,
+        final int b)
+        throws ArithmeticException
+    {
+        if ((a > 0) && (b > Integer.MAX_VALUE - a))
+        {
+            throw new ArithmeticException("Integer Overflow: " +
+                a + " + " + b + " > Integer.MAX_VALUE");
+        }
+        else if ((a < 0) && (b < Integer.MIN_VALUE - a))
+        {
+            throw new ArithmeticException("Integer Underflow: " +
+                a + " + " + b + " < Integer.MIN_VALUE");            
+        }
+        else
+        {
+            return a + b;
+        }
+    }
+    
+    /**
+     * Safely checks for overflow before multiplying two integers.  
+     * If an overflow would occur as a result of the
+     * multiplication, an {@code ArithmeticException} is thrown.
+     * 
+     * @param a
+     *      The first integer to multiply
+     * @param b
+     *      The second integer to multiply
+     * @return
+     *      The result of multiplying the integers a and b
+     * @throws ArithmeticException 
+     *      If an overflow will occur upon multiplying a and b
+     */
+    @PublicationReference(
+        author={
+            "Tov Are",
+            "Paul van Keep",
+            "Mike Cowlishaw",
+            "Pierre Baillargeon",
+            "Bill Wilkinson",
+            "Patricia Shanahan",
+            "Joseph Bowbeer",
+            "Charles Thomas",
+            "Joel Crisp",
+            "Eric Nagler",
+            "Daniel Leuck",
+            "William Brogden",
+            "Yves Bossu",
+            "Chad Loder"
+        },
+        title="Java Gotchas",
+        type=PublicationType.WebPage,
+        year=2011,
+        url="http://202.38.93.17/bookcd/285/1.iso/faq/gloss/gotchas.html#OVERFLOW",
+        notes="")
+    static public int checkedMultiply(
+        final int a,
+        final int b)
+        throws ArithmeticException
+    {
+        final long result = (long)a * (long)b;
+        final int desiredHighBits = - ((int)( result >>> 31 ) & 1);
+        final int actualHighBits = (int)( result >>> 32 );
+        if (desiredHighBits == actualHighBits)
+        {
+            return(int)result;
+        }
+        else if (result > 0)
+        {
+            throw new ArithmeticException("Integer Overflow: " +
+                a + " * " + b + " > Integer.MAX_VALUE");
+        }
+        else
+        {
+            throw new ArithmeticException("Integer Underflow: " +
+                a + " * " + b + " < Integer.MIN_VALUE");
+        }
+    }
 }

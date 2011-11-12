@@ -14,7 +14,6 @@
 
 package gov.sandia.cognition.math.matrix;
 
-import gov.sandia.cognition.math.RingTestHarness;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -28,7 +27,7 @@ import java.util.Iterator;
  *
  */
 abstract public class VectorTestHarness
-    extends RingTestHarness<Vector>
+    extends VectorSpaceTestHarness<Vector>
 {
 
     /**
@@ -51,11 +50,6 @@ abstract public class VectorTestHarness
     abstract protected Vector createCopy(
         Vector vector);
 
-    /**
-     * Max dimensions
-     */
-    protected static int DEFAULT_MAX_DIMENSION = 10;
-    
     /**
      * Creates a new RANDOM Vector with a given dimension and range
      * @param numDim dimension of the vector
@@ -80,7 +74,8 @@ abstract public class VectorTestHarness
     /** Creates a new instance of VectorTestHarness
      * @param testName Name of the test
      */
-    public VectorTestHarness(String testName)
+    public VectorTestHarness(
+        String testName)
     {
         super(testName);
     }
@@ -233,34 +228,21 @@ abstract public class VectorTestHarness
     }
 
     /**
-     * Test of dotProduct method, of class gov.sandia.isrc.math.matrix.Vector.
+     * Test of scaleEquals method, of class gov.sandia.isrc.math.matrix.Vector.
      */
-    public void testDotProduct()
+    public void testScaleEquals()
     {
-        System.out.println("dotProduct");
+        System.out.println("scaleEquals");
 
-        double range = 10.0;
         Vector v1 = this.createRandom();
         int M = v1.getDimensionality();
-        Vector v2 = this.createRandom(M, -range, range);
 
-        double expected = 0.0;
+        Vector v2 = v1.clone();
+        double scaleFactor = RANDOM.nextDouble();
+        v2.scaleEquals(scaleFactor);
         for (int i = 0; i < M; i++)
         {
-            expected += v1.getElement(i) * v2.getElement(i);
-        }
-
-        assertEquals(expected, v1.dotProduct(v2));
-
-        Vector v3 = this.createRandom(M + 1, -range, range);
-        try
-        {
-            v1.dotProduct(v3);
-            fail("Should have thrown exception: " + v1.getClass());
-        }
-        catch (DimensionalityMismatchException e)
-        {
-            System.out.println( "Good: " + e );
+            assertEquals(v1.getElement(i) * scaleFactor, v2.getElement(i));
         }
 
     }
@@ -293,241 +275,6 @@ abstract public class VectorTestHarness
         Matrix m2 = v2.outerProduct(v1);
         assertEquals(M2, m2.getNumRows());
         assertEquals(M1, m2.getNumColumns());
-
-    }
-
-    /**
-     * Test of cosine method, of class gov.sandia.isrc.math.matrix.Vector.
-     */
-    public void testCosine()
-    {
-        System.out.println("cosine");
-
-        Vector v1 = this.createRandom();
-        int M = v1.getDimensionality();
-        Vector v2 = this.createRandom(M, -RANGE, RANGE);
-
-        double expected = v1.dotProduct(v2) / (v1.norm2() * v2.norm2());
-        assertEquals(expected, v1.cosine(v2), TOLERANCE );
-
-        v2.zero();
-        assertEquals( 0.0, v1.cosine(v2) );
-
-        Vector v3 = this.createRandom(M + 1, -RANGE, RANGE);
-        try
-        {
-            v1.cosine(v3);
-            fail("Should have thrown exception: " + v1.getClass());
-        }
-        catch (Exception e)
-        {
-            System.out.println( "Good: " + e );
-        }
-
-    }
-
-    /**
-     * Test of sum method, of class Vector.
-     */
-    public void testSum()
-    {
-
-        Vector v1 = this.createRandom();
-        int M = v1.getDimensionality();
-
-        double expected = 0.0;
-        for (int i = 0; i < M; i++)
-        {
-            expected += v1.getElement(i);
-        }
-
-        assertEquals(expected, v1.sum());
-    }
-
-    /**
-     * Test of norm1 method, of class gov.sandia.isrc.math.matrix.Vector.
-     */
-    public void testNorm1()
-    {
-        System.out.println("norm1");
-
-        Vector v1 = this.createRandom();
-        int M = v1.getDimensionality();
-
-        double expected = 0.0;
-        for (int i = 0; i < M; i++)
-        {
-            expected += Math.abs(v1.getElement(i));
-        }
-
-        assertEquals(expected, v1.norm1());
-
-    }
-
-    /**
-     * Test of norm2 method, of class gov.sandia.isrc.math.matrix.Vector.
-     */
-    public void testNorm2()
-    {
-        System.out.println("norm2");
-
-        Vector v1 = this.createRandom();
-        int M = v1.getDimensionality();
-        double expected = 0.0;
-        for (int i = 0; i < M; i++)
-        {
-            expected += v1.getElement(i) * v1.getElement(i);
-        }
-
-        assertEquals(Math.sqrt(expected), v1.norm2());
-
-    }
-
-    /**
-     * Test of norm2Squared method, of class gov.sandia.isrc.math.matrix.Vector.
-     */
-    public void testNorm2Squared()
-    {
-        System.out.println("norm2Squared");
-
-        Vector v1 = this.createRandom();
-        int M = v1.getDimensionality();
-        double expected = 0.0;
-        for (int i = 0; i < M; i++)
-        {
-            expected += v1.getElement(i) * v1.getElement(i);
-        }
-
-        assertEquals(expected, v1.norm2Squared(), 1e-5);
-
-    }
-    
-    /**
-     * Test of normInfinity method, of class gov.sandia.isrc.math.matrix.Vector.
-     */
-    public void testNormInfinity()
-    {
-        System.out.println("normInfinity");
-        Vector v1 = this.createRandom();
-        int M = v1.getDimensionality();
-        double expected = 0.0;
-        for (int i = 0; i < M; i++)
-        {
-            double v = Math.abs(v1.getElement(i));
-            if( expected < v )
-            {
-                expected = v;
-            }
-        }
-
-        assertEquals(expected, v1.normInfinity());
-        
-    }    
-
-    /**
-     * Test of euclideanDistance method, of class gov.sandia.isrc.math.matrix.Vector.
-     */
-    public void testEuclideanDistance()
-    {
-        System.out.println("euclideanDistance");
-
-        Vector v1 = this.createRandom();
-        int M = v1.getDimensionality();
-        Vector v2 = this.createRandom(M, -RANGE, RANGE);
-        assertEquals(v1.minus(v2).norm2(), v1.euclideanDistance(v2));
-
-        assertEquals(v1.euclideanDistance(v2), v2.euclideanDistance(v1));
-
-        Vector v3 = this.createRandom(M + 1, -RANGE, RANGE);
-        try
-        {
-            v1.euclideanDistance(v3);
-            fail("Should have thrown exception: " + v1.getClass());
-        }
-        catch (Exception e)
-        {
-            System.out.println( "Good: " + e );
-        }
-
-    }
-
-    /**
-     * Test of euclideanDistanceSquared method, of class gov.sandia.isrc.math.matrix.Vector.
-     */
-    public void testEuclideanDistanceSquared()
-    {
-        System.out.println("euclideanDistanceSquared");
-
-
-        Vector v1 = this.createRandom();
-        int M = v1.getDimensionality();
-        Vector v2 = this.createRandom(M, -RANGE, RANGE);
-        assertEquals(v1.minus(v2).norm2(), v1.euclideanDistance(v2));
-
-        assertEquals(v1.euclideanDistance(v2), v2.euclideanDistance(v1));
-
-        Vector v3 = this.createRandom(M + 1, -RANGE, RANGE);
-        try
-        {
-            v1.euclideanDistance(v3);
-            fail("Should have thrown exception: " + v1.getClass());
-        }
-        catch (Exception e)
-        {
-        }
-
-    }
-
-    /**
-     * Test of equals method, of class gov.sandia.isrc.math.matrix.Vector.
-     */
-    public void testEquals()
-    {
-        System.out.println("equals");
-
-        Vector v1 = this.createRandom();
-        int M = v1.getDimensionality();
-        assertEquals(v1, v1);
-
-        int index = RANDOM.nextInt( M );
-        double delta = RANDOM.nextDouble();
-
-        Vector v2 = v1.clone();
-        v1.setElement(index, v1.getElement(index) + delta);
-        assertFalse(v1.equals(v2));
-        assertTrue(v1.equals(v2, delta + delta));
-
-        Vector v3 = this.createRandom(M + 1, -RANGE, RANGE);
-        assertFalse( v1.equals( v3 ) );
-
-    }
-    
-    /**
-     * Test of hashCode method, of class gov.sandia.isrc.math.matrix.Vector.
-     */
-    public void testHashCode()
-    {
-        System.out.println("hashCode");
-
-        Vector v1 = this.createRandom();
-        int M = v1.getDimensionality();
-        assertEquals(v1.hashCode(), v1.hashCode());
-        assertEquals(v1.hashCode(), v1.clone().hashCode());
-
-        int index = RANDOM.nextInt( M );
-        double delta = RANDOM.nextDouble();
-
-        Vector v2 = v1.clone();
-        assertEquals( v1.hashCode(), v2.hashCode() );
-        
-        v1.setElement(index, v1.getElement(index) + delta);
-        assertFalse(v1.hashCode() == v2.hashCode());
-
-        v1.setElement(index, 0.0);
-        assertFalse(v1.hashCode() == v2.hashCode());
-
-        Vector v3 = this.createRandom(M + 1, -RANGE, RANGE);
-        assertFalse(v1.hashCode() == v3.hashCode());
 
     }
 
@@ -586,7 +333,7 @@ abstract public class VectorTestHarness
         for (int i = 0; i < M; i++)
         {
             System.out.println("i: " + i + "v1: " + v1.getElement(i) + " v2: " + v2.getElement(i) + " v3: " + v3.getElement(i));
-            assertEquals(v3.getElement(i), v1.getElement(i) * v2.getElement(i));
+            assertEquals(v3.getElement(i), v1.getElement(i) * v2.getElement(i), TOLERANCE);
         }
 
         Vector v4 = this.createRandom(M + 1, -RANGE, RANGE);
@@ -601,7 +348,60 @@ abstract public class VectorTestHarness
         }
 
     }
+
+    /**
+     * Test of equals method, of class gov.sandia.isrc.math.matrix.Vector.
+     */
+    public void testEquals()
+    {
+        System.out.println("equals");
+
+        Vector v1 = this.createRandom();
+        int M = v1.getDimensionality();
+        assertEquals(v1, v1);
+
+        int index = RANDOM.nextInt( M );
+        double delta = RANDOM.nextDouble();
+
+        Vector v2 = v1.clone();
+        v1.setElement(index, v1.getElement(index) + delta);
+        assertFalse(v1.equals(v2));
+        assertTrue(v1.equals(v2, delta + delta));
+
+        Vector v3 = this.createRandom(M + 1, -RANGE, RANGE);
+        assertFalse( v1.equals( v3 ) );
+
+    }
     
+    /**
+     * Test of hashCode method, of class gov.sandia.isrc.math.matrix.Vector.
+     */
+    public void testHashCode()
+    {
+        System.out.println("hashCode");
+
+        Vector v1 = this.createRandom();
+        int M = v1.getDimensionality();
+        assertEquals(v1.hashCode(), v1.hashCode());
+        assertEquals(v1.hashCode(), v1.clone().hashCode());
+
+        int index = RANDOM.nextInt( M );
+        double delta = RANDOM.nextDouble();
+
+        Vector v2 = v1.clone();
+        assertEquals( v1.hashCode(), v2.hashCode() );
+        
+        v1.setElement(index, v1.getElement(index) + delta);
+        assertFalse(v1.hashCode() == v2.hashCode());
+
+        v1.setElement(index, 1.0);
+        assertFalse(v1.hashCode() == v2.hashCode());
+
+        Vector v3 = this.createRandom(M + 1, -RANGE, RANGE);
+        assertFalse(v1.hashCode() == v3.hashCode());
+
+    }
+
     /**
      * Test of times
      */
@@ -653,68 +453,6 @@ abstract public class VectorTestHarness
         }
         
         
-    }
-
-    /**
-     * Test of scaleEquals method, of class gov.sandia.isrc.math.matrix.Vector.
-     */
-    public void testScaleEquals()
-    {
-        System.out.println("scaleEquals");
-
-        Vector v1 = this.createRandom();
-        int M = v1.getDimensionality();
-
-        Vector v2 = v1.clone();
-        double scaleFactor = RANDOM.nextDouble();
-        v2.scaleEquals(scaleFactor);
-        for (int i = 0; i < M; i++)
-        {
-            assertEquals(v1.getElement(i) * scaleFactor, v2.getElement(i));
-        }
-
-    }
-
-    /**
-     * Test of unitVector method, of class gov.sandia.isrc.math.matrix.Vector.
-     */
-    public void testUnitVector()
-    {
-        System.out.println("unitVector");
-
-        Vector v1 = this.createRandom();
-        Vector u1 = v1.unitVector();
-
-        assertEquals(v1.scale(1.0 / v1.norm2()), u1);
-        assertEquals(1.0, u1.norm2(), 0.00001);
-
-        // Make sure that the zeros test case works.
-        Vector zeros = this.createVector(10);
-        Vector v2 = this.createVector(10);
-        Vector u2 = v2.unitVector();
-        assertEquals(zeros, u2);
-    }
-
-    /**
-     * Test of unitVectorEquals method, of class gov.sandia.isrc.math.matrix.Vector.
-     */
-    public void testUnitVectorEquals()
-    {
-        System.out.println("unitVectorEquals");
-
-        Vector v1 = this.createRandom();
-        Vector u1 = v1.clone();
-        u1.unitVectorEquals();
-
-        assertEquals(v1.scale(1.0 / v1.norm2()), u1);
-        assertEquals(1.0, u1.norm2(), 0.00001);
-
-        // Make sure that the zeros test case works.
-        Vector zeros = this.createVector(10);
-        Vector v2 = this.createVector(10);
-        Vector u2 = v2.clone();
-        u2.unitVectorEquals();
-        assertEquals(zeros, u2);
     }
 
     /**

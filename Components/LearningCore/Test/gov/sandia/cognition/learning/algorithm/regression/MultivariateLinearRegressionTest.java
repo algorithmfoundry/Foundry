@@ -22,6 +22,7 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
 import java.util.LinkedList;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.vector.MultivariateDiscriminant;
+import gov.sandia.cognition.learning.function.vector.MultivariateDiscriminantWithBias;
 import gov.sandia.cognition.math.matrix.Vector;
 import java.util.Collection;
 import java.util.Random;
@@ -95,7 +96,8 @@ public class MultivariateLinearRegressionTest
 
         double r = 1.0;
         Matrix A = MatrixFactory.getDefault().createUniformRandom( M, N, -r, r, RANDOM );
-        MultivariateDiscriminant f = new MultivariateDiscriminant( A );
+        Vector bias = VectorFactory.getDefault().createUniformRandom( M, -r, r, RANDOM);
+        MultivariateDiscriminantWithBias f = new MultivariateDiscriminantWithBias( A, bias );
 
         int num = RANDOM.nextInt( 100 ) + (M*N);
         Collection<InputOutputPair<Vector,Vector>> dataset =
@@ -110,13 +112,30 @@ public class MultivariateLinearRegressionTest
         MultivariateLinearRegression learner =
             new MultivariateLinearRegression();
         learner.setUsePseudoInverse(true);
-        MultivariateDiscriminant fhat = learner.learn( dataset );
+        MultivariateDiscriminantWithBias fhat = learner.learn( dataset );
+        System.out.println( "fhat: " + fhat.convertToVector() );
+        System.out.println( "f:    " + f.convertToVector() );
         assertTrue( A.equals( fhat.getDiscriminant(), 1e-5 ) );
 
         learner.setUsePseudoInverse(false);
         fhat = learner.learn( dataset );
+        Vector p1 = fhat.convertToVector();
         assertTrue( A.equals( fhat.getDiscriminant(), 1e-5 ) );
+        System.out.println( "p1: " + p1.norm2() );
+        
+        learner.setRegularization(0.1);
+        fhat = learner.learn( dataset );
+        Vector p2 = fhat.convertToVector();
+        System.out.println( "p2: " + p2.norm2() );
+        assertTrue( p1.norm2() > p2.norm2() );
 
+        learner.setRegularization(1.0);
+        fhat = learner.learn( dataset );
+        Vector p3 = fhat.convertToVector();
+        System.out.println( "p3: " + p3.norm2() );
+        assertTrue( p2.norm2() > p3.norm2() );
+        
+        
     }
 
     /**

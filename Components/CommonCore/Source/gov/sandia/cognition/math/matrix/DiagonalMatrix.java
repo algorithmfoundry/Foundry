@@ -64,10 +64,31 @@ public interface DiagonalMatrix
     // since the off-diagonal elements are necessarily zero
     public DiagonalMatrix dotTimes(
         Matrix matrix );
-    
+
+    /**
+     * Multiplies this by the given DiagonalMatrix, leaving this unmodified
+     * @param matrix
+     * DigonalMatrix to multiply this
+     * @return
+     * DiagonalMatrix representing the multiplication
+     */
+    DiagonalMatrix times(
+        DiagonalMatrix matrix );
+
+    /**
+     * Multiplies this by the other diagonal matrix, stores the result in this
+     * @param matrix
+     * Diagonal matrix to multiply this by
+     */
+    void timesEquals(
+        DiagonalMatrix matrix );
+
     public DiagonalMatrix pseudoInverse();
     
     public DiagonalMatrix pseudoInverse(
         double effectiveZero );
-    
+
+
+    public DiagonalMatrix inverse();
+
 }

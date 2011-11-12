@@ -250,5 +250,28 @@ public class ReceiverOperatingCharacteristicTest extends TestCase
         assertSame( Utest, instance.getUtest() );
         
     }
-    
+
+    public void testKnownAUC1()
+    {
+        System.out.println( "Known AUC1" );
+
+        LinkedList<InputOutputPair<Double,Boolean>> data =
+            new LinkedList<InputOutputPair<Double, Boolean>>();
+
+        data.add( DefaultInputOutputPair.create( 0.95, true ) );
+        data.add( DefaultInputOutputPair.create( 0.9,  true ) );
+        data.add( DefaultInputOutputPair.create( 0.8,  false ) );
+        data.add( DefaultInputOutputPair.create( 0.7,  true ) );
+        data.add( DefaultInputOutputPair.create( 0.65, true ) );
+        data.add( DefaultInputOutputPair.create( 0.6,  true ) );
+        data.add( DefaultInputOutputPair.create( 0.5,  true ) );
+        data.add( DefaultInputOutputPair.create( 0.4,  false ) );
+        data.add( DefaultInputOutputPair.create( 0.3,  true ) );
+        data.add( DefaultInputOutputPair.create( 0.2,  true ) );
+        data.add( DefaultInputOutputPair.create( 0.1,  false ) );
+        data.add( DefaultInputOutputPair.create( 0.05, false ) );
+
+        assertEquals( 0.75, ReceiverOperatingCharacteristic.create(data).computeStatistics().getAreaUnderCurve(), 1e-5 );
+    }
+
 }

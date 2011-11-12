@@ -80,7 +80,8 @@ public interface VectorSpace<VectorType extends VectorSpace<VectorType,?>,EntryT
     /**
      * Returns the p-norm of the Vector with the given power.
      * @param power
-     * Power to exponentiate each entry, must be greater than 0.0
+     * Power to exponentiate each entry, must be greater than 0.0,
+     * Double.POSITIVE_INFINITY
      * @return
      * p-norm with the given power.
      */

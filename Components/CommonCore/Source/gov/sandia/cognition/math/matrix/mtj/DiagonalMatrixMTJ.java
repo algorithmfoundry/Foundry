@@ -74,11 +74,7 @@ public class DiagonalMatrixMTJ
     {
         this( diagonal.length );
         double[] actual = this.getDiagonal();
-        for( int i = 0; i < diagonal.length; i++ )
-        {
-            actual[i] = diagonal[i];
-        }
-        
+        System.arraycopy(diagonal, 0, actual, 0, diagonal.length);
     }
 
     public int getDimensionality()
@@ -109,20 +105,17 @@ public class DiagonalMatrixMTJ
                 "Number of columns of this != number of rows of matrix" );
         }
         
-        int M = this.getNumRows();
-        int N = matrix.getNumColumns();
+        final int M = this.getNumRows();
+        final int N = matrix.getNumColumns();
         
-        DenseMatrix retval = DenseMatrixFactoryMTJ.INSTANCE.createMatrix( M, N );
-//        this.timesInto( matrix, retval );
-        
+        DenseMatrix retval = DenseMatrixFactoryMTJ.INSTANCE.createMatrix( M, N );        
         
         double[] diagonal = this.getDiagonal();
         
         // The diagonal elements scale each row
         for( int i = 0; i < M; i++ )
         {
-            double di = diagonal[i];
-            
+            final double di = diagonal[i];
             if( di != 0.0 )
             {
                 for( int j = 0; j < N; j++ )
@@ -141,11 +134,43 @@ public class DiagonalMatrixMTJ
     }
 
     @Override
+    public DiagonalMatrixMTJ times(
+        DiagonalMatrix matrix)
+    {
+        DiagonalMatrixMTJ clone = (DiagonalMatrixMTJ) this.clone();
+        clone.timesEquals(matrix);
+        return clone;
+    }
+
+    @Override
+    public void timesEquals(
+        DiagonalMatrix matrix)
+    {
+
+        if( !this.checkSameDimensions(matrix) )
+        {
+            throw new IllegalArgumentException( "Matrix must be the same size as this" );
+        }
+
+        final int M = this.getDimensionality();
+
+        // The diagonal elements scale each row
+        for( int i = 0; i < M; i++ )
+        {
+            final double d1i = this.getElement(i);
+            final double d2j = matrix.getElement(i);
+            final double v = d1i * d2j;
+
+            this.setElement(i, v);
+        }
+
+    }
+
+    @Override
     public AbstractMTJVector times(
         AbstractMTJVector vector )
     {
-        int M = this.getDimensionality();
-        
+        final int M = this.getDimensionality();
         if( M != vector.getDimensionality() )
         {
             throw new IllegalArgumentException(
@@ -155,10 +180,10 @@ public class DiagonalMatrixMTJ
         double[] retval = new double[ diagonal.length ];
         for( int i = 0; i < M; i++ )
         {
-            double v2 = diagonal[i];
+            final double v2 = diagonal[i];
             if( v2 != 0.0 )
             {
-                double v1 = vector.getElement( i );
+                final double v1 = vector.getElement( i );
                 if( v1 != 0.0 )
                 {
                     retval[i] = v1*v2;
@@ -376,17 +401,9 @@ public class DiagonalMatrixMTJ
     }
 
     @Override
-    public Matrix inverse()
+    public DiagonalMatrixMTJ inverse()
     {
-        if (!this.isSquare())
-        {
-            throw new UnsupportedOperationException(
-                "Can only invert square matrices.");
-        }
-        else
-        {
-            return this.pseudoInverse();
-        }
+        return this.pseudoInverse();
     }
 
     public Vector getColumn(
@@ -547,10 +564,7 @@ public class DiagonalMatrixMTJ
 
         double[] diag = (double[]) in.readObject();
         this.setInternalMatrix( new no.uib.cipr.matrix.BandMatrix( diag.length, 0, 0 ) );
-        for( int i = 0; i < diag.length; i++ )
-        {
-            this.getDiagonal()[i] = diag[i];
-        }
+        System.arraycopy(diag, 0, this.getDiagonal(), 0, diag.length);
     }
 
 }

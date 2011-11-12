@@ -18,6 +18,7 @@ import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.CodeReviewResponse;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.matrix.mtj.decomposition.SingularValueDecompositionMTJ;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixEntry;
@@ -67,7 +68,6 @@ public class DenseMatrix
     extends AbstractMTJMatrix
     implements Serializable
 {
-
     /**
      * Creates a new instance of DenseMatrix
      * @param numRows number of rows in the matrix
@@ -76,8 +76,24 @@ public class DenseMatrix
     protected DenseMatrix(
         int numRows,
         int numColumns )
-    {
-        super( new no.uib.cipr.matrix.DenseMatrix( numRows, numColumns ) );
+    {        
+        super( 
+            new Object() {
+                no.uib.cipr.matrix.DenseMatrix checkedCreateMatrix(
+                    final int numRows,
+                    final int numColumns)
+                {
+                    // Need to check for integer overflow because 
+                    // no.uib.cipr.matrix.DenseMatrix creates a matrix as an 
+                    // array of doubles with length numRows * numColumns and 
+                    // Java overflows silently.  This method will throw an 
+                    // exception if an overflow will occur
+                    MathUtil.checkedMultiply(numRows, numColumns);
+                    return new no.uib.cipr.matrix.DenseMatrix(numRows,
+                        numColumns);
+                }
+            }.checkedCreateMatrix(numRows, numColumns)
+        );
     }
 
     /**
@@ -232,7 +248,9 @@ public class DenseMatrix
     public String toString()
     {
         final StringBuilder result =
-            new StringBuilder(this.getNumRows() * this.getNumColumns() * 10);
+            new StringBuilder(MathUtil.checkedMultiply(10, 
+                MathUtil.checkedMultiply(this.getNumRows(),
+                this.getNumColumns())));
 
         for (int i = 0; i < this.getNumRows(); i++)
         {
@@ -251,7 +269,9 @@ public class DenseMatrix
         final NumberFormat format)
     {
         final StringBuilder result =
-            new StringBuilder(this.getNumRows() * this.getNumColumns() * 5);
+            new StringBuilder(MathUtil.checkedMultiply(5, 
+                MathUtil.checkedMultiply(this.getNumRows(),
+                this.getNumColumns())));
 
         for (int i = 0; i < this.getNumRows(); i++)
         {

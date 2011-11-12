@@ -47,4 +47,18 @@ public class DenseMatrixTest extends MatrixTestHarness
         return new DenseMatrix( matrix );
     } 
     
+    public void testCreateMatrixWithOverflow()
+    {        
+        // A test that is unique to dense matrices
+        System.out.println( 
+            "creating a matrix with numRows * numColumns > Integer.MAX_VALUE");
+        try
+        {
+            Matrix m1 = this.createMatrix(Integer.MAX_VALUE, 2);
+            fail("Should have thrown an ArithmeticExcpetion due to overflow");
+        }
+        catch (Exception e)
+        {
+        }        
+    }
 }

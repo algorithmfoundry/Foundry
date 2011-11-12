@@ -227,7 +227,7 @@ public class MathUtilTest
      */
     public void testLogMultinomialBetaFunction()
     {
-        System.out.println( "MathUtil.logMultinomialBetaFunction" );
+        System.out.println( "logMultinomialBetaFunction" );
 
         Vector a = VectorFactory.getDefault().copyValues(1.0, 2.0, 3.0 );
         assertEquals( -4.094344562222101, MathUtil.logMultinomialBetaFunction(a), TOLERANCE );
@@ -248,5 +248,106 @@ public class MathUtilTest
         }
 
     }
+    
+    /**
+     * Test of checkedAdd method, of class MathUtil
+     */
+    public void testCheckedAdd()
+    {
+        System.out.println("checkedAdd");
+        
+        final int a1 = Integer.MAX_VALUE;
+        final int b1 = -3;
+        int result1 = MathUtil.checkedAdd(a1, b1);
+        assertEquals(result1, 2147483644);
 
+        final int a2 = Integer.MIN_VALUE;
+        final int b2 = 4;
+        int result2 = MathUtil.checkedAdd(a2, b2);
+        assertEquals(result2, -2147483644);         
+         
+        final int a3 = Integer.MAX_VALUE;
+        final int b3 = 1;
+        try
+        {
+            final int result3 = MathUtil.checkedAdd(a3, b3);
+            fail("An ArithmeticException should have been thrown!");
+        }
+        catch (ArithmeticException e)
+        {
+            System.out.println("Good: " + e);
+        }
+        catch (Exception e)
+        {
+            fail("An ArithmeticException should have been thrown!");
+        }
+        
+        final int a4 = Integer.MIN_VALUE;
+        final int b4 = -1;
+        try
+        {
+            final int result4 = MathUtil.checkedAdd(a4, b4);
+            fail("An ArithmeticException should have been thrown!");
+        }
+        catch (ArithmeticException e)
+        {
+            System.out.println("Good: " + e);
+        }
+        catch (Exception e)
+        {
+            fail("An ArithmeticException should have been thrown!");
+        }
+    }
+    
+    public void testCheckedMultiply()
+    {
+        System.out.println("checkedMultiply");
+        
+        final int a1 = 3;
+        final int b1 = 4;
+        int result1 = MathUtil.checkedMultiply(a1, b1);
+        assertEquals(result1, 12);
+        
+        final int a2 = -5;
+        final int b2 = 6;
+        int result2 = MathUtil.checkedMultiply(a2, b2);
+        assertEquals(result2, -30);
+        
+        final int a3 = -7;
+        final int b3 = -8;
+        int result3 = MathUtil.checkedMultiply(a3, b3);
+        assertEquals(result3, 56);
+        
+        final int a4 = Integer.MAX_VALUE;
+        final int b4 = 2;
+        try
+        {
+            final int result4 = MathUtil.checkedMultiply(a4, b4);
+            fail("An ArithmeticException should have been thrown!");
+        }
+        catch (ArithmeticException e)
+        {
+            System.out.println("Good: " + e);
+        }
+        catch (Exception e)
+        {
+            fail("An ArithmeticException should have been thrown!");
+        }   
+        
+        final int a5 = Integer.MIN_VALUE;
+        final int b5 = 2;
+        try
+        {
+            final int result5 = MathUtil.checkedMultiply(a5, b5);
+            fail("An ArithmeticException should have been thrown!");
+        }
+        catch (ArithmeticException e)
+        {
+            System.out.println("Good: " + e);
+        }
+        catch (Exception e)
+        {
+            fail("An ArithmeticException should have been thrown!");
+        } 
+    }
 }

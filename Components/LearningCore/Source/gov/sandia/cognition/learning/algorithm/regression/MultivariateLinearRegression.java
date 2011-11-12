@@ -14,29 +14,58 @@
 
 package gov.sandia.cognition.learning.algorithm.regression;
 
+import gov.sandia.cognition.annotation.PublicationReference;
+import gov.sandia.cognition.annotation.PublicationReferences;
+import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.learning.function.vector.MultivariateDiscriminant;
+import gov.sandia.cognition.learning.function.vector.MultivariateDiscriminantWithBias;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
+import gov.sandia.cognition.util.ArgumentChecker;
 import java.util.Collection;
 
 /**
- * Performs multivariate regression, without explicitly estimating a bias term
- * and without regularization.  To use a bias term, append a constant to the
- * inputs with something like DatasetUtil.appendBias.
+ * Performs multivariate regression with an explicit bias term, with optional
+ * L2 regularization.
  * @author Kevin R. Dixon
  * @since 3.2.1
  */
+@PublicationReferences(
+    references={
+        @PublicationReference(
+            author="Wikipedia",
+            title="Linear regression",
+            type=PublicationType.WebPage,
+            year=2008,
+            url="http://en.wikipedia.org/wiki/Linear_regression"
+        )
+        ,
+        @PublicationReference(
+            author="Wikipedia",
+            title="Tikhonov regularization",
+            type=PublicationType.WebPage,
+            year=2011,
+            url="http://en.wikipedia.org/wiki/Tikhonov_regularization",
+            notes="Despite what Wikipedia says, this is always called Ridge Regression"
+        )
+    }
+)
 public class MultivariateLinearRegression 
     extends AbstractCloneableSerializable
-    implements SupervisedBatchLearner<Vector, Vector, MultivariateDiscriminant>
+    implements SupervisedBatchLearner<Vector, Vector, MultivariateDiscriminantWithBias>
 {
 
+    /**
+     * Default regularization, {@value}.
+     */
+    public static final double DEFAULT_REGULARIZATION = 0.0;    
+    
     /**
      * Tolerance for the pseudo inverse in the learn method, {@value}.
      */
@@ -49,6 +78,12 @@ public class MultivariateLinearRegression
      */
     private boolean usePseudoInverse;
 
+    /**
+     * L2 ridge regularization term, must be nonnegative, a value of zero is
+     * equivalent to unregularized regression.
+     */
+    private double regularization;    
+    
     /** 
      * Creates a new instance of MultivariateLinearRegression 
      */
@@ -64,7 +99,7 @@ public class MultivariateLinearRegression
     }
 
     @Override
-    public MultivariateDiscriminant learn(
+    public MultivariateDiscriminantWithBias learn(
         Collection<? extends InputOutputPair<? extends Vector, Vector>> data)
     {
         // We need to cheat to figure out how many coefficients we need...
@@ -75,26 +110,30 @@ public class MultivariateLinearRegression
         int N = first.getOutput().getDimensionality();
         int numSamples = data.size();
 
-        Matrix X = MatrixFactory.getDefault().createMatrix( numSamples, M );
-        Matrix Y = MatrixFactory.getDefault().createMatrix( numSamples, N );
+        Matrix X =  MatrixFactory.getDefault().createMatrix( M+1, numSamples );
+        Matrix Xt = MatrixFactory.getDefault().createMatrix( numSamples, M+1 );
+        Matrix Y =  MatrixFactory.getDefault().createMatrix( N, numSamples );
+        Matrix Yt =  MatrixFactory.getDefault().createMatrix( numSamples, N );
 
         // The matrix equation looks like:
         // y = C*[f0(x) f1(x) ... fn(x) ], fi() is the ith basis function
         int i = 0;
+        Vector one = VectorFactory.getDefault().copyValues(1.0);
         for (InputOutputPair<? extends Vector, Vector> pair : data)
         {
             Vector output = pair.getOutput();
-            Vector input = pair.getInput().convertToVector();
+            Vector input = pair.getInput().convertToVector().stack(one);
             final double weight = DatasetUtil.getWeight(pair);
             if( weight != 1.0 )
             {
-                // Can't use scaleEquals because that would modify the
-                // underlying dataset
-                input = input.scale(weight);
+                // We can use scaleEquals() here because of the stack() method
+                input.scaleEquals(weight);
                 output = output.scale(weight);
             }
-            X.setRow( i, input );
-            Y.setRow( i, output );
+            Xt.setRow( i, input );
+            X.setColumn( i, input );
+            Y.setColumn( i, output );
+            Yt.setRow( i, output );
             i++;
         }
 
@@ -102,14 +141,28 @@ public class MultivariateLinearRegression
         Matrix coefficients;
         if( this.getUsePseudoInverse() )
         {
-            Matrix psuedoInverse = X.pseudoInverse(DEFAULT_PSEUDO_INVERSE_TOLERANCE);
-            coefficients = psuedoInverse.times(Y).transpose();
+            Matrix pseudoInverse = Xt.pseudoInverse(DEFAULT_PSEUDO_INVERSE_TOLERANCE);
+            coefficients = pseudoInverse.times( Yt ).transpose();
         }
         else
         {
-            coefficients = X.solve( Y ).transpose();
+            Matrix lhs = X.times( Xt );
+            if( this.regularization > 0.0 )
+            {
+                for( i = 0; i < M+1; i++ )
+                {
+                    double v = lhs.getElement(i, i);
+                    lhs.setElement(i, i, v + this.regularization);
+                }
+            }
+            Matrix rhs = Y.times( Xt );
+            coefficients = lhs.solve( rhs.transpose() ).transpose();
         }
-        return new MultivariateDiscriminant( coefficients );
+        
+        Matrix discriminant = coefficients.getSubMatrix(0, N-1, 0, M-1);
+        Vector bias = coefficients.getColumn(M);
+        
+        return new MultivariateDiscriminantWithBias( discriminant, bias );
     }
 
     /**
@@ -137,4 +190,28 @@ public class MultivariateLinearRegression
         this.usePseudoInverse = usePseudoInverse;
     }
 
+    /**
+     * Getter for regularization
+     * @return
+     * L2 ridge regularization term, must be nonnegative, a value of zero is
+     * equivalent to unregularized regression.
+     */
+    public double getRegularization()
+    {
+        return this.regularization;
+    }
+
+    /**
+     * Setter for regularization
+     * @param regularization
+     * L2 ridge regularization term, must be nonnegative, a value of zero is
+     * equivalent to unregularized regression.
+     */
+    public void setRegularization(
+        double regularization)
+    {
+        ArgumentChecker.assertIsNonNegative("regularization", regularization);
+        this.regularization = regularization;
+    }    
+    
 }

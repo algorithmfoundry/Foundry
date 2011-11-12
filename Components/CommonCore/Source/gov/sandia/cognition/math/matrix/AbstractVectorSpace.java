@@ -122,6 +122,16 @@ public abstract class AbstractVectorSpace<VectorType extends VectorSpace<VectorT
         final double power)
     {
         ArgumentChecker.assertIsPositive("power", power);
+        if( Double.isNaN(power) )
+        {
+            throw new ArithmeticException( "Power cannot be NaN" );
+        }
+
+        if( Double.isInfinite(power) )
+        {
+            return this.normInfinity();
+        }
+
         double sum = 0.0;
         for( Entry entry : this )
         {

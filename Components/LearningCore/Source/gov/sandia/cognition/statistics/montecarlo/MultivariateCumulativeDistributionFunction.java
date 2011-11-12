@@ -14,6 +14,8 @@
 
 package gov.sandia.cognition.statistics.montecarlo;
 
+import gov.sandia.cognition.annotation.PublicationReference;
+import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.ProbabilityUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.statistics.Distribution;
@@ -27,6 +29,13 @@ import java.util.Random;
  * @author  Kevin R. Dixon
  * @since   3.3.0
  */
+@PublicationReference(
+    author="MathWorks",
+    title="Multivariate normal cumulative distribution function",
+    type=PublicationType.WebPage,
+    year=2011,
+    url="http://www.mathworks.com/help/toolbox/stats/mvncdf.html"
+)
 public class MultivariateCumulativeDistributionFunction 
 {
 
@@ -53,9 +62,8 @@ public class MultivariateCumulativeDistributionFunction
     {
 
         ProbabilityUtil.assertIsProbability(probabilityTolerance);
-        double factor = 4*0.25 / probabilityTolerance;
+        double factor = 1.0 / probabilityTolerance;
         int numSamples = (int) Math.ceil( factor*factor );
-//        System.out.println( "NumSamples = " + numSamples );
         ArrayList<? extends Vector> samples =
             distribution.sample( random, numSamples );
         int numNotLess = 0;

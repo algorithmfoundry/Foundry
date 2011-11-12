@@ -245,7 +245,7 @@ public class LogisticRegression
             final double r = yhat*(1.0-yhat);
             this.err.setElement( n, (y - yhat) );
             this.R.setElement( n, r );
-            this.Ri.setElement( n, 1.0/r );
+            this.Ri.setElement( n, (r!=0.0) ? 1.0/r : 0.0 );
             n++;
         }
         
@@ -254,19 +254,19 @@ public class LogisticRegression
         Vector z = w.times( this.X );
         z.plusEquals( this.Ri.times( this.err ) );
 
-        Matrix XWR = this.X.times( this.W.times( this.R ) );
-        Matrix lhs = XWR.times( this.Xt );
+        this.R.timesEquals(this.W);
+        Matrix lhs = this.X.times( this.R.times( this.Xt ) );
         if( this.regularization != 0.0 )
         {
             final int N = this.X.getNumRows();
             for( int i = 0; i < N; i++ )
             {
-                double v = lhs.getElement(i, i);
+                final double v = lhs.getElement(i, i);
                 lhs.setElement(i, i, v + this.regularization);
             }
         }
 
-        Vector rhs = XWR.times( z );
+        Vector rhs = this.X.times( this.R.times( z ) );
         
         Vector wnew = lhs.solve( rhs );        
         f.convertFromVector( wnew );
@@ -426,5 +426,5 @@ public class LogisticRegression
         }
         
     }
-    
+
 }

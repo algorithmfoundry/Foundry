@@ -85,8 +85,8 @@ public class ReceiverOperatingCharacteristic
         Collection<ReceiverOperatingCharacteristic.DataPoint> rocData,
         MannWhitneyUConfidence.Statistic Utest )
     {
-        ArrayList<DataPoint> sortedData =
-            new ArrayList<DataPoint>( rocData );
+        ArrayList<ReceiverOperatingCharacteristic.DataPoint> sortedData =
+            CollectionUtil.asArrayList(rocData);
         
         Collections.sort( sortedData, new DataPoint.Sorter() );
         
@@ -118,6 +118,7 @@ public class ReceiverOperatingCharacteristic
      * @return 
      * Pessimistic TruePositiveRate for the given FalsePositiveRate
      */
+    @Override
     public Double evaluate(
         Double input )
     {
@@ -271,7 +272,9 @@ public class ReceiverOperatingCharacteristic
                 positivesSoFar++;
             }
         }
-        
+
+        Collections.sort(rocData, new ReceiverOperatingCharacteristic.DataPoint.Sorter());
+
         // Compute a statistical test on the data.
         MannWhitneyUConfidence.Statistic uTest =
             new MannWhitneyUConfidence().evaluateNullHypothesis(data);
@@ -363,7 +366,8 @@ public class ReceiverOperatingCharacteristic
         
         
         /**
-         * Computes the "pessimistic" area under the ROC curve
+         * Computes the "pessimistic" area under the ROC curve using the
+         * top-left rectangle method for numerical integration.
          * @param roc 
          * ROC Curve to compute the area under
          * @return 
@@ -374,12 +378,13 @@ public class ReceiverOperatingCharacteristic
         public static double computeAreaUnderCurve(
             ReceiverOperatingCharacteristic roc )
         {
-            return computeAreaUnderCurve( roc.getSortedROCData() );            
+            return computeAreaUnderCurveTopLeft( roc.getSortedROCData() );
         }
 
         /**
          * Computes the Area Under Curve for an x-axis sorted Collection
-         * of ROC points
+         * of ROC points using the top-left rectangle method for numerical
+         * integration.
          * @param points
          * x-axis sorted collection of x-axis points
          * @return
@@ -387,7 +392,14 @@ public class ReceiverOperatingCharacteristic
          * 0.5 means that the classifier is doing no better than chance and
          * bigger is better
          */
-        public static double computeAreaUnderCurve(
+        @PublicationReference(
+            author="Wikipedia",
+            title="Rectangle method",
+            type=PublicationType.WebPage,
+            year=2011,
+            url="http://en.wikipedia.org/wiki/Rectangle_method"
+        )
+        public static double computeAreaUnderCurveTopLeft(
             Collection<ReceiverOperatingCharacteristic.DataPoint> points )
         {
             ReceiverOperatingCharacteristic.DataPoint current =
@@ -414,8 +426,64 @@ public class ReceiverOperatingCharacteristic
             }
 
             // Assume that the final point is at xn=1.0
+            xnm1 = xn;
             xn = 1.0;
             final double area = ynm1*(xn-xnm1);
+            auc += area;
+            return auc;
+        }
+
+        /**
+         * Computes the Area Under Curve for an x-axis sorted Collection
+         * of ROC points using the top-left rectangle method for numerical
+         * integration.
+         * @param points
+         * x-axis sorted collection of x-axis points
+         * @return
+         * Area underneath the ROC curve, on the interval [0,1].  A value of
+         * 0.5 means that the classifier is doing no better than chance and
+         * bigger is better
+         */
+        @PublicationReference(
+            author="Wikipedia",
+            title="Trapezoidal rule",
+            type=PublicationType.WebPage,
+            year=2011,
+            url="http://en.wikipedia.org/wiki/Trapezoidal_rule"
+        )
+        public static double computeAreaUnderCurveTrapezoid(
+            Collection<ReceiverOperatingCharacteristic.DataPoint> points )
+        {
+            ReceiverOperatingCharacteristic.DataPoint current =
+                CollectionUtil.getFirst(points);
+            double auc = 0.0;
+            double xnm1 = 0.0;
+            double ynm1 = 0.0;
+            double yn = 0.0;
+            double xn = 0.0;
+            for( ReceiverOperatingCharacteristic.DataPoint point : points )
+            {
+                // Technically, this wastes the computation of the first point,
+                // but since the delta is 0.0, it doesn't effect the AUC.
+                ReceiverOperatingCharacteristic.DataPoint previous = current;
+                previous = current;
+                current = point;
+
+                xnm1 = previous.getFalsePositiveRate();
+                ynm1 = previous.getTruePositiveRate();
+                xn = current.getFalsePositiveRate();
+                yn = current.getTruePositiveRate();
+
+                final double area = (xn-xnm1) * (yn+ynm1) / 2.0;
+                auc += area;
+
+            }
+
+            // Assume that the final point is at xn=1.0
+            xnm1 = xn;
+            xn = 1.0;
+            yn = 1.0;
+            final double area = (xn-xnm1) * (yn+ynm1) / 2.0;
             auc += area;
             return auc;
         }
@@ -715,6 +783,7 @@ public class ReceiverOperatingCharacteristic
              * @return
              * -1 if o1<o2, +1 if o1>o2, 0 if o1=o2
              */
+            @Override
             public int compare(
                 ReceiverOperatingCharacteristic.DataPoint o1,
                 ReceiverOperatingCharacteristic.DataPoint o2)
@@ -768,6 +837,7 @@ public class ReceiverOperatingCharacteristic
          * @param o2 Second score
          * @return -1 if o1<o2, +1 if o1>o2, 0 if o1=02
          */
+        @Override
         public int compare(
             InputOutputPair<Double,? extends Object> o1,
             InputOutputPair<Double,? extends Object> o2)
