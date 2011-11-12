@@ -72,7 +72,7 @@ abstract public class MatrixTestHarness
     /**
      * Default dimension of the matrices
      */
-    protected static int DEFAULT_DIM = RANDOM.nextInt( 10 ) + 10;
+    protected int DEFAULT_DIM = RANDOM.nextInt( 10 ) + 10;
 
     /**
      * {@inheritDoc}

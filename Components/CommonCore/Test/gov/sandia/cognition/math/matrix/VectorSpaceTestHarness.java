@@ -120,7 +120,7 @@ public abstract class VectorSpaceTestHarness<VectorType extends VectorSpace<Vect
     {
         System.out.println("norm1");
         VectorType instance = this.createRandom();
-        assertEquals( instance.norm(1.0), instance.norm1() );
+        assertEquals( instance.norm(1.0), instance.norm1(), TOLERANCE );
     }
 
     /**
@@ -130,7 +130,8 @@ public abstract class VectorSpaceTestHarness<VectorType extends VectorSpace<Vect
     {
         System.out.println("norm2");
         VectorType instance = this.createRandom();
-        assertEquals( instance.norm(2.0), instance.norm2() );
+
+        assertEquals( instance.norm(2.0), instance.norm2(), TOLERANCE);
     }
 
     /**
@@ -140,7 +141,7 @@ public abstract class VectorSpaceTestHarness<VectorType extends VectorSpace<Vect
     {
         System.out.println("norm2Squared");
         VectorType instance = this.createRandom();
-        assertEquals( instance.norm2()*instance.norm2(), instance.norm2Squared() );
+        assertEquals( instance.norm2()*instance.norm2(), instance.norm2Squared(), TOLERANCE );
     }
 
     /**

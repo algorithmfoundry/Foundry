@@ -56,27 +56,50 @@ public class LogNumberTest
     }
 
     @Override
+    public void testScale()
+    {
+        System.out.println( "scale" );
+
+        // This test assumes that scaleEquals has been tested and verified
+        double scaleFactor = RANDOM.nextDouble() * RANGE;
+        LogNumber r1 = this.createRandom();
+        LogNumber r1clone = r1.clone();
+
+        assertEquals( r1, r1clone );
+        r1.scaleEquals( scaleFactor );
+        assertTrue( r1.equals( r1clone.scale( scaleFactor ), epsilon ) );
+        assertFalse( r1.equals( r1clone ) );
+
+        assertEquals( r1.scale( 2.0 ), r1.plus( r1 ) );
+
+    }
+
+    @Override
     public void testScaleEquals()
     {
         double value = 0.0;
         double scale = this.randomDouble();
         double expected = 0.0;
-        LogNumber instance = new LogNumber();
+        double scaledEpsilon = epsilon;
+        LogNumber instance = LogNumber.createFromValue(value);
         expected = value * scale;
+        scaledEpsilon *= scale;
         instance.scaleEquals(scale);
-        assertEquals(expected, instance.getValue(), epsilon);
+        assertEquals(expected, instance.getValue(), scaledEpsilon);
 
         value = this.randomDouble();
         scale = this.randomDouble();
         instance.setValue(value);
         expected = value * scale;
+        scaledEpsilon = epsilon;
         instance.scaleEquals(scale);
-        assertEquals(expected, instance.getValue(), epsilon);
+        assertEquals(expected, instance.getValue(), scaledEpsilon);
 
         for (int i = 0; i < 1 + RANDOM.nextInt(10); i++)
         {
             scale = this.randomDouble();
             expected *= scale;
+            scaledEpsilon *= scale;
             instance.scaleEquals(scale);
             assertEquals(expected, instance.getValue(), 1e-3);
         }
@@ -88,55 +111,57 @@ public class LogNumberTest
         double value = 0.0;
         double otherValue = this.randomDouble();
         double expected = 0.0;
-        MutableDouble instance = new MutableDouble();
+        LogNumber instance = new LogNumber();
         expected = value + otherValue;
-        instance.plusEquals(new MutableDouble(otherValue));
-        assertEquals(expected, instance.getValue(), 0.0);
+        instance.plusEquals(LogNumber.createFromValue(otherValue));
+        assertEquals(expected, instance.getValue(), epsilon);
 
         value = this.randomDouble();
         otherValue = this.randomDouble();
         instance.setValue(value);
         expected = value + otherValue;
-        instance.plusEquals(new MutableDouble(otherValue));
-        assertEquals(expected, instance.getValue(), 0.0);
+        instance.plusEquals(LogNumber.createFromValue(otherValue));
+        assertEquals(expected, instance.getValue(), epsilon);
 
         for (int i = 0; i < 1 + RANDOM.nextInt(10); i++)
         {
             otherValue = this.randomDouble();
-            MutableDouble other = new MutableDouble(otherValue);
+            LogNumber other = LogNumber.createFromValue(otherValue);
             expected += otherValue;
             instance.plusEquals(other);
-            assertEquals(expected, instance.getValue(), 0.0);
-            assertEquals(otherValue, other.getValue(), 0.0);
+            assertEquals(expected, instance.getValue(), epsilon);
+            assertEquals(otherValue, other.getValue(), epsilon);
         }
     }
 
     @Override
     public void testMinusEquals()
     {
-        double value = 0.0;
-        double otherValue = this.randomDouble();
+        double value = this.randomDouble();
+        double otherValue = 0.0;
         double expected = 0.0;
-        MutableDouble instance = new MutableDouble();
+        LogNumber instance = LogNumber.createFromValue(value);
         expected = value - otherValue;
-        instance.minusEquals(new MutableDouble(otherValue));
-        assertEquals(expected, instance.getValue(), 0.0);
+        instance.minusEquals(LogNumber.createFromValue(otherValue));
+        assertEquals(expected, instance.getValue(), epsilon);
 
         value = this.randomDouble();
         otherValue = RANDOM.nextDouble() * value;
         instance.setValue(value);
         expected = value - otherValue;
-        instance.minusEquals(new MutableDouble(otherValue));
-        assertEquals(expected, instance.getValue(), 0.0);
+        instance.minusEquals(LogNumber.createFromValue(otherValue));
+        assertEquals(expected, instance.getValue(), epsilon);
 
         for (int i = 0; i < 1 + RANDOM.nextInt(10); i++)
         {
+            value = this.randomDouble();
+            instance.setValue(value);
             otherValue = RANDOM.nextDouble() * value;
-            MutableDouble other = new MutableDouble(otherValue);
-            expected -= otherValue;
+            LogNumber other = LogNumber.createFromValue(otherValue);
+            expected = value - otherValue;
             instance.minusEquals(other);
-            assertEquals(expected, instance.getValue(), 0.0);
-            assertEquals(otherValue, other.getValue(), 0.0);
+            assertEquals(expected, instance.getValue(), epsilon);
+            assertEquals(otherValue, other.getValue(), epsilon);
         }
     }
 
@@ -146,23 +171,25 @@ public class LogNumberTest
         double value = 0.0;
         double otherValue = this.randomDouble();
         double expected = 0.0;
-        MutableDouble instance = new MutableDouble();
+        LogNumber instance = new LogNumber();
         expected = value * otherValue;
-        instance.dotTimesEquals(new MutableDouble(otherValue));
+        instance.dotTimesEquals(LogNumber.createFromValue(otherValue));
         assertEquals(expected, instance.getValue(), epsilon);
 
         value = this.randomDouble();
         otherValue = this.randomDouble();
         instance.setValue(value);
         expected = value * otherValue;
-        instance.dotTimesEquals(new MutableDouble(otherValue));
+        instance.dotTimesEquals(LogNumber.createFromValue(otherValue));
         assertEquals(expected, instance.getValue(), epsilon);
 
         for (int i = 0; i < 1 + RANDOM.nextInt(10); i++)
         {
+            value = this.randomDouble();
+            instance.setValue(value);
             otherValue = this.randomDouble();
-            MutableDouble other = new MutableDouble(otherValue);
-            expected *= otherValue;
+            LogNumber other = LogNumber.createFromValue(otherValue);
+            expected = value * otherValue;
             instance.dotTimesEquals(other);
             assertEquals(expected, instance.getValue(), epsilon);
             assertEquals(otherValue, other.getValue(), epsilon);
