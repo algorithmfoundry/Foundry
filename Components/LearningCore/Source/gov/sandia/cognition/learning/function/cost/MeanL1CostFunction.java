@@ -60,7 +60,7 @@ public class MeanL1CostFunction
 
     @Override
     public Double evaluatePerformance(
-        Collection<? extends TargetEstimatePair<Vector, Vector>> data )
+        Collection<? extends TargetEstimatePair<? extends Vector, ? extends Vector>> data )
     {
         double denominator = 0.0;
         double sumL1 = 0.0;

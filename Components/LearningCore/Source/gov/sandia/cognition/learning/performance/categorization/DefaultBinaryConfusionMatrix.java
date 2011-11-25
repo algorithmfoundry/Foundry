@@ -462,7 +462,7 @@ public class DefaultBinaryConfusionMatrix
         }
 
         public DefaultBinaryConfusionMatrix evaluatePerformance(
-            final Collection<? extends TargetEstimatePair<Boolean, Boolean>> data )
+            final Collection<? extends TargetEstimatePair<? extends Boolean, ? extends Boolean>> data )
         {
             return DefaultBinaryConfusionMatrix.create(data);
         }

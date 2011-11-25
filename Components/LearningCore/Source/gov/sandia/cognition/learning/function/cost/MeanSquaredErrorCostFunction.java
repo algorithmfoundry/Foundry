@@ -71,7 +71,7 @@ public class MeanSquaredErrorCostFunction
 
     @Override
     public Double evaluatePerformance(
-        Collection<? extends TargetEstimatePair<Vector, Vector>> data )
+        Collection<? extends TargetEstimatePair<? extends Vector, ? extends Vector>> data )
     {
 
         double sumSquaredError = 0.0;

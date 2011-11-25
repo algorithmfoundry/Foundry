@@ -74,7 +74,7 @@ public abstract class AbstractSupervisedCostFunction<InputType, TargetType>
 
     @Override
     public abstract Double evaluatePerformance(
-        Collection<? extends TargetEstimatePair<TargetType, TargetType>> data );
+        Collection<? extends TargetEstimatePair<? extends TargetType, ? extends TargetType>> data );
 
     public Double evaluate(
         Evaluator<? super InputType, ? extends TargetType> evaluator )
@@ -82,7 +82,8 @@ public abstract class AbstractSupervisedCostFunction<InputType, TargetType>
         ArrayList<WeightedTargetEstimatePair<TargetType, TargetType>> targetEstimatePairs =
             new ArrayList<WeightedTargetEstimatePair<TargetType, TargetType>>( this.getCostParameters().size() );
 
-        for (InputOutputPair<? extends InputType, ? extends TargetType> io : this.getCostParameters())
+        for (InputOutputPair<? extends InputType, ? extends TargetType> io
+            : this.getCostParameters())
         {
             TargetType estimate = evaluator.evaluate(io.getInput());
             targetEstimatePairs.add(DefaultWeightedTargetEstimatePair.create(
@@ -105,9 +106,9 @@ public abstract class AbstractSupervisedCostFunction<InputType, TargetType>
 
     @Override
     public Double summarize(
-        Collection<? extends TargetEstimatePair<TargetType, TargetType>> data )
+        Collection<? extends TargetEstimatePair<? extends TargetType, ? extends TargetType>> data )
     {
-        return this.evaluatePerformance( data );
+        return this.evaluatePerformance(data);
     }
 
 }

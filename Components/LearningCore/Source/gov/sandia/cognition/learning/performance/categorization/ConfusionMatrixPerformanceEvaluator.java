@@ -64,11 +64,11 @@ public class ConfusionMatrixPerformanceEvaluator<InputType, CategoryType>
 
     @Override
     public ConfusionMatrix<CategoryType> evaluatePerformance(
-        final Collection<? extends TargetEstimatePair<CategoryType, CategoryType>> data)
+        final Collection<? extends TargetEstimatePair<? extends CategoryType, ? extends CategoryType>> data)
     {
         // Create the confusion matrix and add each target-estimate pair to it.
         final ConfusionMatrix<CategoryType> result = this.getFactory().create();
-        for (TargetEstimatePair<CategoryType, CategoryType> pair : data)
+        for (TargetEstimatePair<? extends CategoryType, ? extends CategoryType> pair : data)
         {
             result.add(pair.getTarget(), pair.getEstimate());
         }

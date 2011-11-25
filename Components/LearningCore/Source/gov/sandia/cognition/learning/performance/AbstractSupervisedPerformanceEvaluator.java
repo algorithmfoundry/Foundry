@@ -17,7 +17,8 @@ package gov.sandia.cognition.learning.performance;
 
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.evaluator.Evaluator;
-import gov.sandia.cognition.learning.data.DefaultTargetEstimatePair;
+import gov.sandia.cognition.learning.data.DatasetUtil;
+import gov.sandia.cognition.learning.data.DefaultWeightedTargetEstimatePair;
 import gov.sandia.cognition.learning.data.TargetEstimatePair;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.Summarizer;
@@ -41,7 +42,7 @@ import java.util.Collection;
 public abstract class AbstractSupervisedPerformanceEvaluator<InputType, TargetType, EstimateType, ResultType>
     extends AbstractCloneableSerializable
     implements SupervisedPerformanceEvaluator<InputType, TargetType, EstimateType, ResultType>,
-    Summarizer<TargetEstimatePair<TargetType, EstimateType>, ResultType>
+    Summarizer<TargetEstimatePair<? extends TargetType, ? extends EstimateType>, ResultType>
 {
 
     /**
@@ -61,7 +62,7 @@ public abstract class AbstractSupervisedPerformanceEvaluator<InputType, TargetTy
      * @return The performance evaluation result.
      */
     public ResultType evaluatePerformance(
-        final Evaluator<? super InputType, EstimateType> evaluator,
+        final Evaluator<? super InputType, ? extends EstimateType> evaluator,
         final Collection<? extends InputOutputPair<InputType, TargetType>> data )
     {
         // Use the given evaluator to compute the Target-Estimate pairs for
@@ -74,7 +75,8 @@ public abstract class AbstractSupervisedPerformanceEvaluator<InputType, TargetTy
             final InputType input = example.getInput();
             final TargetType target = example.getOutput();
             final EstimateType estimate = evaluator.evaluate( input );
-            pairs.add(DefaultTargetEstimatePair.create(target, estimate));
+            final double weight = DatasetUtil.getWeight(example);
+            pairs.add(DefaultWeightedTargetEstimatePair.create(target, estimate, weight));
         }
 
         // Evaluate the performance of the pairs.
@@ -82,12 +84,12 @@ public abstract class AbstractSupervisedPerformanceEvaluator<InputType, TargetTy
     }
 
     public ResultType summarize(
-        Collection<? extends TargetEstimatePair<TargetType, EstimateType>> data )
+        Collection<? extends TargetEstimatePair<? extends TargetType, ? extends EstimateType>> data )
     {
         return this.evaluatePerformance( data );
     }
 
     public abstract ResultType evaluatePerformance(
-        Collection<? extends TargetEstimatePair<TargetType, EstimateType>> data );
+        Collection<? extends TargetEstimatePair<? extends TargetType, ? extends EstimateType>> data );
 
 }

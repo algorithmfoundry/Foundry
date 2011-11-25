@@ -54,7 +54,7 @@ public class MeanZeroOneErrorEvaluator<InputType, DataType>
      * @return {@inheritDoc}
      */
     public Double evaluatePerformance(
-        final Collection<? extends TargetEstimatePair<DataType, DataType>> data )
+        final Collection<? extends TargetEstimatePair<? extends DataType, ? extends DataType>> data )
     {
         return MeanZeroOneErrorEvaluator.compute( data );
     }
@@ -69,7 +69,7 @@ public class MeanZeroOneErrorEvaluator<InputType, DataType>
      * @return  The mean zero-one error.
      */
     public static <DataType> double compute(
-        final Collection<? extends TargetEstimatePair<DataType, DataType>> data )
+        final Collection<? extends TargetEstimatePair<? extends DataType, ? extends DataType>> data )
     {
         // Since we compute the mean we need to know how many items there are.
         final int count = data.size();
@@ -82,7 +82,8 @@ public class MeanZeroOneErrorEvaluator<InputType, DataType>
 
         // Compute the error for each pair and add it to the sum.
         int errorSum = 0;
-        for (TargetEstimatePair<DataType, DataType> pair : data)
+        for (TargetEstimatePair<? extends DataType, ? extends  DataType> pair
+            : data)
         {
             final DataType target = pair.getTarget();
             final DataType estimate = pair.getEstimate();

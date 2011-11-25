@@ -195,7 +195,7 @@ public class ParallelizedCostFunctionContainer
     
     @Override
     public Double evaluatePerformance(
-        Collection<? extends TargetEstimatePair<Vector, Vector>> data )
+        Collection<? extends TargetEstimatePair<? extends Vector, ? extends Vector>> data )
     {
         return this.getCostFunction().evaluatePerformance( data );
     }

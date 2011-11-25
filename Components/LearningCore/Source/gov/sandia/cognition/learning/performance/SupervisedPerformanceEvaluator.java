@@ -36,8 +36,8 @@ import java.util.Collection;
 public interface SupervisedPerformanceEvaluator
     <InputType, TargetType, EstimateType, ResultType>
     extends PerformanceEvaluator
-        <Evaluator<? super InputType, EstimateType>, 
-         Collection<? extends InputOutputPair<InputType, TargetType>>, 
+        <Evaluator<? super InputType, ? extends EstimateType>,
+         Collection<? extends InputOutputPair<InputType, TargetType>>,
          ResultType>
 {
 
@@ -49,6 +49,6 @@ public interface SupervisedPerformanceEvaluator
      * @return The performance evaluation result.
      */
     ResultType evaluatePerformance(
-        Collection<? extends TargetEstimatePair<TargetType, EstimateType>> data);
+        Collection<? extends TargetEstimatePair<? extends TargetType, ? extends EstimateType>> data);
 
 }

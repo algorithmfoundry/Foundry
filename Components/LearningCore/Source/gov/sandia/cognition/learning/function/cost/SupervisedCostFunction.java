@@ -34,7 +34,7 @@ import java.util.Collection;
  */
 public interface SupervisedCostFunction<InputType, TargetType>
     extends CostFunction<Evaluator<? super InputType, ? extends TargetType>, Collection<? extends InputOutputPair<? extends InputType, TargetType>>>,
-    Summarizer<TargetEstimatePair<TargetType, TargetType>, Double>,
+    Summarizer<TargetEstimatePair<? extends TargetType, ? extends TargetType>, Double>,
     SupervisedPerformanceEvaluator<InputType, TargetType, TargetType, Double>
 {
 }

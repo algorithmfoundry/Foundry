@@ -46,9 +46,9 @@ public class LearnerValidationExperimentTest
     public void testConstructors()
     {
         LearnerValidationExperiment
-            <InputOutputPair<Vector,Boolean>, InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, Boolean>, Double, ConfidenceInterval>
+            <InputOutputPair<Vector,Boolean>, InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, ? extends Boolean>, Double, ConfidenceInterval>
             instance = new LearnerValidationExperiment
-                <InputOutputPair<Vector,Boolean>, InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, Boolean>, Double, ConfidenceInterval>();
+                <InputOutputPair<Vector,Boolean>, InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, ? extends Boolean>, Double, ConfidenceInterval>();
 
         assertNull(instance.getFoldCreator());
         assertNull(instance.getPerformanceEvaluator());
@@ -59,7 +59,7 @@ public class LearnerValidationExperimentTest
         MeanZeroOneErrorEvaluator<Vector, Boolean> measure = new MeanZeroOneErrorEvaluator<Vector, Boolean>();
         StudentTConfidence.Summary summarizer = new StudentTConfidence.Summary(0.95);
         instance = new LearnerValidationExperiment
-            <InputOutputPair<Vector,Boolean>, InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, Boolean>, Double, ConfidenceInterval>(
+            <InputOutputPair<Vector,Boolean>, InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, ? extends Boolean>, Double, ConfidenceInterval>(
             foldCreator, measure, summarizer);
         assertSame(foldCreator, instance.getFoldCreator());
         assertSame(measure, instance.getPerformanceEvaluator());

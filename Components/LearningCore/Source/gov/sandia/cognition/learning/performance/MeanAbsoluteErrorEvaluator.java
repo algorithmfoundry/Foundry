@@ -48,7 +48,7 @@ public class MeanAbsoluteErrorEvaluator<InputType>
      * @return {@inheritDoc}
      */
     public Double evaluatePerformance(
-        final Collection<? extends TargetEstimatePair<Double, Double>> data )
+        final Collection<? extends TargetEstimatePair<? extends Double, ? extends Double>> data )
     {
         return MeanAbsoluteErrorEvaluator.compute( data );
     }
@@ -62,7 +62,7 @@ public class MeanAbsoluteErrorEvaluator<InputType>
      * @return The mean absolute error.
      */
     public static double compute(
-        final Collection<? extends TargetEstimatePair<Double, Double>> data )
+        final Collection<? extends TargetEstimatePair<? extends Double, ? extends Double>> data )
     {
         // Since we compute the mean we need to know how many items there are.
         final int count = data.size();
@@ -75,7 +75,7 @@ public class MeanAbsoluteErrorEvaluator<InputType>
 
         // Compute the error for each pair and add it to the sum.
         double errorSum = 0.0;
-        for (TargetEstimatePair<Double, Double> pair : data)
+        for (TargetEstimatePair<? extends Double, ? extends Double> pair : data)
         {
             final double target = pair.getTarget();
             final double estimate = pair.getEstimate();

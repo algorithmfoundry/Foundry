@@ -56,8 +56,8 @@ public class LearnerRepeatExperimentTest
     {
         int numTrials = LearnerRepeatExperiment.DEFAULT_NUM_TRIALS;
         LearnerRepeatExperiment
-            <InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, Boolean>, Double, ConfidenceInterval>
-            instance = new LearnerRepeatExperiment<InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, Boolean>, Double, ConfidenceInterval>();
+            <InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, ? extends Boolean>, Double, ConfidenceInterval>
+            instance = new LearnerRepeatExperiment<InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, ? extends Boolean>, Double, ConfidenceInterval>();
         assertEquals(numTrials, instance.getNumTrials());
         assertNull(instance.getPerformanceEvaluator());
         assertNull(instance.getSummarizer());
@@ -66,7 +66,7 @@ public class LearnerRepeatExperimentTest
         MeanZeroOneErrorEvaluator<Vector, Boolean> measure = new MeanZeroOneErrorEvaluator<Vector, Boolean>();
         StudentTConfidence.Summary summarizer = new StudentTConfidence.Summary(0.95);
         instance = new LearnerRepeatExperiment
-            <InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, Boolean>, Double, ConfidenceInterval>(
+            <InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, ? extends Boolean>, Double, ConfidenceInterval>(
             numTrials, measure, summarizer);
         assertEquals(numTrials, instance.getNumTrials());
         assertSame(measure, instance.getPerformanceEvaluator());
@@ -85,8 +85,8 @@ public class LearnerRepeatExperimentTest
             new MeanZeroOneErrorEvaluator<Vector, Boolean>();
         StudentTConfidence.Summary summarizer = new StudentTConfidence.Summary(0.95);
 
-        LearnerRepeatExperiment<InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, Boolean>, Double, ConfidenceInterval>
-            instance = new LearnerRepeatExperiment<InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, Boolean>, Double, ConfidenceInterval>(
+        LearnerRepeatExperiment<InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, ? extends Boolean>, Double, ConfidenceInterval>
+            instance = new LearnerRepeatExperiment<InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, ? extends Boolean>, Double, ConfidenceInterval>(
                 numTrials, measure, summarizer);
 
 
@@ -183,8 +183,8 @@ public class LearnerRepeatExperimentTest
     @Test
     public void testSetPerformanceEvaluator()
     {
-        LearnerRepeatExperiment<InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, Boolean>, Double, ConfidenceInterval>
-            instance = new LearnerRepeatExperiment<InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, Boolean>, Double, ConfidenceInterval>();
+        LearnerRepeatExperiment<InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, ? extends Boolean>, Double, ConfidenceInterval>
+            instance = new LearnerRepeatExperiment<InputOutputPair<Vector, Boolean>, Evaluator<? super Vector, ? extends Boolean>, Double, ConfidenceInterval>();
         assertNull(instance.getPerformanceEvaluator());
 
         MeanZeroOneErrorEvaluator<Vector, Boolean> measure = new MeanZeroOneErrorEvaluator<Vector, Boolean>();
