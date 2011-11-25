@@ -437,6 +437,27 @@ public class DatasetUtilTest
     }
 
     /**
+     * Test of outputsList method, of class DatasetUtil.
+     */
+    public void testOutputsList()
+    {
+        String a = "something";
+        String b = "b";
+        String c = "";
+
+        ArrayList<InputOutputPair<String, String>> data = new ArrayList<InputOutputPair<String, String>>();
+        data.add(new DefaultInputOutputPair<String, String>("input", a));
+        data.add(new DefaultInputOutputPair<String, String>("input", b));
+        data.add(new DefaultInputOutputPair<String, String>("input", c));
+
+        List<String> outputs = DatasetUtil.outputsList(data);
+        assertEquals(3, outputs.size());
+        assertSame(a, outputs.get(0));
+        assertSame(b, outputs.get(1));
+        assertSame(c, outputs.get(2));
+    }
+
+    /**
      * Test of getInputDimensionality method of class DatasetUtil.
      */
     public void testGetInputDimensionality()

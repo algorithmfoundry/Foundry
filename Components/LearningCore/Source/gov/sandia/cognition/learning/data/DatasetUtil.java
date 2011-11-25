@@ -484,13 +484,13 @@ public class DatasetUtil
      * @param   data
      *      The data to collect the input values from.
      * @return
-     *      The set of unique output values. Implemented as a linked hash set.
+     *      A list containing the output values.
      */
     public static <InputType> List<InputType> inputsList(
         final Iterable<? extends InputOutputPair<? extends InputType, ?>> data)
     {
 // TODO: Make this a proxy object rather than copying the list.
-        // Create the result set.
+        // Create the result list.
         final ArrayList<InputType> inputs = new ArrayList<InputType>();
 
         if (data != null)
@@ -503,6 +503,35 @@ public class DatasetUtil
         }
 
         return inputs;
+    }
+
+    /**
+     * Creates a list containing all of the output values from the given data.
+     *
+     * @param   <OutputType>
+     *      The type of the output values.
+     * @param   data
+     *      The data to collect the output values from.
+     * @return
+     *      A list containing the output values.
+     */
+    public static <OutputType> List<OutputType> outputsList(
+        final Iterable<? extends InputOutputPair<?, ? extends OutputType>> data)
+    {
+// TODO: Make this a proxy object rather than copying the list.
+        // Create the result list.
+        final ArrayList<OutputType> outputs = new ArrayList<OutputType>();
+
+        if (data != null)
+        {
+            // Go through and add each input.
+            for (InputOutputPair<?, ? extends OutputType> example : data)
+            {
+                outputs.add(example.getOutput());
+            }
+        }
+
+        return outputs;
     }
 
     /**
