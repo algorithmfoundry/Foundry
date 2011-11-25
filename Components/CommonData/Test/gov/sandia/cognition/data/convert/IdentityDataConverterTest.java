@@ -76,4 +76,15 @@ public class IdentityDataConverterTest
         assertSame(instance, instance.reverse());
     }
 
+    /**
+     * Test of create method, of class IdentityDataConverter.
+     */
+    @Test
+    public void testCreate()
+    {
+        IdentityDataConverter<Object> instance = IdentityDataConverter.create();
+        assertNotNull(instance);
+        assertNotSame(instance, IdentityDataConverter.create());
+    }
+
 }

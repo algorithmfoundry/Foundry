@@ -59,4 +59,17 @@ public class IdentityDataConverter<DataType>
         return this;
     }
 
+    /**
+     * Convenience method to create a new {@code IdentityDataConverter}.
+     *
+     * @param   <DataType>
+     *      The data type that is allowed.
+     * @return
+     *      A new identity data converter.
+     */
+    public static <DataType> IdentityDataConverter<DataType> create()
+    {
+        return new IdentityDataConverter<DataType>();
+    }
+
 }
