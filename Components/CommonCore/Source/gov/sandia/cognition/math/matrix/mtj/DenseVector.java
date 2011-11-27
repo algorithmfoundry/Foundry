@@ -156,6 +156,11 @@ public class DenseVector
         final Vector other,
         double effectiveZero)
     {
+        if (!this.checkSameDimensionality(other))
+        {
+            return false;
+        }
+        
         // Determine if all entries are within effectiveZero of each other.
         // If we find a single entry larger than effectiveZero, we know that
         // the vectors aren't equal, so just return false.  However, if we loop

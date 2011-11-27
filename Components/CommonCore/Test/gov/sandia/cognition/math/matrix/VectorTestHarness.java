@@ -371,6 +371,18 @@ abstract public class VectorTestHarness
         Vector v3 = this.createRandom(M + 1, -RANGE, RANGE);
         assertFalse( v1.equals( v3 ) );
 
+        Vector v01 = this.createVector(2);
+        Vector v02 = this.createVector(7);
+        Vector v03 = this.createVector(3);
+        assertTrue(v01.equals(v01));
+        assertTrue(v02.equals(v02));
+        assertTrue(v03.equals(v03));
+        assertFalse(v01.equals(v02));
+        assertFalse(v01.equals(v03));
+        assertFalse(v02.equals(v01));
+        assertFalse(v02.equals(v03));
+        assertFalse(v03.equals(v01));
+        assertFalse(v03.equals(v02));
     }
     
     /**
