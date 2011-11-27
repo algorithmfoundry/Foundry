@@ -795,4 +795,24 @@ public class DatasetUtil
         }
     }
 
+    /**
+     * Gets the sum of the weights of the weights of the elements of the
+     * dataset. It loops over the items and calls getWeight on each one.
+     *
+     * @param   data
+     *      The dataset to compute the sum of the weights
+     * @return
+     *      The sum of the weights of the elements in the dataset.
+     */
+    public static double sumWeights(
+        final Collection<? extends InputOutputPair<?, ?>> data)
+    {
+        double result = 0.0;
+        for (InputOutputPair<?, ?> example : data)
+        {
+            result += getWeight(example);
+        }
+        return result;
+    }
+
 }

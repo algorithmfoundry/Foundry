@@ -540,4 +540,25 @@ public class DatasetUtilTest
         }
 
     }
+
+
+    /**
+     * Test of sumWeights method, of class DatasetUtil.
+     */
+    public void testSumWeights()
+    {
+        ArrayList<InputOutputPair<String, String>> data = new ArrayList<InputOutputPair<String, String>>();
+
+        assertEquals(0.0, DatasetUtil.sumWeights(data), 0.0);
+
+        data.add(new DefaultInputOutputPair<String, String>("input1", "a"));
+        assertEquals(0.0, DatasetUtil.sumWeights(data), 1.0);
+
+        data.add(new DefaultInputOutputPair<String, String>("input2", "b"));
+        assertEquals(0.0, DatasetUtil.sumWeights(data), 2.0);
+
+        data.add(new DefaultWeightedInputOutputPair<String, String>("input3", "c", 0.7));
+
+        assertEquals(0.0, DatasetUtil.sumWeights(data), 2.7);
+    }
 }
