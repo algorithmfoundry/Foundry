@@ -105,7 +105,7 @@ public class ParallelizedKMeansClusterer<DataType, ClusterType extends Cluster<D
         int maxIterations,
         ThreadPoolExecutor threadPool,
         FixedClusterInitializer<ClusterType, DataType> initializer,
-        ClusterDivergenceFunction<ClusterType, DataType> divergenceFunction,
+        ClusterDivergenceFunction<? super ClusterType, ? super DataType> divergenceFunction,
         ClusterCreator<ClusterType, DataType> creator )
     {
         super( numRequestedClusters, maxIterations, initializer, divergenceFunction, creator );

@@ -25,6 +25,7 @@ import gov.sandia.cognition.learning.algorithm.clustering.cluster.Cluster;
 import gov.sandia.cognition.learning.algorithm.clustering.cluster.ClusterCreator;
 import gov.sandia.cognition.learning.algorithm.clustering.divergence.ClusterDivergenceFunction;
 import gov.sandia.cognition.learning.algorithm.clustering.initializer.FixedClusterInitializer;
+import gov.sandia.cognition.learning.function.distance.DivergenceFunctionContainer;
 import gov.sandia.cognition.util.DefaultNamedValue;
 import gov.sandia.cognition.util.NamedValue;
 import gov.sandia.cognition.util.ObjectUtil;
@@ -90,7 +91,8 @@ import java.util.Collection;
 )
 public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
     extends AbstractAnytimeBatchLearner<Collection<? extends DataType>, Collection<ClusterType>>
-    implements BatchClusterer<DataType, ClusterType>, MeasurablePerformanceAlgorithm
+    implements BatchClusterer<DataType, ClusterType>, MeasurablePerformanceAlgorithm,
+        DivergenceFunctionContainer<ClusterType, DataType>
 {
     /** The default number of requested clusters is {@value}. */
     public static final int DEFAULT_NUM_REQUESTED_CLUSTERS = 10;
@@ -105,7 +107,7 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
     protected FixedClusterInitializer<ClusterType, DataType> initializer;
 
     /** The divergence function between cluster being used. */
-    protected ClusterDivergenceFunction<ClusterType, DataType> 
+    protected ClusterDivergenceFunction<? super ClusterType, ? super DataType>
         divergenceFunction;
 
     /** The cluster creator for creating clusters. */
@@ -148,7 +150,7 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
         int numRequestedClusters,
         int maxIterations,
         FixedClusterInitializer<ClusterType, DataType> initializer,
-        ClusterDivergenceFunction<ClusterType, DataType> divergenceFunction,
+        ClusterDivergenceFunction<? super ClusterType, ? super DataType> divergenceFunction,
         ClusterCreator<ClusterType, DataType> creator)
     {
         super(maxIterations);
@@ -458,7 +460,7 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
      *
      * @return The divergence function.
      */
-    public ClusterDivergenceFunction<ClusterType, DataType> 
+    public ClusterDivergenceFunction<? super ClusterType, ? super DataType>
         getDivergenceFunction()
     {
         return this.divergenceFunction;
@@ -509,7 +511,7 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
      * @param divergenceFunction The divergence function.
      */
     public void setDivergenceFunction(
-        ClusterDivergenceFunction<ClusterType, DataType> divergenceFunction)
+        ClusterDivergenceFunction<? super ClusterType, ? super DataType> divergenceFunction)
     {
         this.divergenceFunction = divergenceFunction;
     }

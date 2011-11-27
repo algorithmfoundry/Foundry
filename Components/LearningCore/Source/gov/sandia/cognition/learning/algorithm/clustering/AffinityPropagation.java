@@ -20,6 +20,7 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.learning.algorithm.AbstractAnytimeBatchLearner;
 import gov.sandia.cognition.learning.algorithm.clustering.cluster.CentroidCluster;
+import gov.sandia.cognition.learning.function.distance.DivergenceFunctionContainer;
 import gov.sandia.cognition.math.DivergenceFunction;
 import gov.sandia.cognition.util.DefaultNamedValue;
 import gov.sandia.cognition.util.NamedValue;
@@ -80,7 +81,8 @@ public class AffinityPropagation<DataType>
     extends AbstractAnytimeBatchLearner
         <Collection<? extends DataType>, Collection<CentroidCluster<DataType>>>
     implements BatchClusterer<DataType, CentroidCluster<DataType>>,
-        MeasurablePerformanceAlgorithm
+        MeasurablePerformanceAlgorithm,
+        DivergenceFunctionContainer<DataType, DataType>
 {
 
     // NOTE: This class makes extensive use of direct-member access to improve
@@ -711,6 +713,12 @@ public class AffinityPropagation<DataType>
         final HashMap<Integer, CentroidCluster<DataType>> clusters)
     {
         this.clusters = clusters;
+    }
+
+    @Override
+    public DivergenceFunction<? super DataType, ? super DataType> getDivergenceFunction()
+    {
+        return this.getDivergence();
     }
     
     /**

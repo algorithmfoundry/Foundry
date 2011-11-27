@@ -25,6 +25,7 @@ import gov.sandia.cognition.learning.algorithm.clustering.cluster.ClusterCreator
 import gov.sandia.cognition.learning.algorithm.clustering.hierarchy.ClusterHierarchyNode;
 import gov.sandia.cognition.learning.algorithm.clustering.hierarchy.DefaultClusterHierarchyNode;
 import gov.sandia.cognition.learning.algorithm.clustering.divergence.ClusterToClusterDivergenceFunction;
+import gov.sandia.cognition.learning.function.distance.DivergenceFunctionContainer;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -75,7 +76,8 @@ public class AgglomerativeClusterer
     extends AbstractAnytimeBatchLearner
         <Collection<? extends DataType>, Collection<ClusterType>>
     implements BatchClusterer<DataType, ClusterType>, 
-        BatchHierarchicalClusterer<DataType, ClusterType>
+        BatchHierarchicalClusterer<DataType, ClusterType>,
+        DivergenceFunctionContainer<ClusterType, ClusterType>
 {
 
     /** The default minimum number of clusters is {@value}. */
@@ -90,7 +92,7 @@ public class AgglomerativeClusterer
     /**
      * The divergence function used to find the distance between two clusters. 
      */
-    protected ClusterToClusterDivergenceFunction<ClusterType, DataType>
+    protected ClusterToClusterDivergenceFunction<? super ClusterType, ? super DataType>
         divergenceFunction;
 
     /** The merger used to merge two clusters into one element. */
@@ -137,7 +139,7 @@ public class AgglomerativeClusterer
      * @param  creator The method for creating clusters.
      */
     public AgglomerativeClusterer(
-        final ClusterToClusterDivergenceFunction<ClusterType, DataType> 
+        final ClusterToClusterDivergenceFunction<? super ClusterType, ? super DataType>
             divergenceFunction,
         final ClusterCreator<ClusterType, DataType> creator)
     {
@@ -155,7 +157,7 @@ public class AgglomerativeClusterer
      *         be greater than zero.
      */
     public AgglomerativeClusterer(
-        final ClusterToClusterDivergenceFunction<ClusterType, DataType> 
+        final ClusterToClusterDivergenceFunction<? super ClusterType, ? super DataType>
             divergenceFunction,
         ClusterCreator<ClusterType, DataType> creator,
         int minNumClusters)
@@ -175,7 +177,7 @@ public class AgglomerativeClusterer
      *         to allow.
      */
     public AgglomerativeClusterer(
-        ClusterToClusterDivergenceFunction<ClusterType, DataType> 
+        ClusterToClusterDivergenceFunction<? super ClusterType, ? super DataType>
             divergenceFunction,
         ClusterCreator<ClusterType, DataType> creator,
         double maxMinDistance)
@@ -197,7 +199,7 @@ public class AgglomerativeClusterer
      *         to allow.
      */
     public AgglomerativeClusterer(
-        ClusterToClusterDivergenceFunction<ClusterType, DataType> 
+        ClusterToClusterDivergenceFunction<? super ClusterType, ? super DataType>
             divergenceFunction,
         ClusterCreator<ClusterType, DataType> creator,
         int minNumClusters,
@@ -559,7 +561,7 @@ public class AgglomerativeClusterer
      *
      * @return The divergence function.
      */
-    public ClusterToClusterDivergenceFunction<ClusterType, DataType> 
+    public ClusterToClusterDivergenceFunction<? super ClusterType, ? super DataType>
         getDivergenceFunction()
     {
         return this.divergenceFunction;
@@ -571,7 +573,7 @@ public class AgglomerativeClusterer
      * @param divergenceFunction The divergence function.
      */
     public void setDivergenceFunction(
-        ClusterToClusterDivergenceFunction<ClusterType, DataType> 
+        ClusterToClusterDivergenceFunction<? super ClusterType, ? super DataType>
             divergenceFunction)
     {
         this.divergenceFunction = divergenceFunction;

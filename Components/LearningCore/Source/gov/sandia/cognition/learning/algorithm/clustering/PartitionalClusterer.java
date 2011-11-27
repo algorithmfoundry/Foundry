@@ -25,6 +25,7 @@ import gov.sandia.cognition.learning.algorithm.clustering.cluster.Cluster;
 import gov.sandia.cognition.learning.algorithm.clustering.cluster.IncrementalClusterCreator;
 import gov.sandia.cognition.learning.algorithm.clustering.hierarchy.ClusterHierarchyNode;
 import gov.sandia.cognition.learning.algorithm.clustering.divergence.ClusterDivergenceFunction;
+import gov.sandia.cognition.learning.function.distance.DivergenceFunctionContainer;
 import gov.sandia.cognition.util.ArgumentChecker;
 import gov.sandia.cognition.util.DefaultPair;
 import gov.sandia.cognition.util.Randomized;
@@ -77,7 +78,7 @@ public class PartitionalClusterer
         <Collection<? extends DataType>, Collection<ClusterType>>
     implements BatchClusterer<DataType, ClusterType>,
         BatchHierarchicalClusterer<DataType, ClusterType>,
-        Randomized
+        Randomized, DivergenceFunctionContainer<ClusterType, DataType>
 {
 
     /** The default minimum number of elements per cluster is {@value}. */
@@ -92,7 +93,7 @@ public class PartitionalClusterer
     /**
      * The divergence function used to find the distance between two clusters.
      */
-    protected ClusterDivergenceFunction<ClusterType, DataType>
+    protected ClusterDivergenceFunction<? super ClusterType, ? super DataType>
         divergenceFunction;
 
     /** The merger used to merge two clusters into one element. */
@@ -132,7 +133,7 @@ public class PartitionalClusterer
      *      The random number generator to use.
      */
     public PartitionalClusterer(
-        final ClusterDivergenceFunction<ClusterType, DataType>
+        final ClusterDivergenceFunction<? super ClusterType, ? super DataType>
             divergenceFunction,
         final IncrementalClusterCreator<ClusterType, DataType> creator,
         final Random random)
@@ -156,7 +157,7 @@ public class PartitionalClusterer
      *      The random number generator to use.
      */
     public PartitionalClusterer(
-        final ClusterDivergenceFunction<ClusterType, DataType>
+        final ClusterDivergenceFunction<? super ClusterType, ? super DataType>
             divergenceFunction,
         final IncrementalClusterCreator<ClusterType, DataType> creator,
         final int minClusterSize,
@@ -184,7 +185,7 @@ public class PartitionalClusterer
      *      The random number generator to use.
      */
     public PartitionalClusterer(
-        final ClusterDivergenceFunction<ClusterType, DataType>
+        final ClusterDivergenceFunction<? super ClusterType, ? super DataType>
             divergenceFunction,
         final IncrementalClusterCreator<ClusterType, DataType> creator,
         final int maxIterations,
@@ -519,7 +520,7 @@ public class PartitionalClusterer
      *
      * @return The divergence function.
      */
-    public ClusterDivergenceFunction<ClusterType, DataType>
+    public ClusterDivergenceFunction<? super ClusterType, ? super DataType>
         getDivergenceFunction()
     {
         return this.divergenceFunction;
@@ -531,7 +532,7 @@ public class PartitionalClusterer
      * @param divergenceFunction The divergence function.
      */
     public void setDivergenceFunction(
-        ClusterDivergenceFunction<ClusterType, DataType>
+        ClusterDivergenceFunction<? super ClusterType, ? super DataType>
             divergenceFunction)
     {
         this.divergenceFunction = divergenceFunction;

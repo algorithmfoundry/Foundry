@@ -32,6 +32,7 @@ import gov.sandia.cognition.util.ObjectUtil;
  */
 public class DefaultDivergenceFunctionContainer<FirstType, SecondType>
     extends AbstractCloneableSerializable
+    implements DivergenceFunctionContainer<FirstType, SecondType>
 {
     /**
      * The internal divergence function for the object to use.
