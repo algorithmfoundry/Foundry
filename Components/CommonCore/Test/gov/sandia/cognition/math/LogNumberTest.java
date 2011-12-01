@@ -241,47 +241,6 @@ public class LogNumberTest
         }
     }
 
-    @Override
-    public void testMinus()
-    {
-        System.out.println( "minus" );
-
-
-        // This test assumes that plus and scale have been tested and verified
-        LogNumber r1 = this.createRandom();
-        LogNumber r1clone = r1.clone();
-
-        LogNumber r2 = r1.scale( RANDOM.nextDouble() * RANGE);
-        LogNumber r2clone = r2.clone();
-
-        assertTrue( r1.minus( r2 ).equals( r1.plus( r2.scale( -1.0 ) ), TOLERANCE ) );
-
-        // This makes sure that the minus operator didn't modify the result
-        assertEquals( r1, r1clone );
-        assertEquals( r2, r2clone );
-
-        // Make sure minus and minusEquals return the same value
-        // and that the r2 doesn't get modified by the methods
-        r1.minusEquals( r2 );
-        assertEquals( r2clone, r2 );
-        assertEquals( r1, r1clone.minus( r2 ) );
-        assertEquals( r2clone, r2 );
-
-        // Self minus should equal zero-ing
-        r2.minusEquals( r2 );
-        r1.zero();
-        assertEquals( r1, r2 );
-
-        try
-        {
-            r1.minus( null );
-            fail( "Should have thrown null-pointer exception: minus() " + r1.getClass() );
-        }
-        catch (NullPointerException e)
-        {
-        }
-
-    }
     /**
      * Test of longValue method, of class LogNumber.
      */
