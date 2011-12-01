@@ -14,6 +14,8 @@
 
 package gov.sandia.cognition.data.convert;
 
+import gov.sandia.cognition.evaluator.IdentityEvaluator;
+
 /**
  * A pass-through converter that just returns the given value.
  * 
@@ -23,7 +25,8 @@ package gov.sandia.cognition.data.convert;
  * @since   3.0
  */
 public class IdentityDataConverter<DataType>
-    extends AbstractReversibleDataConverter<DataType, DataType>
+    extends IdentityEvaluator<DataType>
+    implements ReversibleDataConverter<DataType, DataType>
 {
 
     /**
@@ -32,20 +35,6 @@ public class IdentityDataConverter<DataType>
     public IdentityDataConverter()
     {
         super();
-    }
-
-    /**
-     * Returns the given input.
-     * 
-     * @param   input 
-     *      The input value.
-     * @return
-     *      The input value.
-     */
-    public DataType evaluate(
-        final DataType input)
-    {
-        return input;
     }
 
     /**
