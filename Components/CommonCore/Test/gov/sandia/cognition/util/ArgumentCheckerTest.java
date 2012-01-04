@@ -63,34 +63,29 @@ public class ArgumentCheckerTest
     public void testAssertIsPositive_String_int()
     {
         String argument = "x";
-        ArgumentChecker.assertIsPositive(argument, 1);
-        ArgumentChecker.assertIsPositive(argument, 2);
-        boolean exceptionThrown = false;
-        try
+        int[] goodValues = {1, 2, 3, 5, 12, 103, 1000, Integer.MAX_VALUE};
+        for (int value : goodValues)
         {
-            ArgumentChecker.assertIsPositive(argument, 0);
-        }
-        catch (IllegalArgumentException e)
-        {
-            exceptionThrown = true;
-        }
-        finally
-        {
-             assertTrue(exceptionThrown);
+            ArgumentChecker.assertIsPositive(argument, value);
         }
 
-        exceptionThrown = false;
-        try
+        int[] badValues = {0, -1, -2, -3, -5, -12, -103, -100, Integer.MIN_VALUE};
+        for (int badValue : badValues)
         {
-            ArgumentChecker.assertIsPositive(argument, -1);
-        }
-        catch (IllegalArgumentException e)
-        {
-            exceptionThrown = true;
-        }
-        finally
-        {
-             assertTrue(exceptionThrown);
+            boolean exceptionThrown = false;
+            try
+            {
+                ArgumentChecker.assertIsPositive(argument, badValue);
+            }
+            catch (IllegalArgumentException e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                 assertTrue("Should have been an exception: " + badValue,
+                     exceptionThrown);
+            }
         }
     }
 
@@ -100,34 +95,33 @@ public class ArgumentCheckerTest
     public void testAssertIsPositive_String_double()
     {
         String argument = "x";
-        ArgumentChecker.assertIsPositive(argument, 1.0);
-        ArgumentChecker.assertIsPositive(argument, 1.1);
-        boolean exceptionThrown = false;
-        try
+        double[] goodValues = {0.1, 1.0, 1.1, 2.3, 3.4, 12.13, 103, 1000,
+            Math.PI, Math.E, Double.MIN_VALUE, Double.MIN_NORMAL,
+            Double.POSITIVE_INFINITY};
+        for (double value : goodValues)
         {
-            ArgumentChecker.assertIsPositive(argument, 0.0);
-        }
-        catch (IllegalArgumentException e)
-        {
-            exceptionThrown = true;
-        }
-        finally
-        {
-             assertTrue(exceptionThrown);
+            ArgumentChecker.assertIsPositive(argument, value);
         }
 
-        exceptionThrown = false;
-        try
+        double[] badValues = {0.0, -0.0, -0.1, -1.0, -1.1, -2.3, -3.4, -12.13, -103, -1000,
+            -Math.PI, -Math.E, -Double.MIN_VALUE, -Double.MIN_NORMAL,
+            Double.NEGATIVE_INFINITY, Double.NaN};
+        for (double badValue : badValues)
         {
-            ArgumentChecker.assertIsPositive(argument, -1.0);
-        }
-        catch (IllegalArgumentException e)
-        {
-            exceptionThrown = true;
-        }
-        finally
-        {
-             assertTrue(exceptionThrown);
+            boolean exceptionThrown = false;
+            try
+            {
+                ArgumentChecker.assertIsPositive(argument, badValue);
+            }
+            catch (IllegalArgumentException e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                 assertTrue("Should have been an exception: " + badValue,
+                     exceptionThrown);
+            }
         }
     }
 
@@ -137,21 +131,29 @@ public class ArgumentCheckerTest
     public void testAssertIsNonNegative_String_int()
     {
         String argument = "x";
-        ArgumentChecker.assertIsNonNegative(argument, 0);
-        ArgumentChecker.assertIsNonNegative(argument, 1);
-        ArgumentChecker.assertIsNonNegative(argument, 2);
-        boolean exceptionThrown = false;
-        try
+        int[] goodValues = {0, 1, 2, 3, 5, 12, 103, 1000, Integer.MAX_VALUE};
+        for (int value : goodValues)
         {
-            ArgumentChecker.assertIsNonNegative(argument, -1);
+            ArgumentChecker.assertIsNonNegative(argument, value);
         }
-        catch (IllegalArgumentException e)
+
+        int[] badValues = {-1, -2, -3, -5, -12, -103, -100, Integer.MIN_VALUE};
+        for (int badValue : badValues)
         {
-            exceptionThrown = true;
-        }
-        finally
-        {
-             assertTrue(exceptionThrown);
+            boolean exceptionThrown = false;
+            try
+            {
+                ArgumentChecker.assertIsNonNegative(argument, badValue);
+            }
+            catch (IllegalArgumentException e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                 assertTrue("Should have been an exception: " + badValue,
+                     exceptionThrown);
+            }
         }
     }
 
@@ -161,35 +163,33 @@ public class ArgumentCheckerTest
     public void testAssertIsNonNegative_String_double()
     {
         String argument = "x";
-        ArgumentChecker.assertIsNonNegative(argument, 0.0);
-        ArgumentChecker.assertIsNonNegative(argument, 1.0);
-        ArgumentChecker.assertIsNonNegative(argument, 1.1);
-        boolean exceptionThrown = false;
-        try
+        double[] goodValues = {0.0, -0.0, 0.1, 1.0, 1.1, 2.3, 3.4, 12.13, 103, 1000,
+            Math.PI, Math.E, Double.MIN_VALUE, Double.MIN_NORMAL,
+            Double.POSITIVE_INFINITY};
+        for (double value : goodValues)
         {
-            ArgumentChecker.assertIsNonNegative(argument, -0.1);
-        }
-        catch (IllegalArgumentException e)
-        {
-            exceptionThrown = true;
-        }
-        finally
-        {
-             assertTrue(exceptionThrown);
+            ArgumentChecker.assertIsNonNegative(argument, value);
         }
 
-        exceptionThrown = false;
-        try
+        double[] badValues = {-0.1, -1.0, -1.1, -2.3, -3.4, -12.13, -103, -1000,
+            -Math.PI, -Math.E, -Double.MIN_VALUE, -Double.MIN_NORMAL,
+            Double.NEGATIVE_INFINITY, Double.NaN};
+        for (double badValue : badValues)
         {
-            ArgumentChecker.assertIsNonNegative(argument, -1.0);
-        }
-        catch (IllegalArgumentException e)
-        {
-            exceptionThrown = true;
-        }
-        finally
-        {
-             assertTrue(exceptionThrown);
+            boolean exceptionThrown = false;
+            try
+            {
+                ArgumentChecker.assertIsNonNegative(argument, badValue);
+            }
+            catch (IllegalArgumentException e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                 assertTrue("Should have been an exception: " + badValue,
+                     exceptionThrown);
+            }
         }
     }
 
@@ -204,32 +204,23 @@ public class ArgumentCheckerTest
         ArgumentChecker.assertIsInRangeInclusive(argument, 2.1, 1.1, 3.4);
         ArgumentChecker.assertIsInRangeInclusive(argument, 3.4, 1.1, 3.4);
 
-        boolean exceptionThrown = false;
-        try
+        double[] badValues = { -0.1, 0.0, 1.0, 1.09, 3.41, 3.5, 10.0,
+            Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.NaN};
+        for (double badValue : badValues)
         {
-            ArgumentChecker.assertIsInRangeInclusive(argument, 0.1, 1.1, 3.4);
-        }
-        catch (IllegalArgumentException e)
-        {
-            exceptionThrown = true;
-        }
-        finally
-        {
-             assertTrue(exceptionThrown);
-        }
-
-        exceptionThrown = false;
-        try
-        {
-            ArgumentChecker.assertIsInRangeInclusive(argument, 3.5, 1.1, 3.4);
-        }
-        catch (IllegalArgumentException e)
-        {
-            exceptionThrown = true;
-        }
-        finally
-        {
-             assertTrue(exceptionThrown);
+            boolean exceptionThrown = false;
+            try
+            {
+                ArgumentChecker.assertIsInRangeInclusive(argument, badValue, 1.1, 3.4);
+            }
+            catch (IllegalArgumentException e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                 assertTrue(exceptionThrown);
+            }
         }
     }
 
@@ -243,7 +234,8 @@ public class ArgumentCheckerTest
         ArgumentChecker.assertIsInRangeExclusive(argument, 2.1, 1.1, 3.4);
         ArgumentChecker.assertIsInRangeExclusive(argument, 3.1, 1.1, 3.4);
 
-        double[] badValues = { -0.1, 0.0, 1.0, 1.1, 3.4, 3.5, 10.0 };
+        double[] badValues = { -0.1, 0.0, 1.0, 1.1, 3.4, 3.5, 10.0,
+            Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.NaN};
         for (double badValue : badValues)
             {
             boolean exceptionThrown = false;

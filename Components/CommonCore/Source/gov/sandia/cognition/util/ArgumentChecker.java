@@ -21,6 +21,7 @@ package gov.sandia.cognition.util;
  * @since   3.1
  */
 public class ArgumentChecker
+    extends Object
 {
 
     /**
@@ -55,7 +56,7 @@ public class ArgumentChecker
         final String argument,
         final int value)
     {
-        if (value <= 0)
+        if (!(value > 0))
         {
             throw new IllegalArgumentException(argument + " must be positive "
                 + "(was " + value + ").");
@@ -64,7 +65,7 @@ public class ArgumentChecker
 
     /**
      * Asserts the given value is positive (> 0.0). If the assertion is
-     * violated, an IllegalArgumentException is thrown.
+     * violated, an IllegalArgumentException is thrown. NaNs fail the assertion.
      *
      * @param   argument
      *      The name of the argument.
@@ -75,7 +76,7 @@ public class ArgumentChecker
         final String argument,
         final double value)
     {
-        if (value <= 0.0)
+        if (!(value > 0.0))
         {
             throw new IllegalArgumentException(argument + " must be positive "
                 + "(was " + value + ").");
@@ -95,7 +96,7 @@ public class ArgumentChecker
         final String argument,
         final int value)
     {
-        if (value < 0)
+        if (!(value >= 0))
         {
             throw new IllegalArgumentException(argument + " cannot be negative "
                 + "(was " + value + ").");
@@ -104,7 +105,8 @@ public class ArgumentChecker
 
     /**
      * Asserts that the given argument is non-negative (>=0.0). If the assertion
-     * is violated, an IllegalArgumentException is thrown.
+     * is violated, an IllegalArgumentException is thrown. NaNs fail the
+     * assertion.
      *
      * @param   argument
      *      The name of the argument.
@@ -115,7 +117,7 @@ public class ArgumentChecker
         final String argument,
         final double value)
     {
-        if (value < 0.0)
+        if (!(value >= 0.0))
         {
             throw new IllegalArgumentException(argument + " cannot be negative "
                 + "(was " + value + ").");
@@ -126,6 +128,7 @@ public class ArgumentChecker
     /**
      * Asserts that the given argument is in the given range, inclusive.
      * If the assertion is violated, an IllegalArgumentException is thrown.
+     * NaNs are treated as outside of the range.
      *
      * @param   argument
      *      The name of the argument.
@@ -142,7 +145,7 @@ public class ArgumentChecker
         final double lowerBound,
         final double upperBound)
     {
-        if (value < lowerBound || value > upperBound)
+        if (!(value >= lowerBound && value <= upperBound))
         {
             throw new IllegalArgumentException(
                 "" + argument + " must be between "
@@ -153,6 +156,7 @@ public class ArgumentChecker
     /**
      * Asserts that the given argument is in the given range, exclusive.
      * If the assertion is violated, an IllegalArgumentException is thrown.
+     * NaNs are treated as outside of the range.
      *
      * @param   argument
      *      The name of the argument.
@@ -169,7 +173,7 @@ public class ArgumentChecker
         final double lowerBound,
         final double upperBound)
     {
-        if (value <= lowerBound || value >= upperBound)
+        if (!(value > lowerBound && value < upperBound))
         {
             throw new IllegalArgumentException(
                 "" + argument + " must be between "
