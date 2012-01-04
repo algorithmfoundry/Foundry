@@ -222,7 +222,7 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
         }
 
         // Sort the list in ascending order by value.
-        Collections.sort(values, 
+        Collections.sort(values,
             DefaultWeightedValue.WeightComparator.getInstance());
 
         // Get the smallest and largest values.
@@ -301,8 +301,15 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
                         // the point that is half way between the current value
                         // and the previous value. Hopefully this will be more
                         // robust than using just the value itself.
-                        final double threshold =
-                            (value + previousValue) / 2.0;
+                        double threshold = (value + previousValue) / 2.0;
+
+                        // If a round-off error drops the threshold back to
+                        // the previous value, set it equal to the current
+                        // value since we use a >= threshold.
+                        if (threshold <= previousValue)
+                        {
+                            threshold = value;
+                        }
 
                         bestGain = gain;
                         bestTieBreaker = tieBreaker;
@@ -318,10 +325,11 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
         // Sanity check to make sure we found a threshold that
         // partitions the values.
         if (   bestThreshold <= smallestValue
-            || bestThreshold >= largestValue)
+            || bestThreshold >  largestValue)
         {
             throw new RuntimeException(
-                "bestThreshold (" + bestThreshold + ") lies outside range of values (" + smallestValue + ", " + largestValue + ")");
+                "bestThreshold (" + bestThreshold + ") lies outside range of "
+                + "values (" + smallestValue + ", " + largestValue + "]");
         }
 
         // Return the pair containing the best gain and best threshold

@@ -336,5 +336,40 @@ public class VectorThresholdInformationGainLearnerTest
         result = instance.computeBestGainAndThreshold(data, 1, baseCounts);
         assertEquals((5.5639 + 1.0763) / 2.0, result.getSecond());
     }
+    
+    public void testThresholdRoundoff()
+    {
+        VectorThresholdInformationGainLearner<Boolean> instance =
+            new VectorThresholdInformationGainLearner<Boolean>();
+
+        DefaultDataDistribution<Boolean> baseCounts = null;
+        DefaultPair<Double, Double> result = null;
+
+        LinkedList<InputOutputPair<Vector2, Boolean>> data =
+            new LinkedList<InputOutputPair<Vector2, Boolean>>();
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 0.0), true));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, 0.0), true));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, Double.MIN_VALUE), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, Double.MIN_VALUE), false));
+
+        baseCounts = CategorizationTreeLearner.getOutputCounts(data);
+        result = instance.computeBestGainAndThreshold(data, 1, baseCounts);
+        assertEquals(Double.MIN_VALUE, result.getSecond());
+
+        data.clear();
+        double x1 = Double.MIN_VALUE;
+        double x2 = x1 + x1;
+
+
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, x1), true));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, x1), true));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, x2), false));
+        data.add(new DefaultInputOutputPair<Vector2, Boolean>(new Vector2(0.0, x2), false));
+
+        baseCounts = CategorizationTreeLearner.getOutputCounts(data);
+        result = instance.computeBestGainAndThreshold(data, 1, baseCounts);
+        assertEquals(x2, result.getSecond());
+
+    }
 
 }
