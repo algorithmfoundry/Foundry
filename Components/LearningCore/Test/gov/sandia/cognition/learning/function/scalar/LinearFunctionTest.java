@@ -11,16 +11,19 @@
  * Government. See CopyrightHistory.txt for complete details.
  * 
  */
+
 package gov.sandia.cognition.learning.function.scalar;
 
 /**
- * JUnit tests for class LinearFunctionTest
- * @author Kevin R. Dixon
+ * Unit tests for class LinearFunction.
+ *
+ * @author  Kevin R. Dixon
+ * @author  Justin Basilico
  */
 public class LinearFunctionTest
     extends DifferentiableUnivariateScalarFunctionTestHarness
 {
-    
+
     /**
      * Entry point for JUnit tests for class LinearFunctionTest
      * @param testName name of this test
@@ -35,6 +38,16 @@ public class LinearFunctionTest
     public LinearFunction createInstance()
     {
         return new LinearFunction(RANDOM.nextGaussian(), RANDOM.nextGaussian());
+    }
+
+    /**
+     * Test of constants of class LinearFunction.
+     */
+    public void testConstants()
+    {
+        // The default values need to be this.
+        assertEquals(1.0, LinearFunction.DEFAULT_SLOPE, 0.0);
+        assertEquals(0.0, LinearFunction.DEFAULT_OFFSET, 0.0);
     }
 
     @Override
@@ -55,35 +68,6 @@ public class LinearFunctionTest
         instance = new LinearFunction(instance);
         assertEquals(slope, instance.getSlope(), 0.0);
         assertEquals(offset, instance.getOffset(), 0.0);
-     }
-
-    /**
-     * Test of evaluate method, of class LinearFunction.
-     */
-    public void testEvaluate()
-    {
-        System.out.println( "evaluate" );
-        
-        for( int i = 0; i < NUM_SAMPLES; i++ )
-        {
-            LinearFunction instance = new LinearFunction();
-            double input = RANDOM.nextDouble();
-            assertEquals( input, instance.evaluate(input) );
-        }
-    }
-
-    /**
-     * Test of differentiate method, of class LinearFunction.
-     */
-    public void testDifferentiate()
-    {
-        System.out.println( "differentiate" );
-        for( int i = 0; i < NUM_SAMPLES; i++ )
-        {
-            LinearFunction instance = new LinearFunction();
-            double input = RANDOM.nextDouble();
-            assertEquals( 1.0, instance.differentiate(input) );
-        }
     }
 
     /**
@@ -110,6 +94,58 @@ public class LinearFunctionTest
     }
 
     /**
+     * Test of evaluate method, of class LinearFunction.
+     */
+    public void testEvaluate()
+    {
+        // Test how it performs by default: f(x) = x.
+        LinearFunction instance = new LinearFunction();
+        for (int i = 0; i < NUM_SAMPLES; i++)
+        {
+            double input = RANDOM.nextDouble();
+            assertEquals(input, instance.evaluate(input), 0.0);
+        }
+
+        instance = new LinearFunction(-1.2, 0.5);
+        for (int i = 0; i < NUM_SAMPLES; i++)
+        {
+            double input = RANDOM.nextDouble();
+            assertEquals(-1.2 * input + 0.5, instance.evaluate(input), 0.0);
+        }
+    }
+
+    /**
+     * Test of differentiate method, of class LinearFunction.
+     */
+    public void testDifferentiate()
+    {
+        // Test how it is for the default: f(x) = x
+        LinearFunction instance = new LinearFunction();
+        for (int i = 0; i < NUM_SAMPLES; i++)
+        {
+            double input = RANDOM.nextDouble();
+            assertEquals(1.0, instance.differentiate(input), 0.0);
+        }
+
+        for (int i = 0; i < NUM_SAMPLES; i++)
+        {
+            double slope = RANDOM.nextGaussian();
+            instance.setSlope(slope);
+            instance.setOffset(RANDOM.nextGaussian());
+            double input = RANDOM.nextDouble();
+
+            assertEquals(slope, instance.differentiate(input), 0.0);
+        }
+
+        instance.setSlope(0.0);
+        for (int i = 0; i < NUM_SAMPLES; i++)
+        {
+            double input = RANDOM.nextDouble();
+            assertEquals(0.0, instance.differentiate(input), 0.0);
+        }
+    }
+
+    /**
      * Test of getSlope method, of class LinearFunction.
      */
     public void testGetSlope()
@@ -126,8 +162,11 @@ public class LinearFunctionTest
         LinearFunction instance = new LinearFunction();
         assertEquals(slope, instance.getSlope(), 0.0);
 
-        double[] goodValues = {0.0, 1.0, -2.0, RANDOM.nextDouble(), -RANDOM.nextDouble(),
-            Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NaN};
+        double[] goodValues =
+        {
+            0.0, 1.0, -2.0, RANDOM.nextDouble(), -RANDOM.nextDouble(),
+            Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NaN
+        };
         for (double goodValue : goodValues)
         {
             slope = goodValue;
@@ -153,8 +192,11 @@ public class LinearFunctionTest
         LinearFunction instance = new LinearFunction();
         assertEquals(offset, instance.getOffset(), 0.0);
 
-        double[] goodValues = {0.0, 1.0, -2.0, RANDOM.nextDouble(), -RANDOM.nextDouble(),
-            Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NaN};
+        double[] goodValues =
+        {
+            0.0, 1.0, -2.0, RANDOM.nextDouble(), -RANDOM.nextDouble(),
+            Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NaN
+        };
         for (double goodValue : goodValues)
         {
             offset = goodValue;
@@ -162,5 +204,5 @@ public class LinearFunctionTest
             assertEquals(offset, instance.getOffset(), 0.0);
         }
     }
-   
+
 }
