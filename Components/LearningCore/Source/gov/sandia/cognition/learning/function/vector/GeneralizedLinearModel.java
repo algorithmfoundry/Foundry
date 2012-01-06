@@ -16,7 +16,7 @@ package gov.sandia.cognition.learning.function.vector;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.learning.function.scalar.AtanFunction;
+import gov.sandia.cognition.learning.function.scalar.IdentityScalarFunction;
 import gov.sandia.cognition.math.UnivariateScalarFunction;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFunction;
@@ -59,11 +59,12 @@ public class GeneralizedLinearModel
     private VectorFunction squashingFunction;
 
     /**
-     * Default constructor.
+     * Default constructor. Creates a 1x1 model with an identity function for
+     * the output.
      */
     public GeneralizedLinearModel()
     {
-        this( 1, 1, new AtanFunction() );
+        this(1, 1, new IdentityScalarFunction());
     }
 
     /**
@@ -96,6 +97,8 @@ public class GeneralizedLinearModel
         MultivariateDiscriminant discriminant,
         VectorFunction squashingFunction )
     {
+        super();
+        
         this.setDiscriminant( discriminant );
         this.setSquashingFunction( squashingFunction );
     }
@@ -108,6 +111,21 @@ public class GeneralizedLinearModel
         GeneralizedLinearModel other )
     {
         this( other.getDiscriminant().clone(), other.getSquashingFunction() );
+    }
+
+    /**
+     * Creates a new instance of GeneralizedLinearModel
+     * @param matrixMultiply
+     * GradientDescendable that multiplies an input by the internal matrix
+     * @param scalarSquashingFunction
+     * scalar function that is applied to the output of the matrix multiply
+     */
+    public GeneralizedLinearModel(
+        MultivariateDiscriminant matrixMultiply,
+        UnivariateScalarFunction scalarSquashingFunction )
+    {
+        this( matrixMultiply, new ElementWiseVectorFunction(
+            scalarSquashingFunction ) );
     }
 
     /**

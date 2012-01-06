@@ -15,10 +15,13 @@
 package gov.sandia.cognition.learning.function.vector;
 
 import gov.sandia.cognition.learning.function.scalar.AtanFunction;
+import gov.sandia.cognition.learning.function.scalar.IdentityScalarFunction;
+import gov.sandia.cognition.learning.function.scalar.SigmoidFunction;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.math.matrix.VectorFunction;
 import java.util.Random;
 import junit.framework.TestCase;
 
@@ -64,6 +67,37 @@ public class GeneralizedLinearModelTest
         assertEquals( 1, f.getInputDimensionality() );
         assertEquals( 1, f.getOutputDimensionality() );
         assertNotNull( f.getSquashingFunction() );
+        assertTrue(f.getSquashingFunction() instanceof ElementWiseVectorFunction);
+        assertTrue(((ElementWiseVectorFunction) f.getSquashingFunction()).getScalarFunction() instanceof IdentityScalarFunction);
+
+        SigmoidFunction s = new SigmoidFunction();
+        f = new GeneralizedLinearModel(5, 2, s);
+        assertEquals(5, f.getInputDimensionality());
+        assertEquals(2, f.getOutputDimensionality());
+        assertTrue(f.getSquashingFunction() instanceof ElementWiseVectorFunction);
+        assertSame(s, ((ElementWiseVectorFunction) f.getSquashingFunction()).getScalarFunction());
+
+        MultivariateDiscriminant d = new MultivariateDiscriminant(3, 4);
+        f = new GeneralizedLinearModel(d, s);
+        assertEquals(3, f.getInputDimensionality());
+        assertEquals(4, f.getOutputDimensionality());
+        assertSame(d, f.getDiscriminant());
+        assertTrue(f.getSquashingFunction() instanceof ElementWiseVectorFunction);
+        assertSame(s, ((ElementWiseVectorFunction) f.getSquashingFunction()).getScalarFunction());
+
+        VectorFunction v = new LinearVectorFunction();
+        f = new GeneralizedLinearModel(d, v);
+        assertEquals(3, f.getInputDimensionality());
+        assertEquals(4, f.getOutputDimensionality());
+        assertSame(d, f.getDiscriminant());
+        assertSame(v, f.getSquashingFunction());
+
+        f = new GeneralizedLinearModel(f);
+        assertEquals(3, f.getInputDimensionality());
+        assertEquals(4, f.getOutputDimensionality());
+        assertNotSame(d, f.getDiscriminant());
+        assertEquals(d.convertToVector(), f.getDiscriminant().convertToVector());
+        assertSame(v, f.getSquashingFunction());
 
     }
 

@@ -15,7 +15,7 @@
 package gov.sandia.cognition.learning.function.vector;
 
 import gov.sandia.cognition.learning.algorithm.gradient.GradientDescendable;
-import gov.sandia.cognition.learning.function.scalar.AtanFunction;
+import gov.sandia.cognition.learning.function.scalar.IdentityScalarFunction;
 import gov.sandia.cognition.math.DifferentiableUnivariateScalarFunction;
 import gov.sandia.cognition.math.matrix.DifferentiableVectorFunction;
 import gov.sandia.cognition.math.matrix.Matrix;
@@ -36,11 +36,12 @@ public class DifferentiableGeneralizedLinearModel
 {
 
     /**
-     * Default Constructor
+     * Default Constructor. Creates a 1x1 model with a identity function for
+     * the output.
      */
     public DifferentiableGeneralizedLinearModel()
     {
-        this( 1, 1, new AtanFunction() );
+        this( 1, 1, new IdentityScalarFunction() );
     }
 
     /**
