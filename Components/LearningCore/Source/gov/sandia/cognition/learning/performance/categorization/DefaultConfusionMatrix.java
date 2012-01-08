@@ -13,6 +13,7 @@
 package gov.sandia.cognition.learning.performance.categorization;
 
 import gov.sandia.cognition.learning.data.TargetEstimatePair;
+import gov.sandia.cognition.math.MutableDouble;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.Pair;
 import gov.sandia.cognition.util.Summarizer;
@@ -40,7 +41,7 @@ public class DefaultConfusionMatrix<CategoryType>
 
     /** The backing map of confusion matrix entries. The first key is the
      *  actual category and the second is the predicted category. */
-    protected Map<CategoryType, Map<CategoryType, Entry>> confusions;
+    protected Map<CategoryType, Map<CategoryType, MutableDouble>> confusions;
 
     /**
      * Creates a new, empty {@code DefaultConfusionMatrix}.
@@ -49,7 +50,7 @@ public class DefaultConfusionMatrix<CategoryType>
     {
         super();
 
-        this.confusions = new LinkedHashMap<CategoryType, Map<CategoryType, Entry>>();
+        this.confusions = new LinkedHashMap<CategoryType, Map<CategoryType, MutableDouble>>();
     }
 
     /**
@@ -75,16 +76,16 @@ public class DefaultConfusionMatrix<CategoryType>
 
         if (this.confusions != null)
         {
-            clone.confusions = new LinkedHashMap<CategoryType, Map<CategoryType, Entry>>(
+            clone.confusions = new LinkedHashMap<CategoryType, Map<CategoryType, MutableDouble>>(
                 this.confusions.size());
-            for (Map.Entry<CategoryType, Map<CategoryType, Entry>> outerEntry
+            for (Map.Entry<CategoryType, Map<CategoryType, MutableDouble>> outerEntry
                 : this.confusions.entrySet())
             {
-                final LinkedHashMap<CategoryType, Entry> categoryMap =
-                    new LinkedHashMap<CategoryType, Entry>(
+                final LinkedHashMap<CategoryType, MutableDouble> categoryMap =
+                    new LinkedHashMap<CategoryType, MutableDouble>(
                         outerEntry.getValue().size());
                 clone.confusions.put(outerEntry.getKey(), categoryMap);
-                for (Map.Entry<CategoryType, Entry> innerEntry
+                for (Map.Entry<CategoryType, MutableDouble> innerEntry
                     : outerEntry.getValue().entrySet())
                 {
                     categoryMap.put(innerEntry.getKey(),
@@ -102,23 +103,23 @@ public class DefaultConfusionMatrix<CategoryType>
         final CategoryType estimate,
         final double value)
     {
-        Map<CategoryType, Entry> subMap = confusions.get(target);
+        Map<CategoryType, MutableDouble> subMap = confusions.get(target);
 
         if (subMap == null)
         {
-            subMap = new HashMap<CategoryType, Entry>();
+            subMap = new HashMap<CategoryType, MutableDouble>();
             this.confusions.put(target, subMap);
         }
 
-        Entry entry = subMap.get(estimate);
+        MutableDouble entry = subMap.get(estimate);
         if (entry == null)
         {
-            entry = new Entry(value);
+            entry = new MutableDouble(value);
             subMap.put(estimate, entry);
         }
         else
         {
-            entry.increment(value);
+            entry.value += value;
         }
     }
 
@@ -127,7 +128,7 @@ public class DefaultConfusionMatrix<CategoryType>
         final CategoryType target,
         final CategoryType estimate)
     {
-        Map<CategoryType, Entry> subMap = confusions.get(target);
+        Map<CategoryType, MutableDouble> subMap = confusions.get(target);
 
         if (subMap == null)
         {
@@ -135,7 +136,7 @@ public class DefaultConfusionMatrix<CategoryType>
         }
         else
         {
-            Entry entry = subMap.get(estimate);
+            MutableDouble entry = subMap.get(estimate);
 
             if (entry == null)
             {
@@ -153,7 +154,7 @@ public class DefaultConfusionMatrix<CategoryType>
     public double getActualCount(
         final CategoryType target)
     {
-        Map<CategoryType, Entry> subMap = confusions.get(target);
+        Map<CategoryType, MutableDouble> subMap = confusions.get(target);
 
         if (subMap == null)
         {
@@ -161,7 +162,7 @@ public class DefaultConfusionMatrix<CategoryType>
         }
 
         double result = 0.0;
-        for (Entry value : subMap.values())
+        for (MutableDouble value : subMap.values())
         {
             result += value.getValue();
         }
@@ -210,7 +211,7 @@ public class DefaultConfusionMatrix<CategoryType>
     public Set<CategoryType> getPredictedCategories(
         final CategoryType target)
     {
-        Map<CategoryType, Entry> subMap = confusions.get(target);
+        Map<CategoryType, MutableDouble> subMap = confusions.get(target);
 
         if (subMap == null)
         {
@@ -276,55 +277,6 @@ public class DefaultConfusionMatrix<CategoryType>
             result.add(pair.getFirst(), pair.getSecond());
         }
         return result;
-    }
-
-    /**
-     * An entry in the confusion matrix.
-     */
-    private static class Entry
-        extends AbstractCloneableSerializable
-    {
-// TODO: This implements a mutable double to avoid lots of boxing and unboxing.
-// This could be replaced with a general mutable double class if one was
-// created in the future.
-        /** The value in the entry. */
-        protected double value;
-
-        public Entry(
-            final double value)
-        {
-            this.value = value;
-        }
-
-        @Override
-        public Entry clone()
-        {
-            return (Entry) super.clone();
-        }
-        
-        public void increment(
-            final double count)
-        {
-            value += count;
-        }
-
-        public double getValue()
-        {
-            return this.value;
-        }
-
-        public void setValue(
-            final double value)
-        {
-            this.value = value;
-        }
-
-        @Override
-        public String toString()
-        {
-            return "" + this.value;
-        }
-
     }
 
     /**
