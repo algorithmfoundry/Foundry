@@ -21,19 +21,15 @@ import gov.sandia.cognition.learning.algorithm.BatchLearner;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Matrix;
-import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.ComputableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityFunction;
-import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import gov.sandia.cognition.util.DefaultPair;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.Pair;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Random;
 
 /**
  * Implements the Baum-Welch algorithm, also known as the "forward-backward
@@ -199,7 +195,7 @@ public class BaumWelchAlgorithm<ObservationType>
         {
             pi = this.updateInitialProbabilities(firstGammas);
         }
-//        System.out.println( "Pi: " + pi );
+
         Matrix A = this.updateTransitionMatrix(sequenceTransitionMatrices);
         ArrayList<ProbabilityFunction<ObservationType>> fs =
             this.updateProbabilityFunctions(this.sequenceGammas);
@@ -237,7 +233,6 @@ public class BaumWelchAlgorithm<ObservationType>
             }
         }
 
-//        System.out.println( this.getIteration() + ": " + logLikelihood  );
         return gettingBetter;
     }
 

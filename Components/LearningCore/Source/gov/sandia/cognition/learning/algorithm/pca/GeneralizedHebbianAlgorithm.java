@@ -14,6 +14,7 @@
 
 package gov.sandia.cognition.learning.algorithm.pca;
 
+import gov.sandia.cognition.algorithm.MeasurablePerformanceAlgorithm;
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
@@ -25,6 +26,8 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.util.DefaultNamedValue;
+import gov.sandia.cognition.util.NamedValue;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,9 +68,12 @@ import java.util.Collection;
 )
 public class GeneralizedHebbianAlgorithm
     extends AbstractAnytimeBatchLearner<Collection<Vector>, PrincipalComponentsAnalysisFunction>
-    implements PrincipalComponentsAnalysis
+    implements PrincipalComponentsAnalysis, MeasurablePerformanceAlgorithm
 {
     
+    /** The performance name is {@value}. */
+    public static final String PERFORMANCE_NAME = "Change";
+
     /**
      * Learning rate, or step size, (0,1], typically ~0.1
      */
@@ -104,6 +110,9 @@ public class GeneralizedHebbianAlgorithm
      * zero, typically 1e-10
      */
     private double minChange;
+
+    /** The change in the last iteration. */
+    private transient double change;
     
     /**
      * Creates a new instance of GeneralizedHebbianAlgorithm
@@ -172,14 +181,14 @@ public class GeneralizedHebbianAlgorithm
             ui.setElement( i, 1.0 );
             this.components.add( ui );
         }
+
+        this.change = 0.0;
         
         return retval;
     }
     
     protected void cleanupAlgorithm()
     {
-        
-        System.out.println( "Stopping after " + this.getIteration() );
         int N = this.getData().iterator().next().getDimensionality();
 
         Matrix Umatrix = MatrixFactory.getDefault().createMatrix( 
@@ -243,8 +252,8 @@ public class GeneralizedHebbianAlgorithm
         {
             retval = false;
         }
-        
-        System.out.println( this.getIteration() + ": Change = " + delta + ", Alpha = " + alpha );
+
+        this.change = Math.abs(delta);
         
         return retval;
     }
@@ -344,6 +353,23 @@ public class GeneralizedHebbianAlgorithm
         PrincipalComponentsAnalysisFunction result)
     {
         this.result = result;
+    }
+
+    /**
+     * Gets the change in in the last completed step of the algorithm.
+     *
+     * @return
+     *      The change in the last completed step of the algorithm.
+     */
+    public double getChange()
+    {
+        return this.change;
+    }
+
+    @Override
+    public NamedValue<Double> getPerformance()
+    {
+        return DefaultNamedValue.create(PERFORMANCE_NAME, this.getChange());
     }
 
 }

@@ -238,7 +238,6 @@ public class RejectionSampling<ObservationType,ParameterType>
                 new LineMinimizerDerivativeFree();
             minimizer.setInitialGuess( sampler.getMean() );
             InputOutputPair<Double,Double> mode = minimizer.learn(f);
-            System.out.println( "Parameter = " + mode.getInput() + " LogMode = " + mode.getOutput() + ", Mode = " + Math.exp(mode.getOutput()) );
             return Math.exp(-mode.getOutput());
         }
 

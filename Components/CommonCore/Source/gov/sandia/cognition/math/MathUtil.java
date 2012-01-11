@@ -534,9 +534,9 @@ public class MathUtil
         }
         else
         {
-            System.out.printf( "a = %f, b = %f, x = %f\n", a, b, x );
             throw new OperationNotConvergedException(
-                "Lentz's Method failed in Beta continuous fraction!" );
+                "Lentz's Method failed in Beta continuous fraction: "
+                + String.format( "a = %f, b = %f, x = %f", a, b, x));
         }
 
     }

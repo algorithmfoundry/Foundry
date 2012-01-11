@@ -130,8 +130,7 @@ public abstract class AbstractSparseMatrix
         }
         catch (Exception ex)
         {
-            System.out.println( "Exception: " + ex );
-            throw new OperationNotConvergedException( ex.toString() );
+            throw new OperationNotConvergedException(ex);
         }
 
         SparseVector x;

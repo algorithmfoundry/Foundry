@@ -31,6 +31,8 @@ import gov.sandia.cognition.math.matrix.decomposition.SingularValueDecomposition
 import gov.sandia.cognition.math.matrix.TwoMatrixEntry;
 import gov.sandia.cognition.math.matrix.Vector;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import no.uib.cipr.matrix.MatrixSingularException;
 
 /**
@@ -485,8 +487,8 @@ public abstract class AbstractMTJMatrix
         }
         catch ( MatrixSingularException e )
         {
-            System.out.println("Warning: AbstractMTJMatrix.solve(): " +
-                "Matrix is singular.");
+            Logger.getLogger(AbstractMTJMatrix.class.getName()).log(Level.WARNING,
+                "AbstractMTJMatrix.solve(): Matrix is singular.");
             usePseudoInverse = true;
         }
         
@@ -502,9 +504,8 @@ public abstract class AbstractMTJMatrix
                     double v = X.getElement(i, j);
                     if( Double.isNaN(v) || Double.isInfinite(v) )
                     {
-                        System.out.println(
-                            "Warning: AbstractMTJMatrix.solve(): " +
-                            "Solver produced invalid results.");
+                        Logger.getLogger(AbstractMTJMatrix.class.getName()).log(Level.WARNING,
+                            "AbstractMTJMatrix.solve(): Solver produced invalid results.");
                         usePseudoInverse = true;
                         break;
                     }
@@ -564,8 +565,8 @@ public abstract class AbstractMTJMatrix
         }
         catch ( MatrixSingularException e )
         {
-            System.out.println("Warning: AbstractMTJMatrix.solve(): " +
-                "Matrix is singular.");
+            Logger.getLogger(AbstractMTJMatrix.class.getName()).log(Level.WARNING,
+                "AbstractMTJMatrix.solve(): Matrix is singular.");
             usePseudoInverse = true;
         }
         
@@ -579,8 +580,8 @@ public abstract class AbstractMTJMatrix
                 double v = x.getElement(i);
                 if( Double.isNaN(v) || Double.isInfinite(v) )
                 {
-                    System.out.println("Warning: AbstractMTJMatrix.solve(): " +
-                        "Solver produced invalid results.");
+                    Logger.getLogger(AbstractMTJMatrix.class.getName()).log(Level.WARNING,
+                        "AbstractMTJMatrix.solve(): Solver produced invalid results.");
                     usePseudoInverse = true;
                     break;
                 }

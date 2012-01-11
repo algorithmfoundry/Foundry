@@ -97,6 +97,43 @@ public class ArgumentCheckerTest
     /**
      * Test of assertIsPositive method, of class ArgumentChecker.
      */
+    public void testAssertIsPositive_String_long()
+    {
+        String argument = "x";
+        ArgumentChecker.assertIsPositive(argument, 1L);
+        ArgumentChecker.assertIsPositive(argument, 2L);
+        boolean exceptionThrown = false;
+        try
+        {
+            ArgumentChecker.assertIsPositive(argument, 0L);
+        }
+        catch (IllegalArgumentException e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+             assertTrue(exceptionThrown);
+        }
+
+        exceptionThrown = false;
+        try
+        {
+            ArgumentChecker.assertIsPositive(argument, -1L);
+        }
+        catch (IllegalArgumentException e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+             assertTrue(exceptionThrown);
+        }
+    }
+
+    /**
+     * Test of assertIsPositive method, of class ArgumentChecker.
+     */
     public void testAssertIsPositive_String_double()
     {
         String argument = "x";
@@ -144,6 +181,30 @@ public class ArgumentCheckerTest
         try
         {
             ArgumentChecker.assertIsNonNegative(argument, -1);
+        }
+        catch (IllegalArgumentException e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+             assertTrue(exceptionThrown);
+        }
+    }
+
+    /**
+     * Test of assertIsNonNegative method, of class ArgumentChecker.
+     */
+    public void testAssertIsNonNegative_String_long()
+    {
+        String argument = "x";
+        ArgumentChecker.assertIsNonNegative(argument, 0L);
+        ArgumentChecker.assertIsNonNegative(argument, 1L);
+        ArgumentChecker.assertIsNonNegative(argument, 2L);
+        boolean exceptionThrown = false;
+        try
+        {
+            ArgumentChecker.assertIsNonNegative(argument, -1L);
         }
         catch (IllegalArgumentException e)
         {

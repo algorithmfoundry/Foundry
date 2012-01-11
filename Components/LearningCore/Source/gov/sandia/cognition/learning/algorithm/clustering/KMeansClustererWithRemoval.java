@@ -179,25 +179,18 @@ public class KMeansClustererWithRemoval
                 minIndex = i;
             }
         }
-
-//        System.out.printf("k = %d, Changed = %d, Threshold = %d, MinCount = %d, MinIndex = %d\n",
-//            this.getNumClusters(), this.getNumChanged(), removalNumber,
-//                minCount, minIndex);
-
+        
         for (int i = this.getNumClusters() - 1; i >= 0; i--)
         {
             int clusterCount = this.clusterCounts[i];
             if (clusterCount <= removalNumber)
             {
-//                System.out.println("Removing index " + i
-//                    + " assigned = " + clusterCount);
                 this.removeCluster(i);
                 this.setNumChanged(this.getNumChanged() + clusterCount + 1);
             }
         }
 
         return superStepReturn;
-
     }
 
 }

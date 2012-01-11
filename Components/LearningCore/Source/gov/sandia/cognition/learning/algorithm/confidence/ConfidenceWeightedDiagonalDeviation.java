@@ -150,7 +150,7 @@ public class ConfidenceWeightedDiagonalDeviation
             mean = target.getMean();
             variance = target.getVariance();
         }
-//System.out.println("Variance: " + variance);
+
         // Figure out the predicted and actual (yi) values.
         final double predicted = input.dotProduct(mean);
         final double actual = label ? +1.0 : -1.0;
@@ -165,24 +165,30 @@ public class ConfidenceWeightedDiagonalDeviation
 
         // Now get the margin variance (Vi).
         final double marginVariance = input.dotProduct(varianceTimesInput);
-//System.out.println("Margin: " + margin);
-//System.out.println("Margin variance: " + marginVariance);
-final double m = margin;
-final double v = marginVariance;
 
-if (v == 0.0 || m > phi * Math.sqrt(v))
-{
-    return;
-}
+// TODO: Cache repeated multiplications.
+// --jbasilico (2011-12-03)
+        final double m = margin;
+        final double v = marginVariance;
 
-double alpha = (-m * psi + Math.sqrt(m * m * Math.pow(phi, 4) / 4.0 + v * phi * phi * epsilon)) / (v * epsilon);
-alpha = Math.max(alpha, 0.0);
-if (alpha <= 0.0)
-{
-    return;
-}
-double u = 0.25 * Math.pow(-alpha * v * phi + Math.sqrt(alpha * alpha * v * v * phi * phi + 4.0 * v), 2);
-double beta = alpha * phi / (Math.sqrt(u) + v * alpha * phi);
+        if (v == 0.0 || m > phi * Math.sqrt(v))
+        {
+            return;
+        }
+
+        double alpha = (-m * psi
+            + Math.sqrt(m * m * Math.pow(phi, 4) / 4.0
+                + v * phi * phi * epsilon))
+            / (v * epsilon);
+        alpha = Math.max(alpha, 0.0);
+        if (alpha <= 0.0)
+        {
+            return;
+        }
+        double u = 0.25 *
+            Math.pow(-alpha * v * phi
+                + Math.sqrt(alpha * alpha * v * v * phi * phi + 4.0 * v), 2);
+        double beta = alpha * phi / (Math.sqrt(u) + v * alpha * phi);
 
         // Compute the new mean.
         final Vector meanUpdate = varianceTimesInput.scale(actual * alpha);

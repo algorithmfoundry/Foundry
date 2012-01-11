@@ -303,12 +303,6 @@ public class KernelBasedIterativeRegression<InputType>
             // Compute the weight to see if this was considered an "error".
             final double difference = newWeight - oldWeight;
 
-            System.out.println( "Input: " + input );
-            System.out.println( "actual: " + actual + " prediction: " + prediction + " error: " + (actual - prediction) );
-            System.out.println( "Old weight: " + oldWeight + ", new weight: " + newWeight );
-            System.out.println( "Difference: " + difference );
-
-
             if (difference != 0.0)
             {
                 // We need to change the kernel scalar function..

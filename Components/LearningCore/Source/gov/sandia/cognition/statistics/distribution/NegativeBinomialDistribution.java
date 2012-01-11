@@ -251,8 +251,7 @@ public class NegativeBinomialDistribution
     @Override
     public String toString()
     {
-        System.out.println( "r = " + this.getR() + ", p = " + this.getP() );
-        return super.toString();
+        return "(r = " + this.getR() + ", p = " + this.getP() + ")";
     }
 
     /**

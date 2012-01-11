@@ -45,13 +45,42 @@ public class OperationNotConvergedException
     extends RuntimeException
 {
     /**
-     * Creates a new instance of OperationNotConvergedException
+     * Creates a new {@code OperationNotConvergedException}.
      *
-     * @param message text of error message
+     * @param   message
+     *      The detail message.
      */
     public OperationNotConvergedException(
-        String message)
+        final String message)
     {
         super(message);
     }
+
+    /**
+     * Creates a new {@code OperationNotConvergedException}.
+     *
+     * @param   message
+     *      The detail message.
+     * @param   cause
+     *      The cause of the exception.
+     */
+    public OperationNotConvergedException(
+        final String message,
+        final Throwable cause)
+    {
+        super(message, cause);
+    }
+
+    /**
+     * Creates a new {@code OperationNotConvergedException}.
+     *
+     * @param   cause
+     *      The cause of the exception.
+     */
+    public OperationNotConvergedException(
+        final Throwable cause)
+    {
+        super(cause);
+    }
+    
 }

@@ -19,15 +19,13 @@ import org.netlib.blas.BLAS;
 import org.netlib.lapack.LAPACK;
 
 /**
- * Tests to see if native versions of LAPACK and BLAS are loaded
+ * Tests to see if native versions of LAPACK and BLAS are loaded.
  *
  * @author Kevin R. Dixon
  * @since  1.0
- *
  */
 public class NativeMatrixTests
 {
-    
     
     /**
      * Tests if Native LAPACK is loaded
@@ -48,10 +46,5 @@ public class NativeMatrixTests
     {
         return BLAS.getInstance().getClass().getName().contains("Native");
     }
-    
-    public static void main(String... a)
-    {
-        System.out.println(BLAS.getInstance().getClass().getName());
-        System.out.println(LAPACK.getInstance().getClass().getName());
-    }
+
 }

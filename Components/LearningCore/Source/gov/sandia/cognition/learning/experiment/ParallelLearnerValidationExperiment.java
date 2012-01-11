@@ -171,30 +171,24 @@ public class ParallelLearnerValidationExperiment<InputDataType, FoldDataType, Le
             this.fold = fold;
         }
         
+        @Override
         public StatisticType call()
+            throws Exception
         {
-            try
-            {
-                fireTrialStarted();
-                // Perform the learning algorithm on this fold.
-                final BatchLearner<? super Collection<? extends FoldDataType>, ? extends LearnedType>
-                    learnerClone = ObjectUtil.cloneSmart(getLearner());
+            fireTrialStarted();
+            // Perform the learning algorithm on this fold.
+            final BatchLearner<? super Collection<? extends FoldDataType>, ? extends LearnedType>
+                learnerClone = ObjectUtil.cloneSmart(getLearner());
 
-                final LearnedType learned = learnerClone.learn(fold.getTrainingSet());
+            final LearnedType learned = learnerClone.learn(fold.getTrainingSet());
 
-                // Compute the statistic of the learned object on the testing set.
-                final Collection<FoldDataType> testingSet = fold.getTestingSet();
-                final StatisticType statistic = 
-                    getPerformanceEvaluator().evaluatePerformance(
-                        learned, testingSet);
-                fireTrialEnded();
-                return statistic;
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                return null;
-            }
+            // Compute the statistic of the learned object on the testing set.
+            final Collection<FoldDataType> testingSet = fold.getTestingSet();
+            final StatisticType statistic =
+                getPerformanceEvaluator().evaluatePerformance(
+                    learned, testingSet);
+            fireTrialEnded();
+            return statistic;
         }
         
     }

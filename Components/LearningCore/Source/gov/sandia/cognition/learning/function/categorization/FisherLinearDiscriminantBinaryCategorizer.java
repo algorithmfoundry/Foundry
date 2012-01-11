@@ -174,7 +174,6 @@ public class FisherLinearDiscriminantBinaryCategorizer
 
             // Technically, the threshold is supposed to be zero, but we might
             // try to do better
-            System.out.println("Weights: " + weightVector);
             LinearDiscriminant discriminant =
                 new LinearDiscriminant(weightVector);
             ArrayList<InputOutputPair<Double, Boolean>> doubleData =
@@ -192,10 +191,6 @@ public class FisherLinearDiscriminantBinaryCategorizer
 
             ReceiverOperatingCharacteristic.Statistic stats =
                 roc.computeStatistics();
-            System.out.println("Optimal Threshold: " + stats.getOptimalThreshold().getClassifier().getThreshold());
-            System.out.println("Confusion Matrix:\n" + stats.getOptimalThreshold().getConfusionMatrix());
-            System.out.println("AUC: " + stats.getAreaUnderCurve() + " d': " + stats.getDPrime());
-            System.out.println("p-value: " + stats.getNullHypothesisProbability());
             return new FisherLinearDiscriminantBinaryCategorizer(
                 discriminant, stats.getOptimalThreshold().getClassifier().getThreshold() );
         }

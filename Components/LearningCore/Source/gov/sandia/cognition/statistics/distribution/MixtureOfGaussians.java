@@ -488,7 +488,6 @@ public class MixtureOfGaussians
 
             }
 
-            System.out.println( this.getIteration() + ": " + this.assignmentChanged );
             if( this.assignmentChanged <= this.getTolerance() )
             {
                 return false;
@@ -502,9 +501,6 @@ public class MixtureOfGaussians
                     this.weightedData.get(n).setWeight(this.assignments.get(n)[k]);
                 }
                 this.distributions.set( k, this.learner.learn( this.weightedData ) );
-
-                System.out.println( "\t" + k + ": Prior = " + this.distributionPrior[k] + " Mean: " + this.distributions.get(k).getMean() );
-
             }
 
             return true;
@@ -529,7 +525,7 @@ public class MixtureOfGaussians
         public NamedValue<Double> getPerformance()
         {
             return new DefaultNamedValue<Double>(
-                PERFORMANCE_NAME, this.assignmentChanged );
+                PERFORMANCE_NAME, this.getAssignmentChanged());
         }
 
         /**
@@ -566,7 +562,19 @@ public class MixtureOfGaussians
         {
             this.random = random;
         }
-        
+
+        /**
+         * Gets the total assignment change from the last completed step of
+         * the algorithm.
+         *
+         * @return
+         *      The assignment changed from the last completed step.
+         */
+        public double getAssignmentChanged()
+        {
+            return this.assignmentChanged;
+        }
+
      }
 
 }

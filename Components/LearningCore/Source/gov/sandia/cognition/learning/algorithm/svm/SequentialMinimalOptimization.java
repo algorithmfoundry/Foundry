@@ -13,6 +13,7 @@
 
 package gov.sandia.cognition.learning.algorithm.svm;
 
+import gov.sandia.cognition.algorithm.MeasurablePerformanceAlgorithm;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.learning.algorithm.AbstractAnytimeSupervisedBatchLearner;
@@ -21,6 +22,7 @@ import gov.sandia.cognition.learning.function.categorization.KernelBinaryCategor
 import gov.sandia.cognition.learning.function.kernel.Kernel;
 import gov.sandia.cognition.learning.function.kernel.KernelContainer;
 import gov.sandia.cognition.math.MutableDouble;
+import gov.sandia.cognition.util.DefaultNamedValue;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.Randomized;
 import java.util.ArrayList;
@@ -50,7 +52,7 @@ import java.util.Random;
     url="http://research.microsoft.com/pubs/68391/smo-book.pdf")
 public class SequentialMinimalOptimization<InputType>
     extends AbstractAnytimeSupervisedBatchLearner<InputType, Boolean, KernelBinaryCategorizer<InputType, DefaultWeightedValue<InputType>>>
-    implements KernelContainer<InputType>, Randomized
+    implements KernelContainer<InputType>, Randomized, MeasurablePerformanceAlgorithm
 {
     // TODO: Add a better explanation of the SMO algorithm in the class
     // description.
@@ -72,6 +74,9 @@ public class SequentialMinimalOptimization<InputType>
 
     /** The default size of the kernel cache. */
     public static final int DEFAULT_KERNEL_CACHE_SIZE = 1000;
+
+    /** The performance name is {@value}. */
+    public static final String PERFORMANCE_NAME = "Change count";
 
     /** The maximum penalty parameter (C). Must be greater than 0.0. */
     private double maxPenalty;
@@ -299,7 +304,7 @@ public class SequentialMinimalOptimization<InputType>
     protected boolean step()
     {
         this.changeCount = 0;
-//System.out.println("Iteration " + this.iteration);
+        
         if (this.examineAll)
         {
             // Loop over all examples.
@@ -1173,6 +1178,12 @@ public class SequentialMinimalOptimization<InputType>
     public int getChangeCount()
     {
         return this.changeCount;
+    }
+
+    @Override
+    public DefaultNamedValue<Integer> getPerformance()
+    {
+        return DefaultNamedValue.create(PERFORMANCE_NAME, this.getChangeCount());
     }
 
 }

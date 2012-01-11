@@ -14,8 +14,8 @@
 
 package gov.sandia.cognition.text.topic;
 
+import gov.sandia.cognition.algorithm.event.AbstractIterativeAlgorithmListener;
 import gov.sandia.cognition.algorithm.IterativeAlgorithm;
-import gov.sandia.cognition.algorithm.IterativeAlgorithmListener;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationReferences;
 import gov.sandia.cognition.annotation.PublicationType;
@@ -669,7 +669,7 @@ public class ProbabilisticLatentSemanticAnalysis
      * algorithm. Can be useful for debugging and other purposes.
      */
     public static class StatusPrinter
-        implements IterativeAlgorithmListener
+        extends AbstractIterativeAlgorithmListener
     {
         /** The stream to write the status to. */
         protected PrintStream out;
@@ -694,17 +694,6 @@ public class ProbabilisticLatentSemanticAnalysis
             super();
 
             this.out = out;
-        }
-
-        public void algorithmStarted(
-            final IterativeAlgorithm algorithm)
-        {
-
-        }
-
-        public void algorithmEnded(
-            final IterativeAlgorithm algorithm)
-        {
         }
 
         public void stepStarted(
