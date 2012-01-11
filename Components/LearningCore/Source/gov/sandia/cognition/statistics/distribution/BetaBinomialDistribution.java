@@ -493,8 +493,7 @@ public class BetaBinomialDistribution
 
             BetaBinomialDistribution.PMF distribution =
                 new BetaBinomialDistribution.PMF( N, alpha, beta );
-            System.out.println( "Mean: " + distribution.getMean().doubleValue() + ", Variance: " + distribution.getVariance() );
-                return distribution;
+            return distribution;
         }
 
         /**
@@ -518,11 +517,9 @@ public class BetaBinomialDistribution
             double denom = N*((variance/mean) - mean - 1.0) + mean;
             double alpha = Math.abs((N*mean - variance) / denom);
             double beta = Math.abs( (N-mean)*(N-(variance/mean)) / denom );
-            System.out.println( "N = " + N + ", alpha = " + alpha + ", beta = " + beta );
             BetaBinomialDistribution.PMF distribution =
                 new BetaBinomialDistribution.PMF( N, alpha, beta );
-            System.out.println( "Mean: " + distribution.getMean().doubleValue() + ", Variance: " + distribution.getVariance() );
-            return new BetaBinomialDistribution.PMF( N, alpha, beta );
+            return distribution;
         }
 
     }

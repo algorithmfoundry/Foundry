@@ -82,7 +82,6 @@ public class RootFinderSecantMethod
     @Override
     protected boolean step()
     {
-//        System.out.println( this.getIteration() + ": Point: " + this.previousPoint );
         double xnm1 = this.previousPoint.getInput();
         double fnm1 = this.previousPoint.getOutput();
         double dnm1 = this.previousPoint.getSlope();

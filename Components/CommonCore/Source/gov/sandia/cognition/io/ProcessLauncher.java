@@ -19,6 +19,8 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Launches a process as a separate thread and monitors the stdout and stderr,
@@ -153,7 +155,7 @@ public class ProcessLauncher
 
         try
         {
-            System.out.println( "Executing: " + this.getActualCommand() );
+            Logger.getLogger(ProcessLauncher.class.getName()).info("Executing: " + this.getActualCommand());
             this.setProcess( Runtime.getRuntime().exec( this.getActualCommand() ) );
 
             this.stdout = new StreamGobbler(

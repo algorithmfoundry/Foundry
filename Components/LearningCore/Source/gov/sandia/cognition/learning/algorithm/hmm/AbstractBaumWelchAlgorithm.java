@@ -114,7 +114,7 @@ public abstract class AbstractBaumWelchAlgorithm<ObservationType,DataType>
     public NamedValue<Double> getPerformance()
     {
         return new DefaultNamedValue<Double>(
-            PERFORMANCE_NAME, this.lastLogLikelihood );
+            PERFORMANCE_NAME, this.getLastLogLikelihood());
     }
 
     public HiddenMarkovModel<ObservationType> getResult()
@@ -184,5 +184,17 @@ public abstract class AbstractBaumWelchAlgorithm<ObservationType,DataType>
     {
         this.distributionLearner = distributionLearner;
     }
+
+    /**
+     * Gets the log likelihood of the last completed step of the algorithm.
+     *
+     * @return
+     *      The last log likelihood.
+     */
+    public double getLastLogLikelihood()
+    {
+        return this.lastLogLikelihood;
+    }
+
 
 }

@@ -14,8 +14,8 @@
 
 package gov.sandia.cognition.learning.algorithm.ensemble;
 
+import gov.sandia.cognition.algorithm.event.AbstractIterativeAlgorithmListener;
 import gov.sandia.cognition.algorithm.IterativeAlgorithm;
-import gov.sandia.cognition.algorithm.IterativeAlgorithmListener;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.collection.CollectionUtil;
@@ -30,7 +30,6 @@ import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.statistics.DataDistribution;
 import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
-import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
 import gov.sandia.cognition.util.Randomized;
 import java.util.ArrayList;
@@ -737,8 +736,7 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
      *      The category type the algorithm is learning over.
      */
     public static class OutOfBagErrorStoppingCriteria<InputType, CategoryType>
-        extends AbstractCloneableSerializable
-        implements IterativeAlgorithmListener
+        extends AbstractIterativeAlgorithmListener
     {
 // TODO: Implement a look-ahead capability.
 // -- jdbasil (2011-02-18)
@@ -826,13 +824,6 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
         }
 
         @Override
-        public void stepStarted(
-            final IterativeAlgorithm algorithm)
-        {
-            // Ignored.
-        }
-
-        @Override
         public void stepEnded(
             final IterativeAlgorithm algorithm)
         {
@@ -890,8 +881,6 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
                 UnivariateStatisticsUtil.computeMean(this.smoothingBuffer);
             this.smoothedErrorRates.add(smoothedErrorRate);
 
-//System.out.println("" + learner.getIteration() + "\t" + outOfBagEnsembleErrorRate + "\t" + this.outOfBagErrorCount + "\t" + smoothedErrorRate);
-
             // See if the algorithm is still making progress or not. Once the
             // smoothed error rate stops improving, its time to stop.
             if (smoothedErrorRate >= this.previousSmoothedErrorRate)
@@ -923,22 +912,11 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
                 {
                     learner.ensemble.members.remove(i);
                 }
-//System.out.println("Best index: " + bestIndex);
-//System.out.println("Best raw error rate: " + bestRawErrorRate);
-//System.out.println("Ensemble now has " + learner.ensemble.members.size() + " members.");
             }
 
             // Save the smoothed error rate.
             this.previousSmoothedErrorRate = smoothedErrorRate;
 
-/*
-            System.out.println("Step " + learner.getIteration());
-            System.out.println("    Num incorrect: " + learner.currentIncorrectIndices.size());
-//            System.out.println("    Out of bag count: " + outOfBagTotalCount);
-            System.out.println("    Out of bag ensemble error count: " + this.outOfBagErrorCount);
-            System.out.println("    Out of bag ensemble error rate: " + outOfBagEnsembleErrorRate);
-            System.out.println("    Out of bag ensemble accuracy: " + (1.0 - outOfBagEnsembleErrorRate));
- */
         }
 
         /**

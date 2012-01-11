@@ -132,9 +132,7 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
         }
         catch (Exception e)
         {
-            System.out.println( "Exception: " + e );
-            e.printStackTrace();
-            results = null;
+            throw new RuntimeException(e);
         }
 
         double minCost = Double.POSITIVE_INFINITY;
@@ -215,7 +213,7 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
                 ClosedFormComputableDistribution<DataType> result1 =
                     ObjectUtil.cloneSafe( this.distribution );
                 double cost1 = costFunction.evaluate(result1);
-                System.out.println( "Initial Cost: " + cost1 + ", Class: " + result1.getClass().getCanonicalName() + ", Parameters: " + result1.convertToVector() );
+//                System.out.println( "Initial Cost: " + cost1 + ", Class: " + result1.getClass().getCanonicalName() + ", Parameters: " + result1.convertToVector() );
                 
                 // The initial parameters don't work, so guess some more
                 if( Double.isInfinite(cost1) || Double.isNaN(cost1) )
@@ -242,12 +240,12 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
                         {
                             result2 = (ClosedFormComputableDistribution<DataType>) solver.learn( this.data );
                             double cost2 = costFunction.evaluate(result2);
-                            System.out.println( "Solver Cost: " + cost2 + ", Class: " + result2.getClass().getCanonicalName() + ", Parameters: " + result2.convertToVector() );
+//                            System.out.println( "Solver Cost: " + cost2 + ", Class: " + result2.getClass().getCanonicalName() + ", Parameters: " + result2.convertToVector() );
                             bruteForce = (Double.isInfinite(cost2) || Double.isNaN(cost2));
                         }
                         catch (Exception e)
                         {
-                            System.out.println( "Solver barfed: " + solver.getClass().getCanonicalName() + ", Exception: " + e );
+//                            System.out.println( "Solver barfed: " + solver.getClass().getCanonicalName() + ", Exception: " + e );
                             bruteForce = true;
                             result2 = ObjectUtil.cloneSafe(this.distribution);
                         }
@@ -258,12 +256,12 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
                             {
                                 result2 = (ClosedFormComputableDistribution<DataType>) solver.learn( subList );
                                 double cost2 = costFunction.evaluate(result2);
-                                System.out.println( "Sub-Solver Cost: " + cost2 + ", Class: " + result2.getClass().getCanonicalName() + ", Parameters: " + result2.convertToVector() );
+//                                System.out.println( "Sub-Solver Cost: " + cost2 + ", Class: " + result2.getClass().getCanonicalName() + ", Parameters: " + result2.convertToVector() );
                                 bruteForce = (Double.isInfinite(cost2) || Double.isNaN(cost2));
                             }
                             catch (Exception e)
                             {
-                                System.out.println( "Sub-Solver barfed: " + solver.getClass().getCanonicalName() + ", Exception: " + e );
+//                                System.out.println( "Sub-Solver barfed: " + solver.getClass().getCanonicalName() + ", Exception: " + e );
                                 result2 = ObjectUtil.cloneSafe(this.distribution);
                             }
 
@@ -285,7 +283,7 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
                                 ObjectUtil.cloneSafe(result2), costFunction, minimizer1 );
                         result2 = estimator2.learn(this.data);
                         double cost2 = costFunction.evaluate(result2);
-                        System.out.println( "Brute Cost: " + cost2 + ", Class: " + result2.getClass().getCanonicalName() + ", Parameters: " + result2.convertToVector() );
+//                        System.out.println( "Brute Cost: " + cost2 + ", Class: " + result2.getClass().getCanonicalName() + ", Parameters: " + result2.convertToVector() );
 
                         // Damn.. nothing has worked so far... subsample the
                         // data and re-estimate.
@@ -300,7 +298,7 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
 
                             costFunction.setCostParameters(this.data);
                             double cost3 = costFunction.evaluate(result2);
-                            System.out.println( "Subsample Cost: " + cost3 + ", Class: " + result2.getClass().getCanonicalName() + ", Parameters: " + result2.convertToVector() );
+//                            System.out.println( "Subsample Cost: " + cost3 + ", Class: " + result2.getClass().getCanonicalName() + ", Parameters: " + result2.convertToVector() );
 
 
                         }
@@ -322,12 +320,12 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
 
 
                 double cost3 = costFunction.evaluate(result3);
-                System.out.println( "Final Cost: " + cost3 + ", Class: " + result3.getClass().getCanonicalName() + ", Parameters: " + result3.convertToVector() );
+//                System.out.println( "Final Cost: " + cost3 + ", Class: " + result3.getClass().getCanonicalName() + ", Parameters: " + result3.convertToVector() );
                 return DefaultPair.create( cost3, result3 );
             }
             catch (Exception e)
             {
-                System.out.println( this.distribution.getClass().getCanonicalName() + " barfed: " + e );
+//                System.out.println( this.distribution.getClass().getCanonicalName() + " barfed: " + e );
 //                e.printStackTrace();
                 return DefaultPair.create( Double.POSITIVE_INFINITY, (ClosedFormComputableDistribution<DataType>) this.distribution.clone() );
             }
@@ -421,7 +419,7 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
                     }
                     catch (Exception e)
                     {
-                        System.out.println( "Couldn't instantiate: " + c.getCanonicalName() );
+//                        System.out.println( "Couldn't instantiate: " + c.getCanonicalName() );
                     }
                 }
             }

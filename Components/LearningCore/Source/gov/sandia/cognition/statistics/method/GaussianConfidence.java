@@ -141,7 +141,6 @@ public class GaussianConfidence
         // we expect the number of samples to be >30 or so, then the
         // Gaussian and Student-t distribution (N>=30) are approximately
         // equal.
-        System.out.println( "Z = " + z );
         return new GaussianConfidence.Statistic( z );
 
     }

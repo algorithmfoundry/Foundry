@@ -64,6 +64,26 @@ public class ArgumentChecker
     }
 
     /**
+     * Asserts the given value is positive (> 0). If the assertion is violated,
+     * an IllegalArgumentException is thrown.
+     *
+     * @param   argument
+     *      The name of the argument.
+     * @param   value
+     *      The value of the argument.
+     */
+    public static void assertIsPositive(
+        final String argument,
+        final long value)
+    {
+        if (value <= 0)
+        {
+            throw new IllegalArgumentException(argument + " must be positive "
+                + "(was " + value + ").");
+        }
+    }
+
+    /**
      * Asserts the given value is positive (> 0.0). If the assertion is
      * violated, an IllegalArgumentException is thrown. NaNs fail the assertion.
      *
@@ -115,6 +135,26 @@ public class ArgumentChecker
      */
     public static void assertIsNonNegative(
         final String argument,
+        final long value)
+    {
+        if (value < 0)
+        {
+            throw new IllegalArgumentException(argument + " cannot be negative "
+                + "(was " + value + ").");
+        }
+    }
+
+    /**
+     * Asserts that the given argument is non-negative (>=0.0). If the assertion
+     * is violated, an IllegalArgumentException is thrown.
+     *
+     * @param   argument
+     *      The name of the argument.
+     * @param   value
+     *      The value of the argument.
+     */
+    public static void assertIsNonNegative(
+        final String argument,
         final double value)
     {
         if (!(value >= 0.0))
@@ -123,7 +163,6 @@ public class ArgumentChecker
                 + "(was " + value + ").");
         }
     }
-
 
     /**
      * Asserts that the given argument is in the given range, inclusive.

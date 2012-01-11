@@ -25,6 +25,13 @@ import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadPoolExecutor;
 
+/**
+ * A parallel implementation of {@link LatentDirichletAllocationVectorGibbsSampler}.
+ * It runs the sampling for the different documents using a thread pool.
+ *
+ * @author  Jason Shepherd
+ * @since   3.3.2
+ */
 public class ParallelLatentDirichletAllocationVectorGibbsSampler
     extends LatentDirichletAllocationVectorGibbsSampler
     implements ParallelAlgorithm

@@ -241,15 +241,10 @@ public class FourierTransform
     public List<ComplexNumber> evaluate(
         Collection<Double> data )
     {
-
-//        final int num = data.size();
-//        long start = System.currentTimeMillis();
         ComplexNumber[] c = cooleyTukeyFFT( convertToComplex(data) );
 
         // Make sure we remove the useless coefficients
         List<ComplexNumber> coefficients = Arrays.asList( c );
-//        long stop = System.currentTimeMillis();
-//        System.out.println( "Computed FFT " + data.size() + " in " + (stop-start)/1000.0 );
 
         return coefficients;
 

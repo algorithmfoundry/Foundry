@@ -86,6 +86,7 @@ public class MultithreadedCognitiveModel
             this.previousModuleState = previousModuleState;
         }
  
+        @Override
         public Exception call() 
         {              
             try
@@ -246,9 +247,6 @@ public class MultithreadedCognitiveModel
             String errorMessage = "MultithreadedCognitiveModel.update: " +
                 exceptionCounter + " exceptions encountered during module " +
                 "evaluation";
-            System.out.println(errorMessage + "; printing stack trace of " +
-                "first exception encountered:");
-            firstException.printStackTrace();
             throw new IllegalArgumentException(errorMessage + "; throwing " +
                 "first exception encountered", firstException);            
         }

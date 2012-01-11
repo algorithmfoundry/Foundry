@@ -197,7 +197,6 @@ public class DirichletProcessClustering
         }
 
         final int K = maxSample.getNumClusters();
-        System.out.println( "Max Index = " + maxIndex + ", K = " + K + ", Log-Posterior = " + maxPosterior );
         this.result = new ArrayList<GaussianCluster>( K );
         for( int k = 0; k < K; k++ )
         {

@@ -209,7 +209,8 @@ public class KernelWeightedRobustRegression<InputType, OutputType>
     {
 
         double change = 0.0;
-        for (DefaultWeightedInputOutputPair<InputType, OutputType> pair : this.weightedData)
+        for (DefaultWeightedInputOutputPair<InputType, OutputType> pair
+            : this.weightedData)
         {
             // Use the kernel to determine the new weight of the sample
             // Generally, the kernel should weight accurate samples more
@@ -218,7 +219,6 @@ public class KernelWeightedRobustRegression<InputType, OutputType>
             double weightNew = this.kernelWeightingFunction.evaluate(
                 pair.getOutput(), yhat );
             double weightOld = pair.getWeight();
-            System.out.println( "Y: " + pair.getOutput() + " yhat: " + yhat + " weightNew: " + weightNew + " weightOld: " + weightOld );
             change += Math.abs( weightNew - weightOld );
             pair.setWeight( weightNew );
         }

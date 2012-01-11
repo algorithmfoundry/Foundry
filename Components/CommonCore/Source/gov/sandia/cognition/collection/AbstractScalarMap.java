@@ -13,15 +13,9 @@
 
 package gov.sandia.cognition.collection;
 
-import gov.sandia.cognition.math.MutableDouble;
-import gov.sandia.cognition.math.matrix.InfiniteVector;
-import gov.sandia.cognition.math.matrix.VectorSpace;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.CloneableSerializable;
-import gov.sandia.cognition.util.ObjectUtil;
 import java.util.AbstractMap;
-import java.util.AbstractSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -78,10 +72,6 @@ public abstract class AbstractScalarMap<KeyType>
     {
         final double newValue = this.get(key) + value;
         this.set(key, newValue);
-//        if (this.get(key) != newValue)
-//        {
-//            System.out.println("Bad key!");
-//        }
         return newValue;
     }
 

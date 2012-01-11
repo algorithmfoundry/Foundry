@@ -260,19 +260,4 @@ public class MultiCategoryAdaBoost<InputType, CategoryType>
         this.weakLearner = weakLearner;
     }
 
-    /**
-     * Main
-     * @param args
-     * Args
-     */
-    public static void main(
-        String... args)
-    {
-        System.out.println(Math.log(1.0));
-        
-        System.out.println(Math.log(0.00000001));
-        System.out.println(Math.log(0.0000000));
-        System.out.println(Math.pow(4.7, 1.0));
-    }
-
 }
