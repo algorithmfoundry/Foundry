@@ -18,7 +18,9 @@ import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.collection.IntegerSpan;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistributionTestHarness;
-import java.util.Collection;
+import gov.sandia.cognition.util.DefaultWeightedValue;
+import gov.sandia.cognition.util.WeightedValue;
+import java.util.ArrayList;
 
 /**
  * Unit tests for PoissonDistributionTest.
@@ -225,6 +227,47 @@ public class PoissonDistributionTest
     {
 //       RANDOM = new Random(2);
 //        super.testCDFSample_Random_int();
+    }
+
+    public void testLearner()
+    {
+        PoissonDistribution p1 = new PoissonDistribution(0.25);
+
+        ArrayList<Number> data = p1.sample(RANDOM, 100);
+        PoissonDistribution learned =
+            new PoissonDistribution.MaximumLikelihoodEstimator().learn(data);
+        assertEquals(p1.getRate(), learned.getRate(), TOLERANCE);
+    }
+    
+    public void testWeightedLearner()
+    {
+        PoissonDistribution p1 = new PoissonDistribution(0.25);
+
+        ArrayList<WeightedValue<Number>> data = new ArrayList<WeightedValue<Number>>();
+        for (Number value : p1.sample(RANDOM, 100))
+        {
+            data.add(DefaultWeightedValue.create(value,
+                100.0 + RANDOM.nextDouble()));
+        }
+
+        // Add some noise.
+        for (int i = 0; i < 5; i++)
+        {
+            data.add(DefaultWeightedValue.create((Number)
+                (RANDOM.nextInt(10) + 1), 0.0001 * RANDOM.nextDouble()));
+        }
+
+
+        // Add some zeros.
+        for (int i = 0; i < 10; i++)
+        {
+            data.add(DefaultWeightedValue.create((Number)
+                100, 0.0));
+        }
+
+        PoissonDistribution learned =
+            new PoissonDistribution.WeightedMaximumLikelihoodEstimator().learn(data);
+        assertEquals(p1.getMean(), learned.getMean(), 0.001);
     }
 
 }
