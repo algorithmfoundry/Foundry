@@ -39,7 +39,7 @@ package gov.sandia.cognition.math;
  */
 public class LogNumber
     extends Number
-    implements Ring<LogNumber>
+    implements Ring<LogNumber>, Comparable<LogNumber>
 {
     
     /** The log of the value represented by this object, log(value). */
@@ -125,6 +125,70 @@ public class LogNumber
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public boolean equals(
+        final Object other)
+    {
+        return other instanceof LogNumber
+            && this.equals((LogNumber) other, 0.0);
+    }
+
+    @Override
+    public boolean equals(
+        final LogNumber other,
+        final double effectiveZero)
+    {
+        // This if statement is to avoid creating negative numbers.
+        if (this.logValue == other.logValue)
+        {
+            // This check for exact equality helps deal with positive
+            // infinity.
+            return true;
+        }
+        else if (this.logValue > other.logValue)
+        {
+            return LogMath.subtract(this.logValue, other.logValue)
+                <= Math.log(effectiveZero);
+        }
+        else if (this.logValue < other.logValue)
+        {
+            return LogMath.subtract(other.logValue, this.logValue)
+                <= Math.log(effectiveZero);
+        }
+        else
+        {
+            // This is to deal with NaNs.
+            return false;
+        }
+    }
+
+    @Override
+    public int compareTo(
+        final LogNumber other)
+    {
+        return Double.compare(this.logValue, other.logValue);
+    }
+    
+    @Override
+    public int hashCode()
+    {
+        int hash = 7;
+        hash =
+            17 * hash +
+            (int) (Double.doubleToLongBits(this.logValue)
+            ^ (Double.doubleToLongBits(this.logValue) >>> 32));
+        return hash;
+    }
+
+    @Override
+    public String toString()
+    {
+        // Since the value is represented as a log, its true value is the
+        // exponentiation of the stored log value.
+        return "exp(" + this.logValue + ")";
+    }
+
 
     @Override
     public LogNumber plus(
@@ -213,32 +277,6 @@ public class LogNumber
     }
 
     @Override
-    public boolean equals(
-        final Object other)
-    {
-        return other instanceof LogNumber
-            && this.equals((LogNumber) other, 0.0);
-    }
-
-    @Override
-    public boolean equals(
-        final LogNumber other,
-        final double effectiveZero)
-    {
-        // This if statement is to avoid creating negative numbers.
-        if (this.logValue >= other.logValue)
-        {
-            return LogMath.subtract(this.logValue, other.logValue)
-                <= Math.log(effectiveZero);
-        }
-        else
-        {
-            return LogMath.subtract(other.logValue, this.logValue)
-                <= Math.log(effectiveZero);
-        }
-    }
-
-    @Override
     public LogNumber dotTimes(
         final LogNumber other)
     {
@@ -300,6 +338,122 @@ public class LogNumber
     }
 
     /**
+     * Returns a new {@code LogNumber} representing this log number taken
+     * to the given power.
+     *
+     * @param   power
+     *      The power.
+     * @return
+     *      The log number to the given power.
+     */
+    public LogNumber power(
+        final double power)
+    {
+        if (power == 0.0)
+        {
+            return new LogNumber(0.0);
+        }
+        else
+        {
+            return new LogNumber(this.logValue * power);
+        }
+    }
+
+
+    /**
+     * Transforms this log number by taking it to the given power.
+     *
+     * @param   power
+     *      The power.
+     */
+    public void powerEquals(
+        final double power)
+    {
+        if (power == 0.0)
+        {
+            this.logValue = 0.0;
+        }
+        else
+        {
+            this.logValue *= power;
+        }
+    }
+
+    /**
+     * A new {@code LogNumber} that is the minimum of this and another.
+     *
+     * @param   other
+     *      Another value.
+     * @return
+     *      A new object containing the minimum of this value or the given
+     *      value.
+     */
+    public LogNumber min(
+        final LogNumber other)
+    {
+        if (this.logValue <= other.logValue || this.logValue != this.logValue)
+        {
+            return this.clone();
+        }
+        else
+        {
+            return other.clone();
+        }
+    }
+    
+    /**
+     * Changes this value to be the minimum of this value or the given value.
+     *
+     * @param   other
+     *      Another value.
+     */
+    public void minEquals(
+        final LogNumber other)
+    {
+        if (this.logValue > other.logValue)
+        {
+            this.logValue = other.logValue;
+        }
+    }
+
+    /**
+     * A new {@code LogNumber} that is the maximum of this and another.
+     *
+     * @param   other
+     *      Another value.
+     * @return
+     *      A new object containing the maximum of this value or the given
+     *      value.
+     */
+    public LogNumber max(
+        final LogNumber other)
+    {
+        if (this.logValue >= other.logValue || this.logValue != this.logValue)
+        {
+            return this.clone();
+        }
+        else
+        {
+            return other.clone();
+        }
+    }
+    
+    /**
+     * Changes this value to be the maximum of this value or the given value.
+     *
+     * @param   other
+     *      Another value.
+     */
+    public void maxEquals(
+        final LogNumber other)
+    {
+        if (this.logValue < other.logValue)
+        {
+            this.logValue = other.logValue;
+        }
+    }
+
+    /**
      * Gets the value represented by the log number. Since the value is
      * stored as log(value), this returns exp(log(value)) == value. Thus, it
      * is equivalent to Math.exp(getLogValue()).
@@ -349,25 +503,6 @@ public class LogNumber
         final double logValue)
     {
         this.logValue = logValue;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        int hash = 7;
-        hash =
-            17 * hash +
-            (int) (Double.doubleToLongBits(this.logValue)
-            ^ (Double.doubleToLongBits(this.logValue) >>> 32));
-        return hash;
-    }
-
-    @Override
-    public String toString()
-    {
-        // Since the value is represented as a log, its true value is the
-        // exponentiation of the stored log value.
-        return "exp(" + this.logValue + ")";
     }
 
     @Override

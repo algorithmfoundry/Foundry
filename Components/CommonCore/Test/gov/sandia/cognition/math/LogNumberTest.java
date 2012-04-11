@@ -55,6 +55,72 @@ public class LogNumberTest
         return new LogNumber(this.randomDouble());
     }
 
+    public void testConstructors()
+    {
+        assertEquals(0.0, new LogNumber().getValue(), 0.0);
+
+        for (double value : this.getGoodValues())
+        {
+            double logValue = Math.log(value);
+            LogNumber instance = new LogNumber(logValue);
+            assertEquals(logValue, instance.logValue, 0.0);
+
+            instance = new LogNumber(instance);
+            assertEquals(logValue, instance.logValue, 0.0);
+        }
+    }
+
+    public void testCreateFromValue()
+    {
+        for (double value : this.getGoodValues())
+        {
+            LogNumber instance = LogNumber.createFromValue(value);
+            assertEquals(Math.log(value), instance.logValue, 0.0);
+        }
+    }
+
+    public void testCreateFromLogValue()
+    {
+        for (double value : this.getGoodValues())
+        {
+            double logValue = Math.log(value);
+            LogNumber instance = LogNumber.createFromLogValue(logValue);
+            assertEquals(logValue, instance.logValue, 0.0);
+        }
+    }
+
+    public void testEquals()
+    {
+        for (double x : this.getGoodValues())
+        {
+            for (double y : this.getGoodValues())
+            {
+                boolean expected = new Double(x).equals(new Double(y));
+                LogNumber instance = LogNumber.createFromValue(x);
+                LogNumber other = LogNumber.createFromValue(y);
+                assertEquals(expected, instance.equals(other));
+                assertEquals(x, instance.getValue(), epsilon * Math.abs(x));
+                assertEquals(y, other.getValue(), epsilon * Math.abs(y));
+            }
+        }
+    }
+
+    public void testCompareTo()
+    {
+        for (double x : this.getGoodValues())
+        {
+            for (double y : this.getGoodValues())
+            {
+                int expected = Double.compare(x, y);
+                LogNumber instance = LogNumber.createFromValue(x);
+                LogNumber other = LogNumber.createFromValue(y);
+                assertEquals(expected, instance.compareTo(other));
+                assertEquals(x, instance.getValue(), epsilon * Math.abs(x));
+                assertEquals(y, other.getValue(), epsilon * Math.abs(y));
+            }
+        }
+    }
+
     @Override
     public void testScale()
     {
@@ -133,6 +199,29 @@ public class LogNumberTest
             assertEquals(otherValue, other.getValue(), epsilon);
         }
     }
+    
+    /**
+     * Test of minus method, of class LogNumber.
+     */
+    @Override
+    public void testMinus()
+    {
+        for (double x : this.getGoodValues())
+        {
+            for (double y : this.getGoodValues())
+            {
+                LogNumber instance = LogNumber.createFromValue(x);
+                LogNumber other = LogNumber.createFromValue(y);
+                double expectedValue = (x >= y) ? (x - y) : Double.NaN;
+                LogNumber result = instance.minus(other);
+                assertNotSame(result, instance);
+                assertNotSame(result, other);
+                assertEquals(expectedValue, result.getValue(), epsilon * Math.abs(expectedValue));
+                assertEquals(x, instance.getValue(), epsilon * Math.abs(x));
+                assertEquals(y, other.getValue(), epsilon * Math.abs(y));
+            }
+        }
+    }
 
     @Override
     public void testMinusEquals()
@@ -196,6 +285,28 @@ public class LogNumberTest
         }
     }
 
+    /**
+     * Test of negative method, of class LogNumber.
+     */
+    @Override
+    public void testNegative()
+    {
+        double value = 0.0;
+        LogNumber instance = new LogNumber();
+        LogNumber result = instance.negative();
+        assertTrue(Double.isNaN(result.getLogValue()));
+
+        for (double goodValue : this.getGoodValues())
+        {
+            value = goodValue;
+            instance.setValue(value);
+            result = instance.negative();
+            assertNotSame(result, instance);
+            assertTrue(Double.isNaN(result.getLogValue()));
+            assertEquals(value, instance.getValue(), epsilon * Math.abs(goodValue));
+        }
+    }
+
     @Override
     public void testNegativeEquals()
     {
@@ -238,6 +349,299 @@ public class LogNumberTest
         }
         catch (NullPointerException e)
         {
+        }
+    }
+
+    public void testTimes()
+    {
+        double value = 0.0;
+        double otherValue = this.randomDouble();
+        double expected = 0.0;
+        LogNumber instance = new LogNumber();
+        LogNumber result = null;
+        expected = value * otherValue;
+        result = instance.times(LogNumber.createFromValue(otherValue));
+        assertEquals(expected, result.getValue(), epsilon);
+
+        value = this.randomDouble();
+        otherValue = this.randomDouble();
+        instance.setValue(value);
+        expected = value * otherValue;
+        result = instance.times(LogNumber.createFromValue(otherValue));
+        assertEquals(expected, result.getValue(), epsilon);
+
+        for (double x : this.getGoodValues())
+        {
+            for (double y : this.getGoodValues())
+            {
+                instance = LogNumber.createFromValue(x);
+                LogNumber other = LogNumber.createFromValue(y);
+                expected = x * y;
+                result = instance.times(other);
+                assertEquals(expected, result.getValue(), epsilon * Math.abs(expected));
+                assertEquals(y, other.getValue(), epsilon * Math.abs(y));
+            }
+        }
+    }
+
+    public void testTimesEquals()
+    {
+        double value = 0.0;
+        double otherValue = this.randomDouble();
+        double expected = 0.0;
+        LogNumber instance = new LogNumber();
+        expected = value * otherValue;
+        instance.timesEquals(LogNumber.createFromValue(otherValue));
+        assertEquals(expected, instance.getValue(), epsilon);
+
+        value = this.randomDouble();
+        otherValue = this.randomDouble();
+        instance.setValue(value);
+        expected = value * otherValue;
+        instance.timesEquals(LogNumber.createFromValue(otherValue));
+        assertEquals(expected, instance.getValue(), epsilon);
+
+        for (int i = 0; i < 1 + RANDOM.nextInt(10); i++)
+        {
+            otherValue = this.randomDouble();
+            LogNumber other = LogNumber.createFromValue(otherValue);
+            expected *= otherValue;
+            instance.timesEquals(other);
+            assertEquals(expected, instance.getValue(), epsilon * Math.abs(expected));
+            assertEquals(otherValue, other.getValue(), epsilon * Math.abs(otherValue));
+        }
+
+        for (double x : this.getGoodValues())
+        {
+            for (double y : this.getGoodValues())
+            {
+                instance = LogNumber.createFromValue(x);
+                LogNumber other = LogNumber.createFromValue(y);
+                expected = x * y;
+                instance.timesEquals(other);
+                assertEquals(expected, instance.getValue(), epsilon * Math.abs(expected));
+                assertEquals(y, other.getValue(), epsilon * Math.abs(y));
+            }
+        }
+    }
+
+    public void testDivide()
+    {
+        double value = 0.0;
+        double otherValue = this.randomDouble();
+        double expected = 0.0;
+        LogNumber instance = new LogNumber();
+        LogNumber result = null;
+        expected = value / otherValue;
+        result = instance.divide(LogNumber.createFromValue(otherValue));
+        assertEquals(expected, result.getValue(), epsilon);
+
+        value = this.randomDouble();
+        otherValue = this.randomDouble();
+        instance.setValue(value);
+        expected = value / otherValue;
+        result = instance.divide(LogNumber.createFromValue(otherValue));
+        assertEquals(expected, result.getValue(), epsilon);
+
+        for (double x : this.getGoodValues())
+        {
+            for (double y : this.getGoodValues())
+            {
+                instance = LogNumber.createFromValue(x);
+                LogNumber other = LogNumber.createFromValue(y);
+                expected = x / y;
+                result = instance.divide(other);
+                assertEquals(expected, result.getValue(), epsilon * Math.abs(expected));
+                assertEquals(y, other.getValue(), epsilon * Math.abs(y));
+            }
+        }
+    }
+
+    public void testDivideEquals()
+    {
+        double value = 0.0;
+        double otherValue = this.randomDouble();
+        double expected = 0.0;
+        LogNumber instance = new LogNumber();
+        expected = value / otherValue;
+        instance.divideEquals(LogNumber.createFromValue(otherValue));
+        assertEquals(expected, instance.getValue(), epsilon);
+
+        value = this.randomDouble();
+        otherValue = this.randomDouble();
+        instance.setValue(value);
+        expected = value / otherValue;
+        instance.divideEquals(LogNumber.createFromValue(otherValue));
+        assertEquals(expected, instance.getValue(), epsilon);
+
+        for (int i = 0; i < 1 + RANDOM.nextInt(10); i++)
+        {
+            otherValue = this.randomDouble();
+            LogNumber other = LogNumber.createFromValue(otherValue);
+            expected /= otherValue;
+            instance.divideEquals(other);
+            assertEquals(expected, instance.getValue(), epsilon * Math.abs(expected));
+            assertEquals(otherValue, other.getValue(), epsilon * Math.abs(otherValue));
+        }
+
+        for (double x : this.getGoodValues())
+        {
+            for (double y : this.getGoodValues())
+            {
+                instance = LogNumber.createFromValue(x);
+                LogNumber other = LogNumber.createFromValue(y);
+                expected = x / y;
+                instance.divideEquals(other);
+                assertEquals(expected, instance.getValue(), epsilon * Math.abs(expected));
+                assertEquals(y, other.getValue(), epsilon * Math.abs(y));
+            }
+        }
+    }
+
+    /**
+     * Test of min method, of class LogNumber.
+     */
+    public void testMin()
+    {
+        for (double x : this.getGoodValues())
+        {
+            for (double y : this.getGoodValues())
+            {
+                LogNumber instance = LogNumber.createFromValue(x);
+                LogNumber other = LogNumber.createFromValue(y);
+                double expectedValue = Math.min(x, y);
+                LogNumber expected = expectedValue == x ? instance : other;
+                LogNumber result = instance.min(other);
+                assertNotSame(expected, result);
+                assertEquals(expected, result);
+                assertEquals(expectedValue, result.getValue(), epsilon * Math.abs(expectedValue));
+                assertEquals(x, instance.getValue(), epsilon * Math.abs(x));
+                assertEquals(y, other.getValue(), epsilon * Math.abs(y));
+            }
+        }
+    }
+
+    /**
+     * Test of minEquals method, of class LogNumber.
+     */
+    public void testMinEquals()
+    {
+        for (double x : this.getGoodValues())
+        {
+            for (double y : this.getGoodValues())
+            {
+                LogNumber instance = LogNumber.createFromValue(x);
+                LogNumber other = LogNumber.createFromValue(y);
+                double expectedValue = Math.min(x, y);
+                LogNumber expected = expectedValue == x ? instance : other;
+                instance.minEquals(other);
+                assertEquals(expected, instance);
+                assertEquals(expectedValue, instance.getValue(), epsilon * Math.abs(expectedValue));
+                assertEquals(y, other.getValue(), epsilon * Math.abs(y));
+            }
+        }
+    }
+
+    /**
+     * Test of max method, of class LogNumber.
+     */
+    public void testMax()
+    {
+        for (double x : this.getGoodValues())
+        {
+            for (double y : this.getGoodValues())
+            {
+                LogNumber instance = LogNumber.createFromValue(x);
+                LogNumber other = LogNumber.createFromValue(y);
+                double expectedValue = Math.max(x, y);
+                LogNumber expected = expectedValue == x ? instance : other;
+                LogNumber result = instance.max(other);
+                assertNotSame(expected, result);
+                assertEquals(expected, result);
+                assertEquals(expectedValue, result.getValue(), epsilon * Math.abs(expectedValue));
+                assertEquals(x, instance.getValue(), epsilon * Math.abs(x));
+                assertEquals(y, other.getValue(), epsilon * Math.abs(y));
+            }
+        }
+    }
+
+    /**
+     * Test of maxEquals method, of class LogNumber.
+     */
+    public void testMaxEquals()
+    {
+        for (double x : this.getGoodValues())
+        {
+            for (double y : this.getGoodValues())
+            {
+                LogNumber instance = LogNumber.createFromValue(x);
+                LogNumber other = LogNumber.createFromValue(y);
+                double expectedValue = Math.max(x, y);
+                LogNumber expected = expectedValue == x ? instance : other;
+                instance.maxEquals(other);
+                assertEquals(expected, instance);
+                assertEquals(expectedValue, instance.getValue(), epsilon * Math.abs(expectedValue));
+                assertEquals(y, other.getValue(), epsilon * Math.abs(y));
+            }
+        }
+    }
+
+    /**
+     * Test of power method, of class LogNumber.
+     */
+    public void testPower()
+    {
+        LogNumber instance = new LogNumber();
+
+        for (double goodValue : this.getGoodValues())
+        {
+            for (double power : this.getGoodValues())
+            {
+                double value = goodValue;
+                instance.setValue(value);
+                double expected = Math.pow(value, power);
+                LogNumber result = instance.power(power);
+                assertEquals(expected, result.getValue(), epsilon * Math.abs(expected));
+            }
+        }
+    }
+
+    /**
+     * Test of powerEquals method, of class LogNumber.
+     */
+    public void testPowerEquals()
+    {
+        LogNumber instance = new LogNumber();
+
+        for (double goodValue : this.getGoodValues())
+        {
+            for (double power : this.getGoodValues())
+            {
+                double value = goodValue;
+                instance.setValue(value);
+                double expected = Math.pow(value, power);
+                instance.powerEquals(power);
+                assertEquals(expected, instance.getValue(), epsilon * Math.abs(expected));
+            }
+        }
+    }
+
+    /**
+     * Test of intValue method, of class LogNumber.
+     */
+    public void testIntValue()
+    {
+        double value = 0.0;
+        LogNumber instance = new LogNumber();
+        int expected = (int) value;
+        assertEquals(expected, instance.intValue(), 0.0);
+
+        for (double goodValue : this.getGoodValues())
+        {
+            value = goodValue;
+            instance.setValue(value);
+            expected = (int) value;
+            assertEquals(expected, instance.intValue(), 0.0);
         }
     }
 
@@ -321,6 +725,33 @@ public class LogNumberTest
             instance.setValue(value);
             assertEquals(Math.log(value), instance.logValue, 0.0);
             assertEquals(value, instance.getValue(), epsilon);
+        }
+    }
+
+    /**
+     * Test of getLogValue method, of class LogNumber.
+     */
+    public void testGetLogValue()
+    {
+        this.testSetLogValue();
+    }
+
+    /**
+     * Test of setLogValue method, of class LogNumber.
+     */
+    public void testSetLogValue()
+    {
+        double value = 0.0;
+        double logValue = Math.log(value);
+        LogNumber instance = new LogNumber();
+        assertEquals(logValue, instance.getLogValue(), 0.0);
+
+        for (double goodValue : this.getGoodValues())
+        {
+            value = goodValue;
+            logValue = Math.log(value);
+            instance.setLogValue(logValue);
+            assertEquals(logValue, instance.getLogValue(), 0.0);
         }
     }
 }
