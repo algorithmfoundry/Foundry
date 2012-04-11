@@ -47,6 +47,7 @@ public class LogMathTest
         assertEquals(Math.log(0.0), LogMath.LOG_0, 0.0);
         assertEquals(Math.log(1.0), LogMath.LOG_1, 0.0);
         assertEquals(Math.log(2.0), LogMath.LOG_2, 0.0);
+        assertEquals(Math.log(Math.E), LogMath.LOG_E, 0.0);
         assertEquals(Math.log(10.0), LogMath.LOG_10, 0.0);
     }
 
@@ -113,7 +114,8 @@ public class LogMathTest
     public void testAdd()
     {
         LinkedList<Double> values = new LinkedList<Double>();
-        values.addAll(Arrays.asList(0.0, 0.1, 0.5, 1.0, 2.0, 4.7, 10.0, 1e-50, 1e100));
+        values.addAll(Arrays.asList(0.0, 0.1, 0.5, 1.0, 2.0, 4.7, 10.0, 1e-50, 1e100,
+            Double.POSITIVE_INFINITY));
         for (int i = 0; i < 10; i++)
         {
             values.add(random.nextDouble() * 100000.0);
@@ -139,7 +141,8 @@ public class LogMathTest
     public void testSubtract()
     {
         LinkedList<Double> values = new LinkedList<Double>();
-        values.addAll(Arrays.asList(0.0, 0.1, 0.5, 1.0, 2.0, 4.7, 10.0, 1e-200, 1e100));
+        values.addAll(Arrays.asList(0.0, 0.1, 0.5, 1.0, 2.0, 4.7, 10.0, 1e-200, 1e100,
+            Double.POSITIVE_INFINITY));
         for (int i = 0; i < 10; i++)
         {
             values.add(random.nextDouble() * 100000.0);

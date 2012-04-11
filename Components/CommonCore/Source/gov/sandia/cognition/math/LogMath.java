@@ -34,6 +34,9 @@ public class LogMath
     /** The natural logarithm of 2 (log(2)). */
     public static final double LOG_2 = Math.log(2.0);
 
+    /** The natural logarithm of e (log(e)), which is 1. */
+    public static final double LOG_E = 1.0;
+
     /** The natural logarithm of 10 (log(10)). */
     public static final double LOG_10 = Math.log(10.0);
 
@@ -123,6 +126,11 @@ public class LogMath
         {
             // Since y > x, we will have a log of a negative number, which
             // does not exist.
+            return Double.NaN;
+        }
+        else if (logX == Double.POSITIVE_INFINITY)
+        {
+            // Infinity minus infinity is normally a NaN.
             return Double.NaN;
         }
         else
