@@ -1,5 +1,5 @@
 /*
- * File:                LogNumber.java
+ * File:                UnsignedLogNumber.java
  * Authors:             Justin Basilico
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
@@ -15,8 +15,8 @@
 package gov.sandia.cognition.math;
 
 /**
- * Represents a number in log space, storing log(value) and operating directly
- * on it. It is used to operate on the number as if it were not being
+ * Represents an unsigned number in log space, storing log(value) and operating
+ * directly on it. It is used to operate on the number as if it were not being
  * represented in log space. Thus if you have two log numbers, a and b such that
  * a = log(x) and b = log(y), doing c = a * b will be result in c = log(x * y),
  * not c = log(x) * log(y). This means that when you do a.getValue() you will
@@ -32,10 +32,14 @@ package gov.sandia.cognition.math;
  *
  * Note that this can only represent non-negative numbers (x >= 0). Any
  * operations that will create negative numbers result in a NaN being stored
- * as the value.
+ * as the value. If you are looking for signed log numbers, see
+ * {@see LogNumber}. However, when you are dealing with unsigned numbers like
+ * probabilities, this class will be more efficient.
  *
  * @author  Justin Basilico
- * @since   3.3.0
+ * @since   3.4.0
+ * @see     LogNumber
+ * @see     LogMath
  */
 public class UnsignedLogNumber
     extends Number
