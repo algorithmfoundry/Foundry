@@ -37,9 +37,9 @@ package gov.sandia.cognition.math;
  * @author  Justin Basilico
  * @since   3.3.0
  */
-public class LogNumber
+public class UnsignedLogNumber
     extends Number
-    implements Ring<LogNumber>, Comparable<LogNumber>
+    implements Ring<UnsignedLogNumber>, Comparable<UnsignedLogNumber>
 {
     
     /** The log of the value represented by this object, log(value). */
@@ -48,7 +48,7 @@ public class LogNumber
     /**
      * Creates the {@code LogNumber} representing zero.
      */
-    public LogNumber()
+    public UnsignedLogNumber()
     {
         this(LogMath.LOG_0);
     }
@@ -62,7 +62,7 @@ public class LogNumber
      * @param   logValue
      *      The log(value) for the value to be represented by this LogNumber.
      */
-    protected LogNumber(
+    protected UnsignedLogNumber(
         final double logValue)
     {
         super();
@@ -76,8 +76,8 @@ public class LogNumber
      * @param   other
      *      The LogNumber to copy.
      */
-    public LogNumber(
-        final LogNumber other)
+    public UnsignedLogNumber(
+        final UnsignedLogNumber other)
     {
         super();
 
@@ -92,10 +92,10 @@ public class LogNumber
      * @return
      *      The LogNumber representation of that value.
      */
-    public static LogNumber createFromValue(
+    public static UnsignedLogNumber createFromValue(
         final double value)
     {
-        return new LogNumber(Math.log(value));
+        return new UnsignedLogNumber(Math.log(value));
     }
 
     /**
@@ -107,18 +107,18 @@ public class LogNumber
      * @return
      *      The LogNumber representation of value = exp(logValue).
      */
-    public static LogNumber createFromLogValue(
+    public static UnsignedLogNumber createFromLogValue(
         final double logValue)
     {
-        return new LogNumber(logValue);
+        return new UnsignedLogNumber(logValue);
     }
 
     @Override
-    public LogNumber clone()
+    public UnsignedLogNumber clone()
     {
         try
         {
-            return (LogNumber) super.clone();
+            return (UnsignedLogNumber) super.clone();
         }
         catch (CloneNotSupportedException e)
         {
@@ -130,13 +130,13 @@ public class LogNumber
     public boolean equals(
         final Object other)
     {
-        return other instanceof LogNumber
-            && this.equals((LogNumber) other, 0.0);
+        return other instanceof UnsignedLogNumber
+            && this.equals((UnsignedLogNumber) other, 0.0);
     }
 
     @Override
     public boolean equals(
-        final LogNumber other,
+        final UnsignedLogNumber other,
         final double effectiveZero)
     {
         // This if statement is to avoid creating negative numbers.
@@ -165,7 +165,7 @@ public class LogNumber
 
     @Override
     public int compareTo(
-        final LogNumber other)
+        final UnsignedLogNumber other)
     {
         return Double.compare(this.logValue, other.logValue);
     }
@@ -191,29 +191,29 @@ public class LogNumber
 
 
     @Override
-    public LogNumber plus(
-        final LogNumber other)
+    public UnsignedLogNumber plus(
+        final UnsignedLogNumber other)
     {
-        return new LogNumber(LogMath.add(this.logValue, other.logValue));
+        return new UnsignedLogNumber(LogMath.add(this.logValue, other.logValue));
     }
 
     @Override
     public void plusEquals(
-        final LogNumber other)
+        final UnsignedLogNumber other)
     {
         this.logValue = LogMath.add(this.logValue, other.logValue);
     }
 
     @Override
-    public LogNumber minus(
-        final LogNumber other)
+    public UnsignedLogNumber minus(
+        final UnsignedLogNumber other)
     {
-        return new LogNumber(LogMath.subtract(this.logValue, other.logValue));
+        return new UnsignedLogNumber(LogMath.subtract(this.logValue, other.logValue));
     }
 
     @Override
     public void minusEquals(
-        final LogNumber other)
+        final UnsignedLogNumber other)
     {
         this.logValue = LogMath.subtract(this.logValue, other.logValue);
     }
@@ -226,11 +226,11 @@ public class LogNumber
      * @return
      *      The result of this * other.
      */
-    public LogNumber times(
-        final LogNumber other)
+    public UnsignedLogNumber times(
+        final UnsignedLogNumber other)
     {
         // Multiplication inside the log becomes addition of the log values.
-        return new LogNumber(this.logValue + other.logValue);
+        return new UnsignedLogNumber(this.logValue + other.logValue);
     }
 
     /**
@@ -241,7 +241,7 @@ public class LogNumber
      *      The other value.
      */
     public void timesEquals(
-        final LogNumber other)
+        final UnsignedLogNumber other)
     {
         // Multiplication inside the log becomes addition of the log values.
         this.logValue += other.logValue;
@@ -255,11 +255,11 @@ public class LogNumber
      * @return
      *      The result of this / other.
      */
-    public LogNumber divide(
-        final LogNumber other)
+    public UnsignedLogNumber divide(
+        final UnsignedLogNumber other)
     {
         // Division inside the log becomes division of the log values.
-        return new LogNumber(this.logValue - other.logValue);
+        return new UnsignedLogNumber(this.logValue - other.logValue);
     }
 
     /**
@@ -270,31 +270,31 @@ public class LogNumber
      *      The other value.
      */
     public void divideEquals(
-        final LogNumber other)
+        final UnsignedLogNumber other)
     {
         // Division inside the log becomes division of the log values.
         this.logValue -= other.logValue;
     }
 
     @Override
-    public LogNumber dotTimes(
-        final LogNumber other)
+    public UnsignedLogNumber dotTimes(
+        final UnsignedLogNumber other)
     {
         return this.times(other);
     }
 
     @Override
     public void dotTimesEquals(
-        final LogNumber other)
+        final UnsignedLogNumber other)
     {
         this.timesEquals(other);
     }
 
     @Override
-    public LogNumber scale(
+    public UnsignedLogNumber scale(
         final double scaleFactor)
     {
-        return new LogNumber(this.logValue + Math.log(scaleFactor));
+        return new UnsignedLogNumber(this.logValue + Math.log(scaleFactor));
     }
 
     @Override
@@ -305,10 +305,10 @@ public class LogNumber
     }
 
     @Override
-    public LogNumber negative()
+    public UnsignedLogNumber negative()
     {
         // Can't negate log numbers.
-        return new LogNumber(Double.NaN);
+        return new UnsignedLogNumber(Double.NaN);
     }
 
     @Override
@@ -346,16 +346,16 @@ public class LogNumber
      * @return
      *      The log number to the given power.
      */
-    public LogNumber power(
+    public UnsignedLogNumber power(
         final double power)
     {
         if (power == 0.0)
         {
-            return new LogNumber(0.0);
+            return new UnsignedLogNumber(0.0);
         }
         else
         {
-            return new LogNumber(this.logValue * power);
+            return new UnsignedLogNumber(this.logValue * power);
         }
     }
 
@@ -388,8 +388,8 @@ public class LogNumber
      *      A new object containing the minimum of this value or the given
      *      value.
      */
-    public LogNumber min(
-        final LogNumber other)
+    public UnsignedLogNumber min(
+        final UnsignedLogNumber other)
     {
         if (this.logValue <= other.logValue || this.logValue != this.logValue)
         {
@@ -408,7 +408,7 @@ public class LogNumber
      *      Another value.
      */
     public void minEquals(
-        final LogNumber other)
+        final UnsignedLogNumber other)
     {
         if (this.logValue > other.logValue)
         {
@@ -425,8 +425,8 @@ public class LogNumber
      *      A new object containing the maximum of this value or the given
      *      value.
      */
-    public LogNumber max(
-        final LogNumber other)
+    public UnsignedLogNumber max(
+        final UnsignedLogNumber other)
     {
         if (this.logValue >= other.logValue || this.logValue != this.logValue)
         {
@@ -445,7 +445,7 @@ public class LogNumber
      *      Another value.
      */
     public void maxEquals(
-        final LogNumber other)
+        final UnsignedLogNumber other)
     {
         if (this.logValue < other.logValue)
         {
