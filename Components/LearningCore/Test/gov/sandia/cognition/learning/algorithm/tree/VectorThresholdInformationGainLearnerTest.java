@@ -226,8 +226,8 @@ public class VectorThresholdInformationGainLearnerTest
         // Make sure configure() assigns proper defaults.  
         instance.configure(null, trainCounts);
         double[] expected = {0.5, 0.25, 0.2, 0.05};
-        ArrayList<Integer> index = readKlassIndex(instance);
-        double[] priors = (double[])readPrivateField(instance, "klassPriors");        
+        ArrayList<Integer> index = instance.categories;
+        double[] priors = instance.categoryPriors;
         for (int i = 0; i < numKlass; ++i) {
             int klass = index.get(i);
             assertEquals(expected[klass], priors[i], 1e-5);
@@ -245,44 +245,12 @@ public class VectorThresholdInformationGainLearnerTest
             inversePriors.put(i, expected[i]);
         }
         instance.configure(inversePriors, trainCounts);
-        index = readKlassIndex(instance);
-        priors = (double[])readPrivateField(instance, "klassPriors");                
+        index = instance.categories;
+        priors = instance.categoryPriors;
         for (int i = 0; i < numKlass; ++i) {
             int klass = index.get(i);
             assertEquals(expected[klass], priors[i], 1e-5);
         }
-    }
-
-    private ArrayList<Integer> readKlassIndex(VectorThresholdInformationGainLearner<Integer> instance)
-    {
-        @SuppressWarnings("unchecked")
-        ArrayList<Integer> index = (ArrayList<Integer>)readPrivateField(instance, "klasses");
-        return index;
-    }
-
-    private Object readPrivateField(Object instance, String fieldName)
-    {
-        Class c = instance.getClass();
-        Object value = null;
-        String err = null;
-
-        try {
-            Field f = c.getDeclaredField(fieldName);
-            f.setAccessible(true);
-            value = f.get(instance);
-        }
-        catch (NoSuchFieldException nsfe) {
-            err = nsfe.toString();
-        }
-        catch (IllegalAccessException iae) {
-            err = iae.toString();
-        }
-
-        if (err != null) {
-            fail(err);
-        }
-
-        return value;
     }
 
     /**
