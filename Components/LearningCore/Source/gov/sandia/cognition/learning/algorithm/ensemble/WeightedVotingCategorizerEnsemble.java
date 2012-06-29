@@ -19,6 +19,7 @@ import gov.sandia.cognition.learning.data.DefaultWeightedValueDiscriminant;
 import gov.sandia.cognition.learning.function.categorization.AbstractCategorizer;
 import gov.sandia.cognition.learning.function.categorization.DiscriminantCategorizer;
 import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
+import gov.sandia.cognition.util.ArgumentChecker;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
@@ -108,26 +109,20 @@ public class WeightedVotingCategorizerEnsemble<InputType, CategoryType, MemberTy
     /**
      * Adds the given categorizer with a given weight.
      *
-     * @param   categorizer
+     * @param   member
      *      The categorizer to add.
      * @param   weight
      *      The weight for the new member. Cannot be negative.
      */
     public void add(
-        final MemberType categorizer,
+        final MemberType member,
         final double weight)
     {
-        if (categorizer == null)
-        {
-            throw new IllegalArgumentException("categorizer cannot be null");
-        }
-        else if (weight < 0.0)
-        {
-            throw new IllegalArgumentException("weight cannot be negative");
-        }
+        ArgumentChecker.assertIsNotNull("member", member);
+        ArgumentChecker.assertIsNonNegative("weight", weight);
 
         final WeightedValue<MemberType> weighted =
-            new DefaultWeightedValue<MemberType>(categorizer, weight);
+            new DefaultWeightedValue<MemberType>(member, weight);
 
         this.getMembers().add(weighted);
     }

@@ -17,6 +17,7 @@ package gov.sandia.cognition.learning.algorithm.ensemble;
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.function.categorization.AbstractDiscriminantBinaryCategorizer;
+import gov.sandia.cognition.util.ArgumentChecker;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
@@ -72,31 +73,28 @@ public class WeightedBinaryEnsemble<InputType, MemberType extends Evaluator<? su
     /**
      * Adds the given categorizer with a default weight of 1.0.
      *
-     * @param  categorizer The categorizer to add.
+     * @param  member The categorizer to add.
      */
     public void add(
-        final MemberType categorizer)
+        final MemberType member)
     {
-        this.add(categorizer, DEFAULT_WEIGHT);
+        this.add(member, DEFAULT_WEIGHT);
     }
 
     /**
      * Adds the given categorizer with a given weight.
      *
-     * @param  categorizer The categorizer to add.
+     * @param  member The categorizer to add.
      * @param weight The weight for the new member.
      */
     public void add(
-        final MemberType categorizer,
+        final MemberType member,
         final double weight)
     {
-        if (categorizer == null)
-        {
-            throw new NullPointerException("categorizer cannot be null");
-        }
+        ArgumentChecker.assertIsNotNull("member", member);
 
         final WeightedValue<MemberType> weighted =
-            DefaultWeightedValue.create(categorizer, weight);
+            DefaultWeightedValue.create(member, weight);
 
         this.getMembers().add(weighted);
     }

@@ -16,12 +16,8 @@ package gov.sandia.cognition.learning.algorithm.ensemble;
 
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.evaluator.Evaluator;
-import gov.sandia.cognition.learning.algorithm.AbstractAnytimeBatchLearner;
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
-import gov.sandia.cognition.learning.algorithm.BatchLearnerContainer;
-import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.util.Randomized;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,30 +45,10 @@ import java.util.Random;
     }
 )
 public class BinaryBaggingLearner<InputType>
-    extends AbstractAnytimeBatchLearner
-        <Collection<? extends InputOutputPair<? extends InputType,Boolean>>, 
-            WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>>>
-    implements Randomized,
-        BatchLearnerContainer<BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>>>
+    extends AbstractBaggingLearner<InputType, Boolean,
+        Evaluator<? super InputType, ? extends Boolean>,
+        WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>>>
 {
-
-    /** The default maximum number of iterations is {@value}. */
-    public static final int DEFAULT_MAX_ITERATIONS = 100;
-
-    /** The learner to use to create the categorizer for each iteration. */
-    protected BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>>
-        learner;
-
-    /** The random number generator to use. */
-    protected Random random;
-
-    /** The ensemble being created by the learner. */
-    protected transient WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>>
-        ensemble;
-
-    /** The data stored for efficient random access. */
-    protected transient ArrayList<InputOutputPair<? extends InputType, Boolean>>
-        dataList;
 
     /**
      * Creates a new instance of BinaryBaggingLearner.
@@ -129,156 +105,47 @@ public class BinaryBaggingLearner<InputType>
         final int maxIterations,
         final Random random)
     {
-        super(maxIterations);
-
-        this.setLearner(learner);
-        this.setRandom(random);
-
-        this.setEnsemble(null);
-        this.setDataList(null);
+        this(learner, maxIterations, DEFAULT_PERCENT_TO_SAMPLE, random);
     }
 
-    @Override
-    protected boolean initializeAlgorithm()
-    {
-        if (this.getData() == null || this.getData().size() <= 0)
-        {
-            // This is an invalid dataset.
-            return false;
-        }
-
-        // Create the ensemble where we will be storing the output.
-        WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>> localEmsemble =
-            new WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>>(
-            new ArrayList<WeightedValue<Evaluator<? super InputType,? extends Boolean>>>(
-                this.getMaxIterations()));
-        this.setEnsemble(localEmsemble);
-
-        // Create a random-access version of the data.
-        this.setDataList(
-            new ArrayList<InputOutputPair<? extends InputType,Boolean>>(
-            this.getData()));
-
-        return true;
-    }
-
-    @Override
-    protected boolean step()
-    {
-        // We are going to create a bag that is the same size as the data that
-        // we have.
-        int count = this.getDataList().size();
-        ArrayList<InputOutputPair<? extends InputType, Boolean>> bag =
-            new ArrayList<InputOutputPair<? extends InputType, Boolean>>(count);
-
-        // Create the bag by sampling with replacement.
-        for (int i = 0; i < count; i++)
-        {
-            int index = this.getRandom().nextInt(count);
-            InputOutputPair<? extends InputType, Boolean> example =
-                this.dataList.get(index);
-            bag.add(example);
-        }
-
-        // Learn the categorizer on the new bag of data.
-        Evaluator<? super InputType,? extends Boolean> learned = this.learner.learn(bag);
-
-        // Add the categorizer to the ensemble and give it equal weight.
-        this.ensemble.add(learned, 1.0);
-
-        // We keep going until we've created the requested number of members,
-        // which is checked by the super-class.
-        return true;
-    }
-
-    @Override
-    protected void cleanupAlgorithm()
-    {
-        // To clean up we remove the reference to the copy of the data 
-        // collection that we made.
-        this.setDataList(null);
-    }
-
-    @Override
-    public WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>> getResult()
-    {
-        return this.getEnsemble();
-    }
 
     /**
-     * Gets the learner to use to create the categorizer for each iteration.
+     * Creates a new instance of BinaryBaggingLearner.
      *
-     * @return The learner used by the algorithm.
+     * @param  learner
+     *      The learner to use to create the ensemble member on each iteration.
+     * @param  maxIterations
+     *      The maximum number of iterations to run for, which is also the
+     *      number of learners to create.
+     * @param   percentToSample
+     *      The percentage of the total size of the data to sample on each
+     *      iteration. Must be positive.
+     * @param  random
+     *      The random number generator to use.
      */
-    public BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>>
-        getLearner()
-    {
-        return this.learner;
-    }
-
-    /**
-     * Sets the learner to use to create the categorizer for each iteration.
-     *
-     * @param   learner The learner for the algorithm to use.
-     */
-    public void setLearner(
-        final BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>> learner)
-    {
-        this.learner = learner;
-    }
-
-    public Random getRandom()
-    {
-        return this.random;
-    }
-
-    public void setRandom(
+    public BinaryBaggingLearner(
+        final BatchLearner<? super Collection<? extends InputOutputPair<? extends InputType, Boolean>>, ? extends Evaluator<? super InputType, ? extends Boolean>>
+            learner,
+        final int maxIterations,
+        final double percentToSample,
         final Random random)
     {
-        this.random = random;
+        super(learner, maxIterations, percentToSample, random);
     }
 
-    /**
-     * Gets the ensemble created by this learner.
-     *
-     * @return The ensemble created by this learner.
-     */
-    public WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>> getEnsemble()
+    @Override
+    protected WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>> createInitialEnsemble()
     {
-        return this.ensemble;
+        return new WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>>(
+            new ArrayList<WeightedValue<Evaluator<? super InputType,? extends Boolean>>>(
+                this.getMaxIterations()));
     }
 
-    /**
-     * Sets the ensemble created by this learner.
-     *
-     * @param  ensemble The ensemble created by this learner.
-     */
-    protected void setEnsemble(
-        final WeightedBinaryEnsemble<InputType, Evaluator<? super InputType, ? extends Boolean>> ensemble)
+    @Override
+    protected void addEnsembleMember(
+        final Evaluator<? super InputType, ? extends Boolean> member)
     {
-        this.ensemble = ensemble;
-    }
-
-    /**
-     * Gets the data the learner is using as an array list.
-     *
-     * @return The data as an array list.
-     */
-    public ArrayList<InputOutputPair<? extends InputType, Boolean>> 
-        getDataList()
-    {
-        return this.dataList;
-    }
-
-    /**
-     * Sets the data the learner is using as an array list.
-     *
-     * @param  dataList The data as an array list.
-     */
-    protected void setDataList(
-        final ArrayList<InputOutputPair<? extends InputType, Boolean>> dataList)
-    {
-        this.dataList = dataList;
+        this.ensemble.add(member);
     }
 
 }

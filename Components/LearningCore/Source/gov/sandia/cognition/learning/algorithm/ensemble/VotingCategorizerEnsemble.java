@@ -70,7 +70,8 @@ public class VotingCategorizerEnsemble<InputType, CategoryType, MemberType exten
     }
 
     /**
-     * Creates a new {@code VotingCategorizerEnsemble} with the given
+     * Creates a new {@code VotingCategorizerEnsemble} with the given set of
+     * categories and list of members.
      *
      * @param   categories
      *      The set of output categories for the ensemble.
