@@ -15,8 +15,8 @@
 package gov.sandia.cognition.math;
 
 import gov.sandia.cognition.annotation.CodeReview;
-import gov.sandia.cognition.util.CloneableSerializable;
 import gov.sandia.cognition.evaluator.Evaluator;
+import gov.sandia.cognition.util.CloneableSerializable;
 
 /**
  * Simple interface that describes a function that maps the reals to the reals,
@@ -34,7 +34,8 @@ import gov.sandia.cognition.evaluator.Evaluator;
 )
 public interface UnivariateScalarFunction
     extends Evaluator<Double, Double>,
-    CloneableSerializable
+        ScalarFunction<Double>,
+        CloneableSerializable
 {
 
     /**
@@ -45,6 +46,6 @@ public interface UnivariateScalarFunction
      * output at the given input
      */
     double evaluate(
-        double input );
+        final double input);
 
 }

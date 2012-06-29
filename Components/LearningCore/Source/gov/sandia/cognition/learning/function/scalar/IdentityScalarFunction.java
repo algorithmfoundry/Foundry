@@ -58,6 +58,7 @@ public class IdentityScalarFunction
         return input;
     }
 
+    @Override
     public double evaluateAsDouble(
         final Double input)
     {

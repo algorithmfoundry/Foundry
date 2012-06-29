@@ -14,11 +14,10 @@
 
 package gov.sandia.cognition.learning.function.scalar;
 
-import gov.sandia.cognition.evaluator.Evaluator;
+import gov.sandia.cognition.math.AbstractScalarFunction;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vectorizable;
-import gov.sandia.cognition.util.AbstractCloneableSerializable;
 
 /**
  * An evaluator that returns the value of an input vector at a specified index.
@@ -28,8 +27,8 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
  * @since   3.0
  */
 public class VectorEntryFunction
-    extends AbstractCloneableSerializable
-    implements Evaluator<Vectorizable, Double>, Vectorizable
+    extends AbstractScalarFunction<Vectorizable>
+    implements Vectorizable
 {
     /** The default index is {@value}. */
     public static final int DEFAULT_INDEX = 0;
@@ -89,7 +88,7 @@ public class VectorEntryFunction
      *      The value of the input vector at the given index.
      */
     @Override
-    public Double evaluate(
+    public double evaluateAsDouble(
         final Vectorizable input)
     {
         return input.convertToVector().getElement(this.index);
@@ -101,6 +100,7 @@ public class VectorEntryFunction
      * @return
      *      A 1-dimensional vector containing the index.
      */
+    @Override
     public Vector convertToVector()
     {
         return VectorFactory.getDefault().createVector(1, this.getIndex());
@@ -112,6 +112,7 @@ public class VectorEntryFunction
      * @param   parameters
      *      The parameter vector. Must be of dimensionality one.
      */
+    @Override
     public void convertFromVector(
         final Vector parameters)
     {

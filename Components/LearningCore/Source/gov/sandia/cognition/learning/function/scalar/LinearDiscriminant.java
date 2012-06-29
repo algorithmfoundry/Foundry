@@ -14,11 +14,10 @@
 
 package gov.sandia.cognition.learning.function.scalar;
 
+import gov.sandia.cognition.learning.function.regression.AbstractRegressor;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.Vectorizable;
-import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.math.matrix.VectorInputEvaluator;
-import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
 
 /**
@@ -31,9 +30,8 @@ import gov.sandia.cognition.util.ObjectUtil;
  *
  */
 public class LinearDiscriminant
-    extends AbstractCloneableSerializable
-    implements Evaluator<Vectorizable,Double>,
-    Vectorizable,
+    extends AbstractRegressor<Vectorizable>
+    implements Vectorizable,
     VectorInputEvaluator<Vectorizable,Double>
 {
     
@@ -97,10 +95,10 @@ public class LinearDiscriminant
     }
 
     @Override
-    public Double evaluate(
+    public double evaluateAsDouble(
         final Vectorizable input)
     {
-        return this.getWeightVector().dotProduct( input.convertToVector() );
+        return this.getWeightVector().dotProduct(input.convertToVector());
     }
 
     @Override

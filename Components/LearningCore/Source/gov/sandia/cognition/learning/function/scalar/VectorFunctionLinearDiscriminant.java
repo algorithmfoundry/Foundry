@@ -14,10 +14,10 @@
 
 package gov.sandia.cognition.learning.function.scalar;
 
+import gov.sandia.cognition.learning.function.regression.AbstractRegressor;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.Vectorizable;
-import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
 
 /**
@@ -29,10 +29,14 @@ import gov.sandia.cognition.util.ObjectUtil;
  * @author Kevin R. Dixon
  */
 public class VectorFunctionLinearDiscriminant<InputType>
-    extends AbstractCloneableSerializable
-    implements Evaluator<InputType,Double>,
-    Vectorizable
+    extends AbstractRegressor<InputType>
+    implements Vectorizable
 {
+
+    /**
+     * Maps the input space to a Vector
+     */
+    private Evaluator<? super InputType,Vector> vectorFunction;
 
     /**
      * The dot product of the discriminant with the output of the
@@ -41,10 +45,6 @@ public class VectorFunctionLinearDiscriminant<InputType>
      */
     private LinearDiscriminant discriminant;
     
-    /**
-     * Maps the input space to a Vector
-     */
-    private Evaluator<? super InputType,Vector> vectorFunction;
     
     /** 
      * Creates a new instance of VectorFunctionLinearDiscriminant 
@@ -121,7 +121,8 @@ public class VectorFunctionLinearDiscriminant<InputType>
         this.vectorFunction = vectorFunction;
     }
 
-    public Double evaluate(
+    @Override
+    public double evaluateAsDouble(
         InputType input )
     {
         Vector vfOutput = this.getVectorFunction().evaluate(input);

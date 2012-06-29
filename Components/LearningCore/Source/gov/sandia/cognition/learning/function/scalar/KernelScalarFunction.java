@@ -15,9 +15,9 @@
 
 package gov.sandia.cognition.learning.function.scalar;
 
+import gov.sandia.cognition.learning.function.regression.Regressor;
 import gov.sandia.cognition.learning.function.kernel.DefaultKernelContainer;
 import gov.sandia.cognition.learning.function.kernel.Kernel;
-import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,7 +36,7 @@ import java.util.Collection;
  */
 public class KernelScalarFunction<InputType>
     extends DefaultKernelContainer<InputType>
-    implements Evaluator<InputType, Double>
+    implements Regressor<InputType>
 {
     /** The default value for the bias is 0.0. */
     public static final double DEFAULT_BIAS = 0.0;
@@ -103,7 +103,7 @@ public class KernelScalarFunction<InputType>
     }
     
     /**
-     * Categorizes the given input vector as a double by:
+     * Evaluates the given input vector as a double by:
      * 
      *     sum w_i * k(input, x_i)
      *
@@ -112,6 +112,22 @@ public class KernelScalarFunction<InputType>
      *         categorization.
      */
     public Double evaluate(
+        final InputType input)
+    {
+        return this.evaluateAsDouble(input);
+    }
+    
+    /**
+     * Evaluates the given input vector as a double by:
+     *
+     *     sum w_i * k(input, x_i)
+     *
+     * @param  input The input to categorize.
+     * @return The output categorization as a double where the sign is the
+     *         categorization.
+     */
+    @Override
+    public double evaluateAsDouble(
         final InputType input)
     {
         // The sum starts out with the bias term.

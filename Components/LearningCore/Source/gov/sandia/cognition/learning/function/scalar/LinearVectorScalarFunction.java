@@ -14,16 +14,15 @@
 
 package gov.sandia.cognition.learning.function.scalar;
 
+import gov.sandia.cognition.learning.function.regression.AbstractRegressor;
 import gov.sandia.cognition.annotation.CodeReview;
-import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.Vectorizable;
-import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
 
 /**
  * The <code>LinearVectorScalarFunction</code> class implements a scalar
- * functio that is implemented by a linear function. More formally, the
+ * function that is implemented by a linear function. More formally, the
  * scalar function is parameterized by a weight vector (w) and a bias (b) and 
  * computes the output for a given input (x) as:
  * 
@@ -42,8 +41,7 @@ import gov.sandia.cognition.util.ObjectUtil;
     }
 )
 public class LinearVectorScalarFunction
-    extends AbstractCloneableSerializable
-    implements Evaluator<Vectorizable, Double>
+    extends AbstractRegressor<Vectorizable>
 {
     /** The default bias is 0.0. */
     public static final double DEFAULT_BIAS = 0.0;
@@ -109,12 +107,6 @@ public class LinearVectorScalarFunction
         return clone;
     }
     
-    public Double evaluate(
-        final Vectorizable input)
-    {
-        return this.evaluateAsDouble(input);
-    }
-    
     /**
      * Evaluate the given input vector as a double by:
      * 
@@ -123,6 +115,7 @@ public class LinearVectorScalarFunction
      * @param  input The input vector to evaluate.
      * @return Evaluated input.
      */
+    @Override
     public double evaluateAsDouble(
         final Vectorizable input)
     {

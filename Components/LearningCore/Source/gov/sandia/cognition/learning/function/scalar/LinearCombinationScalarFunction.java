@@ -14,6 +14,7 @@
 
 package gov.sandia.cognition.learning.function.scalar;
 
+import gov.sandia.cognition.learning.function.regression.Regressor;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.evaluator.Evaluator;
@@ -32,6 +33,7 @@ import java.util.Collection;
  */
 public class LinearCombinationScalarFunction<InputType>
     extends LinearCombinationFunction<InputType, Double>
+    implements Regressor<InputType>
 {
 
     /**
@@ -79,6 +81,12 @@ public class LinearCombinationScalarFunction<InputType>
 
     public Double evaluate(
         InputType input )
+    {
+        return this.evaluateAsDouble(input);
+    }
+
+    public double evaluateAsDouble(
+        final InputType input)
     {
         double output = 0.0;
         for (int i = 0; i < this.getCoefficients().getDimensionality(); i++)

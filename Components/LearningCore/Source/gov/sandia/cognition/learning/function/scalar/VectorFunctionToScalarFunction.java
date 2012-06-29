@@ -14,6 +14,7 @@
 
 package gov.sandia.cognition.learning.function.scalar;
 
+import gov.sandia.cognition.learning.function.regression.AbstractRegressor;
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
@@ -50,8 +51,7 @@ import java.util.Collection;
     }
 )
 public class VectorFunctionToScalarFunction<InputType>
-    extends AbstractCloneableSerializable
-    implements Evaluator<InputType, Double>
+    extends AbstractRegressor<InputType>
 {
 
     /** The function that takes a given input and outputs a 1-dimensional 
@@ -92,8 +92,8 @@ public class VectorFunctionToScalarFunction<InputType>
         return result;
     }
     
-    
-    public Double evaluate(
+    @Override
+    public double evaluateAsDouble(
         final InputType input)
     {
         Vectorizable output = this.vectorFunction.evaluate(input);

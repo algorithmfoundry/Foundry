@@ -16,7 +16,6 @@ package gov.sandia.cognition.math;
 
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.CodeReviews;
-import gov.sandia.cognition.util.AbstractCloneableSerializable;
 
 /**
  * Abstract implementation of ScalarFunction where the evaluate(Double) method
@@ -24,7 +23,6 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
  *
  * @author Kevin R. Dixon
  * @since  2.0
- *
  */
 @CodeReviews(
     reviews={
@@ -48,14 +46,30 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
     }
 )
 public abstract class AbstractUnivariateScalarFunction
-    extends AbstractCloneableSerializable
+    extends AbstractScalarFunction<Double>
     implements UnivariateScalarFunction
 {
-
-    public Double evaluate(
-        Double input )
+    
+    /**
+     * Creates a new {@code AbstractUnivariateScalarFunction}.
+     */
+    public AbstractUnivariateScalarFunction()
     {
-        return this.evaluate( (double) input );
+        super();
+    }
+
+    @Override
+    public Double evaluate(
+        final Double input)
+    {
+        return this.evaluate((double) input);
+    }
+
+    @Override
+    public double evaluateAsDouble(
+        final Double input)
+    {
+        return this.evaluate((double) input);
     }
 
 }
