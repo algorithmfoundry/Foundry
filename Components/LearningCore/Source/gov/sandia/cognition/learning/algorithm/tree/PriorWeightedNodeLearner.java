@@ -28,11 +28,11 @@ import java.util.Map;
  * VectorThresholdMaximumGainLearner} should consider whether it makes
  * sense to also implement this class.
  *
- * @param <O>  The (output) type for the decision tree.  E.g., Integer.
+ * @param <OutputType>  The (output) type for the decision tree.  E.g., Integer.
  * @author   Art Munson
  * @since    3.4
  */
-public interface PriorWeightedNodeLearner<O>
+public interface PriorWeightedNodeLearner<OutputType>
 {
     /**
      * Configure the node learner with prior weights and training counts.
@@ -53,5 +53,7 @@ public interface PriorWeightedNodeLearner<O>
      *    categories) in the training data.  This parameter should
      *    always be specified.
      */
-    public void configure(Map<O,Double> priors, Map<O,Integer> trainCounts);
+    public void configure(
+        final Map<OutputType,Double> priors,
+        final Map<OutputType,Integer> trainCounts);
 }

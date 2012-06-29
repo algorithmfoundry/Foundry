@@ -23,7 +23,6 @@ import gov.sandia.cognition.util.ObjectUtil;
 
 
 /**
- * Exposes the KS test for use in the Architect
  * You can specify a particular CDF.
  * It accepts a double sample value which is buffered inside this class in
  * a finite capacity buffer.  The evaluation uses the entire contents of that

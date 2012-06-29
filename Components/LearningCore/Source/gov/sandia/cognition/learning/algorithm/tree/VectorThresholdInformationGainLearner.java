@@ -14,6 +14,7 @@
 
 package gov.sandia.cognition.learning.algorithm.tree;
 
+import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.matrix.mtj.Vector2;
 import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import java.util.ArrayList;
@@ -47,16 +48,14 @@ public class VectorThresholdInformationGainLearner<OutputType>
     extends AbstractVectorThresholdMaximumGainLearner<OutputType>
     implements PriorWeightedNodeLearner<OutputType>
 {
-    private static final double LOG2 = Math.log(2);
+    protected ArrayList<OutputType> categories = null;
+    protected double[] categoryPriors = null;
+    protected int[] categoryCounts = null;
 
-    private ArrayList<OutputType> klasses = null;
-    private double[] klassPriors = null;
-    private int[] klassCounts = null;
-
-    // Following is scratch space used when computing weighted
-    // entropy. It is declared here so it can be allocated once,
-    // instead of during every entropy evaluation.
-    private double[] klassProbs = null;
+    /** Following is scratch space used when computing weighted
+     * entropy. It is declared here so it can be allocated once,
+     * instead of during every entropy evaluation. */
+    protected double[] categoryProbabilities = null;
 
     /**
      * Creates a new instance of VectorDeciderLearner.
@@ -72,7 +71,7 @@ public class VectorThresholdInformationGainLearner<OutputType>
         final DefaultDataDistribution<OutputType> positiveCounts,
         final DefaultDataDistribution<OutputType> negativeCounts)
     {
-        if (klassPriors == null) {
+        if (categoryPriors == null) {
             // Support legacy code that does not configure class
             // priors.
             return legacyComputSplitGain(baseCounts,
@@ -107,38 +106,29 @@ public class VectorThresholdInformationGainLearner<OutputType>
         // where j indexes over classes.
         double p_t = 0;
 
-        for (int j = 0; j < klassProbs.length; ++j) {
+        for (int j = 0; j < categoryProbabilities.length; ++j) {
             // Compute joint probability of seeing class j and landing
             // in this tree node.  We estimate this as:
             //    p(j, t) = prior(j) * p(t | j)
             // where
             //    p(t | j) = (# class j at node t) / (# class j in training)
-            klassProbs[j] = klassPriors[j] 
-                * counts.get(klasses.get(j))
-                / (double)(klassCounts[j]);
-            p_t += klassProbs[j];
+            categoryProbabilities[j] = categoryPriors[j]
+                * counts.get(categories.get(j))
+                / (double)(categoryCounts[j]);
+            p_t += categoryProbabilities[j];
          }
 
         // The entropy of data at a node t equals
         //   - sum_j p(j | t) log p(j | t)
         double entropy = 0;
-        for (int j = 0; j < klassProbs.length; ++j) {
-            double condProb = klassProbs[j] / p_t;
+        for (int j = 0; j < categoryProbabilities.length; ++j) {
+            double condProb = categoryProbabilities[j] / p_t;
             if (condProb > 0) {
-                entropy -= condProb * lb(condProb);
+                entropy -= condProb * MathUtil.log2(condProb);
             }
         }
 
         return new Vector2(entropy, p_t);
-    }
-
-    /**
-     * Compute log_2(x).
-     * @param x should be greater than 0.
-     */
-    private static double lb(double x)
-    {
-        return Math.log(x) / LOG2;
     }
 
     /**
@@ -169,36 +159,36 @@ public class VectorThresholdInformationGainLearner<OutputType>
     public void configure(Map<OutputType,Double> priors, 
                           Map<OutputType,Integer> trainCounts)
     {
-        klasses = new ArrayList<OutputType>(trainCounts.keySet());
+        categories = new ArrayList<OutputType>(trainCounts.keySet());
 
-        klassCounts = new int[klasses.size()];
+        categoryCounts = new int[categories.size()];
         int total = 0;
-        for (int j = 0; j < klasses.size(); ++j) {
-            klassCounts[j] = trainCounts.get(klasses.get(j));
-            total += klassCounts[j];
+        for (int j = 0; j < categories.size(); ++j) {
+            categoryCounts[j] = trainCounts.get(categories.get(j));
+            total += categoryCounts[j];
         }
 
-        klassPriors = new double[klasses.size()];
+        categoryPriors = new double[categories.size()];
         if (priors == null) {
             if (total > 0) {
                 // Default to relative class frequencies.
-                for (int j = 0; j < klasses.size(); ++j) {
-                    klassPriors[j] = klassCounts[j] / ((double)total);
+                for (int j = 0; j < categories.size(); ++j) {
+                    categoryPriors[j] = categoryCounts[j] / ((double)total);
                 }
             }
             else {
                 // This is really unlikely . . .
-                for (int j = 0; j < klasses.size(); ++j) {
-                    klassPriors[j] = 1.0 / klasses.size();
+                for (int j = 0; j < categories.size(); ++j) {
+                    categoryPriors[j] = 1.0 / categories.size();
                 }
             }
         }
         else {
-            for (int j = 0; j < klasses.size(); ++j) {
-                klassPriors[j] = priors.get(klasses.get(j));
+            for (int j = 0; j < categories.size(); ++j) {
+                categoryPriors[j] = priors.get(categories.get(j));
             }
         }
 
-        klassProbs = new double[klasses.size()];
+        categoryProbabilities = new double[categories.size()];
     }
 }
