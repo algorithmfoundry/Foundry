@@ -41,6 +41,8 @@ public class DivergencesEvaluator<InputType, ValueType>
     extends DefaultVectorFactoryContainer
     implements VectorOutputEvaluator<InputType, Vector>,
         DivergenceFunctionContainer<ValueType, InputType>
+// TODO: This should be a DataToVectorEncoder, which is from Common Data.
+// -- jbasilico
 {
 
     /** The divergence function to apply between the data and the input. */
