@@ -78,7 +78,7 @@ public class VectorBasedCognitiveModelInputTest extends TestCase
     {
         System.out.println("clone");
         
-        VectorBasedCognitiveModelInput instance = this.createInstance(random);
+        VectorBasedCognitiveModelInput instance = createInstance(random);
         VectorBasedCognitiveModelInput clone = instance.clone();
         
         assertEquals( instance.getValues(), clone.getValues() );
@@ -96,7 +96,7 @@ public class VectorBasedCognitiveModelInputTest extends TestCase
     {
         System.out.println("getIdentifiers");
 
-        VectorBasedCognitiveModelInput instance = this.createInstance(random);
+        VectorBasedCognitiveModelInput instance = createInstance(random);
         assertNotNull( instance.getIdentifiers() );
         assertEquals( instance.getIdentifiers().length, instance.getValues().getDimensionality() );
     }
@@ -108,7 +108,7 @@ public class VectorBasedCognitiveModelInputTest extends TestCase
     {
         System.out.println("setIdentifiers");
         
-        VectorBasedCognitiveModelInput instance = this.createInstance(random);
+        VectorBasedCognitiveModelInput instance = createInstance(random);
         SemanticIdentifier[] ids = instance.getIdentifiers();
         assertNotNull( ids );
         
@@ -126,7 +126,7 @@ public class VectorBasedCognitiveModelInputTest extends TestCase
     {
         System.out.println("getValues");
 
-        VectorBasedCognitiveModelInput instance = this.createInstance(random);
+        VectorBasedCognitiveModelInput instance = createInstance(random);
         Vector v = instance.getValues();
         assertNotNull( v );
         assertEquals( v.getDimensionality(), instance.getIdentifiers().length );
@@ -139,7 +139,7 @@ public class VectorBasedCognitiveModelInputTest extends TestCase
     {
         System.out.println("setValues");
         
-        VectorBasedCognitiveModelInput instance = this.createInstance(random);
+        VectorBasedCognitiveModelInput instance = createInstance(random);
         Vector v = instance.getValues();
         assertNotNull( v );
         
@@ -157,7 +157,7 @@ public class VectorBasedCognitiveModelInputTest extends TestCase
     {
         System.out.println("getIdentifier");
         
-        VectorBasedCognitiveModelInput instance = this.createInstance(random);
+        VectorBasedCognitiveModelInput instance = createInstance(random);
         int N = instance.getNumInputs();
         for( int i = 0; i < N; i++ )
         {
@@ -173,7 +173,7 @@ public class VectorBasedCognitiveModelInputTest extends TestCase
     {
         System.out.println("getNumInputs");
         
-        VectorBasedCognitiveModelInput instance = this.createInstance(random);
+        VectorBasedCognitiveModelInput instance = createInstance(random);
         assertEquals( instance.getIdentifiers().length, instance.getNumInputs() );
         assertEquals( instance.getValues().getDimensionality(), instance.getNumInputs() );
     }

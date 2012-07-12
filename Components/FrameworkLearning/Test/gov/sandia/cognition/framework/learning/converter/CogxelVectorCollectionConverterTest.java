@@ -49,7 +49,7 @@ public class CogxelVectorCollectionConverterTest extends TestCase
     {
     }
 
-    public static CogxelVectorCollectionConverter createInstance()
+    public CogxelVectorCollectionConverter createInstance()
     {
         
         int N = (int) (Math.random() * 10) + 2;
@@ -70,7 +70,7 @@ public class CogxelVectorCollectionConverterTest extends TestCase
     {
         System.out.println("clone");
         
-        CogxelVectorCollectionConverter instance = this.createInstance();
+        CogxelVectorCollectionConverter instance = createInstance();
         CogxelVectorCollectionConverter clone = instance.clone();
         assertNotSame( instance, clone );
         assertEquals( instance.getNumVectors(), clone.getNumVectors() );

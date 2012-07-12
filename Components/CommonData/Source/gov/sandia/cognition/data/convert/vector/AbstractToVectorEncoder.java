@@ -34,7 +34,7 @@ public abstract class AbstractToVectorEncoder<InputType>
 {
 
     /** The vector factory to use to create new vectors. */
-    protected VectorFactory vectorFactory;
+    protected VectorFactory<?> vectorFactory;
 
     /**
      * Creates a new {@code AbstractToVectorEncoder}.
@@ -52,7 +52,7 @@ public abstract class AbstractToVectorEncoder<InputType>
      *      The {@code VectorFactory} to use.
      */
     public AbstractToVectorEncoder(
-        final VectorFactory vectorFactory)
+        final VectorFactory<?> vectorFactory)
     {
         super();
 

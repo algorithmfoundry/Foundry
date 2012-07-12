@@ -80,10 +80,10 @@ public class CogxelVectorConverterTest
         
         SemanticIdentifierMap map = new DefaultSemanticIdentifierMap();
         
-        VectorFactory defaultVectorFactory = VectorFactory.getDefault();
+        VectorFactory<?> defaultVectorFactory = VectorFactory.getDefault();
         CogxelFactory defaultCogxelFactory = DefaultCogxelFactory.INSTANCE;
         
-        VectorFactory vectorFactory = new DenseVectorFactoryMTJ();
+        VectorFactory<?> vectorFactory = new DenseVectorFactoryMTJ();
         CogxelFactory cogxelFactory = new DefaultCogxelFactory();
         
         CogxelVectorConverter instance = new CogxelVectorConverter();

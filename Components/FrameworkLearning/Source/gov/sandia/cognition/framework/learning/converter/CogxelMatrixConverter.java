@@ -22,6 +22,7 @@ import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * The CogxelVectorConverter implements a converter to convert Cogxels to and
@@ -52,10 +53,10 @@ public class CogxelMatrixConverter
      * Iterable of SemanticLabels to create CogxelVectorConverters from
      */
     public CogxelMatrixConverter(
-        Iterable<SemanticLabel>... columns )
+        Collection<? extends Iterable<SemanticLabel>> columns )
     {
         ArrayList<CogxelVectorConverter> localColumnConverters =
-            new ArrayList<CogxelVectorConverter>( columns.length );
+            new ArrayList<CogxelVectorConverter>( columns.size() );
         for( Iterable<SemanticLabel> column : columns )
         {
             localColumnConverters.add( new CogxelVectorConverter( column ) );

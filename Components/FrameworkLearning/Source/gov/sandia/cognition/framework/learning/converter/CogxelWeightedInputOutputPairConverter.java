@@ -78,7 +78,7 @@ public class CogxelWeightedInputOutputPairConverter<InputType,OutputType>
      */
     @SuppressWarnings("unchecked")
     public CogxelWeightedInputOutputPairConverter(
-        CogxelWeightedInputOutputPairConverter other )
+        CogxelWeightedInputOutputPairConverter<InputType, OutputType> other )
     {
         this( other.getPairConverter().getInputConverter().clone(),
             other.getPairConverter().getOutputConverter().clone(),

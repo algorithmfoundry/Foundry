@@ -46,7 +46,7 @@ public class CogxelMatrixConverterTest extends TestCase
     {
     }
 
-    public static CogxelMatrixConverter createInstance()
+    public CogxelMatrixConverter createInstance()
     {
         int M = (int) (Math.random() * 3) + 1;
         int N = (int) (Math.random() * 3) + 2;

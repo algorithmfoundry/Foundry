@@ -129,7 +129,7 @@ public class EvaluatorBasedCognitiveModuleFactoryTest
 
         CognitiveModel linearModel = modelFactory.createModel();
 
-        EvaluatorBasedCognitiveModule linearModule =
+        EvaluatorBasedCognitiveModule<?, ?> linearModule =
             (EvaluatorBasedCognitiveModule) linearModel.getModules().get(0);
         assertFalse(linearModule instanceof StatefulEvaluatorBasedCognitiveModule);
         assertSame(linearModule.getEvaluator(), settings.getEvaluator());
@@ -146,7 +146,7 @@ public class EvaluatorBasedCognitiveModuleFactoryTest
         settings.setEvaluator(statefulEvaluator);
 
         CognitiveModel statefulModel = modelFactory.createModel();
-        StatefulEvaluatorBasedCognitiveModule statefulModule =
+        StatefulEvaluatorBasedCognitiveModule<?,?> statefulModule =
             (StatefulEvaluatorBasedCognitiveModule) statefulModel.getModules().get(0);
 
         assertTrue(statefulModule instanceof StatefulEvaluatorBasedCognitiveModule);

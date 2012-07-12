@@ -76,8 +76,8 @@ public class EvaluatorBasedCognitiveModuleTest
 
 
         CognitiveModel model = modelFactory.createModel();
-        EvaluatorBasedCognitiveModule module =
-            (EvaluatorBasedCognitiveModule) model.getModules().get(1);
+        EvaluatorBasedCognitiveModule<?, ?> module =
+            (EvaluatorBasedCognitiveModule<?, ?>) model.getModules().get(1);
         assertNull(module.initializeState(model.getCurrentState()));
     }
 
