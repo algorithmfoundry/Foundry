@@ -81,7 +81,7 @@ public class KMeansClustererWithRemovalTest
     {
         System.out.println("getRemovalThreshold");
 
-        KMeansClustererWithRemoval instance = this.createClusterer();
+        KMeansClustererWithRemoval<?,?> instance = this.createClusterer();
         double removalThreshold = random.nextDouble();
         instance.setRemovalThreshold(removalThreshold);
 
@@ -96,7 +96,7 @@ public class KMeansClustererWithRemovalTest
     {
         System.out.println("setRemovalThreshold");
 
-        KMeansClustererWithRemoval instance = this.createClusterer();
+        KMeansClustererWithRemoval<?,?> instance = this.createClusterer();
         double removalThreshold = random.nextDouble();
         instance.setRemovalThreshold(removalThreshold);
 

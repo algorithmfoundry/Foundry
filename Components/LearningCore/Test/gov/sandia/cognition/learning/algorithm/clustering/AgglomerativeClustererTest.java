@@ -179,7 +179,7 @@ public class AgglomerativeClustererTest
         Collection<CentroidCluster<Vector>> clusters = instance.learn(data);
         assertEquals(3, instance.getNumClusters());
 
-        ClusterHierarchyNode root = instance.clusterHierarchically(data);
+        ClusterHierarchyNode<?,?> root = instance.clusterHierarchically(data);
         assertNotNull(root);
         assertNotNull(root.getCluster());
         assertEquals(2, root.getChildren().size());

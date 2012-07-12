@@ -102,7 +102,7 @@ public class MultivariateMonteCarloIntegrator
                 samples,DEFAULT_VARIANCE);
         double weightSum = 0.0;
         double sumSquared = 0.0;
-        for( WeightedValue sample : samples )
+        for( WeightedValue<? extends Vector> sample : samples )
         {
             final double w = sample.getWeight();
             weightSum += w;

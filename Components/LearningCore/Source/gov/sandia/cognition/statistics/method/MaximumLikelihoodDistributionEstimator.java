@@ -232,13 +232,12 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
                     // We've got a closed-form estimator... use that next
                     if( this.distribution instanceof EstimableDistribution )
                     {
-
-                        DistributionEstimator solver =
+                        DistributionEstimator<DataType,ClosedFormComputableDistribution<DataType>>  solver =
                             ((EstimableDistribution) this.distribution).getEstimator();
 
                         try
                         {
-                            result2 = (ClosedFormComputableDistribution<DataType>) solver.learn( this.data );
+                            result2 = solver.learn( this.data );
                             double cost2 = costFunction.evaluate(result2);
 //                            System.out.println( "Solver Cost: " + cost2 + ", Class: " + result2.getClass().getCanonicalName() + ", Parameters: " + result2.convertToVector() );
                             bruteForce = (Double.isInfinite(cost2) || Double.isNaN(cost2));
@@ -254,7 +253,7 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
                         {
                             try
                             {
-                                result2 = (ClosedFormComputableDistribution<DataType>) solver.learn( subList );
+                                result2 = solver.learn( subList );
                                 double cost2 = costFunction.evaluate(result2);
 //                                System.out.println( "Sub-Solver Cost: " + cost2 + ", Class: " + result2.getClass().getCanonicalName() + ", Parameters: " + result2.convertToVector() );
                                 bruteForce = (Double.isInfinite(cost2) || Double.isNaN(cost2));
@@ -364,7 +363,7 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
      * @throws Exception
      *      If there is an error in the estimation.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings(value={"unchecked", "rawtypes"})
     public static ClosedFormDiscreteUnivariateDistribution estimateDiscreteDistribution(
         Collection<? extends Number> data )
         throws Exception
@@ -372,7 +371,7 @@ public class MaximumLikelihoodDistributionEstimator<DataType>
 
         LinkedList<ClosedFormDiscreteUnivariateDistribution> distributions =
             getDistributionClasses( ClosedFormDiscreteUnivariateDistribution.class );
-        MaximumLikelihoodDistributionEstimator estimator =
+        MaximumLikelihoodDistributionEstimator<Number> estimator =
             new MaximumLikelihoodDistributionEstimator(
             (Collection<? extends ClosedFormComputableDistribution>) distributions);
         return (ClosedFormDiscreteUnivariateDistribution) estimator.learn(data);

@@ -79,15 +79,17 @@ public class DefaultClusterHierarchyNode
      * 
      * @param   cluster
      *      The cluster associated with this node.
-     * @param   childrenArray
-     *      The children of this node.
+     * @param   firstChild
+     *      The first child.
+     * @param   secondChild
+     *      The second child.
      */
     public DefaultClusterHierarchyNode(
         final ClusterType cluster,
-        final ClusterHierarchyNode<DataType, ClusterType>... childrenArray)
+        final ClusterHierarchyNode<DataType, ClusterType> firstChild,
+        final ClusterHierarchyNode<DataType, ClusterType> secondChild)
     {
-        this(cluster, 
-            childrenArray == null ? null : Arrays.asList(childrenArray));
+        this(cluster, Arrays.asList(firstChild, secondChild));
     }
 
     public List<ClusterHierarchyNode<DataType, ClusterType>> getChildren()
@@ -110,13 +112,16 @@ public class DefaultClusterHierarchyNode
     /**
      * Sets the children of this node.
      * 
-     * @param childrenArray
+     * @param   firstChild
+     *      The first child.
+     * @param   secondChild
+     *      The second child.
      */
     public void setChildren(
-        final ClusterHierarchyNode<DataType, ClusterType>... childrenArray)
+        final ClusterHierarchyNode<DataType, ClusterType> firstChild,
+        final ClusterHierarchyNode<DataType, ClusterType> secondChild)
     {
-        this.setChildren(
-            childrenArray == null ? null : Arrays.asList(childrenArray));
+        this.setChildren(Arrays.asList(firstChild, secondChild));
     }
 
 }

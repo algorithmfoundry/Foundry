@@ -126,8 +126,8 @@ public class DelayFunctionTest
         System.out.println("clone");
         
         int N = (int) (Math.random() * 10) + 1;
-        DelayFunction instance = new DelayFunction<Double>( N );
-        DelayFunction clone = instance.clone();
+        DelayFunction<?> instance = new DelayFunction<Double>( N );
+        DelayFunction<?> clone = instance.clone();
         assertNotSame( instance, clone );
         assertEquals( instance.getDelaySamples(), clone.getDelaySamples() );
         assertNotSame( instance.getState(), clone.getState() );

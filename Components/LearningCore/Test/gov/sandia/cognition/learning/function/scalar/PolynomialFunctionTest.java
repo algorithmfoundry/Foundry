@@ -438,7 +438,7 @@ public class PolynomialFunctionTest extends TestCase
         double x1 = 10.0;
         InputOutputPair<Double,Double> p1 = new DefaultInputOutputPair<Double, Double>( x1, f1.evaluate( x1 ) );
         
-        PolynomialFunction.Linear fhat = f1.fit( p0, p1 );
+        PolynomialFunction.Linear fhat = PolynomialFunction.Linear.fit( p0, p1 );
         
         final double EPS = 1e-5;
         assertEquals( f1.getQ0(), fhat.getQ0(), EPS );

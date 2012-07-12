@@ -55,9 +55,9 @@ public class KernelBasedIterativeRegressionTest
     public void testClone()
     {
         System.out.println( "Clone" );
-        KernelBasedIterativeRegression instance = new KernelBasedIterativeRegression();
+        KernelBasedIterativeRegression<?> instance = new KernelBasedIterativeRegression<String>();
 
-        KernelBasedIterativeRegression clone = instance.clone();
+        KernelBasedIterativeRegression<?> clone = instance.clone();
         assertNotNull( clone );
         assertNotSame( instance, clone );
     }
@@ -112,7 +112,7 @@ public class KernelBasedIterativeRegressionTest
 
         ArrayList<InputOutputPair<Vector, Double>> data =
             new ArrayList<InputOutputPair<Vector, Double>>();
-        VectorFactory factory = VectorFactory.getDefault();
+        VectorFactory<?> factory = VectorFactory.getDefault();
 
         for (int i = 0; i < values.length; i++)
         {

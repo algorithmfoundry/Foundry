@@ -63,7 +63,7 @@ public class AbstractSelectorTest extends TestCase
             genomes.add( new EvaluatedGenome<Double>( Math.random(), Math.random() ) );
         }
         double pct = Math.random();
-        AbstractSelector instance = new TournamentSelector( pct, 5 );
+        AbstractSelector<Double> instance = new TournamentSelector<Double>( pct, 5 );
         Collection<? super Double> result = instance.reproduce( genomes );
         assertNotNull( result );
         assertEquals( (int) Math.round( genomes.size() * pct ), result.size() );

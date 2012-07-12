@@ -18,6 +18,7 @@ import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.algorithm.SupervisedLearnerTestHarness;
 import gov.sandia.cognition.learning.algorithm.gradient.GradientDescendable;
 import gov.sandia.cognition.learning.function.cost.SumSquaredErrorCostFunction;
+import gov.sandia.cognition.math.matrix.VectorizableVectorFunction;
 import gov.sandia.cognition.util.NamedValue;
 import gov.sandia.cognition.util.ObjectUtil;
 
@@ -47,7 +48,7 @@ public abstract class MinimizerBasedParameterCostMinimizerTestHarness
     public abstract void testConstructors();
 
     @Override
-    public abstract AbstractMinimizerBasedParameterCostMinimizer<?,?> createInstance(
+    public abstract AbstractMinimizerBasedParameterCostMinimizer<? super GradientDescendable,?> createInstance(
         GradientDescendable objectToOptimize);
 
     /**
@@ -57,9 +58,9 @@ public abstract class MinimizerBasedParameterCostMinimizerTestHarness
     {
         System.out.println("clone");
 
-        AbstractMinimizerBasedParameterCostMinimizer instance =
+        AbstractMinimizerBasedParameterCostMinimizer<?,?> instance =
             this.createInstance( new FunctionDiffyANN(3,2,1) );
-        AbstractMinimizerBasedParameterCostMinimizer clone = instance.clone();
+        AbstractMinimizerBasedParameterCostMinimizer<?,?> clone = instance.clone();
         assertNotNull( clone );
         assertNotSame( instance, clone );
         assertNotNull( clone.getObjectToOptimize() );
@@ -74,11 +75,11 @@ public abstract class MinimizerBasedParameterCostMinimizerTestHarness
     public void testCreateInternalFunction()
     {
         System.out.println("createInternalFunction");
-        AbstractMinimizerBasedParameterCostMinimizer instance =
+        AbstractMinimizerBasedParameterCostMinimizer<?,?> instance =
             this.createInstance(new FunctionDiffyANN(3,2,1) );
-        Evaluator result = instance.createInternalFunction();
+        Evaluator<?,?> result = instance.createInternalFunction();
         assertNotNull( result );
-        Evaluator clone = ObjectUtil.cloneSmart(result);
+        Evaluator<?,?> clone = ObjectUtil.cloneSmart(result);
         assertNotNull( clone );
         assertNotSame( result, clone );
     }
@@ -91,7 +92,7 @@ public abstract class MinimizerBasedParameterCostMinimizerTestHarness
         System.out.println("getObjectToOptimize");
         FunctionDiffyANN f = new FunctionDiffyANN(3,2,1);
 
-        AbstractMinimizerBasedParameterCostMinimizer instance =
+        AbstractMinimizerBasedParameterCostMinimizer<?,?> instance =
             this.createInstance(f);
         assertSame( f, instance.getObjectToOptimize() );
     }
@@ -105,7 +106,7 @@ public abstract class MinimizerBasedParameterCostMinimizerTestHarness
         System.out.println("setObjectToOptimize");
         FunctionDiffyANN f = new FunctionDiffyANN(3,2,1);
 
-        AbstractMinimizerBasedParameterCostMinimizer instance =
+        AbstractMinimizerBasedParameterCostMinimizer<? super GradientDescendable,?> instance =
             this.createInstance(f);
         assertSame( f, instance.getObjectToOptimize() );
 
@@ -123,7 +124,7 @@ public abstract class MinimizerBasedParameterCostMinimizerTestHarness
         System.out.println("getResult");
 
         FunctionDiffyANN f = new FunctionDiffyANN(3,2,1);
-        AbstractMinimizerBasedParameterCostMinimizer instance = this.createInstance(f);
+        AbstractMinimizerBasedParameterCostMinimizer<?,?> instance = this.createInstance(f);
         assertNull( instance.getResult() );
     }
 
@@ -135,9 +136,9 @@ public abstract class MinimizerBasedParameterCostMinimizerTestHarness
     {
         System.out.println("setResult");
         FunctionDiffyANN f = new FunctionDiffyANN(3,2,1);
-        AbstractMinimizerBasedParameterCostMinimizer instance = this.createInstance(f);
-        instance.setResult( instance.getObjectToOptimize() );
-        assertSame( instance.getResult(), instance.getObjectToOptimize() );
+        AbstractMinimizerBasedParameterCostMinimizer<? super GradientDescendable,?> instance = this.createInstance(f);
+        instance.setResult( f );
+        assertSame( instance.getResult(), f );
     }
 
     /**
@@ -146,7 +147,7 @@ public abstract class MinimizerBasedParameterCostMinimizerTestHarness
     public void testGetCostFunction()
     {
         System.out.println("getCostFunction");
-        AbstractMinimizerBasedParameterCostMinimizer instance =
+        AbstractMinimizerBasedParameterCostMinimizer<?,?> instance =
             this.createInstance(new FunctionDiffyANN(3,2,1) );
         assertNotNull( instance.getCostFunction() );
     }
@@ -158,7 +159,7 @@ public abstract class MinimizerBasedParameterCostMinimizerTestHarness
     public void testSetCostFunction()
     {
         System.out.println("setCostFunction");
-        AbstractMinimizerBasedParameterCostMinimizer instance =
+        AbstractMinimizerBasedParameterCostMinimizer<?,?> instance =
             this.createInstance(new FunctionDiffyANN(3,2,1) );
         assertNotNull( instance.getCostFunction() );
 
@@ -174,7 +175,7 @@ public abstract class MinimizerBasedParameterCostMinimizerTestHarness
     public void testGetPerformance()
     {
         System.out.println("getPerformance");
-        AbstractMinimizerBasedParameterCostMinimizer instance =
+        AbstractMinimizerBasedParameterCostMinimizer<?,?> instance =
             this.createInstance(new FunctionDiffyANN(3,2,1) );
         @SuppressWarnings("unchecked")
         NamedValue<Double> result = instance.getPerformance();

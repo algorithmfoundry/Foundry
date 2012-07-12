@@ -66,7 +66,7 @@ public class AdaptiveRejectionSampling
     /**
      * Logarithm of the function that we want to evaluate
      */
-    LogEvaluator logFunction;
+    LogEvaluator<?> logFunction;
 
     /**
      * Input-output point pairs, sorted in ascending order by their x-axis value
@@ -140,7 +140,7 @@ public class AdaptiveRejectionSampling
      * Right point to initialize with
      */
     public void initialize(
-        AdaptiveRejectionSampling.LogEvaluator logFunction,
+        AdaptiveRejectionSampling.LogEvaluator<?> logFunction,
         double minSupport,
         double maxSupport,
         double leftPoint,
@@ -299,7 +299,7 @@ public class AdaptiveRejectionSampling
      * @return
      * Logarithm of the function that we want to evaluate
      */
-    public AdaptiveRejectionSampling.LogEvaluator getLogFunction()
+    public AdaptiveRejectionSampling.LogEvaluator<?> getLogFunction()
     {
         return this.logFunction;
     }
@@ -310,7 +310,7 @@ public class AdaptiveRejectionSampling
      * Logarithm of the function that we want to evaluate
      */
     public void setLogFunction(
-        AdaptiveRejectionSampling.LogEvaluator logFunction)
+        AdaptiveRejectionSampling.LogEvaluator<?> logFunction)
     {
         this.logFunction = logFunction;
     }

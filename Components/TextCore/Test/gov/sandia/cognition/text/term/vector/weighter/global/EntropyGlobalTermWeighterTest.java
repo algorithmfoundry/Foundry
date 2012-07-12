@@ -112,7 +112,7 @@ public class EntropyGlobalTermWeighterTest
         assertEquals(new Vector3(1.0, 1.0, 2.0), instance.getTermDocumentFrequencies());
         assertEquals(new Vector3(3.0, 1.0, 2.0), instance.getTermGlobalFrequencies());
 
-        VectorFactory f = VectorFactory.getDefault();
+        VectorFactory<?> f = VectorFactory.getDefault();
         instance.add(f.copyValues(0.0, 0.0, 0.0, 2.0));
         assertEquals(4, instance.getDocumentCount());
         assertEquals(f.copyValues(1.0, 1.0, 2.0, 1.0), instance.getTermDocumentFrequencies());

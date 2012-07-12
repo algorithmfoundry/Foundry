@@ -51,18 +51,6 @@ public class MultivariateMixtureDensityModel<DistributionType extends ClosedForm
      * Underlying distributions from which we sample
      */
     public MultivariateMixtureDensityModel(
-        DistributionType ... distributions )
-    {
-        this( Arrays.asList( distributions ) );
-    }
-
-
-    /**
-     * Creates a new instance of MultivariateMixtureDensityModel
-     * @param distributions
-     * Underlying distributions from which we sample
-     */
-    public MultivariateMixtureDensityModel(
         Collection<? extends DistributionType> distributions )
     {
         this( distributions, null );
@@ -149,18 +137,6 @@ public class MultivariateMixtureDensityModel<DistributionType extends ClosedForm
         extends MultivariateMixtureDensityModel<DistributionType>
         implements ProbabilityDensityFunction<Vector>
     {
-
-        /**
-         * Creates a new instance of MultivariateMixtureDensityModel
-         * @param distributions
-         * Underlying distributions from which we sample
-         */
-        public PDF(
-            DistributionType ... distributions )
-        {
-            super( distributions );
-        }
-
 
         /**
          * Creates a new instance of MultivariateMixtureDensityModel

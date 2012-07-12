@@ -91,17 +91,6 @@ public class LinearBasisRegression<InputType>
      * Basis functions to create the ScalarBasisSet from
      */
     public LinearBasisRegression(
-        Evaluator<? super InputType, Double>... basisFunctions )
-    {
-        this( Arrays.asList( basisFunctions ) );
-    }
-
-    /**
-     * Creates a new instance of LinearRegression
-     * @param basisFunctions 
-     * Basis functions to create the ScalarBasisSet from
-     */
-    public LinearBasisRegression(
         Collection<? extends Evaluator<? super InputType, Double>> basisFunctions )
     {
         this( new ScalarBasisSet<InputType>( basisFunctions ) );

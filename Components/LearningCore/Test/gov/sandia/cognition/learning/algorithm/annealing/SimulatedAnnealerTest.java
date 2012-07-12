@@ -114,7 +114,7 @@ public class SimulatedAnnealerTest
     public void testClone()
     {
 
-        SimulatedAnnealer clone = this.simulatedAnnealer.clone();
+        SimulatedAnnealer<?,?> clone = this.simulatedAnnealer.clone();
         assertNotNull( clone );
         assertNotSame( this.simulatedAnnealer, clone );
 
@@ -158,7 +158,7 @@ public class SimulatedAnnealerTest
         
         EuclideanDistanceCostFunction expected = null;
         this.simulatedAnnealer.setCostFunction(expected);        
-        CostFunction actual = this.simulatedAnnealer.getCostFunction();
+        CostFunction<?,?> actual = this.simulatedAnnealer.getCostFunction();
         assertEquals(
                 "getCostFunction did not return the expected CostFunction", 
                 expected, 
@@ -300,7 +300,7 @@ public class SimulatedAnnealerTest
                 
         EuclideanDistanceCostFunction expected = null;
         this.simulatedAnnealer.setCostFunction(expected);
-        CostFunction actual = 
+        CostFunction<?,?> actual = 
             this.simulatedAnnealer.getCostFunction();
         assertEquals(
                 "setCostFunction did not set the expected CostFunction", 

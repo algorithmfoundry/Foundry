@@ -70,7 +70,7 @@ public abstract class ThresholdBinaryCategorizerTestHarness<InputType>
     public void testGetThreshold()
     {
         System.out.println("getThreshold");
-        AbstractThresholdBinaryCategorizer instance = this.createInstance();
+        AbstractThresholdBinaryCategorizer<?> instance = this.createInstance();
         double threshold = instance.getThreshold() + RANDOM.nextDouble();
         instance.setThreshold(threshold);
         assertEquals( threshold, instance.getThreshold() );
@@ -82,7 +82,7 @@ public abstract class ThresholdBinaryCategorizerTestHarness<InputType>
     public void testSetThreshold()
     {
         System.out.println("setThreshold");
-        AbstractThresholdBinaryCategorizer instance = this.createInstance();
+        AbstractThresholdBinaryCategorizer<?> instance = this.createInstance();
         double threshold = instance.getThreshold() + RANDOM.nextDouble();
         instance.setThreshold(threshold);
         assertEquals( threshold, instance.getThreshold() );

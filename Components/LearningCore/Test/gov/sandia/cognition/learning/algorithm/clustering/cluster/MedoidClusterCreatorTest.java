@@ -55,7 +55,7 @@ public class MedoidClusterCreatorTest
     public void testClone()
     {
         System.out.println( "Clone" );
-        MedoidClusterCreator instance = new MedoidClusterCreator();
+        MedoidClusterCreator<?> instance = new MedoidClusterCreator<Vector>();
 
         CloneableSerializable clone = instance.clone();
         assertNotNull( clone );

@@ -61,7 +61,7 @@ public class SimpleKMeansExample
         
         // Lets make up some random 2-dimensional data with values in [-1, +1].
         Collection<Vector> data = new ArrayList<Vector>();
-        VectorFactory vectorFactory = VectorFactory.getDefault();
+        VectorFactory<?> vectorFactory = VectorFactory.getDefault();
         for (int i = 0; i < 100; i++)
         {
             data.add(vectorFactory.createUniformRandom(2, -1.0, +1.0, random));

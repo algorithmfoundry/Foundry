@@ -371,7 +371,7 @@ public class IVotingCategorizerLearnerTest
      */
     public void testSetRandom()
     {
-        IVotingCategorizerLearner instance = new IVotingCategorizerLearner();
+        IVotingCategorizerLearner<?,?> instance = new IVotingCategorizerLearner<Vector, Boolean>();
         assertNotNull(instance.getRandom());
 
         Random random = new Random();

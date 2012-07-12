@@ -87,7 +87,7 @@ public class ParallelBaumWelchAlgorithmTest
     public void testGetThreadPool()
     {
         System.out.println("getThreadPool");
-        ParallelBaumWelchAlgorithm instance = this.createInstance();
+        ParallelBaumWelchAlgorithm<?> instance = this.createInstance();
         assertNotNull( instance.getThreadPool() );
     }
 
@@ -98,7 +98,7 @@ public class ParallelBaumWelchAlgorithmTest
     {
         System.out.println("setThreadPool");
         ThreadPoolExecutor threadPool = ParallelUtil.createThreadPool();
-        ParallelBaumWelchAlgorithm instance = this.createInstance();
+        ParallelBaumWelchAlgorithm<?> instance = this.createInstance();
         instance.setThreadPool(threadPool);
         assertSame( threadPool, instance.getThreadPool() );
     }

@@ -72,12 +72,12 @@ public class ClusterDistortionMeasureTest
     public void testConstructors()
     {
         System.out.println( "Constructors" );
-        ClusterDistortionMeasure instance = this.createInstance();
+        ClusterDistortionMeasure<?,?> instance = this.createInstance();
         
         assertNotNull( instance );
         assertNotNull( instance.getCostParameters() );
        
-        instance = new ClusterDistortionMeasure();
+        instance = new ClusterDistortionMeasure<Vector,CentroidCluster<Vector>>();
         assertNull( instance.getCostParameters() );
         
     }
@@ -88,8 +88,8 @@ public class ClusterDistortionMeasureTest
     public void testClone()
     {
         System.out.println( "clone" );
-        ClusterDistortionMeasure instance = this.createInstance();
-        ClusterDistortionMeasure clone = instance.clone();
+        ClusterDistortionMeasure<?,?> instance = this.createInstance();
+        ClusterDistortionMeasure<?,?> clone = instance.clone();
         assertNotSame( instance, clone );
         
         assertSame( instance.getCostParameters(), clone.getCostParameters() );
@@ -103,7 +103,7 @@ public class ClusterDistortionMeasureTest
     public void testEvaluate_Collection()
     {
         System.out.println( "evaluate" );
-        ClusterDistortionMeasure instance = this.createInstance();
+        ClusterDistortionMeasure<Vector,CentroidCluster<Vector>> instance = this.createInstance();
         
         LinkedList<CentroidCluster<Vector>> clusters = new LinkedList<CentroidCluster<Vector>>();
         int num = random.nextInt( 10 );
@@ -136,7 +136,7 @@ public class ClusterDistortionMeasureTest
         
         
         CentroidCluster<Vector> cluster = new CentroidCluster<Vector>( centroid, members );
-        ClusterDistortionMeasure instance = this.createInstance();
+        ClusterDistortionMeasure<Vector, CentroidCluster<Vector>> instance = this.createInstance();
         @SuppressWarnings("unchecked")
         Double y = instance.evaluate( cluster );
         
@@ -151,7 +151,7 @@ public class ClusterDistortionMeasureTest
     public void testGetCostParameters()
     {
         System.out.println( "getCostParameters" );
-        ClusterDistortionMeasure instance = this.createInstance();
+        ClusterDistortionMeasure<?,?> instance = this.createInstance();
         assertNotNull( instance.getCostParameters() );
 
     }
@@ -163,9 +163,9 @@ public class ClusterDistortionMeasureTest
     public void testSetCostParameters()
     {
         System.out.println( "setCostParameters" );
-        ClusterDistortionMeasure instance = this.createInstance();
+        ClusterDistortionMeasure<Vector,CentroidCluster<Vector>> instance = this.createInstance();
 
-        ClusterDivergenceFunction div = instance.getCostParameters();
+        ClusterDivergenceFunction<? super CentroidCluster<Vector>, ? super Vector> div = instance.getCostParameters();
         assertNotNull( div );
         instance.setCostParameters( null );
         assertNull( instance.getCostParameters() );

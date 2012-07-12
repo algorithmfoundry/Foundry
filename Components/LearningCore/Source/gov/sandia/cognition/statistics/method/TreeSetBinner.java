@@ -88,21 +88,6 @@ public class TreeSetBinner<ValueType extends Comparable<? super ValueType>>
         this.getBinSet().remove(this.getBinSet().last());
     }
 
-    /**
-     * Creates a new {@code TreeSetBinner} using the provided list of
-     * bin boundaries.
-     * 
-     * @param   binBoundaries
-     *      A list of values to be used as boundary cutoffs for bins; bin
-     *      membership is inclusive of the lower bin bound and exclusive of the
-     *      upper bin bound
-     */
-    public TreeSetBinner(
-        final ValueType... binBoundaries)
-    {
-        this(Arrays.asList(binBoundaries));
-    }
-
     public ValueType findBin(
         final ValueType value)
     {

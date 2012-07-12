@@ -17,6 +17,7 @@ package gov.sandia.cognition.learning.function.scalar;
 import gov.sandia.cognition.learning.function.LinearCombinationFunctionTestHarness;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
+import java.util.Arrays;
 
 /**
  *
@@ -40,11 +41,11 @@ public class LinearCombinationScalarFunctionTest
     {
         @SuppressWarnings("unchecked")
         LinearCombinationScalarFunction<Double> f =
-            new LinearCombinationScalarFunction<Double>(
+            new LinearCombinationScalarFunction<Double>(Arrays.asList(
             new PolynomialFunction( 0.0 ),
             new PolynomialFunction( 1.0 ),
             new PolynomialFunction( 2.0 ),
-            new SigmoidFunction() );
+            new SigmoidFunction() ));
         int num = f.getBasisFunctions().size();
         Vector coefficients =
             VectorFactory.getDefault().createUniformRandom( num, -1.0, 1.0, RANDOM );
@@ -87,7 +88,7 @@ public class LinearCombinationScalarFunctionTest
 
         @SuppressWarnings("unchecked")
         LinearCombinationScalarFunction<Double> f =
-            new LinearCombinationScalarFunction<Double>( new AtanFunction() );
+            new LinearCombinationScalarFunction<Double>( Arrays.asList(new AtanFunction()));
         assertEquals( 1, f.getBasisFunctions().size() );
         assertEquals( 1.0, f.getCoefficients().getElement(0) );
 

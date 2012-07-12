@@ -216,14 +216,14 @@ public class MixtureOfGaussiansTest
 
         MultivariateGaussian g1 = new MultivariateGaussian();
         MultivariateMixtureDensityModel.PDF<MultivariateGaussian> instance =
-            new MultivariateMixtureDensityModel.PDF<MultivariateGaussian>( g1 );
+            new MultivariateMixtureDensityModel.PDF<MultivariateGaussian>( Arrays.asList(g1) );
         assertEquals( 1, instance.getDistributionCount() );
         assertSame( g1, instance.getDistributions().get(0) );
         assertEquals( 1.0, instance.getPriorWeights()[0] );
 
         MultivariateGaussian g2 = new MultivariateGaussian();
         MultivariateMixtureDensityModel.PDF<MultivariateGaussian> i2 =
-            new MultivariateMixtureDensityModel.PDF<MultivariateGaussian>( g1, g2 );
+            new MultivariateMixtureDensityModel.PDF<MultivariateGaussian>( Arrays.asList(g1, g2) );
 
         instance = new MultivariateMixtureDensityModel.PDF<MultivariateGaussian>( i2 );
         assertEquals( i2.getDistributionCount(), instance.getDistributionCount() );

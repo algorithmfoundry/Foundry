@@ -55,8 +55,8 @@ public class VectorFunctionLinearDiscriminantTest
     public void testClone()
     {
         System.out.println( "clone" );
-        VectorFunctionLinearDiscriminant instance = this.createInstance();
-        VectorFunctionLinearDiscriminant clone = instance.clone();
+        VectorFunctionLinearDiscriminant<?> instance = this.createInstance();
+        VectorFunctionLinearDiscriminant<?> clone = instance.clone();
         assertNotSame( instance, clone );
         assertNotNull( clone.getVectorFunction() );
         assertNotSame( instance.getVectorFunction(), clone.getVectorFunction() );
@@ -69,7 +69,7 @@ public class VectorFunctionLinearDiscriminantTest
     public void testGetWeightVector()
     {
         System.out.println( "getWeightVector" );
-        VectorFunctionLinearDiscriminant instance = this.createInstance();
+        VectorFunctionLinearDiscriminant<?> instance = this.createInstance();
         assertNotNull( instance.getDiscriminant() );
 
     }
@@ -80,7 +80,7 @@ public class VectorFunctionLinearDiscriminantTest
     public void testSetWeightVector()
     {
         System.out.println( "setWeightVector" );
-        VectorFunctionLinearDiscriminant instance = this.createInstance();
+        VectorFunctionLinearDiscriminant<?> instance = this.createInstance();
         LinearDiscriminant w = instance.getDiscriminant();
         assertNotNull( w );
 
@@ -142,7 +142,7 @@ public class VectorFunctionLinearDiscriminantTest
     public void testConvertToVector()
     {
         System.out.println( "convertToVector" );
-        VectorFunctionLinearDiscriminant instance = this.createInstance();
+        VectorFunctionLinearDiscriminant<?> instance = this.createInstance();
         Vector v = instance.convertToVector();
         assertNotNull( v );
         assertSame( v, instance.getDiscriminant().convertToVector() );
@@ -156,7 +156,7 @@ public class VectorFunctionLinearDiscriminantTest
     public void testConvertFromVector()
     {
         System.out.println( "convertFromVector" );
-        VectorFunctionLinearDiscriminant instance = this.createInstance();
+        VectorFunctionLinearDiscriminant<?> instance = this.createInstance();
         Vector v = instance.convertToVector();
         assertNotNull( v );
         assertSame( v, instance.getDiscriminant().convertToVector() );

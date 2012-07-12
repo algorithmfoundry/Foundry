@@ -20,6 +20,7 @@ import gov.sandia.cognition.statistics.MultivariateClosedFormComputableDistribut
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -101,14 +102,14 @@ public class MultivariateMixtureDensityModelTest
 
         MultivariateGaussian g1 = new MultivariateGaussian();
         MultivariateMixtureDensityModel<MultivariateGaussian> instance =
-            new MultivariateMixtureDensityModel<MultivariateGaussian>( g1 );
+            new MultivariateMixtureDensityModel<MultivariateGaussian>( Arrays.asList(g1) );
         assertEquals( 1, instance.getDistributionCount() );
         assertSame( g1, instance.getDistributions().get(0) );
         assertEquals( 1.0, instance.getPriorWeights()[0] );
 
         MultivariateGaussian g2 = new MultivariateGaussian();
         MultivariateMixtureDensityModel<MultivariateGaussian> i2 =
-            new MultivariateMixtureDensityModel<MultivariateGaussian>( g1, g2 );
+            new MultivariateMixtureDensityModel<MultivariateGaussian>( Arrays.asList(g1, g2) );
 
         instance = new MultivariateMixtureDensityModel<MultivariateGaussian>( i2 );
         assertEquals( i2.getDistributionCount(), instance.getDistributionCount() );
@@ -125,14 +126,14 @@ public class MultivariateMixtureDensityModelTest
 
         MultivariateGaussian g1 = new MultivariateGaussian();
         MultivariateMixtureDensityModel.PDF<MultivariateGaussian> instance =
-            new MultivariateMixtureDensityModel.PDF<MultivariateGaussian>( g1 );
+            new MultivariateMixtureDensityModel.PDF<MultivariateGaussian>( Arrays.asList(g1) );
         assertEquals( 1, instance.getDistributionCount() );
         assertSame( g1, instance.getDistributions().get(0) );
         assertEquals( 1.0, instance.getPriorWeights()[0] );
 
         MultivariateGaussian g2 = new MultivariateGaussian();
         MultivariateMixtureDensityModel.PDF<MultivariateGaussian> i2 =
-            new MultivariateMixtureDensityModel.PDF<MultivariateGaussian>( g1, g2 );
+            new MultivariateMixtureDensityModel.PDF<MultivariateGaussian>( Arrays.asList(g1, g2) );
 
         instance = new MultivariateMixtureDensityModel.PDF<MultivariateGaussian>( i2 );
         assertEquals( i2.getDistributionCount(), instance.getDistributionCount() );

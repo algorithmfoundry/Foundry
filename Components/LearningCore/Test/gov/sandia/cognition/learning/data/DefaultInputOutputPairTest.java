@@ -210,7 +210,7 @@ public class DefaultInputOutputPairTest extends TestCase
     public void testToString()
     {
         System.out.println( "toString" );
-        InputOutputPair instance = new DefaultInputOutputPair();
+        InputOutputPair<?,?> instance = new DefaultInputOutputPair<String,String>();
         System.out.println( "Pair: " + instance );
     }
 

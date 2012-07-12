@@ -120,7 +120,7 @@ public abstract class MultivariateClosedFormComputableDiscreteDistributionTestHa
     public void testPMFGetInputDimensionality()
     {
         System.out.println( "PMF.getInputDimensionality" );
-        DiscreteDistribution instance = this.createInstance();
+        DiscreteDistribution<?> instance = this.createInstance();
         @SuppressWarnings("unchecked")
         ProbabilityMassFunction<Vector> pmf =
             (ProbabilityMassFunction<Vector>) instance.getProbabilityFunction();

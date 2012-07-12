@@ -166,9 +166,9 @@ public class VectorFunctionToScalarFunction<InputType>
 
         @Override
         @SuppressWarnings("unchecked")
-        public Learner clone()
+        public Learner<InputType> clone()
         {
-            final Learner result = (Learner) super.clone();
+            final Learner<InputType> result = (Learner) super.clone();
             result.vectorLearner = ObjectUtil.cloneSafe(this.vectorLearner);
             return result;
         }

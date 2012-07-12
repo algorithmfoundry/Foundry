@@ -54,7 +54,7 @@ public class VectorizableVectorConverterWithBiasTest
             new VectorizableVectorConverterWithBias();
         assertSame(VectorFactory.getDefault(), instance.getVectorFactory());
 
-        VectorFactory vectorFactory = new DenseVectorFactoryMTJ();
+        VectorFactory<?> vectorFactory = new DenseVectorFactoryMTJ();
         instance = new VectorizableVectorConverterWithBias(vectorFactory);
         assertSame(vectorFactory, instance.getVectorFactory());
     }
@@ -104,7 +104,7 @@ public class VectorizableVectorConverterWithBiasTest
             new VectorizableVectorConverterWithBias();
         assertSame(VectorFactory.getDefault(), instance.getVectorFactory());
 
-        VectorFactory vectorFactory = new DenseVectorFactoryMTJ();
+        VectorFactory<?> vectorFactory = new DenseVectorFactoryMTJ();
         instance.setVectorFactory(vectorFactory);
         assertSame(vectorFactory, instance.getVectorFactory());
 

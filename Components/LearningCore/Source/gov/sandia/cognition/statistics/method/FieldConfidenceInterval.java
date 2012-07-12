@@ -164,7 +164,7 @@ public class FieldConfidenceInterval
     {
 
         // Get the fields from the first object in the dataset
-        Class dataClass = data.iterator().next().getClass();
+        Class<?> dataClass = data.iterator().next().getClass();
 
         // Now, get the list of fields
         LinkedList<Field> allFields = ObjectUtil.getAllFields( dataClass );
@@ -174,7 +174,7 @@ public class FieldConfidenceInterval
             new ArrayList<Field>( allFields.size() );
         for (Field f : allFields)
         {
-            Class c = f.getType();
+            Class<?> c = f.getType();
 
             if (c.isPrimitive() || Number.class.isAssignableFrom( c ))
             {
@@ -213,7 +213,7 @@ public class FieldConfidenceInterval
     {
 
         // First of all, all data objects must be the EXACT same class
-        Class dataClass = null;
+        Class<?> dataClass = null;
         for (Object o : data)
         {
             if (dataClass == null)

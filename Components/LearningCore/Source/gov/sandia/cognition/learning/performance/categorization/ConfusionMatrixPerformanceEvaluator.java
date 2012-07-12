@@ -14,8 +14,10 @@ package gov.sandia.cognition.learning.performance.categorization;
 
 import gov.sandia.cognition.factory.DefaultFactory;
 import gov.sandia.cognition.factory.Factory;
+import gov.sandia.cognition.factory.PrototypeFactory;
 import gov.sandia.cognition.learning.data.TargetEstimatePair;
 import gov.sandia.cognition.learning.performance.AbstractSupervisedPerformanceEvaluator;
+import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.Collection;
 
 /**
@@ -41,10 +43,10 @@ public class ConfusionMatrixPerformanceEvaluator<InputType, CategoryType>
      * Creates a new {@code ConfusionMatrixPerformanceEvaluator} with a
      * default factory behind it.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings(value={"unchecked"})
     public ConfusionMatrixPerformanceEvaluator()
     {
-        this(new DefaultFactory(DefaultConfusionMatrix.class));
+        this(new DefaultConfusionMatrix.Factory<CategoryType>());
     }
 
     /**

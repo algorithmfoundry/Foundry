@@ -44,7 +44,7 @@ public class AbstractBinaryCategorizerTest
     public void testConstructors()
     {
         System.out.println( "Constructors" );
-        AbstractBinaryCategorizer instance = this.createInstance();
+        AbstractBinaryCategorizer<?> instance = this.createInstance();
         assertSame( AbstractBinaryCategorizer.BINARY_CATEGORIES, instance.getCategories() );
     }
 

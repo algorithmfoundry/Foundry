@@ -15,6 +15,7 @@
 package gov.sandia.cognition.statistics.method;
 
 import gov.sandia.cognition.annotation.CodeReview;
+import java.util.Arrays;
 import junit.framework.TestCase;
 
 /**
@@ -51,7 +52,7 @@ public class TreeSetBinnerTest
     public void testfindBin()
     {
         TreeSetBinner<Double> binner =
-            new TreeSetBinner<Double>(0.0, 3.0, 8.0, 7.0, 1.0);
+            new TreeSetBinner<Double>(Arrays.asList(0.0, 3.0, 8.0, 7.0, 1.0));
 
         Double result = binner.findBin(-1.0);
         assertEquals(null, result);
@@ -93,7 +94,7 @@ public class TreeSetBinnerTest
     public void testGetBinCount()
     {
         TreeSetBinner<Double> binner =
-            new TreeSetBinner<Double>(0.0, 3.0, 8.0, 7.0, 1.0);
+            new TreeSetBinner<Double>(Arrays.asList(0.0, 3.0, 8.0, 7.0, 1.0));
         assertEquals(4, binner.getBinCount());
     }
 

@@ -47,7 +47,7 @@ public class ParallelizedKMeansClustererTest
     {
         System.out.println( "Constructors" );
 
-        ParallelizedKMeansClusterer instance = new ParallelizedKMeansClusterer();
+        ParallelizedKMeansClusterer<?,?> instance = new ParallelizedKMeansClusterer<Vector, CentroidCluster<Vector>>();
         assertEquals( ParallelizedKMeansClusterer.DEFAULT_NUM_REQUESTED_CLUSTERS, instance.getNumRequestedClusters() );
         assertEquals( ParallelizedKMeansClusterer.DEFAULT_MAX_ITERATIONS, instance.getMaxIterations() );
     }
@@ -58,8 +58,8 @@ public class ParallelizedKMeansClustererTest
     public void testClone()
     {
         System.out.println( "clone" );
-        ParallelizedKMeansClusterer instance = this.createClusterer();
-        ParallelizedKMeansClusterer clone = instance.clone();
+        ParallelizedKMeansClusterer<?,?> instance = this.createClusterer();
+        ParallelizedKMeansClusterer<?,?> clone = instance.clone();
         
         assertNotNull( clone );
         assertNotSame( instance, clone );
@@ -80,10 +80,10 @@ public class ParallelizedKMeansClustererTest
     public void testGetThreadPool()
     {
         System.out.println( "getThreadPool" );
-        ParallelizedKMeansClusterer instance = this.createClusterer();
+        ParallelizedKMeansClusterer<Vector, CentroidCluster<Vector>> instance = this.createClusterer();
         assertNotNull( instance.getThreadPool() );
         
-        instance.setData( new LinkedList() );
+        instance.setData( new LinkedList<Vector>() );
         instance.initializeAlgorithm();
         
         assertNotNull( instance.getThreadPool() );
@@ -96,10 +96,10 @@ public class ParallelizedKMeansClustererTest
     public void testSetThreadPool()
     {
         System.out.println( "setThreadPool" );
-        ParallelizedKMeansClusterer instance = this.createClusterer();
+        ParallelizedKMeansClusterer<Vector, CentroidCluster<Vector>> instance = this.createClusterer();
         assertNotNull( instance.getThreadPool() );
         
-        instance.setData( new LinkedList() );
+        instance.setData( new LinkedList<Vector>() );
         instance.initializeAlgorithm();
         
         ThreadPoolExecutor pool = instance.getThreadPool();

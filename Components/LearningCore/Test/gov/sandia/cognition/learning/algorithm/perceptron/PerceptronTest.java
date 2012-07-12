@@ -72,7 +72,7 @@ public class PerceptronTest
         assertEquals( marginNegative, instance.getMarginNegative() );
         assertSame( VectorFactory.getDefault(), instance.getVectorFactory() );
 
-        VectorFactory factory = new SparseVectorFactoryMTJ();
+        VectorFactory<?> factory = new SparseVectorFactoryMTJ();
         instance = new Perceptron( maxIterations, marginPositive, marginNegative,
             factory );
         assertEquals( maxIterations, instance.getMaxIterations() );
@@ -243,7 +243,7 @@ public class PerceptronTest
         Perceptron instance = new Perceptron();
         assertSame( VectorFactory.getDefault(), instance.getVectorFactory() );
 
-        VectorFactory factory = new SparseVectorFactoryMTJ();
+        VectorFactory<?> factory = new SparseVectorFactoryMTJ();
         instance.setVectorFactory( factory );
         assertSame( factory, instance.getVectorFactory() );
 

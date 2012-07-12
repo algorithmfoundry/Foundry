@@ -159,7 +159,6 @@ public class MaximumLikelihoodDistributionEstimatorTest
         System.out.println( "Best: " + best.getClass().getSimpleName() + ", Parameters: " + best.convertToVector() );
     }
 
-
     public void testGetDistributionClasses()
         throws Exception
     {
@@ -174,9 +173,10 @@ public class MaximumLikelihoodDistributionEstimatorTest
         }
 
         System.out.println( "\n=========== Discrete =======" );
-        LinkedList<ClosedFormDiscreteUnivariateDistribution> i2 =
+        @SuppressWarnings("rawtypes")
+        LinkedList<? extends ClosedFormDiscreteUnivariateDistribution> i2 =
             MaximumLikelihoodDistributionEstimator.getDistributionClasses( ClosedFormDiscreteUnivariateDistribution.class );
-        for( ClosedFormDiscreteUnivariateDistribution distribution : i2 )
+        for( ClosedFormComputableDistribution<?> distribution : i2 )
         {
             System.out.println( distribution.getClass().getCanonicalName() + ": " + distribution.convertToVector() );
         }

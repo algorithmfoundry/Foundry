@@ -86,7 +86,7 @@ public class WeightedMeanLearnerTest
             new double[]{8.00, 13.90},
             new double[]{9.00, 16.00}};
 
-        VectorFactory factory = VectorFactory.getDefault();
+        VectorFactory<?> factory = VectorFactory.getDefault();
 
         for (int i = 0; i < values.length; i++)
         {

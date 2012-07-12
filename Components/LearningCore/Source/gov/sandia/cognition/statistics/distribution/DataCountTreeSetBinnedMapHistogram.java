@@ -75,22 +75,6 @@ public class DataCountTreeSetBinnedMapHistogram<ValueType extends Comparable<? s
         this(new TreeSetBinner<ValueType>(binBoundaries));
     }
 
-    /**
-     * Creates a new instance of DataCountTreeBinnedMapHistogram using
-     * the provided list of bin boundaries.  The bin boundary list will
-     * be used to initialize a TreeSetBinner for performing value binning.
-     * 
-     * @param   binBoundaries
-     *      A list of values to be used as boundary cutoffs for bins; bin
-     *      membership is inclusive of the lower bin bound and exclusive of the
-     *      upper bin bound.
-     */
-    public DataCountTreeSetBinnedMapHistogram(
-        final ValueType... binBoundaries)
-    {
-        this(Arrays.asList(binBoundaries));
-    }
-
     @Override
     public double increment(
         final ValueType key,

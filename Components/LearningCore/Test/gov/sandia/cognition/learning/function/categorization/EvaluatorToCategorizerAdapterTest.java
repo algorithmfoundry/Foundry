@@ -54,7 +54,7 @@ public class EvaluatorToCategorizerAdapterTest
     public void testConstructors()
     {
         System.out.println( "Constructors" );
-        EvaluatorToCategorizerAdapter a = new EvaluatorToCategorizerAdapter();
+        EvaluatorToCategorizerAdapter<?,?> a = new EvaluatorToCategorizerAdapter<Double,Double>();
         assertNotNull( a );
         assertNull( a.getEvaluator() );
         assertNotNull( a.getCategories() );
@@ -72,7 +72,7 @@ public class EvaluatorToCategorizerAdapterTest
     public void testGetEvaluator()
     {
         System.out.println("getEvaluator");
-        EvaluatorToCategorizerAdapter instance = this.createInstance();
+        EvaluatorToCategorizerAdapter<?,?> instance = this.createInstance();
         assertNotNull( instance.getEvaluator() );
     }
 

@@ -73,8 +73,8 @@ public abstract class LinearCombinationFunctionTestHarness<InputType,OutputType>
     public void testClone()
     {
         System.out.println("clone");
-        LinearCombinationFunction instance = this.createInstance();
-        LinearCombinationFunction clone = instance.clone();
+        LinearCombinationFunction<?,?> instance = this.createInstance();
+        LinearCombinationFunction<?,?> clone = instance.clone();
         assertNotNull( clone );
         assertNotSame( instance, clone );
         assertNotNull( clone.getCoefficients() );
@@ -96,7 +96,7 @@ public abstract class LinearCombinationFunctionTestHarness<InputType,OutputType>
     public void testGetCoefficients()
     {
         System.out.println("getCoefficients");
-        LinearCombinationFunction instance = this.createInstance();
+        LinearCombinationFunction<?,?> instance = this.createInstance();
         assertNotNull( instance.getCoefficients() );
     }
 
@@ -106,7 +106,7 @@ public abstract class LinearCombinationFunctionTestHarness<InputType,OutputType>
     public void testSetCoefficients()
     {
         System.out.println("setCoefficients");
-        LinearCombinationFunction instance = this.createInstance();
+        LinearCombinationFunction<?,?> instance = this.createInstance();
         Vector c = instance.getCoefficients();
         Vector cs = c.scale( RANDOM.nextGaussian() );
         assertNotNull( c );
@@ -143,7 +143,7 @@ public abstract class LinearCombinationFunctionTestHarness<InputType,OutputType>
     public void testGetBasisFunctions()
     {
         System.out.println("getBasisFunctions");
-        LinearCombinationFunction instance = this.createInstance();
+        LinearCombinationFunction<?,?> instance = this.createInstance();
         assertNotNull( instance.getBasisFunctions() );
         assertTrue( instance.getBasisFunctions().size() > 0 );
     }
@@ -167,7 +167,7 @@ public abstract class LinearCombinationFunctionTestHarness<InputType,OutputType>
     public void testConvertToVector()
     {
         System.out.println("convertToVector");
-        LinearCombinationFunction instance = this.createInstance();
+        LinearCombinationFunction<?,?> instance = this.createInstance();
         assertSame( instance.getCoefficients(), instance.convertToVector() );
     }
 
@@ -177,7 +177,7 @@ public abstract class LinearCombinationFunctionTestHarness<InputType,OutputType>
     public void testConvertFromVector()
     {
         System.out.println("convertFromVector");
-        LinearCombinationFunction instance = this.createInstance();
+        LinearCombinationFunction<?,?> instance = this.createInstance();
         Vector parameters = instance.convertToVector();
         Vector p2 = parameters.scale(RANDOM.nextGaussian());
         instance.convertFromVector(p2);
@@ -202,7 +202,7 @@ public abstract class LinearCombinationFunctionTestHarness<InputType,OutputType>
     public void testToString()
     {
         System.out.println("toString");
-        LinearCombinationFunction instance = this.createInstance();
+        LinearCombinationFunction<?,?> instance = this.createInstance();
         String result = instance.toString();
         System.out.println( "Mixture:\n" + result );
         assertNotNull( result );

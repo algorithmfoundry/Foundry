@@ -83,7 +83,7 @@ public class RegressionTreeLearnerTest
     public void testClone()
     {
         System.out.println( "Clone" );
-        RegressionTreeLearner instance = new RegressionTreeLearner();
+        RegressionTreeLearner<?> instance = new RegressionTreeLearner<Vectorizable>();
 
         CloneableSerializable clone = instance.clone();
         assertNotNull( clone );

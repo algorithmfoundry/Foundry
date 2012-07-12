@@ -139,13 +139,13 @@ public class RandomSubVectorThresholdLearner<OutputType>
         final int[] permutation = Permutation.createPermutation(
             dimensionality, this.random);
 
-        if (this.subLearner instanceof VectorThresholdMaximumGainLearner)
+        if (this.subLearner instanceof VectorThresholdMaximumGainLearner<?>)
         {
             // In this case we can avoid copying the data by giving the learner
             // the indices to learn using.
             final int[] subDimensions = new int[subDimensionality];
             System.arraycopy(permutation, 0, subDimensions, 0, subDimensionality);
-            ((VectorThresholdMaximumGainLearner<OutputType>) this.subLearner).setDimensionsToConsider(
+            ((VectorThresholdMaximumGainLearner<?>) this.subLearner).setDimensionsToConsider(
                 subDimensions);
             return this.subLearner.learn(data);
         }

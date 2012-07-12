@@ -16,6 +16,8 @@ package gov.sandia.cognition.learning.algorithm.clustering.hierarchy;
 
 import gov.sandia.cognition.learning.algorithm.clustering.cluster.DefaultCluster;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import junit.framework.TestCase;
 
@@ -61,7 +63,7 @@ public class DefaultClusterHierarchyNodeTest
         assertSame(children, instance.getChildren());
 
         instance = new DefaultClusterHierarchyNode<String, DefaultCluster<String>>(
-            cluster, (ClusterHierarchyNode<String, DefaultCluster<String>>[]) null );
+            cluster, null);
         assertSame( cluster, instance.getCluster() );
         assertNull( instance.getChildren() );
 
@@ -106,12 +108,12 @@ public class DefaultClusterHierarchyNodeTest
         instance.setChildren(children);
         assertSame(children, instance.getChildren());
         
-        instance.setChildren(child);
+        instance.setChildren(Arrays.asList(child));
         assertTrue(instance.hasChildren());
         assertSame(child, instance.getChildren().get(0));
         
-        
-        instance.setChildren();
+        children = Collections.emptyList();
+        instance.setChildren(children);
         assertFalse(instance.hasChildren());
     }
 

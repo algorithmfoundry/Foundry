@@ -252,7 +252,7 @@ public class GeneticAlgorithmTest extends TestCase
 
         EuclideanDistanceCostFunction expected = null;
         ga.setCostFunction(expected);
-        CostFunction actual = ga.getCostFunction();
+        CostFunction<?,?> actual = ga.getCostFunction();
         assertEquals(
                 "getCost did not return the expected CostFunction",
                 expected,
@@ -397,7 +397,7 @@ public class GeneticAlgorithmTest extends TestCase
 
         EuclideanDistanceCostFunction expected = null;
         ga.setCostFunction(expected);
-        CostFunction actual = ga.getCostFunction();
+        CostFunction<?,?> actual = ga.getCostFunction();
         assertEquals(
                 "setCost did not set the expected CostFunction",
                 expected,

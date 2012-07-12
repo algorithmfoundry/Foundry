@@ -86,8 +86,8 @@ public class VectorFunctionToScalarFunctionTest
     public void testClone()
     {
         System.out.println("clone");
-        VectorFunctionToScalarFunction instance = this.createInstance();
-        VectorFunctionToScalarFunction clone = instance.clone();
+        VectorFunctionToScalarFunction<?> instance = this.createInstance();
+        VectorFunctionToScalarFunction<?> clone = instance.clone();
         assertNotNull( clone );
         assertNotSame( instance, clone );
         assertNotNull( clone.getVectorFunction() );
@@ -115,7 +115,7 @@ public class VectorFunctionToScalarFunctionTest
     public void testGetVectorFunction()
     {
         System.out.println("getVectorFunction");
-        VectorFunctionToScalarFunction instance = this.createInstance();
+        VectorFunctionToScalarFunction<?> instance = this.createInstance();
         assertNotNull( instance.getVectorFunction() );
     }
 

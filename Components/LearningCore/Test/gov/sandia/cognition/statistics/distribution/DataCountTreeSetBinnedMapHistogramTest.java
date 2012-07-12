@@ -15,6 +15,7 @@
 package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.annotation.CodeReview;
+import java.util.Arrays;
 
 /**
  * Unit tests for class DataCountTreeSetBinnedMapHistogram.
@@ -53,7 +54,7 @@ public class DataCountTreeSetBinnedMapHistogramTest
         System.out.println("add");
 
         DataCountTreeSetBinnedMapHistogram<String> instance =
-            new DataCountTreeSetBinnedMapHistogram<String>("q", "c", "b", "j");
+            new DataCountTreeSetBinnedMapHistogram<String>(Arrays.asList("q", "c", "b", "j"));
         assertEquals(0.0, instance.getTotal());
         assertEquals(0.0, instance.get("b"));
         assertEquals(0.0, instance.get("c"));
@@ -153,7 +154,7 @@ public class DataCountTreeSetBinnedMapHistogramTest
         System.out.println("remove");
 
         DataCountTreeSetBinnedMapHistogram<String> instance =
-            new DataCountTreeSetBinnedMapHistogram<String>("c", "j", "b", "q");
+            new DataCountTreeSetBinnedMapHistogram<String>(Arrays.asList("c", "j", "b", "q"));
         assertEquals(0.0, instance.getTotal());
         assertEquals(0.0, instance.get("b"));
         assertEquals(0.0, instance.get("c"));
@@ -260,7 +261,7 @@ public class DataCountTreeSetBinnedMapHistogramTest
         System.out.println("getNumBins");
 
         DataCountTreeSetBinnedMapHistogram<String> instance =
-            new DataCountTreeSetBinnedMapHistogram<String>("c", "j", "b", "q");
+            new DataCountTreeSetBinnedMapHistogram<String>(Arrays.asList("c", "j", "b", "q"));
         assertEquals(3, instance.getBinCount());
     }
 

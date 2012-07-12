@@ -89,9 +89,10 @@ public class ScalarMixtureDensityModelTest
         ScalarMixtureDensityModel.EMLearner learner =
             new ScalarMixtureDensityModel.EMLearner(
                 RANDOM,
+                Arrays.asList(
                 new UnivariateGaussian.WeightedMaximumLikelihoodEstimator(),
                 new ExponentialDistribution.WeightedMaximumLikelihoodEstimator(),
-                new LaplaceDistribution.WeightedMaximumLikelihoodEstimator() );
+                new LaplaceDistribution.WeightedMaximumLikelihoodEstimator() ));
         ScalarMixtureDensityModel estimate = learner.learn(samples);
         System.out.println( "Estimate: " + estimate );
 

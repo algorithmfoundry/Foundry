@@ -220,9 +220,9 @@ public class MaximumAPosterioriCategorizer<ObservationType,CategoryType>
                 mean = (ObservationType)
                     new Double( ((Number) mean).doubleValue() + weightedCategoryMean );
             }
-            else if( categoryMean instanceof Ring )
+            else if( categoryMean instanceof Ring<?> )
             {
-                Ring weightedCategoryMean = ((Ring) categoryMean).scale(prior);
+                Ring<?> weightedCategoryMean = ((Ring<?>) categoryMean).scale(prior);
                 if( mean == null )
                 {
                     mean = (ObservationType) weightedCategoryMean;

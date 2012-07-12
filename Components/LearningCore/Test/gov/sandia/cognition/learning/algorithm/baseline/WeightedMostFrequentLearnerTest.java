@@ -57,7 +57,7 @@ public class WeightedMostFrequentLearnerTest
     public void testClone()
     {
         System.out.println( "Clone" );
-        WeightedMostFrequentLearner instance = new WeightedMostFrequentLearner();
+        WeightedMostFrequentLearner<?> instance = new WeightedMostFrequentLearner<String>();
 
         CloneableSerializable clone = instance.clone();
         assertNotNull( clone );

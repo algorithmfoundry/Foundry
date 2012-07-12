@@ -53,7 +53,7 @@ public class TimeSeriesPredictionLearnerTest
     public void testGetPredictionHorizon()
     {
         System.out.println( "getPredictionHorizon" );
-        TimeSeriesPredictionLearner instance = new TimeSeriesPredictionLearner();
+        TimeSeriesPredictionLearner<?,?,?> instance = new TimeSeriesPredictionLearner<Double,Double,KNearestNeighborExhaustive<Double,Double>>();
         assertEquals( TimeSeriesPredictionLearner.DEFAULT_PREDICTION_HORIZON, instance.getPredictionHorizon() );
     }
 
@@ -63,7 +63,7 @@ public class TimeSeriesPredictionLearnerTest
     public void testSetPredictionHorizon()
     {
         System.out.println( "setPredictionHorizon" );
-        TimeSeriesPredictionLearner instance = new TimeSeriesPredictionLearner();
+        TimeSeriesPredictionLearner<?,?,?> instance = new TimeSeriesPredictionLearner<Double,Double,KNearestNeighborExhaustive<Double,Double>>();
         assertEquals( TimeSeriesPredictionLearner.DEFAULT_PREDICTION_HORIZON, instance.getPredictionHorizon() );
         final int p2 = 10;
         instance.setPredictionHorizon( p2 );
@@ -76,7 +76,7 @@ public class TimeSeriesPredictionLearnerTest
     public void testGetSupervisedLearner()
     {
         System.out.println( "getSupervisedLearner" );
-        TimeSeriesPredictionLearner instance = new TimeSeriesPredictionLearner();
+        TimeSeriesPredictionLearner<?,?,?> instance = new TimeSeriesPredictionLearner<Double,Double,KNearestNeighborExhaustive<Double,Double>>();
         assertNull( instance.getSupervisedLearner() );
     }
 
@@ -87,10 +87,10 @@ public class TimeSeriesPredictionLearnerTest
     public void testSetSupervisedLearner()
     {
         System.out.println( "setSupervisedLearner" );
-        TimeSeriesPredictionLearner instance = new TimeSeriesPredictionLearner();
+        TimeSeriesPredictionLearner<Double,Double,KNearestNeighborExhaustive<Double,Double>> instance = new TimeSeriesPredictionLearner<Double,Double,KNearestNeighborExhaustive<Double,Double>>();
         assertNull( instance.getSupervisedLearner() );
 
-        SupervisedBatchLearner learner = new KNearestNeighborExhaustive.Learner();
+        KNearestNeighborExhaustive.Learner<Double, Double> learner = new KNearestNeighborExhaustive.Learner<Double, Double>();
         instance.setSupervisedLearner( learner );
         assertSame( learner, instance.getSupervisedLearner() );
     }

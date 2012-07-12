@@ -342,5 +342,32 @@ public class DefaultConfusionMatrix<CategoryType>
         }
 
     }
+    
+    /**
+     * A factory for default confusion matrices.
+     * 
+     * @param   <CategoryType> 
+     *      The type of category that the confusion is computed over.
+     */
+    public static class Factory<CategoryType>
+        extends AbstractCloneableSerializable
+        implements gov.sandia.cognition.factory.Factory<DefaultConfusionMatrix<CategoryType>>
+    {
+
+        /**
+         * Creates a new {@code Factory}.
+         */
+        public Factory()
+        {
+            super();
+        }
+
+        @Override
+        public DefaultConfusionMatrix<CategoryType> create()
+        {
+            return new DefaultConfusionMatrix<CategoryType>();
+        }
+        
+    }
 
 }

@@ -72,7 +72,7 @@ public class KernelAdatronTest
     public void testClone()
     {
         System.out.println( "Clone" );
-        KernelAdatron instance = new KernelAdatron();
+        KernelAdatron<?> instance = new KernelAdatron<Vector>();
 
         CloneableSerializable clone = instance.clone();
         assertNotNull( clone );

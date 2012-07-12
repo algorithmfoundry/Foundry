@@ -35,7 +35,7 @@ public class IdentityDistanceMetricTest
     @Override
     public Object generateRandomFirstType()
     {
-        return this.RANDOM.nextDouble();
+        return RANDOM.nextDouble();
     }
 
     /**

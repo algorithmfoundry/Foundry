@@ -35,18 +35,7 @@ public class LinearCombinationScalarFunction<InputType>
     extends LinearCombinationFunction<InputType, Double>
     implements Regressor<InputType>
 {
-
-    /**
-     * Creates a new instance of LinearCombinationFunction
-     * @param basisFunctions
-     * Collection of basis functions to combine to produce the output
-     */
-    public LinearCombinationScalarFunction(
-        Evaluator<InputType, Double>... basisFunctions )
-    {
-        this( Arrays.asList( basisFunctions ) );
-    }
-
+    
     /**
      * Creates a new instance of LinearCombinationFunction
      * @param basisFunctions

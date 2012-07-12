@@ -96,8 +96,8 @@ public class ParallelNegativeLogLikelihoodTest
     public void testGetThreadPool()
     {
         System.out.println("getThreadPool");
-        ParallelNegativeLogLikelihood instance =
-            new ParallelNegativeLogLikelihood();
+        ParallelNegativeLogLikelihood<Double> instance =
+            new ParallelNegativeLogLikelihood<Double>();
         assertNotNull( instance.getThreadPool() );
 
         instance.setThreadPool(null);
@@ -112,8 +112,8 @@ public class ParallelNegativeLogLikelihoodTest
     {
         System.out.println("setThreadPool");
         ThreadPoolExecutor threadPool = ParallelUtil.createThreadPool();
-        ParallelNegativeLogLikelihood instance =
-            new ParallelNegativeLogLikelihood();
+        ParallelNegativeLogLikelihood<Double> instance =
+            new ParallelNegativeLogLikelihood<Double>();
         instance.setThreadPool(threadPool);
         assertSame( threadPool, instance.getThreadPool() );
     }
@@ -124,8 +124,8 @@ public class ParallelNegativeLogLikelihoodTest
     public void testGetNumThreads()
     {
         System.out.println("getNumThreads");
-        ParallelNegativeLogLikelihood instance =
-            new ParallelNegativeLogLikelihood();
+        ParallelNegativeLogLikelihood<Double> instance =
+            new ParallelNegativeLogLikelihood<Double>();
         int result = instance.getNumThreads();
         assertTrue( result > 0 );
     }

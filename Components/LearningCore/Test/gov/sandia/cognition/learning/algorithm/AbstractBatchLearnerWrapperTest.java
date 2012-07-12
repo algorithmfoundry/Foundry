@@ -62,7 +62,7 @@ public class AbstractBatchLearnerWrapperTest
 
     }
 
-    public AbstractBatchLearnerContainer createInstance()
+    public AbstractBatchLearnerContainer<?> createInstance()
     {
         return new DefaultWrapper();
     }
@@ -74,7 +74,7 @@ public class AbstractBatchLearnerWrapperTest
     {
         System.out.println("Constructors");
 
-        AbstractBatchLearnerContainer instance = this.createInstance();
+        AbstractBatchLearnerContainer<?> instance = this.createInstance();
         assertNotNull(instance);
         assertNotNull(instance.getLearner());
 
@@ -86,8 +86,8 @@ public class AbstractBatchLearnerWrapperTest
     public void testClone()
     {
         System.out.println("clone");
-        AbstractBatchLearnerContainer instance = this.createInstance();
-        AbstractBatchLearnerContainer clone = instance.clone();
+        AbstractBatchLearnerContainer<?> instance = this.createInstance();
+        AbstractBatchLearnerContainer<?> clone = instance.clone();
         assertNotNull(clone);
         assertNotSame(instance, clone);
         assertNotNull(clone.getLearner());
@@ -100,7 +100,7 @@ public class AbstractBatchLearnerWrapperTest
     public void testGetLearner()
     {
         System.out.println("getLearner");
-        AbstractBatchLearnerContainer instance = this.createInstance();
+        AbstractBatchLearnerContainer<?> instance = this.createInstance();
         assertNotNull(instance.getLearner());
     }
 

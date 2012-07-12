@@ -64,7 +64,7 @@ public class VectorFunctionLinearDiscriminant<InputType>
     }
 
     @Override
-    public VectorFunctionLinearDiscriminant clone()
+    public VectorFunctionLinearDiscriminant<InputType> clone()
     {
         @SuppressWarnings("unchecked")
         VectorFunctionLinearDiscriminant<InputType> clone =

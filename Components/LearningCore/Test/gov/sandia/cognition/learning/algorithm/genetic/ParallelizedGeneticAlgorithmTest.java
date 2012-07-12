@@ -59,7 +59,7 @@ public class ParallelizedGeneticAlgorithmTest
     public void testGetThreadPool()
     {
         System.out.println( "getThreadPool" );
-        ParallelizedGeneticAlgorithm instance = this.createInstance();
+        ParallelizedGeneticAlgorithm<?,?> instance = this.createInstance();
         assertNull( instance.getThreadPool() );
         
         instance.initializeAlgorithm();
@@ -73,7 +73,7 @@ public class ParallelizedGeneticAlgorithmTest
     public void testSetThreadPool()
     {
         System.out.println( "setThreadPool" );
-        ParallelizedGeneticAlgorithm instance = this.createInstance();
+        ParallelizedGeneticAlgorithm<?,?> instance = this.createInstance();
         assertNull( instance.getThreadPool() );
         
         instance.initializeAlgorithm();

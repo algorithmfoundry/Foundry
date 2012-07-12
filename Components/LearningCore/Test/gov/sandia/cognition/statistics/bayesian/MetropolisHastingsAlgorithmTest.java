@@ -86,7 +86,7 @@ public class MetropolisHastingsAlgorithmTest
     {
         System.out.println( "Constructors" );
 
-        MetropolisHastingsAlgorithm mcmc = new MetropolisHastingsAlgorithm();
+        MetropolisHastingsAlgorithm<?,?> mcmc = new MetropolisHastingsAlgorithm<Double,GammaDistribution.PDF>();
         assertTrue( mcmc.getBurnInIterations() > 0 );
         assertTrue( mcmc.getIterationsPerSample() > 0 );
     }

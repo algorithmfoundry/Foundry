@@ -50,8 +50,8 @@ public class ScalarBasisSetTest
     public void testClone()
     {
         System.out.println( "clone" );
-        ScalarBasisSet instance = this.createInstance();
-        ScalarBasisSet clone = (ScalarBasisSet) instance.clone();
+        ScalarBasisSet<?> instance = this.createInstance();
+        ScalarBasisSet<?> clone = (ScalarBasisSet<?>) instance.clone();
         assertNotSame( instance, clone );
     }
 
@@ -61,7 +61,7 @@ public class ScalarBasisSetTest
     public void testGetOutputDimensionality()
     {
         System.out.println( "getOutputDimensionality" );
-        ScalarBasisSet instance = this.createInstance();
+        ScalarBasisSet<?> instance = this.createInstance();
         assertEquals( instance.getBasisFunctions().size(), instance.getOutputDimensionality() );
 
     }

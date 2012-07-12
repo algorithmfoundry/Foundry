@@ -80,7 +80,7 @@ public class ScalarFunctionToBinaryCategorizerAdapterTest
     {
         System.out.println( "Constructors" );
 
-        ScalarFunctionToBinaryCategorizerAdapter f = new ScalarFunctionToBinaryCategorizerAdapter();
+        ScalarFunctionToBinaryCategorizerAdapter<String> f = new ScalarFunctionToBinaryCategorizerAdapter<String>();
         assertNotNull( f );
         assertNull( f.getEvaluator() );
         assertEquals( ScalarFunctionToBinaryCategorizerAdapter.DEFAULT_THRESHOLD, f.getThreshold() );
@@ -131,7 +131,7 @@ public class ScalarFunctionToBinaryCategorizerAdapterTest
     public void testGetEvaluator()
     {
         System.out.println("getEvaluator");
-        ScalarFunctionToBinaryCategorizerAdapter instance = this.createInstance();
+        ScalarFunctionToBinaryCategorizerAdapter<?> instance = this.createInstance();
         assertNotNull( instance.getEvaluator() );
     }
 

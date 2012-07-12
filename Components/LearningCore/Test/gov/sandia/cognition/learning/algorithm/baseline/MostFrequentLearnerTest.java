@@ -57,7 +57,7 @@ public class MostFrequentLearnerTest
     public void testClone()
     {
         System.out.println( "Clone" );
-        MostFrequentLearner instance = new MostFrequentLearner();
+        MostFrequentLearner<?> instance = new MostFrequentLearner<String>();
 
         CloneableSerializable clone = instance.clone();
         assertNotNull( clone );

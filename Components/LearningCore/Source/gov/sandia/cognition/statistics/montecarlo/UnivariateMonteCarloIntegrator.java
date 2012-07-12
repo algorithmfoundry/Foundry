@@ -95,7 +95,7 @@ public class UnivariateMonteCarloIntegrator
                 samples,DEFAULT_VARIANCE);
         double weightSum = 0.0;
         double sumSquared = 0.0;
-        for( WeightedValue sample : samples )
+        for( WeightedValue<? extends Double> sample : samples )
         {
             final double w = sample.getWeight();
             weightSum += w;
