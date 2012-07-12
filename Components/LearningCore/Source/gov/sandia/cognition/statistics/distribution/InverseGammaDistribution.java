@@ -292,6 +292,13 @@ public class InverseGammaDistribution
         {
             return this.evaluate(input.doubleValue());
         }
+        
+        @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
+        }
 
         @Override
         public double evaluate(
@@ -406,6 +413,13 @@ public class InverseGammaDistribution
             final Double input)
         {
             return this.evaluate( input.doubleValue() );
+        }
+
+        @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
         }
 
         @Override

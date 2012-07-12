@@ -311,6 +311,13 @@ public class LogNormalDistribution
         }
         
         @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
+        }
+        
+        @Override
         public double evaluate(
             final double input )
         {
@@ -472,6 +479,13 @@ public class LogNormalDistribution
         {
             return this.evaluate( input.doubleValue() );
         }        
+        
+        @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
+        }
 
         @Override
         public LogNormalDistribution.CDF getCDF()

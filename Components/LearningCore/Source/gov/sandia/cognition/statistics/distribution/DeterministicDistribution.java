@@ -294,6 +294,13 @@ public class DeterministicDistribution
         {
             return this.evaluate( input.doubleValue() );
         }
+        
+        @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
+        }
 
         @Override
         public double evaluate(

@@ -510,12 +510,19 @@ public class UnivariateGaussian
         }
         
         @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
+        }
+        
+        @Override
         public double evaluate(
             final double z )
         {
             return evaluate( z, this.mean, this.variance );
         }
-                
+        
         /**
          * Computes the cumulative distribution of a Normalized Gaussian
          * distribution using the errorFunction method.
@@ -639,6 +646,13 @@ public class UnivariateGaussian
             {
                 return this.evaluate( input.doubleValue() );
             }
+        
+            @Override
+            public double evaluateAsDouble(
+                final Double input)
+            {
+                return this.evaluate(input.doubleValue());
+            }
             
             /**
              * Evaluates the Inverse UnivariateGaussian CDF for the given
@@ -739,6 +753,13 @@ public class UnivariateGaussian
             final Double input )
         {
             return this.evaluate( input.doubleValue() );
+        }
+        
+        @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
         }
         
         @Override

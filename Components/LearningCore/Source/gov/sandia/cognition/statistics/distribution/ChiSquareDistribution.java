@@ -261,6 +261,13 @@ public class ChiSquareDistribution
         }
         
         @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
+        }
+        
+        @Override
         public double evaluate(
             final double input )
         {
@@ -373,6 +380,13 @@ public class ChiSquareDistribution
         {
             return this.evaluate( input.doubleValue() );
         }        
+        
+        @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
+        }
 
         /**
          * Computes the values of the Chi-Square CDF for the given input and

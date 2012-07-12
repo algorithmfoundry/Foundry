@@ -299,6 +299,13 @@ public class SnedecorFDistribution
             return this.evaluate( input.doubleValue() );
         }
         
+        @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
+        }
+        
         /**
          * Evaluates the F-distribution CDF(input,v1,v2)
          * @param input 

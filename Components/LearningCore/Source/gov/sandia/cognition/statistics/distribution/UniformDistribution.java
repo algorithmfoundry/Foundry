@@ -274,6 +274,13 @@ public class UniformDistribution
             return this.evaluate( input.doubleValue() );
         }
         
+        @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
+        }
+        
         /**
          * Evaluates the Uniform(minSupport,maxSupport) CDF for the given input
          *
@@ -434,6 +441,13 @@ public class UniformDistribution
             final Double input )
         {
             return this.evaluate( input.doubleValue() );
+        }
+        
+        @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
         }
 
         @Override

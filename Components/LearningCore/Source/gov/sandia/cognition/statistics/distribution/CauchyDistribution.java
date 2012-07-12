@@ -285,6 +285,13 @@ public class CauchyDistribution
         {
             return this.evaluate( input.doubleValue() );
         }
+        
+        @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
+        }
 
         @Override
         public double evaluate(
@@ -351,6 +358,13 @@ public class CauchyDistribution
             final Double input)
         {
             return this.evaluate( input.doubleValue() );
+        }
+        
+        @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
         }
 
         @Override

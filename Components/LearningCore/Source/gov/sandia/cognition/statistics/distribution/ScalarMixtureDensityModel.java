@@ -406,6 +406,13 @@ public class ScalarMixtureDensityModel
         {
             return this.evaluate( input.doubleValue() );
         }
+        
+        @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
+        }
 
         @Override
         public double evaluate(
@@ -514,6 +521,13 @@ public class ScalarMixtureDensityModel
             final Double input)
         {
             return this.evaluate( input.doubleValue() );
+        }
+        
+        @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
         }
 
         @Override
@@ -663,14 +677,14 @@ public class ScalarMixtureDensityModel
          */
         public EMLearner(
             Random random,
-            DistributionWeightedEstimator<Double,? extends SmoothUnivariateDistribution> ... learners )
+            Collection<? extends DistributionWeightedEstimator<Double,? extends SmoothUnivariateDistribution>> learners )
         {
 
             super( DEFAULT_MAX_ITERATIONS );
 
             this.setTolerance( DEFAULT_TOLERANCE );
             this.setRandom(random);
-            this.setLearners( Arrays.asList(learners) );
+            this.setLearners( new ArrayList<DistributionWeightedEstimator<Double,? extends SmoothUnivariateDistribution>>(learners) );
         }
 
         @Override

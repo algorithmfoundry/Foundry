@@ -407,6 +407,13 @@ public class BetaDistribution
         }
         
         @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
+        }
+        
+        @Override
         public double evaluate(
             final double input )
         {
@@ -553,6 +560,13 @@ public class BetaDistribution
         {
             return this.evaluate( input.doubleValue() );
         }
+        
+        @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
+        }
 
         @Override
         public double evaluate(
@@ -561,7 +575,7 @@ public class BetaDistribution
             return evaluate(
                 input, this.getAlpha(), this.getBeta() );
         }
-
+        
         /**
          * Evaluate the Beta-distribution CDF for Beta(x;alpha,beta)
          * @param x

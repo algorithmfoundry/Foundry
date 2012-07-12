@@ -399,6 +399,13 @@ public class StudentTDistribution
         }
         
         @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
+        }
+        
+        @Override
         public double evaluate(
             final double input )
         {
@@ -500,6 +507,13 @@ public class StudentTDistribution
             final Double input )
         {
             return this.evaluate( input.doubleValue() );
+        }
+        
+        @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
         }
 
         @Override

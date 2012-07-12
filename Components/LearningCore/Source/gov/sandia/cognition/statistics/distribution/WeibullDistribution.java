@@ -294,6 +294,13 @@ public class WeibullDistribution
         {
             return this.evaluate( input.doubleValue() );
         }
+        
+        @Override
+        public double evaluateAsDouble(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
+        }
 
         @Override
         public double evaluate(
@@ -359,6 +366,13 @@ public class WeibullDistribution
 
         @Override
         public Double evaluate(
+            final Double input)
+        {
+            return this.evaluate(input.doubleValue());
+        }
+        
+        @Override
+        public double evaluateAsDouble(
             final Double input)
         {
             return this.evaluate(input.doubleValue());
