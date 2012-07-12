@@ -500,6 +500,8 @@ abstract public class MatrixTestHarness
         assertTrue( instance.equals( (Object) clone ) );
         assertTrue( instance.equals( clone, 0.0 ) );
         assertTrue( instance.equals( clone, RANDOM.nextDouble() ) );
+        
+        assertFalse(this.createMatrix(N, M).equals(this.createMatrix(M + 1, N + 1)));
 
         Matrix pusher = instance.clone();
 

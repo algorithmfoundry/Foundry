@@ -96,6 +96,12 @@ public abstract class AbstractMatrix
     {
         final int M = this.getNumRows();
         final int N = this.getNumColumns();
+        
+        if (M != other.getNumRows() || N != other.getNumColumns())
+        {
+            return false;
+        }
+        
         for( int i = 0; i < M; i++ )
         {
             for( int j = 0; j < N; j++ )
