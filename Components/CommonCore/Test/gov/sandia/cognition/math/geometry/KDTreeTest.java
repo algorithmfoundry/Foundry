@@ -398,8 +398,8 @@ public class KDTreeTest
 
         System.out.println( "iterator" );
 
-        KDTree tree = this.createInstance();
-        Iterator iterator = tree.iterator();
+        KDTree<?,?,?> tree = this.createInstance();
+        Iterator<?> iterator = tree.iterator();
         assertTrue( iterator.hasNext() );
         try
         {

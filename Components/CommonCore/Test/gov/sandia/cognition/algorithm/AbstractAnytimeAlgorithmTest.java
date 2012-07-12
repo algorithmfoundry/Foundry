@@ -88,7 +88,7 @@ public class AbstractAnytimeAlgorithmTest
     {
         System.out.println( "getMaxIterations" );
         MyAbstractAnytimeAlgorithm instance = this.createInstance();
-        assertEquals( instance.DEFAULT_MAX_ITERATIONS, instance.getMaxIterations() );
+        assertEquals( MyAbstractAnytimeAlgorithm.DEFAULT_MAX_ITERATIONS, instance.getMaxIterations() );
     }
 
     /**
@@ -98,7 +98,7 @@ public class AbstractAnytimeAlgorithmTest
     {
         System.out.println( "setMaxIterations" );
         MyAbstractAnytimeAlgorithm instance = this.createInstance();
-        assertEquals( instance.DEFAULT_MAX_ITERATIONS, instance.getMaxIterations() );
+        assertEquals( MyAbstractAnytimeAlgorithm.DEFAULT_MAX_ITERATIONS, instance.getMaxIterations() );
         int maxIterations = instance.getMaxIterations() + 1;
         instance.setMaxIterations(maxIterations);
         assertEquals( maxIterations, instance.getMaxIterations() );

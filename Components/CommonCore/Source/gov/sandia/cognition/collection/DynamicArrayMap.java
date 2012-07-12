@@ -615,7 +615,7 @@ public class DynamicArrayMap<ValueType>
             }
             else if (other instanceof Collection)
             {
-                return this.equals((Collection) other);
+                return this.equals((Collection<?>) other);
             }
             else
             {
@@ -631,7 +631,7 @@ public class DynamicArrayMap<ValueType>
          * @return True if the two collections have the same elements.
          */
         public boolean equals(
-            final Collection other)
+            final Collection<?> other)
         {
             if (other == null)
             {
@@ -647,7 +647,7 @@ public class DynamicArrayMap<ValueType>
             // We need to iterate over both at the same time to check to
             // see that each element is equal.
             final Iterator<ValueType> thisIt = this.iterator();
-            final Iterator otherIt = other.iterator();
+            final Iterator<?> otherIt = other.iterator();
 
             boolean keepGoing = true;
             while (keepGoing)
@@ -836,7 +836,7 @@ public class DynamicArrayMap<ValueType>
             final Object other)
         {
             return other instanceof DynamicArrayMap.Entry
-                && this.equals((DynamicArrayMap.Entry) other);
+                && this.equals((DynamicArrayMap<?>.Entry) other);
         }
 
         /**
@@ -846,7 +846,7 @@ public class DynamicArrayMap<ValueType>
          * True if equal, false otherwise.
          */
         public boolean equals(
-            final DynamicArrayMap.Entry other)
+            final DynamicArrayMap<?>.Entry other)
         {
             return this.index == other.index 
                 && ObjectUtil.equalsSafe(this.value, other.value);

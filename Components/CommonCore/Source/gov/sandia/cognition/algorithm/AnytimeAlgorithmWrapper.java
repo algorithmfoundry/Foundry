@@ -25,7 +25,7 @@ import gov.sandia.cognition.util.ObjectUtil;
  * @author Kevin R. Dixon
  * @since 3.0
  */
-public abstract class AnytimeAlgorithmWrapper<ResultType, InternalAlgorithm extends AnytimeAlgorithm>
+public abstract class AnytimeAlgorithmWrapper<ResultType, InternalAlgorithm extends AnytimeAlgorithm<?>>
     extends AbstractIterativeAlgorithm
     implements AnytimeAlgorithm<ResultType>, IterativeAlgorithmListener
 {

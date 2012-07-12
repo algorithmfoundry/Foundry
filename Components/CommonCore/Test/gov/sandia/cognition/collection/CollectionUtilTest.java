@@ -144,7 +144,7 @@ public class CollectionUtilTest
         collection.clear();
         assertTrue(CollectionUtil.isEmpty(iterable));
 
-        Iterable i2 = new PureIterable();
+        Iterable<?> i2 = new PureIterable();
         assertFalse( CollectionUtil.isEmpty(i2) );
 
     }
@@ -191,7 +191,7 @@ public class CollectionUtilTest
         size = 0;
         assertEquals(size, CollectionUtil.size(iterable));
 
-        Iterable i2 = new PureIterable();
+        Iterable<?> i2 = new PureIterable();
         assertEquals( 10, CollectionUtil.size(i2) );
 
     }

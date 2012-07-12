@@ -113,7 +113,7 @@ public class LentzMethodTest
     {
         System.out.println( "getMaxIterations" );
         LentzMethod instance = new LentzMethod();
-        assertEquals( instance.DEFAULT_MAX_ITERATIONS, instance.getMaxIterations() );
+        assertEquals( LentzMethod.DEFAULT_MAX_ITERATIONS, instance.getMaxIterations() );
     }
 
     /**
@@ -124,7 +124,7 @@ public class LentzMethodTest
         System.out.println( "setMaxIterations" );
         int maxIterations = 1;
         LentzMethod instance = new LentzMethod();
-        assertEquals( instance.DEFAULT_MAX_ITERATIONS, instance.getMaxIterations() );
+        assertEquals( LentzMethod.DEFAULT_MAX_ITERATIONS, instance.getMaxIterations() );
         
         instance.setMaxIterations( maxIterations );
         assertEquals( maxIterations, instance.getMaxIterations() );
@@ -137,7 +137,7 @@ public class LentzMethodTest
     {
         System.out.println( "getTolerance" );
         LentzMethod instance = new LentzMethod();
-        assertEquals( instance.DEFAULT_TOLERANCE, instance.getTolerance() );
+        assertEquals( LentzMethod.DEFAULT_TOLERANCE, instance.getTolerance() );
     }
 
     /**
@@ -148,7 +148,7 @@ public class LentzMethodTest
         System.out.println( "setTolerance" );
         double tolerance = 0.0;
         LentzMethod instance = new LentzMethod();
-        assertEquals( instance.DEFAULT_TOLERANCE, instance.getTolerance() );
+        assertEquals( LentzMethod.DEFAULT_TOLERANCE, instance.getTolerance() );
         instance.setTolerance(tolerance);
         assertEquals( tolerance, instance.getTolerance() );
     }
@@ -160,7 +160,7 @@ public class LentzMethodTest
     {
         System.out.println( "getMinDenominator" );
         LentzMethod instance = new LentzMethod();
-        assertEquals( instance.DEFAULT_MIN_DENOMINATOR, instance.getMinDenominator() );
+        assertEquals( LentzMethod.DEFAULT_MIN_DENOMINATOR, instance.getMinDenominator() );
     }
 
     /**
@@ -171,7 +171,7 @@ public class LentzMethodTest
         System.out.println( "setMinDenominator" );
         double minDenominator = 0.0;
         LentzMethod instance = new LentzMethod();
-        assertEquals( instance.DEFAULT_MIN_DENOMINATOR, instance.getMinDenominator() );
+        assertEquals( LentzMethod.DEFAULT_MIN_DENOMINATOR, instance.getMinDenominator() );
         instance.setMinDenominator(minDenominator);
         assertEquals( minDenominator, instance.getMinDenominator() );
     }

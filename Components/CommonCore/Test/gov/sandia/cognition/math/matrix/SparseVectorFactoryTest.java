@@ -34,7 +34,7 @@ public class SparseVectorFactoryTest
     }
 
     @Override
-    public SparseVectorFactory createFactory()
+    public SparseVectorFactory<?> createFactory()
     {
         return SparseVectorFactory.getDefault();
     }
@@ -45,7 +45,7 @@ public class SparseVectorFactoryTest
     public void testGetDefaultSparse()
     {
         System.out.println("getDefault");
-        SparseVectorFactory result = SparseVectorFactory.getDefault();
+        SparseVectorFactory<?> result = SparseVectorFactory.getDefault();
         assertNotNull( result );
         assertSame( SparseVectorFactory.DEFAULT_SPARSE_INSTANCE, result );
     }
@@ -57,7 +57,7 @@ public class SparseVectorFactoryTest
     {
         System.out.println( "createVectorCapacity" );
 
-        SparseVectorFactory factory = this.createFactory();
+        SparseVectorFactory<?> factory = this.createFactory();
         int dim = RANDOM.nextInt(10) + 1;
         int capacity = dim-1;
         Vector v = factory.createVector(dim,capacity);

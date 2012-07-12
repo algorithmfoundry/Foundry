@@ -57,7 +57,7 @@ public abstract class MatrixFactoryTestHarness
      * @return
      * MatrixFactory to test
      */
-    public abstract MatrixFactory createFactory();
+    public abstract MatrixFactory<?> createFactory();
 
     /**
      * Creates a random matrix from the factory
@@ -74,7 +74,7 @@ public abstract class MatrixFactoryTestHarness
     {
         System.out.println( "Constructors" );
 
-        MatrixFactory factory = this.createFactory();
+        MatrixFactory<?> factory = this.createFactory();
         assertNotNull( factory );
         
     }
@@ -126,7 +126,7 @@ public abstract class MatrixFactoryTestHarness
     public void testCopyMatrix()
     {
         System.out.println("copyMatrix");
-        MatrixFactory instance = this.createFactory();
+        MatrixFactory<?> instance = this.createFactory();
 
         Matrix matrix = this.createRandomMatrix();
         assertNotNull( matrix );
@@ -146,7 +146,7 @@ public abstract class MatrixFactoryTestHarness
     {
         System.out.println("copyArray");
 
-        MatrixFactory instance = this.createFactory();
+        MatrixFactory<?> instance = this.createFactory();
         Matrix matrix = this.createRandomMatrix();
         int M = matrix.getNumRows();
         int N = matrix.getNumColumns();
@@ -184,7 +184,7 @@ public abstract class MatrixFactoryTestHarness
         int M = matrix.getNumRows();
         int N = matrix.getNumColumns();
 
-        MatrixFactory factory = this.createFactory();
+        MatrixFactory<?> factory = this.createFactory();
         Matrix m2 = factory.createMatrix(M, N);
         assertNotNull( m2 );
         assertNotSame( matrix, m2 );
@@ -210,7 +210,7 @@ public abstract class MatrixFactoryTestHarness
         Matrix matrix = this.createRandomMatrix();
         int M = matrix.getNumRows();
         int N = matrix.getNumColumns();
-        MatrixFactory instance = this.createFactory();
+        MatrixFactory<?> instance = this.createFactory();
         Matrix ident = instance.createIdentity(M, N);
         assertNotNull( ident );
         assertNotSame( matrix, ident );
@@ -241,7 +241,7 @@ public abstract class MatrixFactoryTestHarness
         System.out.println("createUniformRandom");
 
         Matrix m = this.createRandomMatrix();
-        MatrixFactory factory = this.createFactory();
+        MatrixFactory<?> factory = this.createFactory();
 
         int M = m.getNumRows();
         int N = m.getNumColumns();
@@ -292,7 +292,7 @@ public abstract class MatrixFactoryTestHarness
             rows.add( m.getRow(i) );
         }
 
-        MatrixFactory factory = this.createFactory();
+        MatrixFactory<?> factory = this.createFactory();
         @SuppressWarnings("unchecked")
         Matrix mr = factory.copyRowVectors(rows);
         assertNotNull( mr );
@@ -321,7 +321,7 @@ public abstract class MatrixFactoryTestHarness
             rows[i] = m.getRow(i);
         }
 
-        MatrixFactory factory = this.createFactory();
+        MatrixFactory<?> factory = this.createFactory();
         @SuppressWarnings("unchecked")
         Matrix mr = factory.copyRowVectors(rows);
         assertNotNull( mr );
@@ -349,7 +349,7 @@ public abstract class MatrixFactoryTestHarness
             cols.add( m.getColumn(j) );
         }
 
-        MatrixFactory factory = this.createFactory();
+        MatrixFactory<?> factory = this.createFactory();
         @SuppressWarnings("unchecked")
         Matrix mr = factory.copyColumnVectors(cols);
         assertNotNull( mr );
@@ -377,7 +377,7 @@ public abstract class MatrixFactoryTestHarness
             cols[j] = m.getColumn(j);
         }
 
-        MatrixFactory factory = this.createFactory();
+        MatrixFactory<?> factory = this.createFactory();
         @SuppressWarnings("unchecked")
         Matrix mr = factory.copyColumnVectors(cols);
         assertNotNull( mr );
@@ -398,7 +398,7 @@ public abstract class MatrixFactoryTestHarness
         Vector diagonal = VectorFactory.getDefault().copyValues(
             random.nextGaussian(), random.nextGaussian(), random.nextGaussian() );
         int M = diagonal.getDimensionality();
-        MatrixFactory instance = this.createFactory();
+        MatrixFactory<?> instance = this.createFactory();
         Matrix diag = instance.createDiagonal(diagonal);
         assertNotNull( diag );
         assertEquals( M, diag.getNumRows() );

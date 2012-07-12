@@ -138,7 +138,7 @@ public abstract class FileSerializationHandlerTestHarness<SerializedType>
         result.add(new Date());
 
         int N = random.nextInt(100) + 3;
-        LinkedList<Ring> list = new LinkedList<Ring>();
+        LinkedList<Ring<?>> list = new LinkedList<Ring<?>>();
         for (int i = 0; i < N; i++)
         {
             if (random.nextBoolean())

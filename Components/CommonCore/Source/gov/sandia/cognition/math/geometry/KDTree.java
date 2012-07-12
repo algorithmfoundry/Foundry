@@ -822,7 +822,7 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
          */
         protected class Neighbor<VectorType extends Vectorizable, DataType, PairType extends Pair<? extends VectorType,DataType>>
             extends AbstractCloneableSerializable
-            implements Comparable<Neighbor>
+            implements Comparable<Neighbor<VectorType, DataType, PairType>>
         {
             // Note: This class does not follow the get/set pattern in order to
             // make it as fast as possible, because it is used within the evaluate
@@ -856,7 +856,7 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
             }
 
             public int compareTo(
-                final Neighbor other)
+                final Neighbor<VectorType, DataType, PairType> other)
             {
                 // We reverse the comparison so that the item at the head of the
                 // priority queue is the furthest neighbor

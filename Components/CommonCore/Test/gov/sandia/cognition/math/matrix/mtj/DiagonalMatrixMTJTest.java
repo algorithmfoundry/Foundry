@@ -27,7 +27,7 @@ import junit.framework.TestSuite;
  * @author Kevin R. Dixon
  */
 public class DiagonalMatrixMTJTest
-    extends RingTestHarness
+    extends RingTestHarness<Matrix>
 {
 
     /**

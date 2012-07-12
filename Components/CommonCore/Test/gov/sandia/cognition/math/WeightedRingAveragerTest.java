@@ -58,7 +58,7 @@ public class WeightedRingAveragerTest
     {
         System.out.println( "Constructors" );
 
-        WeightedRingAverager averager = new WeightedRingAverager();
+        WeightedRingAverager<?> averager = new WeightedRingAverager<Vector>();
         assertNotNull( averager );
     }
 
@@ -69,8 +69,8 @@ public class WeightedRingAveragerTest
     {
         System.out.println( "Clone" );
 
-        WeightedRingAverager instance = new WeightedRingAverager();
-        WeightedRingAverager clone = (WeightedRingAverager) instance.clone();
+        WeightedRingAverager<?> instance = new WeightedRingAverager<Vector>();
+        WeightedRingAverager<?> clone = (WeightedRingAverager<?>) instance.clone();
         assertNotSame( instance, clone );
         assertNotNull( clone );
     }

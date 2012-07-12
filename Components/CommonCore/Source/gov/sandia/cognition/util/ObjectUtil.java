@@ -319,7 +319,7 @@ public class ObjectUtil
         final Object o)
     {
         Object instantiatedObject = null;
-        Class c = null;
+        Class<?> c = null;
         if ( o instanceof String )
         {
             try
@@ -347,7 +347,7 @@ public class ObjectUtil
         if( c.getInterfaces().length > 0 )
         {
             retval.append( "Implements " + c.getInterfaces().length + " interfaces:" );
-            for( Class i : c.getInterfaces() )
+            for( Class<?> i : c.getInterfaces() )
             {
                 retval.append( " " + i.getSimpleName() );
             }
@@ -383,16 +383,16 @@ public class ObjectUtil
      * String representing the Constructors and Methods
      */
     public static String inspectAPI(
-        final Class c )
+        final Class<?> c )
     {
         
         LinkedList<Method> methods = ObjectUtil.getMethods( c );
         
         StringBuilder retval = new StringBuilder();
         
-        Constructor[] constructors = c.getConstructors();
+        Constructor<?>[] constructors = c.getConstructors();
         
-        for( Constructor m : constructors )
+        for( Constructor<?> m : constructors )
         {
             retval.append( Modifier.toString( m.getModifiers() ) + " " );
             retval.append( m.getName() );
@@ -451,7 +451,7 @@ public class ObjectUtil
      * Collection of all public/private/protected Methods in the given Class
      */
     public static LinkedList<Method> getMethods(
-        final Class c)
+        final Class<?> c)
     {
         // Don't recurse if te class is null or if it is Object.
         if ( c == null || Object.class.equals( c ) )
@@ -504,9 +504,9 @@ public class ObjectUtil
                 }
                 retval = buffer.toString();
             }
-            else if( o instanceof Iterable )
+            else if( o instanceof Iterable<?> )
             {
-                Iterable iterable = (Iterable) o;
+                Iterable<?> iterable = (Iterable<?>) o;
                 final int num = CollectionUtil.size(iterable);
                 StringBuilder buffer = new StringBuilder( num * 20 );
                 buffer.append( o.getClass().getSimpleName() + " with " + num + " entries:\n" );
@@ -581,7 +581,7 @@ public class ObjectUtil
      * The String containing the name, type, and modifier of all fields.
      */
     public static String inspectFields(
-        final Class c )
+        final Class<?> c )
     {
         StringBuilder retval = new StringBuilder();
         
@@ -606,7 +606,7 @@ public class ObjectUtil
      *      list of fields on the given class or any of its super classes.
      */
     public static LinkedList<Field> getAllFields(
-        final Class c)
+        final Class<?> c)
     {
         // A null class has no fields.
         // Also, don't get fields from Object.
@@ -703,7 +703,7 @@ public class ObjectUtil
      * Short String representing the class name
      */
     public static String getShortClassName(
-        final Class c )
+        final Class<?> c )
     {
         return FileUtil.getExtension(c.toString());
     }

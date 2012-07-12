@@ -168,7 +168,7 @@ public class MatrixTimeTest
 
     public static void testBlas() throws Exception
     {
-        Class c = Class.forName("org.netlib.blas.BLAS");
+        Class<?> c = Class.forName("org.netlib.blas.BLAS");
         Field[] fields = c.getDeclaredFields();
         for (Field f : fields)
         {
@@ -184,7 +184,7 @@ public class MatrixTimeTest
 
     public static void testLapack() throws Exception
     {
-        Class c = Class.forName("org.netlib.lapack.LAPACK");
+        Class<?> c = Class.forName("org.netlib.lapack.LAPACK");
         Field[] fields = c.getDeclaredFields();
         for (Field f : fields)
         {

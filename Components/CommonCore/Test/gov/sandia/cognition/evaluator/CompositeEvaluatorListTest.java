@@ -63,7 +63,7 @@ public class CompositeEvaluatorListTest
             assertSame(evaluatorsArray[i], instance.getEvaluators().get(i));
         }
         
-        ArrayList<Evaluator> evaluatorsList = new ArrayList<Evaluator>();
+        ArrayList<Evaluator<?,?>> evaluatorsList = new ArrayList<Evaluator<?,?>>();
         for (int i = 0; i < evaluatorsArray.length; i++)
         {
             evaluatorsList.add(evaluatorsArray[i]);
@@ -160,7 +160,7 @@ public class CompositeEvaluatorListTest
             assertSame(evaluatorsArray[i], instance.getEvaluators().get(i));
         }
         
-        ArrayList<Evaluator> evaluatorsList = new ArrayList<Evaluator>();
+        ArrayList<Evaluator<?,?>> evaluatorsList = new ArrayList<Evaluator<?,?>>();
         for (int i = 0; i < evaluatorsArray.length; i++)
         {
             evaluatorsList.add(evaluatorsArray[i]);

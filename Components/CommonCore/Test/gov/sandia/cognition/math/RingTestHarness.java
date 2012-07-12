@@ -28,7 +28,7 @@ abstract public class RingTestHarness<RingType extends Ring<RingType>>
     extends TestCase
 {
 
-    /**m
+    /**
      * Random-number generator to use
      */
     public final Random RANDOM = new Random( 0 );

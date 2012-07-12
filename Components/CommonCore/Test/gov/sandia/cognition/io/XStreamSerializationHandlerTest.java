@@ -88,7 +88,7 @@ public class XStreamSerializationHandlerTest
         System.out.println("writeReadList");
         
         int N = RANDOM.nextInt(100) + 3;
-        LinkedList<Ring> list = new LinkedList<Ring>();
+        LinkedList<Ring<?>> list = new LinkedList<Ring<?>>();
         for( int i = 0; i < N; i++ )
         {
             if( RANDOM.nextBoolean() )
@@ -107,10 +107,10 @@ public class XStreamSerializationHandlerTest
         XStreamSerializationHandler.write( writer, list );
         
         StringReader reader = new StringReader( writer.toString() );
-        LinkedList list2 = null;
+        LinkedList<?> list2 = null;
         try
         {
-            list2 = (LinkedList) XStreamSerializationHandler.read( reader );
+            list2 = (LinkedList<?>) XStreamSerializationHandler.read( reader );
         }
         catch (Exception e)
         {
@@ -120,8 +120,8 @@ public class XStreamSerializationHandlerTest
         assertEquals( list.size(), list2.size() );
         for( int i = 0; i < list2.size(); i++ )
         {
-            Ring r1 = list.get(i);
-            Ring r2 = (Ring) list2.get(i);
+            Ring<?> r1 = list.get(i);
+            Ring<?> r2 = (Ring<?>) list2.get(i);
             assertEquals( r1, r2 );
         }
         
@@ -136,7 +136,7 @@ public class XStreamSerializationHandlerTest
         System.out.println("writeReadMultiple");
 
         int N = 2;
-        LinkedList<Ring> list = new LinkedList<Ring>();
+        LinkedList<Ring<?>> list = new LinkedList<Ring<?>>();
         for( int i = 0; i < N; i++ )
         {
             if( RANDOM.nextBoolean() )
@@ -161,10 +161,10 @@ public class XStreamSerializationHandlerTest
         int numRead = 0;
             
         // We should be able to read the first object fine
-        Ring o = null;
+        Ring<?> o = null;
         try
         {
-            o = (Ring) XStreamSerializationHandler.read( reader );
+            o = (Ring<?>) XStreamSerializationHandler.read( reader );
         }
         catch (Exception e)
         {

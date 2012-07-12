@@ -37,7 +37,7 @@ public class VectorFactoryTest
     }
 
     @Override
-    public VectorFactory createFactory()
+    public VectorFactory<?> createFactory()
     {
         return VectorFactory.getDefault();
     }
@@ -48,7 +48,7 @@ public class VectorFactoryTest
     public void testGetDefault()
     {
         System.out.println("getDefault");
-        VectorFactory f = VectorFactory.getDefault();
+        VectorFactory<?> f = VectorFactory.getDefault();
         assertNotNull(f);
         assertSame(f, VectorFactory.DEFAULT_DENSE_INSTANCE);
     }
@@ -59,7 +59,7 @@ public class VectorFactoryTest
     public void testGetDenseDefault()
     {
         System.out.println("getDenseDefault");
-        VectorFactory f = VectorFactory.getDenseDefault();
+        VectorFactory<?> f = VectorFactory.getDenseDefault();
         assertNotNull(f);
         assertSame(VectorFactory.DEFAULT_DENSE_INSTANCE, f);
     }
@@ -70,7 +70,7 @@ public class VectorFactoryTest
     public void testGetSparseDefault()
     {
         System.out.println("getSparseDefault");
-        SparseVectorFactory f = VectorFactory.getSparseDefault();
+        SparseVectorFactory<?> f = VectorFactory.getSparseDefault();
         assertNotNull(f);
         assertSame(VectorFactory.DEFAULT_SPARSE_INSTANCE, f);
     }

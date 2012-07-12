@@ -15,6 +15,7 @@
 package gov.sandia.cognition.io;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.CodeReviews;
 import gov.sandia.cognition.annotation.PublicationReference;
@@ -128,7 +129,7 @@ public class XStreamSerializationHandler
         Serializable object)
         throws IOException
     {
-        XStream xmlStream = new XStream();
+        XStream xmlStream = new XStream(new StaxDriver());
         xmlStream.toXML(object, writer);
         return true;
     }
@@ -298,7 +299,7 @@ public class XStreamSerializationHandler
         throws IOException
     {
 
-        XStream xmlStream = new XStream();
+        XStream xmlStream = new XStream(new StaxDriver());
         Object object = null;
         try
         {

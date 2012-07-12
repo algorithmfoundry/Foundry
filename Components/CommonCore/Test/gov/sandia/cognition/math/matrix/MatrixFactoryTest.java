@@ -46,7 +46,7 @@ public class MatrixFactoryTest
     }
 
     @Override
-    public MatrixFactory createFactory()
+    public MatrixFactory<?> createFactory()
     {
         return MatrixFactory.getDefault();
     }

@@ -76,11 +76,11 @@ public class DefaultTripleTest
     public void testClone()
     {
         System.out.println( "Clone" );
-        DefaultTriple instance = new DefaultTriple<Vector,Vector,Vector>(
+        DefaultTriple<?,?,?> instance = new DefaultTriple<Vector,Vector,Vector>(
             Vector3.createRandom(RANDOM),
             Vector3.createRandom(RANDOM),
             Vector3.createRandom(RANDOM) );
-        DefaultTriple clone = instance.clone();
+        DefaultTriple<?,?,?> clone = instance.clone();
         assertNotNull( clone );
         assertNotSame( instance, clone );
         assertNotNull( clone.getFirst() );

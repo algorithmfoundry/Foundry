@@ -335,7 +335,7 @@ public class ObjectUtilTest
         System.out.println( "toString(Array)" );
 
         final int num = 5;
-        WeightedValue[] values = new DefaultWeightedValue[num];
+        WeightedValue<?>[] values = new DefaultWeightedValue<?>[num];
         for( int i = 0; i < num; i++ )
         {
             values[i] = new DefaultWeightedValue<String>( "Num " + i, r.nextGaussian() );
@@ -350,7 +350,7 @@ public class ObjectUtilTest
     public void testToStringIterable()
     {
         System.out.println( "toString(Iterable)" );
-        LinkedList<WeightedValue> list = new LinkedList<WeightedValue>();
+        LinkedList<WeightedValue<String>> list = new LinkedList<WeightedValue<String>>();
         for( int i = 0; i < 4; i++ )
         {
             list.add( new DefaultWeightedValue<String>( "Num " + i, r.nextGaussian() ) );

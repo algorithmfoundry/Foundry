@@ -58,7 +58,7 @@ public class NumericalDifferentiatorDoubleJacobianTest
     public void testConstructors()
     {
         System.out.println( "Constuctors" );
-        NumericalDifferentiator f = new NumericalDifferentiator.DoubleJacobian();
+        NumericalDifferentiator<?,?,?> f = new NumericalDifferentiator.DoubleJacobian();
         assertNotNull( f );
         assertNull( f.getInternalFunction() );
         assertEquals( NumericalDifferentiator.DEFAULT_DELTA, f.getDelta() );

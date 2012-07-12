@@ -46,17 +46,17 @@ public abstract class VectorFactoryTestHarness
      * @return
      * VectorFactory
      */
-    public abstract VectorFactory createFactory();
+    public abstract VectorFactory<?> createFactory();
 
     /**
      * Random-number range, {@value}.
      */
-    protected static double RANGE = 10.0;
+    protected double RANGE = 10.0;
 
     /**
      * Random-number generator.
      */
-    protected static Random RANDOM = new Random(1);
+    protected Random RANDOM = new Random(1);
 
     /**
      * Constructor test
@@ -64,7 +64,7 @@ public abstract class VectorFactoryTestHarness
     public void testConstructors()
     {
         System.out.println( "Constructors" );
-        VectorFactory f = this.createFactory();
+        VectorFactory<?> f = this.createFactory();
         assertNotNull( f );
     }
 
@@ -79,7 +79,7 @@ public abstract class VectorFactoryTestHarness
         Vector m = VectorFactory.getDefault().createUniformRandom( M, -RANGE, RANGE, RANDOM );
         Vector mclone = m.clone();
         
-        VectorFactory instance = this.createFactory();
+        VectorFactory<?> instance = this.createFactory();
         
         assertEquals( m, mclone );
         Vector r = instance.copyVector( m );
@@ -125,7 +125,7 @@ public abstract class VectorFactoryTestHarness
         }
         double [] valuesClone = values.clone();
         
-        VectorFactory f = this.createFactory();
+        VectorFactory<?> f = this.createFactory();
         Vector m = f.copyArray( values );
         
         assertEquals( m.getDimensionality(), M );
@@ -167,7 +167,7 @@ public abstract class VectorFactoryTestHarness
         System.out.println("copyValues");
         
         
-        VectorFactory f = this.createFactory();
+        VectorFactory<?> f = this.createFactory();
         Vector m0 = f.copyValues();
         assertEquals( 0, m0.getDimensionality() );
         
@@ -200,7 +200,7 @@ public abstract class VectorFactoryTestHarness
         System.out.println("createVector");
         
         int M = RANDOM.nextInt(10) + 1;
-        VectorFactory f = this.createFactory();
+        VectorFactory<?> f = this.createFactory();
         Vector m = f.createVector( M );
         assertEquals( M, m.getDimensionality() );
         for( int i = 0; i < M; i++ )
@@ -231,7 +231,7 @@ public abstract class VectorFactoryTestHarness
 
         int M = RANDOM.nextInt(10) + 1;
         double value = RANDOM.nextGaussian();
-        VectorFactory f = this.createFactory();
+        VectorFactory<?> f = this.createFactory();
         Vector v1 = f.createVector(M,0.0);
         Vector m = f.createVector(M, value);
         assertEquals( M, m.getDimensionality() );
@@ -263,7 +263,7 @@ public abstract class VectorFactoryTestHarness
         System.out.println("createUniformRandom");
         
         int M = RANDOM.nextInt(10) + 1;
-        VectorFactory f = this.createFactory();
+        VectorFactory<?> f = this.createFactory();
         Vector m = f.createUniformRandom( M, RANGE, 2*RANGE, RANDOM );
         assertEquals( M, m.getDimensionality() );
         for( int i = 0; i < M; i++ )
@@ -280,7 +280,7 @@ public abstract class VectorFactoryTestHarness
     public void testCopyArray_3args()
     {
         System.out.println("copyArray");
-        VectorFactory instance = this.createFactory();
+        VectorFactory<?> instance = this.createFactory();
 
         int dimensionality = 10;
         int[] indices = { 1, 2, 5, 4, 0 };
@@ -315,7 +315,7 @@ public abstract class VectorFactoryTestHarness
 
     public void testCreateVector1D()
     {
-        VectorFactory f = this.createFactory();
+        VectorFactory<?> f = this.createFactory();
         Vector1D v = f.createVector1D();
         assertNotNull(v);
         assertEquals(1, v.getDimensionality());
@@ -350,7 +350,7 @@ public abstract class VectorFactoryTestHarness
 
     public void testCreateVector2D()
     {
-        VectorFactory f = this.createFactory();
+        VectorFactory<?> f = this.createFactory();
         Vector2D v = f.createVector2D();
         assertNotNull(v);
         assertEquals(2, v.getDimensionality());
@@ -392,7 +392,7 @@ public abstract class VectorFactoryTestHarness
 
     public void testCreateVector3D()
     {
-        VectorFactory f = this.createFactory();
+        VectorFactory<?> f = this.createFactory();
         Vector3D v = f.createVector3D();
         assertNotNull(v);
         assertEquals(3, v.getDimensionality());

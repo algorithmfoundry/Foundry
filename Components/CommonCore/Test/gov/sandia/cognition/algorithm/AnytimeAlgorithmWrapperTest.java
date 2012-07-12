@@ -188,7 +188,7 @@ extends TestCase
     public void testGetMaxIterations()
     {
         System.out.println("getMaxIterations");
-        AnytimeAlgorithmWrapper instance = this.createInstance();
+        AnytimeAlgorithmWrapper<?,?> instance = this.createInstance();
         assertTrue( instance.getMaxIterations() > 0 );
         assertEquals( instance.getAlgorithm().getMaxIterations(), instance.getMaxIterations() );
     }
@@ -199,7 +199,7 @@ extends TestCase
     public void testSetMaxIterations()
     {
         System.out.println("setMaxIterations");
-        AnytimeAlgorithmWrapper instance = this.createInstance();
+        AnytimeAlgorithmWrapper<?,?> instance = this.createInstance();
         int i = instance.getMaxIterations();
 
         int i2 = i += random.nextInt(100) + 1;
@@ -223,7 +223,7 @@ extends TestCase
     public void testGetAlgorithm()
     {
         System.out.println("getAlgorithm");
-        AnytimeAlgorithmWrapper instance = this.createInstance();
+        AnytimeAlgorithmWrapper<?,?> instance = this.createInstance();
         assertNotNull( instance.getAlgorithm() );
     }
 
@@ -234,8 +234,8 @@ extends TestCase
     public void testSetAlgorithm()
     {
         System.out.println("setAlgorithm");
-        AnytimeAlgorithmWrapper instance = this.createInstance();
-        AnytimeAlgorithm algorithm = instance.getAlgorithm();
+        AnytimeAlgorithmWrapper<Double,LentzMethod> instance = this.createInstance();
+        LentzMethod algorithm = instance.getAlgorithm();
         assertNotNull( algorithm );
         instance.setAlgorithm(null);
         assertNull( instance.getAlgorithm() );
@@ -293,7 +293,7 @@ extends TestCase
     public void testIsResultValid()
     {
         System.out.println("isResultValid");
-        AnytimeAlgorithmWrapper instance = this.createInstance();
+        AnytimeAlgorithmWrapper<?,?> instance = this.createInstance();
         assertFalse( instance.isResultValid() );
         assertNull( instance.getResult() );
     }

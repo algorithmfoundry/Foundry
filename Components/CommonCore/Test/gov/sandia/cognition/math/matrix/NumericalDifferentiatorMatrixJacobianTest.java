@@ -88,7 +88,7 @@ public class NumericalDifferentiatorMatrixJacobianTest
     public void testConstructors()
     {
         System.out.println( "Constuctors" );
-        NumericalDifferentiator f = new NumericalDifferentiator.MatrixJacobian();
+        NumericalDifferentiator<?,?,?> f = new NumericalDifferentiator.MatrixJacobian();
         assertNotNull( f );
         assertNull( f.getInternalFunction() );
         assertEquals( NumericalDifferentiator.DEFAULT_DELTA, f.getDelta() );

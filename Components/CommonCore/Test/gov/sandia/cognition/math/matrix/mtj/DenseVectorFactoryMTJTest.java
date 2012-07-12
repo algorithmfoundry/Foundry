@@ -47,7 +47,7 @@ public class DenseVectorFactoryMTJTest extends VectorFactoryTestHarness
         return suite;
     }
 
-    public VectorFactory createFactory()
+    public VectorFactory<?> createFactory()
     {
         return new DenseVectorFactoryMTJ();
     }

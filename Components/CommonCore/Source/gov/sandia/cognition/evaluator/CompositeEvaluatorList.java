@@ -41,7 +41,7 @@ public class CompositeEvaluatorList<InputType, OutputType>
     implements Evaluator<InputType, OutputType>
 {
     /** The list of evaluators to compose together. */
-    private ArrayList<Evaluator> evaluators;
+    private ArrayList<Evaluator<?,?>> evaluators;
     
     /**
      * Creates a new {@code CompositeEvaluatorList} with an empty list of 
@@ -49,7 +49,7 @@ public class CompositeEvaluatorList<InputType, OutputType>
      */
     public CompositeEvaluatorList()
     {
-        this(new ArrayList<Evaluator>());
+        this(new ArrayList<Evaluator<?,?>>());
     }
     
     /**
@@ -60,7 +60,7 @@ public class CompositeEvaluatorList<InputType, OutputType>
      *      The array of evaluators to compose.
      */
     public CompositeEvaluatorList(
-        final Evaluator... evaluatorsArray)
+        final Evaluator<?,?>... evaluatorsArray)
     {
         this(Arrays.asList(evaluatorsArray));
     }
@@ -73,7 +73,7 @@ public class CompositeEvaluatorList<InputType, OutputType>
      *      The evaluators to compose.
      */
     public CompositeEvaluatorList(
-        final Collection<? extends Evaluator> evaluators)
+        final Collection<? extends Evaluator<?,?>> evaluators)
     {
         super();
         
@@ -91,9 +91,7 @@ public class CompositeEvaluatorList<InputType, OutputType>
         return result;
     }
     
-    
-
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings(value={"unchecked", "rawtypes"})
     public OutputType evaluate(
         final InputType input)
     {
@@ -112,7 +110,7 @@ public class CompositeEvaluatorList<InputType, OutputType>
      * 
      * @return  The list of evaluators.
      */
-    public ArrayList<Evaluator> getEvaluators()
+    public ArrayList<Evaluator<?,?>> getEvaluators()
     {
         return this.evaluators;
     }
@@ -125,9 +123,9 @@ public class CompositeEvaluatorList<InputType, OutputType>
      *      The list of evaluators.
      */
     public void setEvaluators(
-        final Collection<? extends Evaluator> evaluators)
+        final Collection<? extends Evaluator<?,?>> evaluators)
     {
-        this.evaluators = new ArrayList<Evaluator>(evaluators);
+        this.evaluators = new ArrayList<Evaluator<?,?>>(evaluators);
     }
     
     /**
@@ -137,7 +135,7 @@ public class CompositeEvaluatorList<InputType, OutputType>
      *      The array of evaluators.
      */
     public void setEvaluators(
-        final Evaluator... evaluatorsArray)
+        final Evaluator<?,?>... evaluatorsArray)
     {
         this.setEvaluators(Arrays.asList(evaluatorsArray));
     }

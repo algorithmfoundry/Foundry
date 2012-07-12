@@ -15,6 +15,7 @@
 package gov.sandia.cognition.io.serialization;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -66,7 +67,7 @@ public class XStreamSerializationHandlerTest
             new XStreamSerializationHandler();
         assertNotNull(instance);
 
-        XStream xstream = new XStream();
+        XStream xstream = new XStream(new StaxDriver());
         instance = new XStreamSerializationHandler(xstream);
         assertNotNull(instance);
     }
