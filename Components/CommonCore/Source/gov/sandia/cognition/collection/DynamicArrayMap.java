@@ -835,23 +835,17 @@ public class DynamicArrayMap<ValueType>
         public boolean equals(
             final Object other)
         {
-            return other instanceof DynamicArrayMap.Entry
-                && this.equals((DynamicArrayMap.Entry) other);
+            if (!(other instanceof DynamicArrayMap.Entry))
+            {
+                return false;
+            }
+            
+            @SuppressWarnings("unchecked")
+            final Entry otherEntry = (Entry) other;
+            return this.index == otherEntry.index 
+                && ObjectUtil.equalsSafe(this.value, otherEntry.value);
         }
 
-        /**
-         * Returns true if the entries are equal, false otherwise
-         * @param other Other Entry to compare against
-         * @return
-         * True if equal, false otherwise.
-         */
-        public boolean equals(
-            final DynamicArrayMap.Entry other)
-        {
-            return this.index == other.index 
-                && ObjectUtil.equalsSafe(this.value, other.value);
-        }
-        
         @Override
         public int hashCode()
         {
