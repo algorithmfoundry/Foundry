@@ -504,4 +504,34 @@ public class CollectionUtilTest
         list.add("dzd");
         assertEquals("a-/-bb-/-c-/-dzd", CollectionUtil.toStringDelimited(list, "-/-"));
     }
+
+    public void testCreateArrayList()
+    {
+        Double first = RANDOM.nextGaussian();
+        Double second = RANDOM.nextGaussian();
+
+        ArrayList<Double> result = CollectionUtil.createArrayList(first, second);
+        assertEquals(2, result.size());
+        assertSame(first, result.get(0));
+        assertSame(second, result.get(1));
+
+        first = null;
+
+        result = CollectionUtil.createArrayList(first, second);
+        assertEquals(2, result.size());
+        assertSame(first, result.get(0));
+        assertSame(second, result.get(1));
+
+        second = null;
+        result = CollectionUtil.createArrayList(first, second);
+        assertEquals(2, result.size());
+        assertSame(first, result.get(0));
+        assertSame(second, result.get(1));
+
+        first = RANDOM.nextGaussian();
+        result = CollectionUtil.createArrayList(first, second);
+        assertEquals(2, result.size());
+        assertSame(first, result.get(0));
+        assertSame(second, result.get(1));
+    }
 }

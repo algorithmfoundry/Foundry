@@ -15,6 +15,7 @@
 package gov.sandia.cognition.learning.algorithm.clustering.hierarchy;
 
 
+import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.learning.algorithm.clustering.cluster.Cluster;
 import java.util.Arrays;
 import java.util.List;
@@ -89,7 +90,7 @@ public class DefaultClusterHierarchyNode
         final ClusterHierarchyNode<DataType, ClusterType> firstChild,
         final ClusterHierarchyNode<DataType, ClusterType> secondChild)
     {
-        this(cluster, Arrays.asList(firstChild, secondChild));
+        this(cluster, CollectionUtil.createArrayList(firstChild, secondChild));
     }
 
     public List<ClusterHierarchyNode<DataType, ClusterType>> getChildren()
@@ -121,7 +122,8 @@ public class DefaultClusterHierarchyNode
         final ClusterHierarchyNode<DataType, ClusterType> firstChild,
         final ClusterHierarchyNode<DataType, ClusterType> secondChild)
     {
-        this.setChildren(Arrays.asList(firstChild, secondChild));
+        this.setChildren(CollectionUtil.createArrayList(
+            firstChild, secondChild));
     }
 
 }

@@ -597,4 +597,24 @@ public class CollectionUtil
     }
 
 
+    /**
+     * Creates a new ArrayList from the given pair of values.
+     *
+     * @param <DataType>
+     *      The data type.
+     * @param   first
+     *      The first value.
+     * @param   second
+     *      The second value.
+     */
+    public static <DataType> ArrayList<DataType> createArrayList(
+        final DataType first,
+        final DataType second)
+    {
+        final ArrayList<DataType> result = new ArrayList<DataType>(2);
+        result.add(first);
+        result.add(second);
+        return result;
+    }
+
 }
