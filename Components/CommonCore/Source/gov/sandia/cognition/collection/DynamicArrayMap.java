@@ -836,7 +836,7 @@ public class DynamicArrayMap<ValueType>
             final Object other)
         {
             return other instanceof DynamicArrayMap.Entry
-                && this.equals((DynamicArrayMap<?>.Entry) other);
+                && this.equals((DynamicArrayMap.Entry) other);
         }
 
         /**
@@ -846,7 +846,7 @@ public class DynamicArrayMap<ValueType>
          * True if equal, false otherwise.
          */
         public boolean equals(
-            final DynamicArrayMap<?>.Entry other)
+            final DynamicArrayMap.Entry other)
         {
             return this.index == other.index 
                 && ObjectUtil.equalsSafe(this.value, other.value);
