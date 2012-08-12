@@ -87,6 +87,7 @@ public class DefaultIndexer<ValueType>
     @Override
     public DefaultIndexer<ValueType> clone()
     {
+        @SuppressWarnings("unchecked")
         final DefaultIndexer<ValueType> clone = (DefaultIndexer<ValueType>)
             super.clone();
 
