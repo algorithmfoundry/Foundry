@@ -160,6 +160,17 @@ public interface Vector
     public Vector subVector(
         final int minIndex,
         final int maxIndex );
+
+    /**
+     * Converts this vector to a new array of doubles, in the same order as they
+     * are in the vector. The returned will be safe in that no references are
+     * maintained by this vector.
+     *
+     * @return
+     *      The vector as a dense array of doubles. Its length will be equal to
+     *      the dimensionality of the vector.
+     */
+    public double[] toArray();
     
     @Override
     public String toString();

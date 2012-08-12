@@ -638,6 +638,32 @@ abstract public class VectorTestHarness
     }
 
     /**
+     * Test of toArray
+     */
+    public void testToArray()
+    {
+        Vector v1 = this.createRandom();
+        int M = v1.getDimensionality();
+        double[] result = v1.toArray();
+        assertNotSame(result, v1.toArray());
+
+        assertEquals(M, result.length);
+        for (int i = 0; i < M; i++)
+        {
+            assertEquals(v1.getElement(i), result[i]);
+        }
+
+        int index = this.RANDOM.nextInt(M);
+        result[index] += 1;
+        assertFalse(v1.getElement(index) == result[index]);
+
+
+        index = this.RANDOM.nextInt(M);
+        v1.setElement(index, 2 * v1.getElement(index));
+        assertFalse(v1.getElement(index) == result[index]);
+    }
+
+    /**
      * Test of toString
      */
     public void testToString()

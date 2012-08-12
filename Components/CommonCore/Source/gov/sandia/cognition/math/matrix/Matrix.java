@@ -418,6 +418,18 @@ public interface Matrix
      */
     public Vector convertToVector();
 
+    /**
+     * Converts this matrix to a new array of array of doubles, in the same
+     * order as they are in the matrix. The returned will be safe in that no
+     * references are maintained by this class.
+     *
+     * @return
+     *      This matrix as a dense array. The length of the first layer of
+     *      the array will be equal to the number of rows and the second
+     *      layer will be equal to the number of columns.
+     */
+    public double[][] toArray();
+
     public String toString();
 
     /**

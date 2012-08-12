@@ -1768,6 +1768,40 @@ abstract public class MatrixTestHarness
     }
 
     /**
+     * Test of the toArray method.
+     */
+    public void testToArray()
+    {
+        Matrix m1 = this.createRandom();
+        int M = m1.getNumRows();
+        int N = m1.getNumColumns();
+
+        double[][] result = m1.toArray();
+        assertNotSame(result, m1.toArray());
+        
+        assertEquals(M, result.length);
+        for (int i = 0; i < M; i++)
+        {
+            assertEquals(N, result[i].length);
+
+            for (int j = 0; j < N; j++)
+            {
+                assertEquals(m1.getElement(i, j), result[i][j]);
+            }
+        }
+
+        int i = this.RANDOM.nextInt(M);
+        int j = this.RANDOM.nextInt(N);
+        result[i][j] += 1;
+        assertFalse(m1.getElement(i, j) == result[i][j]);
+
+        i = this.RANDOM.nextInt(M);
+        j = this.RANDOM.nextInt(N);
+        m1.setElement(i, j, m1.getElement(i, j) * 2);
+        assertFalse(m1.getElement(i, j) == result[i][j]);
+    }
+
+    /**
      * Test of toString() method
      */
     public void testToString()

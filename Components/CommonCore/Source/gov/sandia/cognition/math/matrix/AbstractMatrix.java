@@ -372,4 +372,23 @@ public abstract class AbstractMatrix
 
         return true;
     }
+
+    @Override
+    public double[][] toArray()
+    {
+        final int rowCount = this.getNumRows();
+        final int columnCount = this.getNumColumns();
+        final double[][] result = new double[rowCount][columnCount];
+
+        for (int i = 0; i < rowCount; i++)
+        {
+            for (int j = 0; j < columnCount; j++)
+            {
+                result[i][j] = this.getElement(i, j);
+            }
+        }
+
+        return result;
+    }
+    
 }

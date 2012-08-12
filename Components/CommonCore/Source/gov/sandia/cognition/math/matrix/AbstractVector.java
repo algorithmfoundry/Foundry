@@ -157,6 +157,18 @@ public abstract class AbstractVector
         first.assertDimensionalityEquals( second.getDimensionality() );
     }
 
+    @Override
+    public double[] toArray()
+    {
+        final int dimensionality = this.getDimensionality();
+        final double[] result = new double[dimensionality];
+        for (int i = 0; i < dimensionality; i++)
+        {
+            result[i] = this.getElement(i);
+        }
+        return result;
+    }
+
     /**
      * Converts a vector to a string that consists of each value in the vector 
      *
