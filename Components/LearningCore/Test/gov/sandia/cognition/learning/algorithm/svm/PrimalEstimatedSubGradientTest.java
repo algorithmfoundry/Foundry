@@ -14,11 +14,14 @@
 
 package gov.sandia.cognition.learning.algorithm.svm;
 
+import gov.sandia.cognition.algorithm.IterativeAlgorithm;
+import gov.sandia.cognition.algorithm.event.AbstractIterativeAlgorithmListener;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.math.matrix.Vectorizable;
 import java.util.ArrayList;
 import java.util.Random;
 import junit.framework.TestCase;
@@ -80,12 +83,58 @@ public class PrimalEstimatedSubGradientTest
             // else - The dot product wsa between -1.0 and +1.0, try again.
         }
 
-        PrimalEstimatedSubGradient instance = new PrimalEstimatedSubGradient(
-            1000, 0.0001, 1000, random);
+        final PrimalEstimatedSubGradient instance = new PrimalEstimatedSubGradient(
+            10, 0.01, 200, random);
+
+        // Plug in a little algorithm listener to print out the performance
+        // information.
+        instance.addIterativeAlgorithmListener(new AbstractIterativeAlgorithmListener()
+        {
+
+            @Override
+            public void stepEnded(
+                final IterativeAlgorithm algorithm)
+            {
+                final LinearBinaryCategorizer result = instance.getResult();
+
+                // Compute the loss of the data as well as the number of
+                // errors.
+                double loss = 0.0;
+                int errorCount = 0;
+                for (InputOutputPair<? extends Vectorizable, Boolean> example
+                    : instance.getData())
+                {
+                    final double predicted = result.evaluateAsDouble(
+                        example.getInput());
+                    final double actual = example.getOutput() ? 1.0 : -1.0;
+                    loss += Math.max(0, 1.0 - actual * predicted);
+                    if (predicted * actual <= 0.0)
+                    {
+                        errorCount += 1;
+                    }
+                }
+
+                loss /= instance.getData().size();
+
+                // Compute the regularization term.
+                final double regularization =
+                        instance.getRegularizationWeight() / 2.0
+                        * result.getWeights().norm2Squared();
+                final double objective = loss + regularization;
+
+                System.out.println(
+                    "Iteration: " + instance.getIteration()
+                    + " Objective: " + objective
+                    + " Loss: " + loss
+                    + " Regularization: " + regularization
+                    + " Errors: " + errorCount);
+            }
+        });
 
         final LinearBinaryCategorizer result = instance.learn(data);
         assertSame(result, instance.getResult());
 
+        // Make sure there is perfect learning on this example.
         for (InputOutputPair<Vector, Boolean> example : data)
         {
 //            System.out.println("" + example.getInput() + " -> " + example.getOutput());

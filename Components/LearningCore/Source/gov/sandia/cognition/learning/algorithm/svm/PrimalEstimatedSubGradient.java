@@ -180,11 +180,9 @@ public class PrimalEstimatedSubGradient
         final double lambda = this.regularizationWeight;
         final double learningRate = 1.0 / (lambda * this.iteration);
 
-        final Vector weights = result.getWeights();
-        weights.scaleEquals(1.0 - (learningRate * lambda));
-
         // Compute the update to the weight vector.
         this.update.zero();
+        double biasUpdate = 0.0;
         int errorCount = 0;
         for (InputOutputPair<? extends Vectorizable, Boolean> example : subSet)
         {
@@ -208,14 +206,27 @@ public class PrimalEstimatedSubGradient
                 {
                     this.update.minusEquals(input);
                 }
+                biasUpdate += actual;
             }
             // else - No update required.
         }
 
-        this.update.scaleEquals(learningRate / this.dataSampleSize);
+        // Update the weights.
+        final Vector weights = this.result.getWeights();
+
+        // Regularization shrinkage.
+        weights.scaleEquals(1.0 - (learningRate * lambda));
+
+        // Apply update.
+        final double stepSize = learningRate / subSet.size();
+        this.update.scaleEquals(stepSize);
         weights.plusEquals(this.update);
 
-        // w_t+1 = min{1, (1 / sqrt(regularizationWeight)) / ||w_t+1/2||)} w_t+1/2
+        // Bias doesn't get regularized or projected.
+        biasUpdate *= stepSize;
+        double bias = this.result.getBias() + biasUpdate;
+
+        // w_t+1 = min{1, (1 / sqrt(lambda)) / ||w_t+1/2||)} w_t+1/2
         final double norm2Squared = weights.norm2Squared();
         final double projection = 1.0 / Math.sqrt(lambda * norm2Squared);
         if (projection < 1.0)
@@ -224,6 +235,7 @@ public class PrimalEstimatedSubGradient
         }
 
         this.result.setWeights(weights);
+        this.result.setBias(bias);
 
         return true;
     }
