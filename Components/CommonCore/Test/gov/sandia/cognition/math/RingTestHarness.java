@@ -323,6 +323,229 @@ abstract public class RingTestHarness<RingType extends Ring<RingType>>
     }
 
     /**
+     * Test of scaledPlus method.
+     */
+    public void testScaledPlus()
+    {
+        System.out.println("scaledPlus");
+
+        // This test assumes that plusEquals has been tested and verified, and
+        // that the exception conditions are equivalent
+        RingType r1 = this.createRandom();
+        RingType r1clone = r1.clone();
+        RingType r2 = r1.scale(RANDOM.nextDouble() * 2.0 * RANGE - RANGE);
+        RingType r2clone = r2.clone();
+
+        // Check that scaledPlus() doesn't modify r1 or r2
+        double scaleFactor = RANDOM.nextDouble() * 2.0 * RANGE - RANGE;
+        r1.scaledPlus(scaleFactor, r2);
+        assertEquals(r1, r1clone);
+        assertEquals(r2, r2clone);
+
+        assertEquals(r1.scaledPlus(scaleFactor, r2), r1.plus(r2.scale(scaleFactor)));
+
+        // Check some self additions.
+        assertEquals(r1.scaledPlus(1.0, r1), r1.scale(2.0), TOLERANCE);
+        assertEquals(r1.scaledPlus(2.0, r1), r1.scale(3.0), TOLERANCE);
+        assertEquals(r1.scaledPlus(-2.0, r1), r1.scale(-1.0), TOLERANCE);
+        assertEquals(r1.scaledPlus(-4.0, r1), r1.scale(-3.0), TOLERANCE);
+
+        // Doing a -1 with self should result in zero.
+        assertEquals(r1.scaledPlus(-1.0, r1), r1.scale(0.0), TOLERANCE);
+
+        for (int i = 0; i < 10; i++)
+        {
+            scaleFactor = RANDOM.nextDouble() * 2.0 * RANGE - RANGE;
+            assertEquals(r1.scaledPlus(scaleFactor, r2), 
+                r1.plus(r2.scale(scaleFactor)));
+            assertEquals(r2.scaledPlus(scaleFactor, r1),
+                r2.plus(r1.scale(scaleFactor)));
+        }
+
+        boolean exceptionThrown = false;
+        try
+        {
+            r1.scaledPlus(scaleFactor, null);
+        }
+        catch (NullPointerException e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+
+    }
+
+    /**
+     * Test of scaledPlusEquals method.
+     */
+    public void testScaledPlusEquals()
+    {
+        System.out.println("scaledPlusEquals");
+
+        // This test assumes that scaledPlus has been tested and verified, and
+        // that the exception conditions are equivalent
+        RingType r1 = this.createRandom();
+        RingType r1clone = r1.clone();
+        RingType r2 = r1.scale(RANDOM.nextDouble() * 2.0 * RANGE - RANGE);
+        RingType r2clone = r2.clone();
+
+        // Check that scaledPlus() doesn't modify r1 or r2
+        double scaleFactor = RANDOM.nextDouble() * 2.0 * RANGE - RANGE;
+
+        // Check that plusEquals() doesn't modify r2, but does modify r1
+        r1.scaledPlusEquals(scaleFactor, r2);
+        assertEquals(r2, r2clone);
+        assertFalse(r1.equals(r1clone));
+
+        // See if the plusEquals() result is the same as plus() result
+        assertEquals(r1, r1clone.scaledPlus(scaleFactor, r2));
+
+        for (int i = 0; i < 10; i++)
+        {
+            r1 = r1clone.clone();
+            r2 = r2clone.clone();
+            scaleFactor = RANDOM.nextDouble() * 2.0 * RANGE - RANGE;
+            r1.scaledPlusEquals(scaleFactor, r2);
+            assertEquals(r1,
+                r1clone.plus(r2clone.scale(scaleFactor)));
+
+            assertEquals(r1, r1clone.scaledPlus(scaleFactor, r2clone));
+        }
+
+        boolean exceptionThrown = false;
+        try
+        {
+            r1.scaledPlusEquals(scaleFactor, null);
+        }
+        catch (NullPointerException e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+    }
+
+    /**
+     * Test of scaledMinus method.
+     */
+    public void testScaledMinus()
+    {
+        System.out.println("scaledMinus");
+
+        // This test assumes that minusEquals and scaledPlus have been tested
+        // and verified, and that the exception conditions are equivalent
+        RingType r1 = this.createRandom();
+        RingType r1clone = r1.clone();
+        RingType r2 = r1.scale(RANDOM.nextDouble() * 2.0 * RANGE - RANGE);
+        RingType r2clone = r2.clone();
+
+        // Check that scaledMinus() doesn't modify r1 or r2
+        double scaleFactor = RANDOM.nextDouble() * 2.0 * RANGE - RANGE;
+        r1.scaledMinus(scaleFactor, r2);
+        assertEquals(r1, r1clone);
+        assertEquals(r2, r2clone);
+
+        // Check some self additions.
+        assertEquals(r1.scaledMinus(2.0, r1), r1.scale(-1.0), TOLERANCE);
+        assertEquals(r1.scaledMinus(4.0, r1), r1.scale(-3.0), TOLERANCE);
+        assertEquals(r1.scaledMinus(-2.0, r1), r1.scale(3.0), TOLERANCE);
+        assertEquals(r1.scaledMinus(-4.0, r1), r1.scale(5.0), TOLERANCE);
+
+        // Doing a -1 with self should result in zero.
+        assertEquals(r1.scaledMinus(1.0, r1), r1.scale(0.0), TOLERANCE);
+
+        for (int i = 0; i < 10; i++)
+        {
+            scaleFactor = RANDOM.nextDouble() * 2.0 * RANGE - RANGE;
+            assertEquals(r1.scaledMinus(scaleFactor, r2),
+                r1.minus(r2.scale(scaleFactor)));
+            assertEquals(r2.scaledMinus(scaleFactor, r1),
+                r2.minus(r1.scale(scaleFactor)));
+
+            assertEquals(
+                r1.scaledMinus(scaleFactor, r2),
+                r1.scaledPlus(-scaleFactor, r2));
+
+            assertEquals(
+                r1.scaledMinus(scaleFactor, r2),
+                r1.scaledPlus(scaleFactor, r2.negative()));
+        }
+
+        boolean exceptionThrown = false;
+        try
+        {
+            r1.scaledMinus(scaleFactor, null);
+        }
+        catch (NullPointerException e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+
+    }
+
+    /**
+     * Test of scaledMinusEquals method.
+     */
+    public void testScaledMinusEquals()
+    {
+        System.out.println("scaledMinusEquals");
+
+        // This test assumes that minus, scale, and scaledMinus have been
+        // tested and verified, and that the exception conditions are equivalent
+        RingType r1 = this.createRandom();
+        RingType r1clone = r1.clone();
+        RingType r2 = r1.scale(RANDOM.nextDouble() * 2.0 * RANGE - RANGE);
+        RingType r2clone = r2.clone();
+
+        // Check that scaledPlus() doesn't modify r1 or r2
+        double scaleFactor = RANDOM.nextDouble() * 2.0 * RANGE - RANGE;
+
+        // Check that plusEquals() doesn't modify r2, but does modify r1
+        r1.scaledMinusEquals(scaleFactor, r2);
+        assertEquals(r2, r2clone);
+        assertFalse(r1.equals(r1clone));
+
+        // See if the plusEquals() result is the same as plus() result
+        assertEquals(r1, r1clone.scaledMinus(scaleFactor, r2));
+
+        for (int i = 0; i < 10; i++)
+        {
+            r1 = r1clone.clone();
+            r2 = r2clone.clone();
+            scaleFactor = RANDOM.nextDouble() * 2.0 * RANGE - RANGE;
+            r1.scaledMinusEquals(scaleFactor, r2);
+            assertEquals(r1, r1clone.minus(r2clone.scale(scaleFactor)));
+
+            assertEquals(r1, r1clone.scaledMinus(scaleFactor, r2clone));
+            assertEquals(r1, r1clone.scaledPlus(-scaleFactor, r2));
+            assertEquals(r1, r1clone.scaledPlus(scaleFactor, r2.negative()));
+        }
+
+        boolean exceptionThrown = false;
+        try
+        {
+            r1.scaledMinusEquals(scaleFactor, null);
+        }
+        catch (NullPointerException e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+    }
+
+    /**
      * Test of negative method, of class gov.sandia.isrc.math.Ring.
      */
     public void testNegative()
@@ -400,4 +623,36 @@ abstract public class RingTestHarness<RingType extends Ring<RingType>>
         assertFalse(this.createRandom().isZero());
     }
 
+    /**
+     * Asserts that the two rings are equal within a given tolerance.
+     * Note that this method uses the equals method on the given objects, so
+     * it should only be used in cases where that method can be assumed to
+     * function properly. That is, it should not be used to test the
+     * equals method itself.
+     *
+     * @param   <RingType>
+     *      The ring type.
+     * @param   expected
+     *      The expected value.
+     * @param   actual
+     * @param tolerance
+     */
+    public static <RingType extends Ring<RingType>> void assertEquals(
+        final RingType expected,
+        final RingType actual,
+        final double tolerance)
+    {
+        if (expected == null)
+        {
+            assertNull(actual);
+        }
+        else
+        {
+            if (!expected.equals(actual, tolerance))
+            {
+                fail("Expected " + expected + " but was " + actual 
+                    + " which is not within tolerance of " + tolerance);
+            }
+        }
+    }
 }

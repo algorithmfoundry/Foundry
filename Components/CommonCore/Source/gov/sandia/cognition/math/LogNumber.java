@@ -435,6 +435,42 @@ public class LogNumber
     }
 
     @Override
+    public LogNumber scaledPlus(
+        final double scaleFactor,
+        final LogNumber other)
+    {
+        final LogNumber result = this.clone();
+        result.scaledPlusEquals(scaleFactor, other);
+        return result;
+    }
+
+    @Override
+    public void scaledPlusEquals(
+        final double scaleFactor,
+        final LogNumber other)
+    {
+        this.plusEquals(other.scale(scaleFactor));
+    }
+
+    @Override
+    public LogNumber scaledMinus(
+        final double scaleFactor,
+        final LogNumber other)
+    {
+        final LogNumber result = this.clone();
+        result.scaledMinusEquals(scaleFactor, other);
+        return result;
+    }
+
+    @Override
+    public void scaledMinusEquals(
+        final double scaleFactor,
+        final LogNumber other)
+    {
+        this.minusEquals(other.scale(scaleFactor));
+    }
+
+    @Override
     public LogNumber negative()
     {
         return new LogNumber(!this.negative, this.logValue);

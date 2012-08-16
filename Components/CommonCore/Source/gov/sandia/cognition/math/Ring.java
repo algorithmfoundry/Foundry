@@ -169,6 +169,84 @@ public interface Ring<RingType extends Ring<RingType>>
         double scaleFactor );
 
     /**
+     * Arithmetic addition of {@code this} and {@code other} after 
+     * element-wise scaling of {@code other} by {@code scaleFactor}.
+     * If this is x, other is y, and scaleFactor is a, then this method is
+     * equivalent to x + a * y. It is typically a more efficient way of doing
+     * {@code this.plus(other.scale(scaleFactor))} since it can avoid
+     * intermediate object creation.
+     *
+     * @param   scaleFactor
+     *      The scale factor to multiply by the elements of other before 
+     *      adding to the elements of this.
+     * @param   other
+     *      Object to scale and then add to this.
+     * @return
+     *      The result of applying the scale factor to other then adding to
+     *      this.
+     */
+    public RingType scaledPlus(
+        final double scaleFactor,
+        final RingType other);
+
+    /**
+     * Inline arithmetic addition of {@code this} and {@code other} after
+     * element-wise scaling of {@code other} by {@code scaleFactor}.
+     * If this is x, other is y, and scaleFactor is a, then this method is
+     * equivalent to x += a * y. It is typically a more efficient way of doing
+     * {@code this.plusEquals(other.scale(scaleFactor))} since it can avoid
+     * intermediate object creation.
+     * 
+     * @param   scaleFactor
+     *      The scale factor to multiply by the elements of other before 
+     *      adding to the elements of this.
+     * @param   other
+     *      Object to scale and then add to this.
+     */
+    public void scaledPlusEquals(
+        final double scaleFactor,
+        final RingType other);
+
+    /**
+     * Arithmetic subtraction {@code other} after element-wise scaling of
+     * {@code other} by {@code scaleFactor} from {@code this}.
+     * If this is x, other is y, and scaleFactor is a, then this method is
+     * equivalent to x - a * y. It is typically a more efficient way of doing
+     * {@code this.minus(other.scale(scaleFactor))} since it can avoid
+     * intermediate object creation.
+     *
+     * @param   scaleFactor
+     *      The scale factor to multiply by the elements of other before
+     *      subtracting from the elements of this.
+     * @param   other
+     *      Object to scale and then subtract from this.
+     * @return
+     *      The result of applying the scale factor to other then subtract from
+     *      this.
+     */
+    public RingType scaledMinus(
+        final double scaleFactor,
+        final RingType other);
+
+    /**
+     * Inline arithmetic subtraction of {@code other} after element-wise
+     * scaling of {@code other} by {@code scaleFactor} from {@code this}.
+     * If this is x, other is y, and scaleFactor is a, then this method is
+     * equivalent to x -= a * y. It is typically a more efficient way of doing
+     * {@code this.minusEquals(other.scale(scaleFactor))} since it can avoid
+     * intermediate object creation.
+     *
+     * @param   scaleFactor
+     *      The scale factor to multiply by the elements of other before
+     *      adding to the elements of this.
+     * @param   other
+     *      Object to scale and then add to this.
+     */
+    public void scaledMinusEquals(
+        final double scaleFactor,
+        final RingType other);
+
+    /**
      * Returns the element-wise negation of <code>this</code>, such that
      * <code>this.plus( this.negative() )</code> has only zero elements.
      *

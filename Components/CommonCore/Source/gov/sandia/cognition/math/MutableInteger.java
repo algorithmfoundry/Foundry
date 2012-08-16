@@ -270,6 +270,38 @@ public class MutableInteger
     }
 
     @Override
+    public MutableInteger scaledPlus(
+        final double scaleFactor,
+        final MutableInteger other)
+    {
+        return new MutableInteger(this.value + (int) (scaleFactor * other.value));
+    }
+
+    @Override
+    public void scaledPlusEquals(
+        final double scaleFactor,
+        final MutableInteger other)
+    {
+        this.value += scaleFactor * other.value;
+    }
+
+    @Override
+    public MutableInteger scaledMinus(
+        final double scaleFactor,
+        final MutableInteger other)
+    {
+        return new MutableInteger(this.value - (int) (scaleFactor * other.value));
+    }
+
+    @Override
+    public void scaledMinusEquals(
+        final double scaleFactor,
+        final MutableInteger other)
+    {
+        this.value -= scaleFactor * other.value;
+    }
+
+    @Override
     public MutableInteger negative()
     {
         return new MutableInteger(-this.value);

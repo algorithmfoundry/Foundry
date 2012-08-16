@@ -269,6 +269,39 @@ public class MutableLong
     }
 
     @Override
+    public MutableLong scaledPlus(
+        final double scaleFactor,
+        final MutableLong other)
+    {
+        return new MutableLong(this.value + (long) (scaleFactor * other.value));
+    }
+
+    @Override
+    public void scaledPlusEquals(
+        final double scaleFactor,
+        final MutableLong other)
+    {
+        this.value += scaleFactor * other.value;
+    }
+
+    @Override
+    public MutableLong scaledMinus(
+        final double scaleFactor,
+        final MutableLong other)
+    {
+        return new MutableLong(this.value - (long) (scaleFactor * other.value));
+    }
+
+    @Override
+    public void scaledMinusEquals(
+        final double scaleFactor,
+        final MutableLong other)
+    {
+        this.value -= scaleFactor * other.value;
+    }
+
+
+    @Override
     public MutableLong negative()
     {
         return new MutableLong(-this.value);

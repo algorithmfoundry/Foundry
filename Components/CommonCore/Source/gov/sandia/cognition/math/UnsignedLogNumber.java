@@ -309,6 +309,60 @@ public class UnsignedLogNumber
     }
 
     @Override
+    public UnsignedLogNumber scaledPlus(
+        final double scaleFactor,
+        final UnsignedLogNumber other)
+    {
+        final UnsignedLogNumber result = this.clone();
+        result.scaledPlusEquals(scaleFactor, other);
+        return result;
+    }
+
+    @Override
+    public void scaledPlusEquals(
+        final double scaleFactor,
+        final UnsignedLogNumber other)
+    {
+        if (scaleFactor >= 0.0)
+        {
+            this.logValue = LogMath.add(this.logValue,
+                other.logValue + Math.log(scaleFactor));
+        }
+        else
+        {
+            this.logValue = LogMath.subtract(this.logValue,
+                other.logValue + Math.log(-scaleFactor));
+        }
+    }
+
+    @Override
+    public UnsignedLogNumber scaledMinus(
+        final double scaleFactor,
+        final UnsignedLogNumber other)
+    {
+        final UnsignedLogNumber result = this.clone();
+        result.scaledMinusEquals(scaleFactor, other);
+        return result;
+    }
+
+    @Override
+    public void scaledMinusEquals(
+        final double scaleFactor,
+        final UnsignedLogNumber other)
+    {
+        if (scaleFactor >= 0)
+        {
+            this.logValue = LogMath.subtract(this.logValue,
+                other.logValue + Math.log(scaleFactor));
+        }
+        else
+        {
+            this.logValue = LogMath.add(this.logValue,
+                other.logValue + Math.log(-scaleFactor));
+        }
+    }
+
+    @Override
     public UnsignedLogNumber negative()
     {
         // Can't negate log numbers.

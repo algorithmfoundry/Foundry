@@ -498,6 +498,116 @@ public class UnsignedLogNumberTest
         }
     }
 
+    @Override
+    public void testScaledPlus()
+    {
+        for (double x : this.getGoodValues())
+        {
+            for (double y : this.getGoodValues())
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    UnsignedLogNumber instance = UnsignedLogNumber.createFromValue(x);
+                    UnsignedLogNumber other = UnsignedLogNumber.createFromValue(y);
+
+                    double scale = RANDOM.nextDouble() * 2.0 * RANGE - RANGE;
+                    double expectedValue = x + scale * y;
+                    if (expectedValue < 0)
+                    {
+                        expectedValue = Double.NaN;
+                    }
+                    UnsignedLogNumber result = instance.scaledPlus(scale, other);
+                    assertNotSame(result, instance);
+                    assertNotSame(result, other);
+                    assertEquals(expectedValue, result.getValue(), epsilon * Math.abs(expectedValue));
+                    assertEquals(x, instance.getValue(), epsilon * Math.abs(x));
+                    assertEquals(y, other.getValue(), epsilon * Math.abs(y));
+                }
+            }
+        }
+    }
+
+    @Override
+    public void testScaledPlusEquals()
+    {
+        for (double x : this.getGoodValues())
+        {
+            for (double y : this.getGoodValues())
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    UnsignedLogNumber instance = UnsignedLogNumber.createFromValue(x);
+                    UnsignedLogNumber other = UnsignedLogNumber.createFromValue(y);
+
+                    double scale = RANDOM.nextDouble() * 2.0 * RANGE - RANGE;
+                    double expectedValue = x + scale * y;
+                    if (expectedValue < 0)
+                    {
+                        expectedValue = Double.NaN;
+                    }
+                    instance.scaledPlusEquals(scale, other);
+                    assertEquals(expectedValue, instance.getValue(), epsilon * Math.abs(expectedValue));
+                    assertEquals(y, other.getValue(), epsilon * Math.abs(y));
+                }
+            }
+        }
+    }
+
+    @Override
+    public void testScaledMinus()
+    {
+        for (double x : this.getGoodValues())
+        {
+            for (double y : this.getGoodValues())
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    UnsignedLogNumber instance = UnsignedLogNumber.createFromValue(x);
+                    UnsignedLogNumber other = UnsignedLogNumber.createFromValue(y);
+
+                    double scale = RANDOM.nextDouble() * 2.0 * RANGE - RANGE;
+                    double expectedValue = x - scale * y;
+                    if (expectedValue < 0)
+                    {
+                        expectedValue = Double.NaN;
+                    }
+                    UnsignedLogNumber result = instance.scaledMinus(scale, other);
+                    assertNotSame(result, instance);
+                    assertNotSame(result, other);
+                    assertEquals(expectedValue, result.getValue(), epsilon * Math.abs(expectedValue));
+                    assertEquals(x, instance.getValue(), epsilon * Math.abs(x));
+                    assertEquals(y, other.getValue(), epsilon * Math.abs(y));
+                }
+            }
+        }
+    }
+
+    @Override
+    public void testScaledMinusEquals()
+    {
+        for (double x : this.getGoodValues())
+        {
+            for (double y : this.getGoodValues())
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    UnsignedLogNumber instance = UnsignedLogNumber.createFromValue(x);
+                    UnsignedLogNumber other = UnsignedLogNumber.createFromValue(y);
+
+                    double scale = RANDOM.nextDouble() * 2.0 * RANGE - RANGE;
+                    double expectedValue = x - scale * y;
+                    if (expectedValue < 0)
+                    {
+                        expectedValue = Double.NaN;
+                    }
+                    instance.scaledMinusEquals(scale, other);
+                    assertEquals(expectedValue, instance.getValue(), epsilon * Math.abs(expectedValue));
+                    assertEquals(y, other.getValue(), epsilon * Math.abs(y));
+                }
+            }
+        }
+    }
+
     /**
      * Test of min method, of class UnsignedLogNumber.
      */

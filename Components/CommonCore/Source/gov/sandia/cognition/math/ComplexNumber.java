@@ -225,6 +225,15 @@ public class ComplexNumber
         this.setImaginaryPart( this.getImaginaryPart() * scaleFactor );
     }
 
+    @Override
+    public void scaledPlusEquals(
+        final double scaleFactor,
+        final ComplexNumber other)
+    {
+        this.realPart += scaleFactor * other.realPart;
+        this.imaginaryPart += scaleFactor * other.imaginaryPart;
+    }
+
     /**
      * Arithmetic multiplication of this and other using polar coordinates:
      *      magnitude = this.magnitude * other.magnitude

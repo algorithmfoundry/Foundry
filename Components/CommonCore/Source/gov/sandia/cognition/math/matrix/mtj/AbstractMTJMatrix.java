@@ -386,6 +386,44 @@ public abstract class AbstractMTJMatrix
         }
     }
 
+    @Override
+    public void scaledPlusEquals(
+        final double scaleFactor,
+        final Matrix other)
+    {
+        this.scaledPlusEquals(scaleFactor, (AbstractMTJMatrix) other);
+    }
+
+    /**
+     * Adds to this vector the scaled version of the other given vector.
+     *
+     * @param   scaleFactor
+     *      The scale factor to use.
+     * @param   other
+     *      The other vector to scale and then add to this vector.
+     */
+    public void scaledPlusEquals(
+        final double scaleFactor,
+        final AbstractMTJMatrix other)
+    {
+        this.internalMatrix.add(scaleFactor, other.internalMatrix);
+    }
+
+    /**
+     * Subtracts from this matrix the scaled version of the other given matrix.
+     *
+     * @param   scaleFactor
+     *      The scale factor to use.
+     * @param   other
+     *      The other matrix to scale and then subtract from this matrix.
+     */
+    public void scaledMinusEquals(
+        final double scaleFactor,
+        final AbstractMTJMatrix other)
+    {
+        this.scaledPlusEquals(-scaleFactor, other);
+    }
+
     public Iterator<MatrixEntry> iterator()
     {
         return new AbstractMTJMatrixIterator();

@@ -90,6 +90,34 @@ public abstract class AbstractRing<RingType extends Ring<RingType>>
         return copy;
     }
 
+    @Override
+    public RingType scaledPlus(
+        final double scaleFactor,
+        final RingType other)
+    {
+        final RingType copy = this.clone();
+        copy.scaledPlusEquals(scaleFactor, other);
+        return copy;
+    }
+
+    @Override
+    public RingType scaledMinus(
+        final double scaleFactor,
+        final RingType other)
+    {
+        final RingType copy = this.clone();
+        copy.scaledMinusEquals(scaleFactor, other);
+        return copy;
+    }
+
+    @Override
+    public void scaledMinusEquals(
+        final double scaleFactor,
+        final RingType other)
+    {
+        this.scaledPlusEquals(-scaleFactor, other);
+    }
+
     public RingType negative()
     {
         RingType copy = this.clone();

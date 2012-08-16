@@ -213,6 +213,14 @@ public class UnivariateRandomVariable
     }
 
     @Override
+    public void scaledPlusEquals(
+        final double scaleFactor,
+        final RandomVariable<Number> other)
+    {
+        this.plusEquals(other.scale(scaleFactor));
+    }
+
+    @Override
     public boolean isZero(
         final double effectiveZero)
     {

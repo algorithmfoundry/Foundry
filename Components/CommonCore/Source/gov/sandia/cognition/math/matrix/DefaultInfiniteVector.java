@@ -358,6 +358,48 @@ public class DefaultInfiniteVector<KeyType>
     }
 
     @Override
+    public InfiniteVector<KeyType> scaledPlus(
+        final double scaleFactor,
+        final InfiniteVector<KeyType> other)
+    {
+        final InfiniteVector<KeyType> result = this.clone();
+        result.scaledPlusEquals(scaleFactor, other);
+        return result;
+    }
+
+    @Override
+    public void scaledPlusEquals(
+        final double scaleFactor,
+        final InfiniteVector<KeyType> other)
+    {
+        for (ScalarMap.Entry<KeyType> entry : other.entrySet())
+        {
+            this.increment(entry.getKey(), scaleFactor * entry.getValue());
+        }
+    }
+
+    @Override
+    public InfiniteVector<KeyType> scaledMinus(
+        final double scaleFactor,
+        final InfiniteVector<KeyType> other)
+    {
+        final InfiniteVector<KeyType> result = this.clone();
+        result.scaledMinusEquals(scaleFactor, other);
+        return result;
+    }
+
+    @Override
+    public void scaledMinusEquals(
+        final double scaleFactor,
+        final InfiniteVector<KeyType> other)
+    {
+        for (ScalarMap.Entry<KeyType> entry : other.entrySet())
+        {
+            this.decrement(entry.getKey(), scaleFactor * entry.getValue());
+        }
+    }
+
+    @Override
     public void zero()
     {
         this.clear();

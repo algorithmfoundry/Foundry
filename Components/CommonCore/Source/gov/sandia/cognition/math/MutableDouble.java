@@ -267,6 +267,38 @@ public class MutableDouble
     }
 
     @Override
+    public MutableDouble scaledPlus(
+        final double scaleFactor,
+        final MutableDouble other)
+    {
+        return new MutableDouble(this.value + scaleFactor * other.value);
+    }
+
+    @Override
+    public void scaledPlusEquals(
+        final double scaleFactor,
+        final MutableDouble other)
+    {
+        this.value += scaleFactor * other.value;
+    }
+
+    @Override
+    public MutableDouble scaledMinus(
+        final double scaleFactor,
+        final MutableDouble other)
+    {
+        return new MutableDouble(this.value - scaleFactor * other.value);
+    }
+
+    @Override
+    public void scaledMinusEquals(
+        final double scaleFactor,
+        final MutableDouble other)
+    {
+        this.value -= scaleFactor * other.value;
+    }
+
+    @Override
     public MutableDouble negative()
     {
         return new MutableDouble(-this.value);
