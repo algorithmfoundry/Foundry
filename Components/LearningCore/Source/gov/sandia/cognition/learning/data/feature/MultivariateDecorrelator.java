@@ -22,6 +22,8 @@ import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.math.matrix.VectorInputEvaluator;
+import gov.sandia.cognition.math.matrix.VectorOutputEvaluator;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.decomposition.CholeskyDecompositionMTJ;
@@ -32,12 +34,15 @@ import java.util.Collection;
 
 /**
  * Decorrelates a data using a mean and full or diagonal covariance matrix.
+ * 
  * @author  Justin Basilico
  * @since   3.0
  */
 public class MultivariateDecorrelator
     extends AbstractCloneableSerializable
-    implements Evaluator<Vectorizable,Vector>
+    implements Evaluator<Vectorizable, Vector>,
+        VectorInputEvaluator<Vectorizable, Vector>,
+        VectorOutputEvaluator<Vectorizable, Vector>
 {
     /** The underlying Gaussian. */
     protected MultivariateGaussian gaussian;
@@ -125,6 +130,18 @@ public class MultivariateDecorrelator
             this.getCovarianceInverseSquareRoot());
     }
 
+    @Override
+    public int getInputDimensionality()
+    {
+        return this.getGaussian().getInputDimensionality();
+    }
+
+    @Override
+    public int getOutputDimensionality()
+    {
+        return this.getGaussian().getInputDimensionality();
+    }
+    
     /**
      * Gets the mean of the underlying Gaussian.
      *

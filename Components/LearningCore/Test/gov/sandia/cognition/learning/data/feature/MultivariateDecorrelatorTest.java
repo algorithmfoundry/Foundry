@@ -125,6 +125,24 @@ public class MultivariateDecorrelatorTest
     }
 
     /**
+     * Test of getInputDimensionality method, of class MultivariateDecorrelator.
+     */
+    public void testGetInputDimensionality()
+    {
+        MultivariateDecorrelator instance = this.createInstance();
+        assertEquals(3, instance.getInputDimensionality());
+    }
+    
+    /**
+     * Test of getOutputDimensionality method, of class MultivariateDecorrelator.
+     */
+    public void testGetOutputDimensionality()
+    {
+        MultivariateDecorrelator instance = this.createInstance();
+        assertEquals(3, instance.getOutputDimensionality());
+    }
+
+    /**
      * Test of getMean method, of class MultivariateDecorrelator.
      */
     public void testGetMean()
