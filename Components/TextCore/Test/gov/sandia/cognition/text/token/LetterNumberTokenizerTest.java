@@ -44,25 +44,31 @@ public class LetterNumberTokenizerTest
         String input = "...Mr. Taco? Help? 123\n AbC ?~!@\t Yes7.";
         String[] expected = { "Mr", "Taco", "Help", "123", "AbC", "Yes7" };
         Iterable<Token> result = instance.tokenize(input);
-        assertEqualTokens(expected, result);
-        
+        assertEqualTokens(input, expected, result);
+
         input = "aB3";
         expected = new String[] { "aB3" };
         result = instance.tokenize(input);
-        assertEqualTokens(expected, result);
+        assertEqualTokens(input, expected, result);
 
         input = "   aB3        ";
         expected = new String[] { "aB3" };
         result = instance.tokenize(input);
-        assertEqualTokens(expected, result);
+        assertEqualTokens(input, expected, result);
+
+        input = "   4    ";
+        expected = new String[] { "4" };
+        result = instance.tokenize(input);
+        assertEqualTokens(input, expected, result);
 
         input = "";
         expected = new String[0];
         result = instance.tokenize(input);
-        assertEqualTokens(expected, result);
+        assertEqualTokens(input, expected, result);
     }
 
     public void assertEqualTokens(
+        final String input,
         final String[] expected,
         final Iterable<? extends Token> tokens)
     {
@@ -71,8 +77,11 @@ public class LetterNumberTokenizerTest
         for (Token token : tokens)
         {
             assertEquals(expected[index], token.getText());
+            assertEquals(expected[index].length(), token.getLength());
+            assertEquals(expected[index], input.substring(token.getStart(), token.getStart() + token.getLength()));
             index++;
         }
     }
+
 
 }

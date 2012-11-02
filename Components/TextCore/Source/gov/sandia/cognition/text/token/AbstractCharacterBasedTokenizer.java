@@ -71,7 +71,7 @@ public abstract class AbstractCharacterBasedTokenizer
                         text = new StringBuilder();
                     }
 
-                    start = index;
+                    start = index + 1;
                 }
                 else
                 {
