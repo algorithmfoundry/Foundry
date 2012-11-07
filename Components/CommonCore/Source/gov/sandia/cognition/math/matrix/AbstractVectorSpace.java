@@ -145,7 +145,21 @@ public abstract class AbstractVectorSpace<VectorType extends VectorSpace<VectorT
     public double angle(
         final VectorType other)
     {
-        return Math.acos(this.cosine(other));
+        // To compute the angle, first get the cosine.
+        double cosine = this.cosine(other);
+        
+        // Fix rounding issues to prevent acos from returning NaNs.
+        if (cosine > 1.0)
+        {
+            cosine = 1.0;
+        }
+        else if (cosine < -1.0)
+        {
+            cosine = -1.0;
+        }
+
+        // Now compute the arc cosine.
+        return Math.acos(cosine);
     }
 
     @Override
