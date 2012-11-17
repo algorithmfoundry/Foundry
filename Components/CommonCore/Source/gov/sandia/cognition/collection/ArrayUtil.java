@@ -23,6 +23,7 @@ import java.util.Arrays;
  * @since   3.1
  */
 public class ArrayUtil
+    extends Object
 {
 
     /**
@@ -45,7 +46,28 @@ public class ArrayUtil
             return Arrays.copyOf(array, array.length);
         }
     }
-    
+
+    /**
+     * Creates a new copy of the given array.
+     *
+     * @param   array
+     *      The array to copy.
+     * @return
+     *      A copy of the given array.
+     */
+    public static double[] copy(
+        final double[] array)
+    {
+        if (array == null)
+        {
+            return null;
+        }
+        else
+        {
+            return Arrays.copyOf(array, array.length);
+        }
+    }
+
     /**
      * Reverses the ordering of elements in an array.
      *
@@ -70,5 +92,29 @@ public class ArrayUtil
             }
         }
     }
-    
+
+    /**
+     * Reverses the ordering of elements in an array.
+     *
+     * @param   array
+     *      The array to reverse the elements in.
+     */
+    public static void reverse(
+        final double[] array)
+    {
+        if (array != null)
+        {
+            final int length = array.length;
+            int i = 0;
+            int j = length - 1;
+            while (i < j)
+            {
+                final double temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+                i++;
+                j--;
+            }
+        }
+    }
 }

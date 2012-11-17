@@ -40,7 +40,7 @@ public class ArrayUtilTest
     /**
      * Test of copy method, of class ArrayUtil.
      */
-    public void testCopy()
+    public void testCopyIntArray()
     {
         int[] array = null;
         assertNull(ArrayUtil.copy(array));
@@ -55,9 +55,26 @@ public class ArrayUtilTest
     }
 
     /**
+     * Test of copy method, of class ArrayUtil.
+     */
+    public void testCopyDoubleArray()
+    {
+        double[] array = null;
+        assertNull(ArrayUtil.copy(array));
+
+        array = new double[] { 1.0, 0.0, -0.5 };
+        double[] result = ArrayUtil.copy(array);
+        assertNotSame(array, result);
+        assertTrue(Arrays.equals(array, result));
+        assertEquals(1, array[0], 0.0);
+        assertEquals(0, array[1], 0.0);
+        assertEquals(-0.5, array[2], 0.0);
+    }
+
+    /**
      * Test of reverse method, of class ArrayUtil.
      */
-    public void testReverse()
+    public void testReverseIntArray()
     {
         int[] array = null;
         ArrayUtil.reverse(array);
@@ -79,8 +96,34 @@ public class ArrayUtilTest
         assertEquals(5, array[0]);
         assertEquals(0, array[1]);
         assertEquals(1, array[2]);
+    }
 
 
+    /**
+     * Test of reverse method, of class ArrayUtil.
+     */
+    public void testReverseDoubleArray()
+    {
+        double[] array = null;
+        ArrayUtil.reverse(array);
+
+        array = new double[0];
+        ArrayUtil.reverse(array);
+
+        array = new double[] { 9.3 };
+        ArrayUtil.reverse(array);
+        assertEquals(9.3, array[0], 0.0);
+
+        array = new double[] { 8.2, -1.6 };
+        ArrayUtil.reverse(array);
+        assertEquals(-1.6, array[0], 0.0);
+        assertEquals(8.2, array[1], 0.0);
+
+        array = new double[] { 1.0, 0.0, 5.0 };
+        ArrayUtil.reverse(array);
+        assertEquals(5.0, array[0], 0.0);
+        assertEquals(0.0, array[1], 0.0);
+        assertEquals(1.0, array[2], 0.0);
     }
 
 }
