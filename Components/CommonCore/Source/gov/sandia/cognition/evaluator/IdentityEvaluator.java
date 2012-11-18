@@ -21,7 +21,7 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
  */
 public class IdentityEvaluator<DataType>
     extends AbstractCloneableSerializable
-    implements Evaluator<DataType, DataType>
+    implements ReversibleEvaluator<DataType, DataType, IdentityEvaluator<DataType>>
 {
 
     /**
@@ -54,6 +54,12 @@ public class IdentityEvaluator<DataType>
         final DataType input)
     {
         return input;
+    }
+
+    @Override
+    public IdentityEvaluator<DataType> reverse()
+    {
+        return this;
     }
 
     /**

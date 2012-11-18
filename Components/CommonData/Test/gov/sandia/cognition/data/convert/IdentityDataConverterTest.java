@@ -14,31 +14,27 @@
 
 package gov.sandia.cognition.data.convert;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
+ * Unit tests for class {@link IdentityDataConverter}.
  *
  * @author Justin Basilico
+ * @since   3.0
  */
 public class IdentityDataConverterTest
+    extends Object
 {
 
+    /**
+     * Creates a new test.
+     */
     public IdentityDataConverterTest()
     {
+        super();
     }
 
-    @BeforeClass
-    public static void setUpClass() throws Exception
-    {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception
-    {
-    }
     
     @Test
     public void testConstructors()
@@ -46,6 +42,18 @@ public class IdentityDataConverterTest
         IdentityDataConverter<Object> instance = 
             new IdentityDataConverter<Object>();
         assertNotNull(instance);
+    }
+
+    /**
+     * Test of clone method, of class IdentityDataConverter.
+     */
+    @Test
+    public void testClone()
+    {
+        IdentityDataConverter<String> instance = new IdentityDataConverter<String>();
+        IdentityDataConverter<String> clone = instance.clone();
+        assertNotSame(instance, clone);
+        assertNotSame(clone, instance.clone());
     }
 
     /**

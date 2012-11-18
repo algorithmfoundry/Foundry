@@ -67,6 +67,18 @@ public class IdentityEvaluatorTest
         assertSame(input, instance.evaluate(input));
     }
 
+
+    /**
+     * Test of reverse method, of class IdentityEvaluator.
+     */
+    @Test
+    public void testReverse()
+    {
+        IdentityEvaluator<String> instance = new IdentityEvaluator<String>();
+        assertSame(instance, instance.reverse());
+        assertSame(instance, instance.reverse().reverse());
+    }
+
     /**
      * Test of create method, of class IdentityEvaluator.
      */

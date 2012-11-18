@@ -14,6 +14,8 @@
 
 package gov.sandia.cognition.data.convert;
 
+import gov.sandia.cognition.evaluator.ReversibleEvaluator;
+
 /**
  * Represents a {@code DataConverter} whose conversion can be reversed. The
  * reverse is just another {@code DataConverter}. It is required that the
@@ -27,7 +29,9 @@ package gov.sandia.cognition.data.convert;
  * @since   3.0
  */
 public interface ReversibleDataConverter<InputType, OutputType>
-    extends DataConverter<InputType, OutputType>
+    extends DataConverter<InputType, OutputType>,
+        ReversibleEvaluator<InputType, OutputType, DataConverter<? super OutputType, ? extends InputType>>
+
 {
 
     /**

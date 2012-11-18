@@ -14,7 +14,7 @@
 
 package gov.sandia.cognition.data.convert;
 
-import gov.sandia.cognition.evaluator.IdentityEvaluator;
+import gov.sandia.cognition.util.AbstractCloneableSerializable;
 
 /**
  * A pass-through converter that just returns the given value.
@@ -25,7 +25,7 @@ import gov.sandia.cognition.evaluator.IdentityEvaluator;
  * @since   3.0
  */
 public class IdentityDataConverter<DataType>
-    extends IdentityEvaluator<DataType>
+    extends AbstractCloneableSerializable
     implements ReversibleDataConverter<DataType, DataType>
 {
 
@@ -37,12 +37,37 @@ public class IdentityDataConverter<DataType>
         super();
     }
 
+    @Override
+    public IdentityDataConverter<DataType> clone()
+    {
+        @SuppressWarnings("unchecked")
+        final IdentityDataConverter<DataType> clone = (IdentityDataConverter<DataType>)
+            super.clone();
+        return clone;
+    }
+
+    /**
+     * Returns the given input.
+     *
+     * @param   input
+     *      The input value.
+     * @return
+     *      The input value.
+     */
+    @Override
+    public DataType evaluate(
+        final DataType input)
+    {
+        return input;
+    }
+
     /**
      * The reverse converter is this converter, since it is an identity 
      * converter.
      * 
      * @return  The reverse converter is this converter.
      */
+    @Override
     public IdentityDataConverter<DataType> reverse()
     {
         return this;
