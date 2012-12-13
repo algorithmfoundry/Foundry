@@ -20,7 +20,11 @@ import gov.sandia.cognition.annotation.PublicationType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -39,7 +43,11 @@ import java.util.List;
     comments="Looks good."
 )
 public class CollectionUtil
+    extends Object
 {
+    /** The default load factor for a hash map is {@value}. */
+    private static final float DEFAULT_LOAD_FACTOR = 0.75f;
+
     /**
      * Returns true if the given collection is null or empty.
      *
@@ -617,4 +625,89 @@ public class CollectionUtil
         return result;
     }
 
+    /**
+     * Creates a new {@link HashMap} with the given expected size. It uses the
+     * default load factor (0.75) to estimate the proper number of elements for
+     * the data structure to avoid a rehash or resize when the given number of
+     * elements are added.
+     *
+     * @param   <KeyType>
+     *      The type for the key of the map.
+     * @param   <ValueType>
+     *      The type of the value in the map.
+     * @param   size
+     *      The size. Must be positive.
+     * @return
+     *      A new hash map with the given expected size.
+     */
+    public static <KeyType, ValueType> HashMap<KeyType, ValueType> createHashMapWithSize(
+        final int size)
+    {
+        final int initialCapacity = (int) Math.ceil(size / DEFAULT_LOAD_FACTOR);
+        return new HashMap<KeyType, ValueType>(initialCapacity, 
+            DEFAULT_LOAD_FACTOR);
+    }
+
+    /**
+     * Creates a new {@link LinkedHashMap} with the given expected size. It uses the
+     * default load factor (0.75) to estimate the proper number of elements for
+     * the data structure to avoid a rehash or resize when the given number of
+     * elements are added.
+     *
+     * @param   <KeyType>
+     *      The type for the key of the map.
+     * @param   <ValueType>
+     *      The type of the value in the map.
+     * @param   size
+     *      The size. Must be positive.
+     * @return
+     *      A new hash map with the given expected size.
+     */
+    public static <KeyType, ValueType> LinkedHashMap<KeyType, ValueType> createLinkedHashMapWithSize(
+        final int size)
+    {
+        final int initialCapacity = (int) Math.ceil(size / DEFAULT_LOAD_FACTOR);
+        return new LinkedHashMap<KeyType, ValueType>(
+            initialCapacity, DEFAULT_LOAD_FACTOR);
+    }
+
+    /**
+     * Creates a new {@link HashSet} with the given expected size. It uses the
+     * default load factor (0.75) to estimate the proper number of elements for
+     * the data structure to avoid a rehash or resize when the given number of
+     * elements are added.
+     *
+     * @param   <ValueType>
+     *      The type of the value in the set.
+     * @param   size
+     *      The size. Must be positive.
+     * @return
+     *      A new hash map with the given expected size.
+     */
+    public static <ValueType> HashSet<ValueType> createHashSetWithSize(
+        final int size)
+    {
+        final int initialCapacity = (int) Math.ceil(size / DEFAULT_LOAD_FACTOR);
+        return new HashSet<ValueType>(initialCapacity, DEFAULT_LOAD_FACTOR);
+    }
+
+    /**
+     * Creates a new {@link LinkedHashSet} with the given expected size. It uses the
+     * default load factor (0.75) to estimate the proper number of elements for
+     * the data structure to avoid a rehash or resize when the given number of
+     * elements are added.
+     *
+     * @param   <ValueType>
+     *      The type of the value in the set.
+     * @param   size
+     *      The size. Must be positive.
+     * @return
+     *      A new hash map with the given expected size.
+     */
+    public static <ValueType> LinkedHashSet<ValueType> createLinkedHashSetWithSize(
+        final int size)
+    {
+        final int initialCapacity = (int) Math.ceil(size / DEFAULT_LOAD_FACTOR);
+        return new LinkedHashSet<ValueType>(initialCapacity, DEFAULT_LOAD_FACTOR);
+    }
 }

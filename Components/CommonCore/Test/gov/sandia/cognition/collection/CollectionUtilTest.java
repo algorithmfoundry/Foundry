@@ -18,8 +18,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -533,5 +536,41 @@ public class CollectionUtilTest
         assertEquals(2, result.size());
         assertSame(first, result.get(0));
         assertSame(second, result.get(1));
+    }
+
+    public void testCreateHashMapWithSize()
+    {
+        HashMap<String, Double> result = CollectionUtil.createHashMapWithSize(10);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        assertNotSame(result, CollectionUtil.createHashMapWithSize(10));
+        assertEquals(result, CollectionUtil.createHashMapWithSize(10));
+    }
+
+    public void testCreateLinkedHashMapWithSize()
+    {
+        LinkedHashMap<String, Double> result = CollectionUtil.createLinkedHashMapWithSize(10);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        assertNotSame(result, CollectionUtil.createLinkedHashMapWithSize(10));
+        assertEquals(result, CollectionUtil.createLinkedHashMapWithSize(10));
+    }
+
+    public void testCreateHashSetWithSize()
+    {
+        HashSet<String> result = CollectionUtil.createHashSetWithSize(10);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        assertNotSame(result, CollectionUtil.createHashSetWithSize(10));
+        assertEquals(result, CollectionUtil.createHashSetWithSize(10));
+    }
+    
+    public void testCreateLinkedHashSetWithSize()
+    {
+        LinkedHashSet<String> result = CollectionUtil.createLinkedHashSetWithSize(10);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        assertNotSame(result, CollectionUtil.createLinkedHashSetWithSize(10));
+        assertEquals(result, CollectionUtil.createLinkedHashSetWithSize(10));
     }
 }
