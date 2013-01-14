@@ -54,7 +54,6 @@ public class KDTreeTest
     /**
      * Example from http://en.wikipedia.org/wiki/Kd-tree#Construction
      */
-    @SuppressWarnings("unchecked")
     public static List<DefaultPair<Vector,Integer>> points = Arrays.asList(
         new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(2,3), 0 ),
         new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(5,4), 1 ),
@@ -419,7 +418,6 @@ public class KDTreeTest
 
         System.out.println( "Pathological Example" );
 
-        @SuppressWarnings("unchecked")
         List<DefaultPair<Vector,Integer>> pathological = Arrays.asList(
             new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 0 ),
             new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 1 ),
