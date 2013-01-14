@@ -162,7 +162,7 @@ public class LinearRegressionTest
             new ArrayList<WeightedInputOutputPair<Vector, Double>>( data.size() );
         for( WeightedInputOutputPair<Double,Double> pair : data )
         {
-            vectorData.add( DefaultWeightedInputOutputPair.create(
+            vectorData.add(new DefaultWeightedInputOutputPair<Vector, Double>(
                 VectorFactory.getDefault().copyValues( pair.getInput() ), pair.getOutput(), pair.getWeight() ) );
         }
 
@@ -227,9 +227,9 @@ public class LinearRegressionTest
                 
         // This is a rank-one matrix, which the third dimension has the regression equation
         // y = -0.642857*x + 1.85714 (according to Octave)
-        data.add(DefaultInputOutputPair.create(VectorFactory.getDefault().copyValues(1.0, 2.0, 3.0 ), 0.0));
-        data.add(DefaultInputOutputPair.create(VectorFactory.getDefault().copyValues(1.0, 2.0, 1.0 ), 1.0));
-        data.add(DefaultInputOutputPair.create(VectorFactory.getDefault().copyValues(1.0, 2.0, 0.0 ), 2.0));
+        data.add(new DefaultInputOutputPair<Vector, Double>(VectorFactory.getDefault().copyValues(1.0, 2.0, 3.0 ), 0.0));
+        data.add(new DefaultInputOutputPair<Vector, Double>(VectorFactory.getDefault().copyValues(1.0, 2.0, 1.0 ), 1.0));
+        data.add(new DefaultInputOutputPair<Vector, Double>(VectorFactory.getDefault().copyValues(1.0, 2.0, 0.0 ), 2.0));
         
         LinearDiscriminantWithBias result = regressionLearner.learn( data );
         System.out.println( "SVD weights: " + result.convertToVector() );

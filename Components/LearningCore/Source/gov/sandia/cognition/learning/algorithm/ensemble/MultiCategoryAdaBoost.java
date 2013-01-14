@@ -119,8 +119,9 @@ public class MultiCategoryAdaBoost<InputType, CategoryType>
             if (example != null && example.getOutput() != null)
             {
                 this.weightedData.add(
-                    DefaultWeightedInputOutputPair.create(example.getInput(),
-                        example.getOutput(), DatasetUtil.getWeight(example)));
+                    new DefaultWeightedInputOutputPair<InputType, CategoryType>(
+                        example.getInput(), example.getOutput(), 
+                        DatasetUtil.getWeight(example)));
                 numExamples++;
             }
         }

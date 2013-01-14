@@ -53,7 +53,7 @@ public class RandomSubVectorThresholdLearner<OutputType>
     public static final double DEFAULT_PERCENT_TO_SAMPLE = 0.1;
 
     /** The decider learner for the subspace. */
-    protected DeciderLearner<? super Vectorizable, OutputType, Boolean, VectorElementThresholdCategorizer> subLearner;
+    protected DeciderLearner<Vectorizable, OutputType, Boolean, VectorElementThresholdCategorizer> subLearner;
 
     /** The percentage of the dimensionality to sample. */
     protected double percentToSample;
@@ -81,7 +81,7 @@ public class RandomSubVectorThresholdLearner<OutputType>
      *      The random number generator.
      */
     public RandomSubVectorThresholdLearner(
-        final DeciderLearner<? super Vectorizable, OutputType, Boolean, VectorElementThresholdCategorizer> subLearner,
+        final DeciderLearner<Vectorizable, OutputType, Boolean, VectorElementThresholdCategorizer> subLearner,
         final double percentToSample,
         final Random random)
     {
@@ -102,7 +102,7 @@ public class RandomSubVectorThresholdLearner<OutputType>
      *      The vector factory to use.
      */
     public RandomSubVectorThresholdLearner(
-        final DeciderLearner<? super Vectorizable, OutputType, Boolean, VectorElementThresholdCategorizer> subLearner,
+        final DeciderLearner<Vectorizable, OutputType, Boolean, VectorElementThresholdCategorizer> subLearner,
         final double percentToSample,
         final Random random,
         final VectorFactory<? extends Vector> vectorFactory)
@@ -210,7 +210,7 @@ public class RandomSubVectorThresholdLearner<OutputType>
      * @return
      *      The learner for the subspace.
      */
-    public DeciderLearner<? super Vectorizable, OutputType, Boolean, VectorElementThresholdCategorizer>
+    public DeciderLearner<Vectorizable, OutputType, Boolean, VectorElementThresholdCategorizer>
         getSubLearner()
     {
         return this.subLearner;
@@ -223,7 +223,7 @@ public class RandomSubVectorThresholdLearner<OutputType>
      *      The learner for the subspace.
      */
     public void setSubLearner(
-        final DeciderLearner<? super Vectorizable, OutputType, Boolean, VectorElementThresholdCategorizer> subLearner)
+        final DeciderLearner<Vectorizable, OutputType, Boolean, VectorElementThresholdCategorizer> subLearner)
     {
         this.subLearner = subLearner;
     }

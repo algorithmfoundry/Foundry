@@ -56,12 +56,12 @@ public class KDTreeTest
      */
     @SuppressWarnings("unchecked")
     public static List<DefaultPair<Vector,Integer>> points = Arrays.asList(
-        DefaultPair.create( VectorFactory.getDefault().copyValues(2,3), 0 ),
-        DefaultPair.create( VectorFactory.getDefault().copyValues(5,4), 1 ),
-        DefaultPair.create( VectorFactory.getDefault().copyValues(9,6), 2 ),
-        DefaultPair.create( VectorFactory.getDefault().copyValues(4,7), 3 ),
-        DefaultPair.create( VectorFactory.getDefault().copyValues(8,1), 4 ),
-        DefaultPair.create( VectorFactory.getDefault().copyValues(7,2), 5 )
+        new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(2,3), 0 ),
+        new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(5,4), 1 ),
+        new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(9,6), 2 ),
+        new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(4,7), 3 ),
+        new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(8,1), 4 ),
+        new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(7,2), 5 )
     );
 
 
@@ -421,12 +421,12 @@ public class KDTreeTest
 
         @SuppressWarnings("unchecked")
         List<DefaultPair<Vector,Integer>> pathological = Arrays.asList(
-            DefaultPair.create( VectorFactory.getDefault().copyValues(0,0), 0 ),
-            DefaultPair.create( VectorFactory.getDefault().copyValues(0,0), 1 ),
-            DefaultPair.create( VectorFactory.getDefault().copyValues(0,0), 2 ),
-            DefaultPair.create( VectorFactory.getDefault().copyValues(0,0), 3 ),
-            DefaultPair.create( VectorFactory.getDefault().copyValues(0,0), 4 ),
-            DefaultPair.create( VectorFactory.getDefault().copyValues(0,0), 5 )
+            new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 0 ),
+            new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 1 ),
+            new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 2 ),
+            new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 3 ),
+            new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 4 ),
+            new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 5 )
         );
 
         KDTree<Vector,Integer,DefaultPair<Vector,Integer>> tree =

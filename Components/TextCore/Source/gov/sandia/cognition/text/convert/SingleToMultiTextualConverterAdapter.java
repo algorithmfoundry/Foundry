@@ -63,7 +63,7 @@ public class SingleToMultiTextualConverterAdapter<InputType, OutputType extends 
         final InputType input)
     {
         // Wrap the output as a singleton list.
-        return Collections.singletonList(this.getConverter().evaluate(input));
+        return Collections.<OutputType>singletonList(this.getConverter().evaluate(input));
     }
 
     /**

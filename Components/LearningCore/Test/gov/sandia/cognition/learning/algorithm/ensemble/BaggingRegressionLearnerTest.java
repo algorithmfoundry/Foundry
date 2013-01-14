@@ -94,13 +94,13 @@ public class BaggingRegressionLearnerTest
 
         for (int i = 0; i < 10; i++)
         {
-            data.add(DefaultInputOutputPair.create(
+            data.add(new DefaultInputOutputPair<Vector, Double>(
                 vectorFactory.createUniformRandom(
                     14, 0.0, 1.0, random), random.nextDouble() + 1.0));
         }
         for (int i = 0; i < 5; i++)
         {
-            data.add( DefaultInputOutputPair.create(
+            data.add(new DefaultInputOutputPair<Vector, Double>(
                 vectorFactory.createUniformRandom(
                     14, -1.0, 0.0, random), -(random.nextDouble() - 1.0)));
         }

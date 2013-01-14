@@ -119,26 +119,26 @@ public class LogisticRegressionTest
         // http://luna.cas.usf.edu/~mbrannic/files/regression/Logistic.html
         LinkedList<InputOutputPair<Vector,Double>> data =
             new LinkedList<InputOutputPair<Vector, Double>>();
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 70), 1.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 80), 1.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 50), 1.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 60), 1.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 40), 1.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 65), 1.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 75), 1.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 80), 1.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 70), 1.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 60), 1.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 65), 0.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 50), 0.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 45), 0.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 35), 0.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 40), 0.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0, 50), 0.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 55), 0.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 45), 0.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 50), 0.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0.0, 60), 0.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(1.0, 70), 1.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(1.0, 80), 1.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(1.0, 50), 1.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(0.0, 60), 1.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(0.0, 40), 1.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(0.0, 65), 1.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(0.0, 75), 1.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(0.0, 80), 1.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(0.0, 70), 1.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(0.0, 60), 1.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(1.0, 65), 0.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(1.0, 50), 0.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(1.0, 45), 0.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(1.0, 35), 0.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(1.0, 40), 0.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(1.0, 50), 0.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(0.0, 55), 0.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(0.0, 45), 0.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(0.0, 50), 0.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(0.0, 60), 0.0 ) );
 
         final double r1 = 0.1;
         LogisticRegression instance = new LogisticRegression(r1);

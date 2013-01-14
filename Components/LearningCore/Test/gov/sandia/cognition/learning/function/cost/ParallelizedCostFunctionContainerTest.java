@@ -178,7 +178,7 @@ public class ParallelizedCostFunctionContainerTest
             new ArrayList<TargetEstimatePair<Vector, Vector>>( num );
         for( int n = 0; n < num; n++ )
         {
-            data.add(DefaultTargetEstimatePair.create(
+            data.add(new DefaultTargetEstimatePair<Vector, Vector>(
                 VectorFactory.getDefault().createUniformRandom( dim, -r, r, RANDOM ),
                 VectorFactory.getDefault().createUniformRandom( dim, -r, r, RANDOM ) ) );
         }        

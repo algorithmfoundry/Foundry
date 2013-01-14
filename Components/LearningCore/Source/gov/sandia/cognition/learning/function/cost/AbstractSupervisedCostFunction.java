@@ -85,9 +85,10 @@ public abstract class AbstractSupervisedCostFunction<InputType, TargetType>
         for (InputOutputPair<? extends InputType, ? extends TargetType> io
             : this.getCostParameters())
         {
+        	TargetType target = io.getOutput();
             TargetType estimate = evaluator.evaluate(io.getInput());
             targetEstimatePairs.add(DefaultWeightedTargetEstimatePair.create(
-                io.getOutput(), estimate, DatasetUtil.getWeight(io)));
+                target, estimate, DatasetUtil.getWeight(io)));
         }
 
         return this.evaluatePerformance( targetEstimatePairs );

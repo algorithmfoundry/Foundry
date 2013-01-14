@@ -69,12 +69,12 @@ public abstract class NearestNeighborTestHarness
      */
     @SuppressWarnings("unchecked")
     public static List<DefaultInputOutputPair<Vector,Double>> POINTS = Arrays.asList(
-        DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(2,3), 0.0 ),
-        DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(5,4), 1.0 ),
-        DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(9,6), 2.0 ),
-        DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(4,7), 3.0 ),
-        DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(8,1), 4.0 ),
-        DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(7,2), 5.0 )
+        new DefaultInputOutputPair<Vector,Double>(VectorFactory.getDefault().copyValues(2, 3), 0.0),
+        new DefaultInputOutputPair<Vector,Double>(VectorFactory.getDefault().copyValues(5, 4), 1.0),
+        new DefaultInputOutputPair<Vector,Double>(VectorFactory.getDefault().copyValues(9, 6), 2.0),
+        new DefaultInputOutputPair<Vector,Double>(VectorFactory.getDefault().copyValues(4, 7), 3.0),
+        new DefaultInputOutputPair<Vector,Double>(VectorFactory.getDefault().copyValues(8, 1), 4.0),
+        new DefaultInputOutputPair<Vector,Double>(VectorFactory.getDefault().copyValues(7, 2), 5.0)
     );
 
 
@@ -224,7 +224,7 @@ public abstract class NearestNeighborTestHarness
 
         AbstractNearestNeighbor<Vector, Double> nn = this.createInstance( POINTS );
         InputOutputPair<Vector,Double> pair =
-            DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(0,0), 6.0 );
+        		new DefaultInputOutputPair<Vector,Double>(VectorFactory.getDefault().copyValues(0,0), 6.0);
 
         int preSize = nn.getData().size();
         assertFalse( nn.getData().contains(pair) );

@@ -24,11 +24,13 @@ import gov.sandia.cognition.learning.function.scalar.LinearDiscriminant;
 import gov.sandia.cognition.learning.function.scalar.PolynomialFunction;
 import gov.sandia.cognition.learning.function.scalar.VectorFunctionLinearDiscriminant;
 import gov.sandia.cognition.learning.function.vector.ScalarBasisSet;
-import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.VectorFunction;
 import gov.sandia.cognition.util.ObjectUtil;
+
 import java.util.LinkedList;
+
 import junit.framework.TestCase;
 
 /**
@@ -88,11 +90,11 @@ public class KernelWeightedRobustRegressionTest
                 new LinearDiscriminant( VectorFactory.getDefault().copyValues(-5.0, 2.0, 0.0 ) ) );
         for (double i = 1; i <= 10; i++)
         {
-            d.add( DefaultInputOutputPair.create( polynomials.evaluate(i), VectorFactory.getDefault().copyValues(f.evaluate(i) ) ) );
+            d.add(new DefaultInputOutputPair<Vector, Vector>( polynomials.evaluate(i), VectorFactory.getDefault().copyValues(f.evaluate(i) ) ) );
         }
 
         double j = 2.5;
-        d.add( DefaultInputOutputPair.create( polynomials.evaluate(j), VectorFactory.getDefault().copyValues(30+f.evaluate(j) )) );
+        d.add(new DefaultInputOutputPair<Vector, Vector>( polynomials.evaluate(j), VectorFactory.getDefault().copyValues(30+f.evaluate(j) )) );
         return d;
     }
 

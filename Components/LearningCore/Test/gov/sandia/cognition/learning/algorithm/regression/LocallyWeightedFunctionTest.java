@@ -211,9 +211,9 @@ public class LocallyWeightedFunctionTest
         
         LinkedList<InputOutputPair<Vector,Double>> data =
             new LinkedList<InputOutputPair<Vector,Double>>();
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(1.0), 0.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(2.0), 1.0 ) );
-        data.add( DefaultInputOutputPair.create( VectorFactory.getDefault().copyValues(3.0), 4.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(1.0), 0.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(2.0), 1.0 ) );
+        data.add( new DefaultInputOutputPair<Vector, Double>( VectorFactory.getDefault().copyValues(3.0), 4.0 ) );
 
         LocallyWeightedFunction.Learner<Vectorizable,Double> learner =
             new LocallyWeightedFunction.Learner<Vectorizable, Double>(
