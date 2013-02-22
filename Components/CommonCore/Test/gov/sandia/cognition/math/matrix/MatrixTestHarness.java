@@ -185,7 +185,7 @@ abstract public class MatrixTestHarness
                 double element = RANDOM.nextDouble();
                 instance.setElement( i, j, element );
                 assertEquals( "getElement(" + i + "," + j + ") failed.",
-                    instance.getElement( i, j ), element );
+                    instance.getElement( i, j ), element, 0.0);
             }
         }
 
@@ -261,7 +261,7 @@ abstract public class MatrixTestHarness
 
                 instance.setElement( i, j, element );
                 assertEquals( "setElement(" + i + "," + j + "," + element + ") failed.",
-                    instance.getElement( i, j ), element );
+                    instance.getElement( i, j ), element, 0.0);
             }
         }
 
