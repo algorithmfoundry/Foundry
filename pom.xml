@@ -10,7 +10,7 @@
     <groupId>gov.sandia.foundry</groupId>
     <artifactId>gov-sandia-foundry</artifactId>
     <packaging>pom</packaging>
-    <version>3.3.2</version>
+    <version>3.3.3-SNAPSHOT</version>
     <name>Cognitive Foundry</name>
     <description>Build intelligent systems.</description>
     <url>http://foundry.sandia.gov</url>
