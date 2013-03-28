@@ -54,14 +54,17 @@ public class KDTreeTest
     /**
      * Example from http://en.wikipedia.org/wiki/Kd-tree#Construction
      */
-    public static List<DefaultPair<Vector,Integer>> points = Arrays.asList(
-        new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(2,3), 0 ),
-        new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(5,4), 1 ),
-        new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(9,6), 2 ),
-        new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(4,7), 3 ),
-        new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(8,1), 4 ),
-        new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(7,2), 5 )
-    );
+    public static List<DefaultPair<Vector,Integer>> points = new ArrayList<DefaultPair<Vector,Integer>>();
+
+    static
+    {
+        points.add(new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(2,3), 0 ));
+        points.add(new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(5,4), 1 ));
+        points.add(new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(9,6), 2 ));
+        points.add(new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(4,7), 3 ));
+        points.add(new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(8,1), 4 ));
+        points.add(new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(7,2), 5 ));
+    }
 
 
     /**
@@ -418,14 +421,13 @@ public class KDTreeTest
 
         System.out.println( "Pathological Example" );
 
-        List<DefaultPair<Vector,Integer>> pathological = Arrays.asList(
-            new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 0 ),
-            new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 1 ),
-            new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 2 ),
-            new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 3 ),
-            new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 4 ),
-            new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 5 )
-        );
+        List<DefaultPair<Vector,Integer>> pathological = new ArrayList<DefaultPair<Vector,Integer>>();
+        pathological.add(new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 0 ));
+        pathological.add(new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 1 ));
+        pathological.add(new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 2 ));
+        pathological.add(new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 3 ));
+        pathological.add(new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 4 ));
+        pathological.add(new DefaultPair<Vector, Integer>( VectorFactory.getDefault().copyValues(0,0), 5 ));
 
         KDTree<Vector,Integer,DefaultPair<Vector,Integer>> tree =
             KDTree.createBalanced(pathological);
