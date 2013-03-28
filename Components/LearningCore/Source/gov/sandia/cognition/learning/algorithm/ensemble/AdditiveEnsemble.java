@@ -31,6 +31,12 @@ public class AdditiveEnsemble<InputType, MemberType extends Evaluator<? super In
     implements Regressor<InputType>
 {
 
+    /** The default bias is {@value}. */
+    public static final double DEFAULT_BIAS = 0.0;
+
+    /** The initial offset value that the ensemble outputs are added to. */
+    protected double bias;
+
     /**
      * Creates a new, empty {@code AdditiveEnsemble}.
      */
@@ -40,7 +46,8 @@ public class AdditiveEnsemble<InputType, MemberType extends Evaluator<? super In
     }
 
     /**
-     * Creates a new {@code AdditiveEnsemble} with the given members.
+     * Creates a new {@code AdditiveEnsemble} with the given members and a bias
+     * of 0.
      *
      * @param   members
      *      The list of ensemble members.
@@ -48,7 +55,24 @@ public class AdditiveEnsemble<InputType, MemberType extends Evaluator<? super In
     public AdditiveEnsemble(
         final List<MemberType> members)
     {
+        this(members, DEFAULT_BIAS);
+    }
+
+    /**
+     * Creates a new {@code AdditiveEnsemble} with the given members.
+     *
+     * @param   members
+     *      The list of ensemble members.
+     * @param   bias
+     *      The initial offset value.
+     */
+    public AdditiveEnsemble(
+        final List<MemberType> members,
+        final double bias)
+    {
         super(members);
+
+        this.setBias(bias);
     }
 
     @Override
@@ -63,7 +87,7 @@ public class AdditiveEnsemble<InputType, MemberType extends Evaluator<? super In
         final InputType input)
     {
         // Sum up the result.
-        double sum = 0.0;
+        double sum = this.bias;
         for (MemberType member : this.getMembers())
         {
             // Compute the estimate of the member.
@@ -79,5 +103,30 @@ public class AdditiveEnsemble<InputType, MemberType extends Evaluator<? super In
         // Return the sum.
         return sum;
     }
-    
+
+    /**
+     * Gets the initial offset value (bias) to which the output of the ensemble
+     * members are added when computing a result.
+     *
+     * @return
+     *      The bias.
+     */
+    public double getBias()
+    {
+        return this.bias;
+    }
+
+    /**
+     * Sets the initial offset value (bias) to which the output of the ensemble
+     * members are added when computing a result.
+     *
+     * @param   bias
+     *      The bias.
+     */
+    public void setBias(
+        final double bias)
+    {
+        this.bias = bias;
+    }
+
 }

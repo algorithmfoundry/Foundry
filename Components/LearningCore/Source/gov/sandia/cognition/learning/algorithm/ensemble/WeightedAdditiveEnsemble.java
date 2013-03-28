@@ -31,6 +31,12 @@ public class WeightedAdditiveEnsemble<InputType, MemberType extends Evaluator<? 
     implements Regressor<InputType>
 {
 
+    /** The default bias is {@value}. */
+    public static final double DEFAULT_BIAS = 0.0;
+
+    /** The initial offset value that the ensemble outputs are added to. */
+    protected double bias;
+    
     /**
      * Creates a new, empty of WeightedAdditiveEnsemble.
      */
@@ -48,7 +54,24 @@ public class WeightedAdditiveEnsemble<InputType, MemberType extends Evaluator<? 
     public WeightedAdditiveEnsemble(
         final List<WeightedValue<MemberType>> members)
     {
+        this(members, DEFAULT_BIAS);
+    }
+
+    /**
+     * Creates a new instance of WeightedAdditiveEnsemble.
+     *
+     * @param   members
+     *      The members of the ensemble.
+     * @param   bias
+     *      The initial offset for the result.
+     */
+    public WeightedAdditiveEnsemble(
+        final List<WeightedValue<MemberType>> members,
+        final double bias)
+    {
         super(members);
+        
+        this.setBias(bias);
     }
 
     @Override
@@ -64,7 +87,7 @@ public class WeightedAdditiveEnsemble<InputType, MemberType extends Evaluator<? 
         final InputType input)
     {
         // Sum up the result.
-        double sum = 0.0;
+        double sum = this.bias;
         for (WeightedValue<MemberType> member : this.getMembers())
         {
             // Compute the estimate of the member.
@@ -79,6 +102,31 @@ public class WeightedAdditiveEnsemble<InputType, MemberType extends Evaluator<? 
 
         // Return the sum.
         return sum;
+    }
+
+    /**
+     * Gets the initial offset value (bias) to which the output of the ensemble
+     * members are added when computing a result.
+     *
+     * @return
+     *      The bias.
+     */
+    public double getBias()
+    {
+        return this.bias;
+    }
+
+    /**
+     * Sets the initial offset value (bias) to which the output of the ensemble
+     * members are added when computing a result.
+     *
+     * @param   bias
+     *      The bias.
+     */
+    public void setBias(
+        final double bias)
+    {
+        this.bias = bias;
     }
 
 }

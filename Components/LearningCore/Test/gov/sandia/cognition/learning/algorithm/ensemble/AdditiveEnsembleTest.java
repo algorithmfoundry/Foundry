@@ -38,16 +38,25 @@ public class AdditiveEnsembleTest
     @Test
     public void testConstructors()
     {
+        double bias = 0.0;
         AdditiveEnsemble<Double, Evaluator<Double, Double>> instance =
             new AdditiveEnsemble<Double, Evaluator<Double, Double>>();
         assertNotNull(instance.getMembers());
         assertTrue(instance.getMembers().isEmpty());
+        assertEquals(bias, instance.getBias(), 0.0);
 
         List<Evaluator<Double, Double>> members =
             new ArrayList<Evaluator<Double, Double>>();
         instance = new AdditiveEnsemble<Double, Evaluator<Double, Double>>(
             members);
         assertSame(members, instance.getMembers());
+        assertEquals(bias, instance.getBias(), 0.0);
+
+        bias = 3.3;
+        instance = new AdditiveEnsemble<Double, Evaluator<Double, Double>>(
+            members, bias);
+        assertSame(members, instance.getMembers());
+        assertEquals(bias, instance.getBias(), 0.0);
     }
 
     /**
@@ -78,6 +87,11 @@ public class AdditiveEnsembleTest
         assertEquals(2.75, instance.evaluate(0.5), 0.0);
         assertEquals(-0.75, instance.evaluate(-0.5), 0.0);
         assertEquals(-9.5, instance.evaluate(-3.0), 0.0);
+
+        // Make sure the bias is used.
+        instance.setBias(0.5);
+        assertEquals(1.5, instance.evaluate(0.0), 0.0);
+        assertEquals(5.0, instance.evaluate(1.0), 0.0);
     }
 
     /**
@@ -108,6 +122,34 @@ public class AdditiveEnsembleTest
         assertEquals(2.75, instance.evaluateAsDouble(0.5), 0.0);
         assertEquals(-0.75, instance.evaluateAsDouble(-0.5), 0.0);
         assertEquals(-9.5, instance.evaluateAsDouble(-3.0), 0.0);
+
+        // Make sure the bias is used.
+        instance.setBias(0.5);
+        assertEquals(1.5, instance.evaluateAsDouble(0.0), 0.0);
+        assertEquals(5.0, instance.evaluateAsDouble(1.0), 0.0);
+    }
+
+    @Test
+    public void testGetBias()
+    {
+        this.testSetBias();
+    }
+
+    @Test
+    public void testSetBias()
+    {
+        double bias = 0.0;
+        AdditiveEnsemble<Double, Evaluator<Double, Double>> instance =
+            new AdditiveEnsemble<Double, Evaluator<Double, Double>>();
+        assertEquals(bias, instance.getBias(), 0.0);
+
+        bias = 1.3;
+        instance.setBias(bias);
+        assertEquals(bias, instance.getBias(), 0.0);
+
+        bias = -3.1;
+        instance.setBias(bias);
+        assertEquals(bias, instance.getBias(), 0.0);
     }
 
 }
