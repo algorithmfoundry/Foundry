@@ -76,7 +76,7 @@ public class CentroidClusterDivergenceFunction<DataType>
         final CentroidCluster<DataType> cluster, 
         final DataType other)
     {
-        return this.divergenceFunction.evaluate(cluster.getCentroid(), other);
+        return this.divergenceFunction.evaluate(other, cluster.getCentroid());
     }
     
 }
