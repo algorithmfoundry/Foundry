@@ -16,10 +16,6 @@ package gov.sandia.cognition.statistics;
 
 import gov.sandia.cognition.math.matrix.InfiniteVector;
 import gov.sandia.cognition.collection.ScalarMap;
-import gov.sandia.cognition.statistics.DiscreteDistribution;
-import gov.sandia.cognition.statistics.DistributionEstimator;
-import gov.sandia.cognition.statistics.EstimableDistribution;
-import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 
 /**
  * A distribution of data from which we can sample and perform Ring operations.
