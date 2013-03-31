@@ -93,7 +93,7 @@ public interface VectorSpace<VectorType extends VectorSpace<VectorType,?>,EntryT
         url="http://en.wikipedia.org/wiki/Vector_norm#p-norm"
     )
     public double norm(
-        final double power );
+        final double power);
 
     /**
      * Inner Vector product between two Vectors
@@ -104,7 +104,7 @@ public interface VectorSpace<VectorType extends VectorSpace<VectorType,?>,EntryT
      * @return dot product, (0,\infty)
      */
     public double dotProduct(
-        final VectorType other );
+        final VectorType other);
 
     /**
      * Computes the angle between two Vectors.
@@ -127,7 +127,7 @@ public interface VectorSpace<VectorType extends VectorSpace<VectorType,?>,EntryT
      * @return cosine between the vectors, [0,1]
      */
     public double cosine(
-        final VectorType other );
+        final VectorType other);
 
     /**
      * Euclidean distance between <code>this</code> and <code>other</code>,
@@ -139,7 +139,7 @@ public interface VectorSpace<VectorType extends VectorSpace<VectorType,?>,EntryT
      * @return this.minus( other ).norm2(), which is [0,\infty)
      */
     public double euclideanDistance(
-        final VectorType other );
+        final VectorType other);
 
     /**
      * Squared Euclidean distance between <code>this</code> and
@@ -152,7 +152,7 @@ public interface VectorSpace<VectorType extends VectorSpace<VectorType,?>,EntryT
      * @return this.minus( other ).norm2Squared(), which is [0,\infty)
      */
     public double euclideanDistanceSquared(
-        final VectorType other );
+        final VectorType other);
 
     /**
      * Returns the unit vector of this vector. That is, a vector in the same
@@ -213,7 +213,7 @@ public interface VectorSpace<VectorType extends VectorSpace<VectorType,?>,EntryT
          *          new value for the Vector at the current index
          */
         public void setValue(
-            final double value );
+            final double value);
 
     }
     
