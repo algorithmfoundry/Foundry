@@ -238,6 +238,45 @@ public class CollectionUtilTest
         collection.clear();
         first = null;
         assertSame(first, CollectionUtil.getFirst(iterable));
+
+        List<Object> list = null;
+        first = null;
+        assertSame(first, CollectionUtil.getFirst(list));
+
+        list = new LinkedList<Object>();
+        assertSame(first, CollectionUtil.getFirst(list));
+
+        first = "a";
+        list.add(first);
+        assertSame(first, CollectionUtil.getFirst(list));
+
+        list.add("b");
+        assertSame(first, CollectionUtil.getFirst(list));
+    }
+
+    /**
+     * Test of getLast method, of class CollectionUtil.
+     */
+    public void testGetLast()
+    {
+        List<Object> list = null;
+        Object last = null;
+        assertSame(last, CollectionUtil.getLast(list));
+
+        list = new LinkedList<Object>();
+        assertSame(last, CollectionUtil.getLast(list));
+
+        last = "a";
+        list.add(last);
+        assertSame(last, CollectionUtil.getLast(list));
+
+        last = "b";
+        list.add("b");
+        assertSame(last, CollectionUtil.getLast(list));
+
+        last = null;
+        list.add(null);
+        assertSame(last, CollectionUtil.getLast(list));
     }
 
 

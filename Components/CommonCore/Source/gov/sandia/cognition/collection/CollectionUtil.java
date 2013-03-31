@@ -216,6 +216,53 @@ public class CollectionUtil
         }
     }
 
+    /**
+     * Gets the first element of the list. If the list is null or empty, null
+     * is returned.
+     *
+     * @param   <T>
+     *      The type of element in the list.
+     * @param   list
+     *      The list to get the first element from.
+     * @return
+     *      The first element from the list, if one exists. Otherwise, null.
+     */
+    public static <T> T getFirst(
+        final List<? extends T> list)
+    {
+        if (list == null || list.isEmpty())
+        {
+            return null;
+        }
+        else
+        {
+            return list.get(0);
+        }
+    }
+
+    /**
+     * Gets the last element of the list. If the list is null or empty, null
+     * is returned.
+     *
+     * @param   <T>
+     *      The type of element in the list.
+     * @param   list
+     *      The list to get the last element from.
+     * @return
+     *      The last element from the list, if one exists. Otherwise, null.
+     */
+    public static <T> T getLast(
+        final List<? extends T> list)
+    {
+        if (list == null || list.isEmpty())
+        {
+            return null;
+        }
+        else
+        {
+            return list.get(list.size() - 1);
+        }
+    }
 
     /**
      * Returns the set of indices of the data array such that
