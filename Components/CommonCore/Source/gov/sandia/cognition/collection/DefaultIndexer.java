@@ -65,7 +65,7 @@ public class DefaultIndexer<ValueType>
         super();
 
         this.valueList = new ArrayList<ValueType>(initialCapacity);
-        this.valueToIndexMap = new LinkedHashMap<ValueType, Integer>(
+        this.valueToIndexMap = CollectionUtil.createLinkedHashMapWithSize(
             initialCapacity);
     }
 
