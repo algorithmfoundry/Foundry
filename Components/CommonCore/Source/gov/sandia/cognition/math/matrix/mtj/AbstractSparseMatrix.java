@@ -241,4 +241,10 @@ public abstract class AbstractSparseMatrix
         return rowVector;
     }
 
+    @Override
+    public boolean isSparse()
+    {
+        return true;
+    }
+
 }

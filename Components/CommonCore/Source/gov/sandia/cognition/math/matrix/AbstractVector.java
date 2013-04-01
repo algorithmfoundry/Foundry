@@ -16,6 +16,7 @@ package gov.sandia.cognition.math.matrix;
 
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.CodeReviews;
+import gov.sandia.cognition.math.UnivariateScalarFunction;
 import java.text.NumberFormat;
 
 /**
@@ -158,6 +159,50 @@ public abstract class AbstractVector
     }
 
     @Override
+    public Vector transform(
+        final UnivariateScalarFunction function)
+    {
+        final Vector result = this.clone();
+        result.transformEquals(function);
+        return result;
+    }
+
+    @Override
+    public void transformEquals(
+        final UnivariateScalarFunction function)
+    {
+        final int dimensionality = this.getDimensionality();
+        for (int i = 0; i < dimensionality; i++)
+        {
+            final double value = function.evaluateAsDouble(this.getElement(i));
+            this.setElement(i, value);
+        }
+    }
+
+    @Override
+    public Vector transformNonZeros(
+        final UnivariateScalarFunction function)
+    {
+        final Vector result = this.clone();
+        result.transformNonZerosEquals(function);
+        return result;
+    }
+
+    @Override
+    public void transformNonZerosEquals(
+        final UnivariateScalarFunction function)
+    {
+        for (Entry entry : this)
+        {
+            final double value = entry.getValue();
+            if (value != 0.0)
+            {
+                entry.setValue(function.evaluateAsDouble(value));
+            }
+        }
+    }
+
+    @Override
     public double[] toArray()
     {
         final int dimensionality = this.getDimensionality();
@@ -189,7 +234,8 @@ public abstract class AbstractVector
             builder.append( this.getElement(i) );
         }
 
-        return builder.toString();    }
+        return builder.toString();
+    }
     
     @Override
     public String toString(

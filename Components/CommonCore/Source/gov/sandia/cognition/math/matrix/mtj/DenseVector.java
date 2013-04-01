@@ -272,6 +272,12 @@ public class DenseVector
         return ((no.uib.cipr.matrix.DenseVector) this.getInternalVector()).getData();
     }
 
+
+    @Override
+    public boolean isSparse()
+    {
+        return false;
+    }
     
     /**
      * Writes a DenseVector out to a serialized stream (usually file)

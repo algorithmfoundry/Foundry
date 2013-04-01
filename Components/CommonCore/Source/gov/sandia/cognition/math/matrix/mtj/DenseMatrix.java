@@ -352,6 +352,12 @@ public class DenseMatrix
             new no.uib.cipr.matrix.DenseMatrix( data ) );
     }
 
+    @Override
+    public boolean isSparse()
+    {
+        return false;
+    }
+
     /**
      * Gets the underlying double array from the MTJ matrix
      * @return double array from the underlying MTJ matrix

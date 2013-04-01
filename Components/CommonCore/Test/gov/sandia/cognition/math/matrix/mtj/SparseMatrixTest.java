@@ -42,4 +42,13 @@ public class SparseMatrixTest
         return new SparseMatrix( matrix );
     }
 
+    public void testIsSparse()
+    {
+        Matrix m1 = this.createRandom();
+        assertTrue(m1.isSparse());
+        assertTrue(m1.isSparse());
+        assertTrue(this.createRandom().isSparse());
+        assertTrue(this.createMatrix(m1.getNumRows(), m1.getNumColumns()).isSparse());
+    }
+
 }

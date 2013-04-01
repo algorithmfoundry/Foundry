@@ -16,6 +16,7 @@ package gov.sandia.cognition.math.matrix;
 
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.CodeReviews;
+import gov.sandia.cognition.math.UnivariateScalarFunction;
 import java.text.NumberFormat;
 
 /**
@@ -109,6 +110,7 @@ public interface Vector
      */
     public Vector times(
         final Matrix matrix );
+
     /**
      * Determines if <code>this</code> and <code>other</code> have the same
      * number of dimensions (size)
@@ -160,6 +162,71 @@ public interface Vector
     public Vector subVector(
         final int minIndex,
         final int maxIndex );
+
+    /**
+     * Applies the given function to each of the elements of this vector and
+     * returns a new vector with the result. Note that this is a dense operation
+     * where zero elements will be passed to the function.
+     *
+     * @param   function
+     *      The function from double to double to apply.
+     * @return
+     *      A new vector whose elements represent the result of applying the
+     *      function to corresponding element in this vector.
+     */
+    public Vector transform(
+        final UnivariateScalarFunction function);
+
+    /**
+     * Applies the given function to each of the elements of this vector and
+     * sets them to the result.
+     *
+     * @param   function
+     *      The function from double to double to apply.
+     */
+    public void transformEquals(
+        final UnivariateScalarFunction function);
+
+    /**
+     * Applies the given function to each of the non-zero elements of this
+     * vector and returns a new vector with the result.
+     *
+     * @param   function
+     *      The function from double to double to apply to the non-zero
+     *      elements.
+     * @return
+     *      A new vector whose elements represent the result of applying the
+     *      function to the corresponding element in this vector, except for
+     *      zeros, which are exactly the same as in this vector.
+     */
+    public Vector transformNonZeros(
+        final UnivariateScalarFunction function);
+
+    /**
+     * Applies the given function to each of the non-zero elements of this
+     * vector and sets them to the result.
+     *
+     * @param   function
+     *      The function from double to double to apply to the non-zero
+     *      elements.
+     */
+    public void transformNonZerosEquals(
+        final UnivariateScalarFunction function);
+
+
+    /**
+     * Returns true if this vector has a potentially sparse underlying
+     * structure. This can indicate that it is faster to only process the
+     * non-zero elements rather than to do dense operations on it. Of course,
+     * even with a sparse structure, there may be no zero elements or
+     * conversely even with a non-sparse (dense) structure there may be many
+     * zero elements.
+     *
+     * @return
+     *      True if the vector has a potentially sparse structure. Otherwise,
+     *      false.
+     */
+    public boolean isSparse();
 
     /**
      * Converts this vector to a new array of doubles, in the same order as they

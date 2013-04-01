@@ -1684,6 +1684,11 @@ abstract public class MatrixTestHarness
     }
 
     /**
+     * Test of isSparse method.
+     */
+    public abstract void testIsSparse();
+
+    /**
      * Test of convertFromVector method, of class gov.sandia.isrc.math.matrix.Matrix.
      */
     public void testConvertFromVector()

@@ -77,5 +77,19 @@ public class DenseVectorTest extends VectorTestHarness
         
         
     }
+
+
+    /**
+     * Test of isSparse method.
+     */
+    public void testIsSparse()
+    {
+        // We expect isSparse to be consistent for a data structure.
+        Vector v1 = this.createRandom();
+        assertFalse(v1.isSparse());
+        assertFalse(v1.isSparse());
+        assertFalse(this.createRandom().isSparse());
+        assertFalse(this.createVector(v1.getDimensionality()).isSparse());
+    }
     
 }

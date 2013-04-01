@@ -98,6 +98,15 @@ public class AbstractMTJVectorTest
         assertEquals( i2, v1.getInternalVector() );
         
     }
-    
+
+    /**
+     * Test of isSparse method.
+     */
+    public void testIsSparse()
+    {
+        // We expect isSparse to be consistent for a data structure.
+        Vector v1 = this.createRandom();
+        assertTrue(v1 instanceof DenseVector ^ v1.isSparse());
+    }
     
 }

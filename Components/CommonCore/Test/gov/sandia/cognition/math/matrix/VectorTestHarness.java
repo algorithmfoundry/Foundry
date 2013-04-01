@@ -14,6 +14,7 @@
 
 package gov.sandia.cognition.math.matrix;
 
+import gov.sandia.cognition.math.AbstractUnivariateScalarFunction;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -467,6 +468,168 @@ abstract public class VectorTestHarness
         
     }
 
+    public void testTransformEquals()
+    {
+        Vector v1 = this.createRandom();
+        Vector v1clone = v1.clone();
+        Vector ones = this.createRandom(v1.getDimensionality(), 1.0, 1.0);
+        v1.transformEquals(new AbstractUnivariateScalarFunction()
+        {
+
+            @Override
+            public double evaluate(
+                final double input)
+            {
+                return 1.0 + input / 2.0;
+            }
+
+        });
+
+        assertEquals(v1clone.scale(0.5).plus(ones), v1);
+        
+        boolean exceptionThrown = false;
+        try
+        {
+            v1.transformEquals(null);
+        }
+        catch (Exception e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+    }
+
+    public void testTransform()
+    {
+        Vector v1 = this.createRandom();
+        Vector v1clone = v1.clone();
+        Vector ones = this.createRandom(v1.getDimensionality(), 1.0, 1.0);
+        Vector v2 = v1.transform(new AbstractUnivariateScalarFunction() 
+        {
+            
+            @Override
+            public double evaluate(
+                final double input)
+            {
+                return 1.0 + input / 4.0;
+            }
+
+        });
+
+        assertEquals(v1clone, v1);
+        assertEquals(v1clone.scale(0.25).plus(ones), v2);
+
+        boolean exceptionThrown = false;
+        try
+        {
+            v1.transform(null);
+        }
+        catch (Exception e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+    }
+
+    public void testTransformNonZerosEquals()
+    {
+        System.out.println("testTransformNonZerosEquals");
+        Vector v1 = this.createRandom();
+        int d = v1.getDimensionality();
+        int randomIndex = RANDOM.nextInt(d);
+        v1.setElement(randomIndex, 0.0);
+        Vector v1clone = v1.clone();
+        Vector ones = this.createVector(d);
+        for (int i = 0; i < d; i++)
+        {
+            if (v1.getElement(i) != 0.0)
+            {
+                ones.setElement(i, 1.0);
+            }
+        }
+        
+        v1.transformNonZerosEquals(new AbstractUnivariateScalarFunction()
+        {
+
+            @Override
+            public double evaluate(
+                final double input)
+            {
+                return 1.0 + input / 8.0;
+            }
+
+        });
+        
+        assertEquals(v1clone.scale(0.125).plus(ones), v1);
+        assertEquals(0.0, v1.getElement(randomIndex), 0.0);
+
+        boolean exceptionThrown = false;
+        try
+        {
+            v1.transformNonZerosEquals(null);
+        }
+        catch (Exception e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+    }
+
+    public void testTransformNonZeros()
+    {
+        Vector v1 = this.createRandom();
+        int d = v1.getDimensionality();
+        int randomIndex = RANDOM.nextInt(d);
+        v1.setElement(randomIndex, 0.0);
+        Vector v1clone = v1.clone();
+        Vector ones = this.createVector(d);
+        for (int i = 0; i < d; i++)
+        {
+            if (v1.getElement(i) != 0.0)
+            {
+                ones.setElement(i, 1.0);
+            }
+        }
+        Vector v2 = v1.transformNonZeros(new AbstractUnivariateScalarFunction()
+        {
+
+            @Override
+            public double evaluate(
+                final double input)
+            {
+                return 1.0 + input / 8.0;
+            }
+
+        });
+
+        assertEquals(v1clone, v1);
+        assertEquals(v1clone.scale(0.125).plus(ones), v2);
+        assertEquals(0.0, v2.getElement(randomIndex), 0.0);
+
+        boolean exceptionThrown = false;
+        try
+        {
+            v1.transformNonZeros(null);
+        }
+        catch (Exception e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+    }
+
     /**
      * Test of checkSameDimensionality method, of class gov.sandia.isrc.math.matrix.Vector.
      */
@@ -662,6 +825,11 @@ abstract public class VectorTestHarness
         v1.setElement(index, 2 * v1.getElement(index));
         assertFalse(v1.getElement(index) == result[index]);
     }
+
+    /**
+     * Test of isSparse method.
+     */
+    public abstract void testIsSparse();
 
     /**
      * Test of toString

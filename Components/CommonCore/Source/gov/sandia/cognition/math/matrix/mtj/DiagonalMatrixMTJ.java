@@ -406,6 +406,12 @@ public class DiagonalMatrixMTJ
         return this.pseudoInverse();
     }
 
+    @Override
+    public boolean isSparse()
+    {
+        return true;
+    }
+
     public Vector getColumn(
         int columnIndex )
     {

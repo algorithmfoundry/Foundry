@@ -61,4 +61,13 @@ public class DenseMatrixTest extends MatrixTestHarness
         {
         }        
     }
+
+    public void testIsSparse()
+    {
+        Matrix m1 = this.createRandom();
+        assertFalse(m1.isSparse());
+        assertFalse(m1.isSparse());
+        assertFalse(this.createRandom().isSparse());
+        assertFalse(this.createMatrix(m1.getNumRows(), m1.getNumColumns()).isSparse());
+    }
 }

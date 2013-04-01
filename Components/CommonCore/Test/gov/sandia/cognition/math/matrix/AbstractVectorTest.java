@@ -15,6 +15,7 @@
 package gov.sandia.cognition.math.matrix;
 
 import gov.sandia.cognition.annotation.CodeReview;
+import gov.sandia.cognition.math.matrix.mtj.DenseVector;
 import gov.sandia.cognition.math.matrix.mtj.DenseVectorFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.SparseVectorFactoryMTJ;
 
@@ -76,6 +77,16 @@ public class AbstractVectorTest
         String testName)
     {
         super(testName);
+    }
+
+    /**
+     * Test of isSparse method.
+     */
+    public void testIsSparse()
+    {
+        // We expect isSparse to be consistent for a data structure.
+        Vector v1 = this.createRandom();
+        assertTrue(v1 instanceof DenseVector ^ v1.isSparse());
     }
 
 }

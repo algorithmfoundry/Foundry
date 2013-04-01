@@ -334,6 +334,20 @@ public interface Matrix
         final Vector vector );
 
     /**
+     * Returns true if this matrix has a potentially sparse underlying
+     * structure. This can indicate that it is faster to only process the
+     * non-zero elements rather than to do dense operations on it. Of course,
+     * even with a sparse structure, there may be no zero elements or
+     * conversely even with a non-sparse (dense) structure there may be many
+     * zero elements.
+     *
+     * @return
+     *      True if the matrix has a potentially sparse structure. Otherwise,
+     *      false.
+     */
+    public boolean isSparse();
+
+    /**
      * Gets the specified column from the zero-based index and returns a
      * vector that corresponds to that column.
      *

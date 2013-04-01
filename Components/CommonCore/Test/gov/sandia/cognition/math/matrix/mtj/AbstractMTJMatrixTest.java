@@ -319,5 +319,15 @@ public class AbstractMTJMatrixTest
         }
         
     }
+
+    /**
+     * Test of isSparse method.
+     */
+    public void testIsSparse()
+    {
+        // We expect isSparse to be consistent for a data structure.
+        Matrix m1 = this.createRandom();
+        assertTrue(m1 instanceof DenseMatrix ^ m1.isSparse());
+    }
     
 }

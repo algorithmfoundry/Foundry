@@ -16,6 +16,7 @@ package gov.sandia.cognition.math.matrix;
 
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.CodeReviewResponse;
+import gov.sandia.cognition.math.matrix.mtj.DenseMatrix;
 import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
 import java.util.Random;
@@ -82,6 +83,16 @@ public class AbstractMatrixTest
         {
             return SparseMatrixFactoryMTJ.INSTANCE.createMatrix( numRows, numColumns );
         }
+    }
+
+    /**
+     * Test of isSparse method.
+     */
+    public void testIsSparse()
+    {
+        // We expect isSparse to be consistent for a data structure.
+        Matrix m1 = this.createRandom();
+        assertTrue(m1 instanceof DenseMatrix ^ m1.isSparse());
     }
 
 }

@@ -217,6 +217,12 @@ public class SparseVector
         
         return stacked;
     }
+
+    @Override
+    public boolean isSparse()
+    {
+        return true;
+    }
     
     /**
      * This method provides custom serialization for the class since the MTJ
