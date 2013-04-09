@@ -15,13 +15,13 @@
 package gov.sandia.cognition.math;
 
 /**
- * Unit tests for class UnsignedLogNumber.
+ * Unit tests for class {@link UnsignedLogNumber}.
  * 
  * @author  Justin Basilico
  * @since   3.3.0
  */
 public class UnsignedLogNumberTest
-    extends RingTestHarness<UnsignedLogNumber>
+    extends FieldTestHarness<UnsignedLogNumber>
 {
     protected double epsilon = 1e-10;
     

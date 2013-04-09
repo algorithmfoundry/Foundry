@@ -27,7 +27,7 @@ import gov.sandia.cognition.math.matrix.mtj.Vector2;
  * @since   3.1.2
  */
 public class MutableIntegerTest
-    extends RingTestHarness<MutableInteger>
+    extends EuclideanRingTestHarness<MutableInteger>
 {
     /**
      * Creates a new test.
@@ -363,6 +363,86 @@ public class MutableIntegerTest
             instance.plusEquals(other);
             assertEquals(expected, instance.getValue());
             assertEquals(otherValue, other.getValue());
+        }
+    }
+
+    @Override
+    public void testTimesEquals()
+    {
+        int value = 0;
+        int otherValue = this.randomInt();
+        int expected = 0;
+        MutableInteger instance = new MutableInteger();
+        expected = value * otherValue;
+        instance.timesEquals(new MutableInteger(otherValue));
+        assertEquals(expected, instance.getValue());
+
+        value = this.randomInt();
+        otherValue = this.randomInt();
+        instance.setValue(value);
+        expected = value * otherValue;
+        instance.timesEquals(new MutableInteger(otherValue));
+        assertEquals(expected, instance.getValue());
+
+        for (int i = 0; i < 1 + RANDOM.nextInt(10); i++)
+        {
+            otherValue = this.randomInt();
+            MutableInteger other = new MutableInteger(otherValue);
+            expected *= otherValue;
+            instance.timesEquals(other);
+            assertEquals(expected, instance.getValue());
+            assertEquals(otherValue, other.getValue());
+        }
+    }
+
+    @Override
+    public void testDivideEquals()
+    {
+        int value = 0;
+        int otherValue = this.randomInt();
+        int expected = 0;
+        MutableInteger instance = new MutableInteger();
+        expected = value / otherValue;
+        instance.divideEquals(new MutableInteger(otherValue));
+        assertEquals(expected, instance.getValue());
+
+        value = this.randomInt();
+        otherValue = this.randomInt();
+        instance.setValue(value);
+        expected = value / otherValue;
+        instance.divideEquals(new MutableInteger(otherValue));
+        assertEquals(expected, instance.getValue());
+
+        for (int i = 0; i < 1 + RANDOM.nextInt(10); i++)
+        {
+            otherValue = this.randomInt();
+            MutableInteger other = new MutableInteger(otherValue);
+
+            if (otherValue != 0)
+            {
+
+                expected /= otherValue;
+                instance.divideEquals(other);
+                assertEquals(expected, instance.getValue());
+                assertEquals(otherValue, other.getValue());
+            }
+            else
+            {
+                boolean exceptionThrown = false;
+                try
+                {
+                    instance.divideEquals(other);
+                }
+                catch (ArithmeticException e)
+                {
+                    exceptionThrown = true;
+                }
+                finally
+                {
+                    assertTrue(exceptionThrown);
+                }
+            }
+
         }
     }
 

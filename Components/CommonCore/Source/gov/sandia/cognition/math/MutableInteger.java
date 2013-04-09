@@ -32,7 +32,7 @@ import gov.sandia.cognition.util.CloneableSerializable;
 public class MutableInteger
     extends Number
     implements CloneableSerializable, Comparable<MutableInteger>,
-        Ring<MutableInteger>, Vectorizable
+        EuclideanRing<MutableInteger>, Vectorizable
 {
     /** Serial version ID for the class. */
     private static final long serialVersionUID = 20110601L;
@@ -239,6 +239,34 @@ public class MutableInteger
         final MutableInteger other)
     {
         this.value -= other.value;
+    }
+
+    @Override
+    public MutableInteger times(
+        final MutableInteger other)
+    {
+        return new MutableInteger(this.value * other.value);
+    }
+
+    @Override
+    public void timesEquals(
+        final MutableInteger other)
+    {
+        this.value *= other.value;
+    }
+
+    @Override
+    public MutableInteger divide(
+        final MutableInteger other)
+    {
+        return new MutableInteger(this.value / other.value);
+    }
+
+    @Override
+    public void divideEquals(
+        final MutableInteger other)
+    {
+        this.value /= other.value;
     }
 
     @Override

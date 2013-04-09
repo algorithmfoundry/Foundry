@@ -43,7 +43,7 @@ package gov.sandia.cognition.math;
  */
 public class LogNumber
     extends Number
-    implements Ring<LogNumber>, Comparable<LogNumber>
+    implements Field<LogNumber>, Comparable<LogNumber>
 {
 
     /** The sign of the value, sign(value). True for negative, and false for
@@ -327,6 +327,7 @@ public class LogNumber
      * @return
      *      The result of this * other.
      */
+    @Override
     public LogNumber times(
         final LogNumber other)
     {
@@ -342,6 +343,7 @@ public class LogNumber
      * @param   other
      *      The other value.
      */
+    @Override
     public void timesEquals(
         final LogNumber other)
     {
@@ -358,6 +360,7 @@ public class LogNumber
      * @return
      *      The result of this / other.
      */
+    @Override
     public LogNumber divide(
         final LogNumber other)
     {
@@ -373,6 +376,7 @@ public class LogNumber
      * @param   other
      *      The other value.
      */
+    @Override
     public void divideEquals(
         final LogNumber other)
     {
@@ -380,7 +384,6 @@ public class LogNumber
         this.negative ^= other.negative;
         this.logValue -= other.logValue;
     }
-
 
     @Override
     public LogNumber dotTimes(
@@ -482,6 +485,18 @@ public class LogNumber
         this.negative = !this.negative;
     }
 
+    @Override
+    public void inverseEquals()
+    {
+        this.logValue = -this.logValue;
+    }
+
+    @Override
+    public LogNumber inverse()
+    {
+        return new LogNumber(this.negative, -this.logValue);
+    }
+    
     @Override
     public void zero()
     {

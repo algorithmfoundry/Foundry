@@ -32,7 +32,7 @@ import gov.sandia.cognition.util.CloneableSerializable;
 public class MutableDouble
     extends Number
     implements CloneableSerializable, Comparable<MutableDouble>,
-        Ring<MutableDouble>, Vectorizable
+        Field<MutableDouble>, Vectorizable
 {
     
     /** Serial version ID for the class. */
@@ -239,6 +239,34 @@ public class MutableDouble
     }
 
     @Override
+    public MutableDouble times(
+        final MutableDouble other)
+    {
+        return new MutableDouble(this.value * other.value);
+    }
+
+    @Override
+    public void timesEquals(
+        final MutableDouble other)
+    {
+        this.value *= other.value;
+    }
+
+    @Override
+    public MutableDouble divide(
+        final MutableDouble other)
+    {
+        return new MutableDouble(this.value / other.value);
+    }
+
+    @Override
+    public void divideEquals(
+        final MutableDouble other)
+    {
+        this.value /= other.value;
+    }
+    
+    @Override
     public MutableDouble dotTimes(
         final MutableDouble other)
     {
@@ -308,6 +336,18 @@ public class MutableDouble
     public void negativeEquals()
     {
         this.value = -this.value;
+    }
+
+    @Override
+    public MutableDouble inverse()
+    {
+        return new MutableDouble(1.0 / this.value);
+    }
+    
+    @Override
+    public void inverseEquals()
+    {
+        this.value = 1.0 / this.value;
     }
 
     @Override

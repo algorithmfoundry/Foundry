@@ -48,7 +48,7 @@ import junit.framework.TestSuite;
     }
 )
 public class ComplexNumberTest
-    extends RingTestHarness<ComplexNumber>
+    extends FieldTestHarness<ComplexNumber>
 {
     /**
      * Creates a new instance of ComplexNumberTest.
@@ -341,9 +341,9 @@ public class ComplexNumberTest
     /**
      * Test of dividedBy method, of class gov.sandia.isrc.math.ComplexNumber.
      */
-    public void testDividedBy()
+    public void testDivide()
     {
-        System.out.println("dividedBy");
+        System.out.println("divide");
      
         // check that the function returns what MATLAB told us the answer is
         ComplexNumber c1 = new ComplexNumber( 10.0, -5.0 );
@@ -351,7 +351,7 @@ public class ComplexNumberTest
         ComplexNumber expected = new ComplexNumber( -0.38462, 3.07692 );
         ComplexNumber copy = c1.clone();
         
-        ComplexNumber result = c1.dividedBy( c2 );
+        ComplexNumber result = c1.divide( c2 );
         
         assertEquals( copy, c1 );
         
@@ -363,15 +363,15 @@ public class ComplexNumberTest
      * Test of dividedByEquals method, of class 
      * gov.sandia.isrc.math.ComplexNumber.
      */
-    public void testDividedByEquals()
+    public void testDivideEquals()
     { 
-        System.out.println("dividedByEquals");
+        System.out.println("divideEquals");
      
         // check that the function returns what MATLAB told us the answer is
         ComplexNumber c1 = new ComplexNumber( -5.0, 3.1 );
         ComplexNumber c2 = new ComplexNumber( 2.7, 1.4 );
         ComplexNumber expected = new ComplexNumber( -0.99027, 1.66162 );
-        c1.dividedByEquals( c2 );
+        c1.divideEquals( c2 );
         
         assertTrue( expected.equals( c1, 0.00001 ) );
     }

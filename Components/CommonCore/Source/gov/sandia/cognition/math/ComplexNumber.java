@@ -56,7 +56,7 @@ import java.io.Serializable;
     url="http://en.wikipedia.org/wiki/Complex_number"
 )
 public class ComplexNumber
-    extends AbstractRing<ComplexNumber>
+    extends AbstractField<ComplexNumber>
     implements Serializable
 {
     /** The real part of the ComplexNumber */
@@ -246,11 +246,12 @@ public class ComplexNumber
      *          complex number by which to multiply this
      * @return answer
      */
+    @Override
     public ComplexNumber times(
         final ComplexNumber other)
     {
-        ComplexNumber copy = this.clone();
-        copy.timesEquals( other );
+        final ComplexNumber copy = this.clone();
+        copy.timesEquals(other);
         return copy;
     }
     
@@ -262,6 +263,7 @@ public class ComplexNumber
      * @param other
      *      complex number by which to multiple this
      */
+    @Override
     public void timesEquals(
         final ComplexNumber other)
     {
@@ -284,11 +286,12 @@ public class ComplexNumber
      *          complex number by which to divide this
      * @return answer
      */
-    public ComplexNumber dividedBy(
+    @Override
+    public ComplexNumber divide(
         final ComplexNumber other)
     {
         ComplexNumber copy = this.clone();
-        copy.dividedByEquals( other );
+        copy.divideEquals( other );
         return copy;
     }
     
@@ -300,7 +303,8 @@ public class ComplexNumber
      * @param other
      *      complex number by which to divide this
      */
-    public void dividedByEquals(
+    @Override
+    public void divideEquals(
         final ComplexNumber other)
     {
         double r = this.getMagnitude() / other.getMagnitude();
@@ -308,6 +312,45 @@ public class ComplexNumber
         
         this.setRealPart( r * Math.cos( theta ) );
         this.setImaginaryPart( r * Math.sin( theta ) );
+    }
+
+    /**
+     * Arithmetic division.
+     *
+     * @param   other
+     *      The other complex number.
+     * @return
+     *      A new complex number.
+     * @deprecated  Use divide.
+     */
+    @Deprecated
+    public ComplexNumber dividedBy(
+        final ComplexNumber other)
+    {
+        return this.divide(other);
+    }
+
+    /**
+     * Inline arithmetic division.
+     *
+     * @param   other
+     *      The other complex number.
+     * @deprecated  Use divideEquals.
+     */
+    @Deprecated
+    public void dividedByEquals(
+        final ComplexNumber other)
+    {
+        this.divideEquals(other);
+    }
+
+    @Override
+    public void inverseEquals()
+    {
+        final double divisor = this.realPart * this.realPart
+            + this.imaginaryPart * this.imaginaryPart;
+        this.setRealPart(this.realPart / divisor);
+        this.setImaginaryPart(-this.imaginaryPart / divisor);
     }
 
     @Override

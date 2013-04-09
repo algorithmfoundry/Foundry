@@ -9,13 +9,13 @@
 package gov.sandia.cognition.math;
 
 /**
- * Unit tests for class LogNumber
+ * Unit tests for class {@link LogNumber}.
  *
  * @author Justin Basilico
  * @since 3.4.0
  */
 public class LogNumberTest
-    extends RingTestHarness<LogNumber>
+    extends FieldTestHarness<LogNumber>
 {
 
     /** Tolerance for numerical precision. */

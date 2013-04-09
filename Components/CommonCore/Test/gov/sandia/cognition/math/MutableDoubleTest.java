@@ -27,7 +27,7 @@ import gov.sandia.cognition.math.matrix.mtj.Vector2;
  * @since   3.2.0
  */
 public class MutableDoubleTest
-    extends RingTestHarness<MutableDouble>
+    extends FieldTestHarness<MutableDouble>
 {
     /**
      * Creates a new test.
@@ -388,6 +388,64 @@ public class MutableDoubleTest
             MutableDouble other = new MutableDouble(otherValue);
             expected *= otherValue;
             instance.dotTimesEquals(other);
+            assertEquals(expected, instance.getValue(), 0.0);
+            assertEquals(otherValue, other.getValue(), 0.0);
+        }
+    }
+
+    @Override
+    public void testTimesEquals()
+    {
+        double value = 0.0;
+        double otherValue = this.randomDouble();
+        double expected = 0.0;
+        MutableDouble instance = new MutableDouble();
+        expected = value * otherValue;
+        instance.timesEquals(new MutableDouble(otherValue));
+        assertEquals(expected, instance.getValue(), 0.0);
+
+        value = this.randomDouble();
+        otherValue = this.randomDouble();
+        instance.setValue(value);
+        expected = value * otherValue;
+        instance.timesEquals(new MutableDouble(otherValue));
+        assertEquals(expected, instance.getValue(), 0.0);
+
+        for (int i = 0; i < 1 + RANDOM.nextInt(10); i++)
+        {
+            otherValue = this.randomDouble();
+            MutableDouble other = new MutableDouble(otherValue);
+            expected *= otherValue;
+            instance.timesEquals(other);
+            assertEquals(expected, instance.getValue(), 0.0);
+            assertEquals(otherValue, other.getValue(), 0.0);
+        }
+    }
+
+    @Override
+    public void testDivideEquals()
+    {
+        double value = 0.0;
+        double otherValue = this.randomDouble();
+        double expected = 0.0;
+        MutableDouble instance = new MutableDouble();
+        expected = value / otherValue;
+        instance.divideEquals(new MutableDouble(otherValue));
+        assertEquals(expected, instance.getValue(), 0.0);
+
+        value = this.randomDouble();
+        otherValue = this.randomDouble();
+        instance.setValue(value);
+        expected = value / otherValue;
+        instance.divideEquals(new MutableDouble(otherValue));
+        assertEquals(expected, instance.getValue(), 0.0);
+
+        for (int i = 0; i < 1 + RANDOM.nextInt(10); i++)
+        {
+            otherValue = this.randomDouble();
+            MutableDouble other = new MutableDouble(otherValue);
+            expected /= otherValue;
+            instance.divideEquals(other);
             assertEquals(expected, instance.getValue(), 0.0);
             assertEquals(otherValue, other.getValue(), 0.0);
         }

@@ -43,7 +43,7 @@ package gov.sandia.cognition.math;
  */
 public class UnsignedLogNumber
     extends Number
-    implements Ring<UnsignedLogNumber>, Comparable<UnsignedLogNumber>
+    implements Field<UnsignedLogNumber>, Comparable<UnsignedLogNumber>
 {
     
     /** The log of the value represented by this object, log(value). */
@@ -230,6 +230,7 @@ public class UnsignedLogNumber
      * @return
      *      The result of this * other.
      */
+    @Override
     public UnsignedLogNumber times(
         final UnsignedLogNumber other)
     {
@@ -244,6 +245,7 @@ public class UnsignedLogNumber
      * @param   other
      *      The other value.
      */
+    @Override
     public void timesEquals(
         final UnsignedLogNumber other)
     {
@@ -259,6 +261,7 @@ public class UnsignedLogNumber
      * @return
      *      The result of this / other.
      */
+    @Override
     public UnsignedLogNumber divide(
         final UnsignedLogNumber other)
     {
@@ -273,6 +276,7 @@ public class UnsignedLogNumber
      * @param   other
      *      The other value.
      */
+    @Override
     public void divideEquals(
         final UnsignedLogNumber other)
     {
@@ -374,6 +378,18 @@ public class UnsignedLogNumber
     {
         // Can't negate log numbers.
         this.logValue = Double.NaN;
+    }
+
+    @Override
+    public UnsignedLogNumber inverse()
+    {
+        return new UnsignedLogNumber(-this.logValue);
+    }
+
+    @Override
+    public void inverseEquals()
+    {
+        this.logValue = -this.logValue;
     }
 
     @Override
