@@ -201,6 +201,37 @@ public abstract class MatrixFactoryTestHarness
 
     }
 
+    public void testCreateMatrixWithInitialValue()
+    {
+        Matrix matrix = this.createRandomMatrix();
+        int M = matrix.getNumRows();
+        int N = matrix.getNumColumns();
+
+        MatrixFactory<?> factory = this.createFactory();
+        double initialValue = this.random.nextGaussian();
+        Matrix m3 = factory.createMatrix(M, N, initialValue);
+        assertNotNull(m3);
+        assertEquals(M, m3.getNumRows());
+        assertEquals(N, m3.getNumColumns());
+
+        boolean hasNonZero = false;
+        for (int i = 0; i < M; i++)
+        {
+            for (int j = 0; j < N; j++)
+            {
+                double value = m3.getElement(i, j);
+
+                if (value != 0.0)
+                {
+                    hasNonZero = true;
+                    assertEquals(initialValue, value, 0.0);
+                }
+            }
+        }
+
+        assertTrue(hasNonZero);
+    }
+
     /**
      * Test of createIdentity method, of class MatrixFactory.
      */

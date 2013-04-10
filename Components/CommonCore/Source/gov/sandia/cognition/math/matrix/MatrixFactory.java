@@ -297,6 +297,37 @@ public abstract class MatrixFactory<MatrixType extends Matrix>
     }
 
     /**
+     * Creates a matrix with the given initial value.
+     *
+     * @param   numRows
+     *      The number of rows. Cannot be negative.
+     * @param   numColumns
+     *      The number of columns. Cannot be negative.
+     * @param   initialValue
+     *      The initial value to set all elements to.
+     * @return
+     *      A Matrix of the given size initialized with the given initial value.
+     */
+    public MatrixType createMatrix(
+        final int numRows,
+        final int numColumns,
+        final double initialValue)
+    {
+        final MatrixType result = this.createMatrix(numRows, numColumns);
+        if (initialValue != 0.0)
+        {
+            for (int i = 0; i < numRows; i++)
+            {
+                for (int j = 0; j < numColumns; j++)
+                {
+                    result.setElement(i, j, initialValue);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * Creates a new square matrix whose number of rows and columns match the
      * dimensionality of the given vector. It also places the values of the
      * vector on the diagonal of the matrix.

@@ -114,6 +114,37 @@ public class DiagonalMatrixFactoryMTJ
         return new DiagonalMatrixMTJ( diagonal );
     }
 
+    /**
+     * Creates a matrix with the given initial value on all of the elements of
+     * the diagonal.
+     *
+     * @param   numRows
+     *      The number of rows. Cannot be negative.
+     * @param   numColumns
+     *      The number of columns. Cannot be negative.
+     * @param   initialValue
+     *      The initial value to set all elements to.
+     * @return
+     *      A Matrix of the given size initialized with the given initial value.
+     */
+    @Override
+    public DiagonalMatrixMTJ createMatrix(
+        final int numRows,
+        final int numColumns,
+        final double initialValue)
+    {
+        final DiagonalMatrixMTJ result = this.createMatrix(numRows, numColumns);
+        if (initialValue != 0.0)
+        {
+            // The matrix is square and diagonal by default.
+            for (int i = 0; i < numRows; i++)
+            {
+                result.setElement(i, i, initialValue);
+            }
+        }
+        return result;
+    }
+
     @Override
     public DiagonalMatrixMTJ createUniformRandom(
         int numRows,
