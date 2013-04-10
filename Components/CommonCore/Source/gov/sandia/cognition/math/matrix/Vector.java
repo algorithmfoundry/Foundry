@@ -112,6 +112,32 @@ public interface Vector
         final Matrix matrix );
 
     /**
+     * Element-wise division of {@code this} by {@code other}. Note that if
+     * {@code other} has zero elements the result will contain {@code NaN}
+     * values.
+     *
+     * @param   other
+     *      The other ring whose elements will divide into this one.
+     * @return
+     *      A new ring of equal size whose elements are equal to the
+     *      corresponding element in {@code this} divided by the element in
+     *      {@link other}.
+     */
+    public Vector dotDivide(
+        final Vector other);
+
+    /**
+     * Inline element-wise division of {@code this} by {@code other}. Note
+     * that if {@code other} has zero elements this will contain {@code NaN}
+     * values.
+     *
+     * @param   other
+     *      The other vector whose elements will divide into this one.
+     */
+    public void dotDivideEquals(
+        final Vector other);
+
+    /**
      * Determines if <code>this</code> and <code>other</code> have the same
      * number of dimensions (size)
      *

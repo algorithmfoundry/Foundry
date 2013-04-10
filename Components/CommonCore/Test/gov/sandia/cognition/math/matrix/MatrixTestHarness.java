@@ -871,6 +871,131 @@ abstract public class MatrixTestHarness
     }
 
     /**
+     * Test of dotDivide method, of class Matrix.
+     */
+    public void testDotDivide()
+    {
+        System.out.println("dotDivide");
+
+        // This test assumes that plusEquals works and is tested
+        Matrix m1 = this.createRandom();
+        int M = m1.getNumRows();
+        int N = m1.getNumColumns();
+        Matrix m2 = this.createRandom(M, N, -RANGE, RANGE);
+
+        Matrix m1Clone = m1.clone();
+        Matrix m2Clone = m2.clone();
+        assertEquals(m1Clone, m1);
+        assertEquals(m2Clone, m2);
+        Matrix r1 = m1.dotDivide(m2);
+        assertNotSame(r1, m1);
+        assertNotSame(r1, m2);
+        assertEquals(m1Clone, m1);
+        assertEquals(m2Clone, m2);
+        
+        for (int i = 0; i < M; i++)
+        {
+            for (int j = 0; j < N; j++)
+            {
+                assertEquals(r1.getElement(i, j), m1.getElement(i, j) / m2.getElement(i, j));
+            }
+        }
+
+        int M2 = M + 1;
+        int N2 = N - 1;
+
+        Matrix m3 = this.createRandom(M2, N, -RANGE, RANGE);
+        try
+        {
+            r1.dotDivide(m3);
+            fail("Should have thrown exception");
+        }
+        catch (Exception e)
+        {
+        }
+
+        Matrix m4 = this.createRandom(M, N2, -RANGE, RANGE);
+        try
+        {
+            r1.dotDivide(m4);
+            fail("Should have thrown exception");
+        }
+        catch (Exception e)
+        {
+        }
+
+        Matrix m5 = this.createRandom(M2, N2, -RANGE, RANGE);
+        try
+        {
+            r1.dotDivide(m5);
+            fail("Should have thrown exception");
+        }
+        catch (Exception e)
+        {
+        }
+
+    }
+
+    /**
+     * Test of dotDivideEquals method, of class Matrix.
+     */
+    public void testDotDivideEquals()
+    {
+        System.out.println("dotDivideEquals");
+
+        // This test assumes that plusEquals works and is tested
+        Matrix m1 = this.createRandom();
+        int M = m1.getNumRows();
+        int N = m1.getNumColumns();
+        Matrix m2 = this.createRandom(M, N, -RANGE, RANGE);
+
+        Matrix r1 = m1.clone();
+        r1.dotDivideEquals(m2);
+
+        for (int i = 0; i < M; i++)
+        {
+            for (int j = 0; j < N; j++)
+            {
+                assertEquals(r1.getElement(i, j), m1.getElement(i, j) / m2.getElement(i, j));
+            }
+        }
+
+        int M2 = M + 1;
+        int N2 = N - 1;
+
+        Matrix m3 = this.createRandom(M2, N, -RANGE, RANGE);
+        try
+        {
+            r1.dotDivideEquals(m3);
+            fail("Should have thrown exception");
+        }
+        catch (Exception e)
+        {
+        }
+
+        Matrix m4 = this.createRandom(M, N2, -RANGE, RANGE);
+        try
+        {
+            r1.dotDivideEquals(m4);
+            fail("Should have thrown exception");
+        }
+        catch (Exception e)
+        {
+        }
+
+        Matrix m5 = this.createRandom(M2, N2, -RANGE, RANGE);
+        try
+        {
+            r1.dotDivideEquals(m5);
+            fail("Should have thrown exception");
+        }
+        catch (Exception e)
+        {
+        }
+
+    }
+
+    /**
      * Test of transpose method, of class gov.sandia.isrc.math.matrix.Matrix.
      */
     public void testTranspose()

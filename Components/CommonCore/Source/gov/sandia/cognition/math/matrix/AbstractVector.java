@@ -159,6 +159,29 @@ public abstract class AbstractVector
     }
 
     @Override
+    public Vector dotDivide(
+        final Vector other)
+    {
+        final Vector result = this.clone();
+        result.dotDivideEquals(other);
+        return result;
+    }
+
+    @Override
+    public void dotDivideEquals(
+        final Vector other)
+    {
+        this.assertSameDimensionality(other);
+
+        // This is a dense loop since there is no sparsity in division.
+        final int dimensionality = this.getDimensionality();
+        for (int i = 0; i < dimensionality; i++)
+        {
+            this.setElement(i, this.getElement(i) / other.getElement(i));
+        }
+    }
+
+    @Override
     public Vector transform(
         final UnivariateScalarFunction function)
     {

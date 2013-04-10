@@ -236,6 +236,32 @@ public interface Matrix
         double effectiveZero );
 
     /**
+     * Element-wise division of {@code this} by {@code other}. Note that if
+     * {@code other} has zero elements the result will contain {@code NaN}
+     * values.
+     *
+     * @param   other
+     *      The other ring whose elements will divide into this one.
+     * @return
+     *      A new ring of equal size whose elements are equal to the
+     *      corresponding element in {@code this} divided by the element in
+     *      {@link other}.
+     */
+    public Matrix dotDivide(
+        final Matrix other);
+
+    /**
+     * Inline element-wise division of {@code this} by {@code other}. Note
+     * that if {@code other} has zero elements this will contain {@code NaN}
+     * values.
+     *
+     * @param   other
+     *      The other vector whose elements will divide into this one.
+     */
+    public void dotDivideEquals(
+        final Matrix other);
+
+    /**
      * Computes the natural logarithm of the determinant of <code>this</code>.
      * Very computationally intensive.  Please THINK LONG AND HARD before
      * invoking this method on sparse matrices, as they have to be converted

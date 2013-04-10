@@ -182,6 +182,35 @@ public abstract class AbstractMatrix
         return this.getNumColumns() == postMultiplicationMatrix.getNumRows();
     }
 
+
+    @Override
+    public Matrix dotDivide(
+        final Matrix other)
+    {
+        final Matrix result = this.clone();
+        result.dotDivideEquals(other);
+        return result;
+    }
+
+    @Override
+    public void dotDivideEquals(
+        final Matrix other)
+    {
+        this.assertSameDimensions(other);
+
+        // This is a dense loop since there is no sparsity in division.
+        final int rowCount = this.getNumRows();
+        final int columnCount = this.getNumColumns();
+        for (int i = 0; i < rowCount; i++)
+        {
+            for (int j = 0; j < columnCount; j++)
+            {
+                this.setElement(i, j,
+                    this.getElement(i, j) / other.getElement(i, j));
+            }
+        }
+    }
+
     @Override
     public double trace()
     {

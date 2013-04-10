@@ -350,6 +350,88 @@ abstract public class VectorTestHarness
 
     }
 
+
+    /**
+     * Test of dotDivide method, of class Vector.
+     */
+    public void testDotDivide()
+    {
+        System.out.println("dotDivide");
+
+        Vector v1 = this.createRandom();
+        Vector v1Clone = v1.clone();
+        int M = v1.getDimensionality();
+        Vector v2 = this.createRandom(M, -RANGE, RANGE);
+        Vector v2Clone = v2.clone();
+
+        assertEquals(v1Clone, v1);
+        assertEquals(v2Clone, v2);
+
+        Vector v3 = v1.dotDivide(v2);
+        assertEquals(v1Clone, v1);
+        assertEquals(v2Clone, v2);
+        assertNotSame(v3, v1);
+        assertNotSame(v3, v2);
+
+
+        for (int i = 0; i < M; i++)
+        {
+            System.out.println("i: " + i + "v1: " + v1.getElement(i) + " v2: " + v2.getElement(i) + " v3: " + v3.getElement(i));
+            assertEquals(v3.getElement(i), v1.getElement(i) / v2.getElement(i), TOLERANCE);
+        }
+
+        Vector v4 = this.createRandom(M + 1, -RANGE, RANGE);
+
+        try
+        {
+            v4.dotDivide(v2);
+            fail("Should have thrown exception: " + v4.getClass());
+        }
+        catch (Exception e)
+        {
+        }
+
+    }
+
+    /**
+     * Test of dotDivideEquals method, of class Vector.
+     */
+    public void testDotDivideEquals()
+    {
+        System.out.println("dotDivideEquals");
+
+        Vector v1 = this.createRandom();
+        int M = v1.getDimensionality();
+        Vector v2 = this.createRandom(M, -RANGE, RANGE);
+
+        System.out.println("v1: " + v1);
+        System.out.println("v2: " + v2);
+        Vector v3 = v1.clone();
+        v3.dotDivideEquals(v2);
+
+        System.out.println("v1: " + v1);
+        System.out.println("v2: " + v2);
+        System.out.println("v3: " + v3);
+
+        for (int i = 0; i < M; i++)
+        {
+            System.out.println("i: " + i + "v1: " + v1.getElement(i) + " v2: " + v2.getElement(i) + " v3: " + v3.getElement(i));
+            assertEquals(v3.getElement(i), v1.getElement(i) / v2.getElement(i), TOLERANCE);
+        }
+
+        Vector v4 = this.createRandom(M + 1, -RANGE, RANGE);
+
+        try
+        {
+            v4.dotDivideEquals(v2);
+            fail("Should have thrown exception: " + v4.getClass());
+        }
+        catch (Exception e)
+        {
+        }
+
+    }
+
     /**
      * Test of equals method, of class gov.sandia.isrc.math.matrix.Vector.
      */
