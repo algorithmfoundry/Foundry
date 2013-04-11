@@ -14,7 +14,7 @@
 
 package gov.sandia.cognition.learning.algorithm.tree;
 
-import gov.sandia.cognition.evaluator.Evaluator;
+import gov.sandia.cognition.learning.function.regression.Regressor;
 
 /**
  * The {@code RegressionTree} class extends the {@code DecisionTree} class
@@ -26,7 +26,7 @@ import gov.sandia.cognition.evaluator.Evaluator;
  */
 public class RegressionTree<InputType>
     extends DecisionTree<InputType, Double>
-    implements Evaluator<InputType, Double>
+    implements Regressor<InputType>
 {
     /**
      * Creates a new instance of RegressionTree.
@@ -46,4 +46,12 @@ public class RegressionTree<InputType>
     {
         super(rootNode);
     }
+
+    @Override
+    public double evaluateAsDouble(
+        final InputType input)
+    {
+        return this.evaluate(input);
+    }
+
 }
