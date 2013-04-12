@@ -17,6 +17,8 @@ package gov.sandia.cognition.evaluator;
  *      The input type to evaluate from.
  * @param   <OutputType>
  *      The output type to evaluate to.
+ * @param   <ReverseType>
+ *      The type of reverse evaluator.
  * @author  Justin Basilico
  * @version 3.4.0
  */

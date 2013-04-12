@@ -113,6 +113,8 @@ public class ArrayUtil
     /**
      * Creates a new copy of the given array. Does not copy the elements.
      *
+     * @param   <T>
+     *      The type of data in the array.
      * @param   array
      *      The array to copy. Does not copy the elements.
      * @return

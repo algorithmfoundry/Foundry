@@ -15,6 +15,16 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
  * This makes it easy to couple two such functions together, even if they were
  * not originally implemented as reversible. 
  *
+ * @param   <InputType>
+ *      The type of input the forward evaluator. Also the output of the 
+ *      reverse evaluator.
+ * @param   <OutputType>
+ *      The type of output of the forward evaluator. Also the input of the
+ *      reverse evaluator
+ * @param   <ForwardType>
+ *      The type of the forward evaluator.
+ * @param   <ReverseType>
+ *      The type of the reverse evaluator.
  * @author  Justin Basilico
  * @version 3.3.3
  */

@@ -661,6 +661,8 @@ public class CollectionUtil
      *      The first value.
      * @param   second
      *      The second value.
+     * @return
+     *      A new array list with the two elements in it.
      */
     public static <DataType> ArrayList<DataType> createArrayList(
         final DataType first,

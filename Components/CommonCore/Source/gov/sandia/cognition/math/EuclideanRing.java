@@ -15,6 +15,8 @@ import gov.sandia.cognition.annotation.PublicationType;
  * Defines something similar to a Euclidean ring from abstract algebra. It is 
  * also known as a Euclidean Domain. Extends a ring and adds division.
  *
+ * @param   <RingType>
+ *      The type of EuclideanRing that this can operate with.
  * @author  Justin Basilico
  * @version 3.3.3
  */

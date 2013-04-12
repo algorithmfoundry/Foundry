@@ -34,9 +34,6 @@ import java.util.Random;
  * @param   <InputType>
  *      The input type for supervised learning. Passed on to the internal
  *      learning algorithm. Also the input type for the learned ensemble.
- * @param   <CategoryType>
- *      The output type for supervised learning. Passed on to the internal
- *      learning algorithm. Also the output type of the learned ensemble.
  * @author  Justin Basilico
  * @version 3.4.0
  * @see     BaggingCategorizerLearner
