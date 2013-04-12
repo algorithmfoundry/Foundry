@@ -33,7 +33,7 @@ package gov.sandia.cognition.math;
  * Note that this can only represent non-negative numbers (x >= 0). Any
  * operations that will create negative numbers result in a NaN being stored
  * as the value. If you are looking for signed log numbers, see
- * {@see LogNumber}. However, when you are dealing with unsigned numbers like
+ * {@link LogNumber}. However, when you are dealing with unsigned numbers like
  * probabilities, this class will be more efficient.
  *
  * @author  Justin Basilico
