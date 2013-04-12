@@ -245,7 +245,7 @@ public interface Matrix
      * @return
      *      A new ring of equal size whose elements are equal to the
      *      corresponding element in {@code this} divided by the element in
-     *      {@link other}.
+     *      {@code other}.
      */
     public Matrix dotDivide(
         final Matrix other);

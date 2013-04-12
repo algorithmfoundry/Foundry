@@ -32,7 +32,7 @@ public interface Field<FieldType extends Field<FieldType>>
 {
     
     /**
-     * Returns the inverse of {@link this}.
+     * Returns the inverse of {@code this}.
      *
      * @return
      *      The inverse of this field.

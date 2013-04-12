@@ -32,13 +32,13 @@ package gov.sandia.cognition.math;
  * <br/><br/>
  *
  * If you know that all of your numbers are positive, such as if they are all
- * probabilities, then you may want to use an {@see UnLogNumber} instead,
+ * probabilities, then you may want to use an {@link UnsignedLogNumber} instead,
  * since it does not have to maintain the sign information, so it will consume
  * less memory and will be faster.
  *
  * @author  Justin Basilico
  * @version 3.3.0
- * @see     UnLogNumber
+ * @see     UnsignedLogNumber
  * @see     LogMath
  */
 public class LogNumber
