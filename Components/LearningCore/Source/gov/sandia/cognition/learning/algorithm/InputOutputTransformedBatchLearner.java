@@ -3,7 +3,7 @@
  * Authors:         Justin Basilico
  * Project:         Community Foundry
  * 
- * Copyright 2011 Justin Basilico. All rights reserved.
+ * Copyright 2011 Cognitive Foundry. All rights reserved.
  */
 
 package gov.sandia.cognition.learning.algorithm;
