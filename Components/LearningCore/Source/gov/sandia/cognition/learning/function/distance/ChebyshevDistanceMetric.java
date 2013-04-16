@@ -1,7 +1,7 @@
 /*
  * File:            ChebyshevDistance.java
  * Authors:         Justin Basilico
- * Project:         Community Foundry
+ * Project:         Cognitive Foundry
  * 
  * Copyright 2011 Cognitive Foundry. All rights reserved.
  */
