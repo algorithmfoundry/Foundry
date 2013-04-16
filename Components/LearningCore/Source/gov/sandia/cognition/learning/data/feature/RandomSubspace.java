@@ -32,7 +32,7 @@ import java.util.Random;
  * bagging or random forests. Thus, it is also known as attribute bagging.
  *
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 @PublicationReference(
     title="Random Subspace Method",

@@ -17,7 +17,7 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
  * @param   <DataType>
  *      The data type of the input and output of the evaluator.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public class IdentityEvaluator<DataType>
     extends AbstractCloneableSerializable

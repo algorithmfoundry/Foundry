@@ -10,7 +10,7 @@
  * Provides functions that output real numbers from some input data structure.
  *
  * @author  Justin Basilico
- * @since   3.4.0
+ * @since   3.3.3
  */
 @gov.sandia.cognition.annotation.Documentation
 package gov.sandia.cognition.learning.function.regression;

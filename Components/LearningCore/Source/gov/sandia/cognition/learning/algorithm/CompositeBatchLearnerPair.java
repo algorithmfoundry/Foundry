@@ -37,7 +37,7 @@ import java.util.Collection;
  *      The type of output of the evaluator learned by the second learner. It
  *      is also the output type of the composite evaluator pair.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  * @see     InputOutputTransformedBatchLearner
  */
 public class CompositeBatchLearnerPair<InputType, IntermediateType, OutputType>

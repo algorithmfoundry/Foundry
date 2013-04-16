@@ -21,7 +21,7 @@ import java.util.Set;
  * @param   <ValueType>
  *      The type of value to be indexed.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  * @see     DefaultIndexer
  */
 public interface Indexer<ValueType>

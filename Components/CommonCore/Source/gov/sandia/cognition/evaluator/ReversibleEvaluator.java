@@ -20,7 +20,7 @@ package gov.sandia.cognition.evaluator;
  * @param   <ReverseType>
  *      The type of reverse evaluator.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public interface ReversibleEvaluator<InputType, OutputType, ReverseType extends Evaluator<? super OutputType, ? extends InputType>>
     extends Evaluator<InputType, OutputType>

@@ -27,7 +27,7 @@ import java.util.Set;
  *      The type of the value being indexed. Must have a valid equals and
  *      hashCode implementation.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  * @see     Indexer
  */
 public class DefaultIndexer<ValueType>

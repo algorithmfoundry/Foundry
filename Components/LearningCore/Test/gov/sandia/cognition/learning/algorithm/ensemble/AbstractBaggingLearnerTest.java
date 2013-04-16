@@ -17,7 +17,7 @@ import junit.framework.TestCase;
  * Unit tests for class AbstractBaggingLearner.
  *
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public class AbstractBaggingLearnerTest
     extends TestCase

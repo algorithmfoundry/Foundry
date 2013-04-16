@@ -35,7 +35,7 @@ import java.util.Random;
  *      The input type for supervised learning. Passed on to the internal
  *      learning algorithm. Also the input type for the learned ensemble.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  * @see     BaggingCategorizerLearner
  */
 @PublicationReference(

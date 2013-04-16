@@ -17,7 +17,7 @@ import gov.sandia.cognition.math.matrix.mtj.Vector2;
  * Unit tests for class MinkowskiDistanceMetric.
  *
  * @author  Justin Basilico
- * @since   3.4.0
+ * @since   3.3.3
  */
 public class MinkowskiDistanceMetricTest
     extends MetricTestHarness<Vectorizable>

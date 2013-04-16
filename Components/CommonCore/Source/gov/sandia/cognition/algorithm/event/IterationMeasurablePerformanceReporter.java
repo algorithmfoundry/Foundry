@@ -19,7 +19,7 @@ import java.io.PrintStream;
  * iteration.
  *
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  * @see     MeasurablePerformanceAlgorithm
  * @see     IterativeAlgorithm
  */

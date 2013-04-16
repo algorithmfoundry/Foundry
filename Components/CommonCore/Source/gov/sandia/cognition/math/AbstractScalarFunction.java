@@ -17,7 +17,7 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
  * @param   <InputType>
  *      The type of the input to the scalar function.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public abstract class AbstractScalarFunction<InputType>
     extends AbstractCloneableSerializable

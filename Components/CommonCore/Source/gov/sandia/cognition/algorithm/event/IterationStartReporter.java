@@ -16,7 +16,7 @@ import java.io.PrintStream;
  * to the given print stream.
  *
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  * @see     IterativeAlgorithm
  */
 public class IterationStartReporter

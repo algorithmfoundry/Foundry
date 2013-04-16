@@ -24,7 +24,7 @@ import java.util.List;
  *      The type of members of the ensemble, which must be evaluators that
  *      return numbers.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public class AdditiveEnsemble<InputType, MemberType extends Evaluator<? super InputType, ? extends Number>>
     extends AbstractUnweightedEnsemble<MemberType>

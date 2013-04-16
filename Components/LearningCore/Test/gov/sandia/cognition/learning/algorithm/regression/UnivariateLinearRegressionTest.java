@@ -22,7 +22,7 @@ import static org.junit.Assert.*;
  * Unit tests for class UnivariateLinearRegression.
  *
  * @author  Justin Basilico
- * @since   3.4.0
+ * @since   3.3.3
  */
 public class UnivariateLinearRegressionTest
 {

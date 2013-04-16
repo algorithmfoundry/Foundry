@@ -18,7 +18,7 @@ import gov.sandia.cognition.math.DivergenceFunction;
  * @param   <SecondType>
  *      The type of the second parameter to the divergence function.
  * @author  Justin Basilico
- * @since   3.4.0
+ * @since   3.3.3
  */
 public interface DivergenceFunctionContainer<FirstType, SecondType>
 {

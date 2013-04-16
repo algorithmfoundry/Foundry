@@ -17,7 +17,7 @@ import gov.sandia.cognition.util.ObjectUtil;
  * Can be used with any object with a valid equals method.
  *
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public class IdentityDistanceMetric
     extends AbstractCloneableSerializable

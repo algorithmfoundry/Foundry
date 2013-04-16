@@ -16,7 +16,7 @@ import gov.sandia.cognition.math.AbstractScalarFunction;
  * @param   <InputType>
  *      The type of the input to the regressor.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public abstract class AbstractRegressor<InputType>
     extends AbstractScalarFunction<InputType>

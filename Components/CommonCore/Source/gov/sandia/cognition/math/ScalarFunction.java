@@ -16,7 +16,7 @@ import gov.sandia.cognition.evaluator.Evaluator;
  * @param   <InputType>
  *      The type of the input to the scalar function.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public interface ScalarFunction<InputType>
     extends Evaluator<InputType, Double>

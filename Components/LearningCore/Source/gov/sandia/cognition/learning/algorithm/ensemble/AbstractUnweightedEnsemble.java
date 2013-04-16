@@ -21,7 +21,7 @@ import java.util.List;
  * @param   <MemberType>
  *      The type of the ensemble members.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public abstract class AbstractUnweightedEnsemble<MemberType>
     extends AbstractCloneableSerializable

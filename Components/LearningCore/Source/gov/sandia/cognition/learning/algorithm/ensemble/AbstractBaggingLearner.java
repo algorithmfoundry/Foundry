@@ -49,7 +49,7 @@ import java.util.Random;
  * @param   <EnsembleType>
  *      The type of ensemble that the algorithm fills with ensemble members.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 @PublicationReference(
     title="Bagging Predictors",

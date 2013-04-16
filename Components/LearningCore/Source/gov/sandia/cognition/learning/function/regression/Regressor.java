@@ -20,7 +20,7 @@ import gov.sandia.cognition.math.ScalarFunction;
  * @param   <InputType>
  *      The type of the input to the regressor.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public interface Regressor<InputType>
     extends ScalarFunction<InputType>

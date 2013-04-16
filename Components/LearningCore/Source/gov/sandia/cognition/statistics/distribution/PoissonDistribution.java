@@ -396,7 +396,7 @@ public class PoissonDistribution
     /**
      * Creates a PoissonDistribution from weighted data.
      *
-     * @since   3.4.0
+     * @since   3.3.3
      */
     public static class WeightedMaximumLikelihoodEstimator
         extends AbstractCloneableSerializable

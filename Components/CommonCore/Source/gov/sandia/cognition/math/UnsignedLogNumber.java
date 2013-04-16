@@ -37,7 +37,7 @@ package gov.sandia.cognition.math;
  * probabilities, this class will be more efficient.
  *
  * @author  Justin Basilico
- * @since   3.4.0
+ * @since   3.3.3
  * @see     LogNumber
  * @see     LogMath
  */

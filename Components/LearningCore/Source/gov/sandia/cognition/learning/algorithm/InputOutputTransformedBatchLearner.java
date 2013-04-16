@@ -66,7 +66,7 @@ import java.util.List;
  *      data converter for mapping the {@code OutputType} to the
  *      {@code TransformedOutputType}, or vice-versa.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public class InputOutputTransformedBatchLearner<InputType, TransformedInputType, TransformedOutputType, OutputType>
     extends AbstractBatchLearnerContainer<BatchLearner<? super Collection<? extends InputOutputPair<? extends TransformedInputType, TransformedOutputType>>, ? extends Evaluator<? super TransformedInputType, ? extends TransformedOutputType>>>

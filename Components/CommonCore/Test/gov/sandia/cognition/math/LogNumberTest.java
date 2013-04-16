@@ -12,7 +12,7 @@ package gov.sandia.cognition.math;
  * Unit tests for class {@link LogNumber}.
  *
  * @author Justin Basilico
- * @since 3.4.0
+ * @since  3.3.3
  */
 public class LogNumberTest
     extends FieldTestHarness<LogNumber>

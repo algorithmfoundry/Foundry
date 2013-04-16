@@ -19,7 +19,7 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
  * @param   <ValueType>
  *      The type of the constant value returned as the result of learning.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public class ConstantLearner<ValueType>
     extends AbstractCloneableSerializable

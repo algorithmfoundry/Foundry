@@ -20,7 +20,7 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
  * is the infinity-norm of the difference between the two vectors.
  *
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 @PublicationReference(
     title="Chebyshev Distance",

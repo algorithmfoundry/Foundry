@@ -12,7 +12,7 @@ package gov.sandia.cognition.math.matrix;
  * Interface for a container for a matrix factory.
  *
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public interface MatrixFactoryContainer
 {

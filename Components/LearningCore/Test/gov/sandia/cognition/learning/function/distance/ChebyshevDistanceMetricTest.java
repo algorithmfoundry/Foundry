@@ -17,7 +17,7 @@ import gov.sandia.cognition.math.matrix.Vectorizable;
  * Unit tests for class: ChebyshevDistanceMetric
  *
  * @author  Justin Basilico
- * @since   3.4.0
+ * @since   3.3.3
  */
 public class ChebyshevDistanceMetricTest
     extends MetricTestHarness<Vectorizable>

@@ -23,7 +23,7 @@ import java.util.List;
  * @param   <MemberType>
  *      The type of members of this ensemble.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public class AveragingEnsemble<InputType, MemberType extends Evaluator<? super InputType, ? extends Number>>
     extends AbstractUnweightedEnsemble<MemberType>

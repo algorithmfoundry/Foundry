@@ -12,7 +12,7 @@
  * inspecting algorithms for development and debugging.
  * 
  * @author  Justin Basilico
- * @since   3.4.0
+ * @since   3.3.3
  */
 @gov.sandia.cognition.annotation.Documentation
 package gov.sandia.cognition.algorithm.event;

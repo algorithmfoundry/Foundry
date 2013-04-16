@@ -21,7 +21,7 @@ import java.util.Collection;
  * weighted examples.
  *
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public class UnivariateLinearRegression
     extends AbstractCloneableSerializable

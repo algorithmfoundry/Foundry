@@ -19,7 +19,7 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
  * for the events they want to listen to.
  *
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  * @see     IterativeAlgorithmListener
  */
 public abstract class AbstractIterativeAlgorithmListener

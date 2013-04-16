@@ -18,7 +18,7 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
  * @param   <ValueType>
  *      The type of value passed into and out of the learner.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public class IdentityLearner<ValueType>
     extends AbstractCloneableSerializable

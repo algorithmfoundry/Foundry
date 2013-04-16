@@ -17,12 +17,12 @@ import gov.sandia.cognition.math.AbstractDifferentiableUnivariateScalarFunction;
  * evaluator, but you don't want to alter the value of the function, like a
  * FeedforwardNeuralNetwork.
  *
- * Note: prior to 3.4.0, this class was named "LinearFunction". Using
+ * Note: prior to 3.3.0, this class was named "LinearFunction". Using
  * LinearFunction with default values will produce the same result. However,
  * it how has additional parameters.
  *
  * @author  Kevin R. Dixon
- * @since   3.4.0
+ * @since   3.3.3
  */
 public class IdentityScalarFunction
     extends AbstractDifferentiableUnivariateScalarFunction

@@ -12,7 +12,7 @@ package gov.sandia.cognition.learning.function.scalar;
  * Unit tests for class IdentityScalarFunction.
  *
  * @author  Justin Basilico
- * @since   3.4.0
+ * @since   3.3.3
  */
 public class IdentityScalarFunctionTest
     extends DifferentiableUnivariateScalarFunctionTestHarness

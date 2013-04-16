@@ -24,7 +24,7 @@ import java.util.List;
  * @param   <MemberType>
  *      The type of the members of this weighted ensemble.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public class AbstractWeightedEnsemble<MemberType>
     extends AbstractCloneableSerializable

@@ -26,7 +26,7 @@ import gov.sandia.cognition.util.ArgumentChecker;
  * To support a power of infinity, see {@code ChebyshevDistanceMetric}.
  * 
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 @PublicationReference(
     title="Minkowski Distance",

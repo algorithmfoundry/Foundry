@@ -35,7 +35,7 @@ import java.util.Collection;
  *      first parameter passed to the divergence function. It is typically a
  *      type like Vector or CenteroidCluster.
  * @author  Justin Basilico
- * @version 3.4.0
+ * @since   3.3.3
  */
 public class DivergencesEvaluator<InputType, ValueType>
     extends DefaultVectorFactoryContainer
