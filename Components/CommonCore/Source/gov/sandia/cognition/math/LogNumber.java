@@ -1,5 +1,5 @@
 /*
- * File:            SignedLogNumber.java
+ * File:            LogNumber.java
  * Authors:         Justin Basilico
  * Project:         Cognitive Foundry
  * 
