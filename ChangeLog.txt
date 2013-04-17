@@ -2,6 +2,91 @@ This file contains the change log for the Cognitive Foundry.
 
 Changes since last release:
 
+Release 3.3.3 (2013-04-??):
+  * General:
+    * Made code able to compile under both Java 1.6 and 1.7. This required
+      removing some potentially unsafe methods that used varargs with generics.
+    * Upgraded XStream dependency to 1.4.4.
+    * Improved support for regression algorithms in learning.
+    * Added general-purpose adapters to make it easier to compose learning
+      algorithms and adapt their input or output.
+  * Common Core:
+    * Added isSparse, toArray, dotDivide, and dotDivideEquals methods for 
+      Vector and Matrix.
+    * Added scaledPlus, scaledPlusEquals, scaledMinus, and scaledMinusEquals to
+      Ring (and thus Vector and Matrix) for potentially faster such operations.
+    * Fixed issue where matrix and dense vector equals was not checking for 
+      equal dimensionality.
+    * Added transform, transformEquals, tranformNonZeros, and 
+      transformNonZerosEquals to Vector.
+    * Made LogNumber into a signed version of a log number and moved the prior
+      unsigned implementation into UnsignedLogNumber.
+    * Added EuclideanRing interface that provides methods for times, 
+      timesEquals, divide, and divideEquals. Also added Field interface that 
+      provides methods for inverse and inverseEquals. These interfaces are now 
+      implemented by the appropriate number classes such as ComplexNumber, 
+      MutableInteger, MutableLong, MutableDouble, LogNumber, and 
+      UnsignedLogNumber.
+    * Added interface for Indexer and DefaultIndexer implementation for
+      creating a zero-based indexing of values.
+    * Added interfaces for MatrixFactoryContainer and 
+      DivergenceFunctionContainer.
+    * Added ReversibleEvaluator, which various identity functions implement as 
+      well as a new utility class ForwardReverseEvaluatorPair to create a 
+      reversible evaluator from a pair of other evaluators.
+    * Added method to create an ArrayList from a pair of values in
+      CollectionUtil.
+    * ArgumentChecker now properly throws assertion errors for NaN values.
+      Also added checks for long types.
+    * Fixed handling of Infinity in subtraction for LogMath.
+    * Fixed issue with angle method that would cause a NaN if cosine had a
+      rounding error.
+    * Added new createMatrix methods to MatrixFactory that initializes the 
+      Matrix with the given value.
+    * Added copy, reverse, and isEmpty methods for several array types to 
+      ArrayUtil.
+    * Added utility methods for creating a HashMap, LinkedHashMap, HashSet, or
+      LinkedHashSet with an expected size to CollectionUtil.
+    * Added getFirst and getLast methods for List types to CollectionUtil.
+    * Removed some calls to System.out and Exception.printStackTrace.
+  * Common Data:
+    * Added create method for IdentityDataConverter.
+    * ReversibleDataConverter now is an extension of ReversibleEvaluator.
+  * Learning Core:
+    * Added general learner transformation capability to make it easier to adapt
+      and compose algorithms. InputOutputTransformedBatchLearner provides this
+      capability for supervised learning algorithms by composing together a
+      triplet. CompositeBatchLearnerPair does it for a pair of algorithms.
+    * Added a constant and identity learners.
+    * Added Chebyshev, Identity, and Minkowski distance metrics.
+    * Added methods to DatasetUtil to get the output values for a dataset and
+      to compute the sum of weights.
+    * Made generics more permissive for supervised cost functions.
+    * Added ClusterDistanceEvaluator for taking a clustering that encodes the 
+      distance from an input value to all clusters and returns the result as a
+      vector.
+    * Fixed potential round-off issue in decision tree splitter.
+    * Added random subspace technique, implemented in RandomSubspace.
+    * Separated functionality from LinearFunction into IdentityScalarFunction.
+      LinearFunction by default is the same, but has parameters that can change
+      the slope and offset of the function.
+    * Default squashing function for GeneralizedLinearModel and 
+      DifferentiableGeneralizedLinearModel is now a linear function instead of 
+      an atan function.
+    * Added a weighted estimator for the Poisson distribution.
+    * Added Regressor interface for evaluators that are the output of 
+      (single-output) regression learning algorithms. Existing such evaluators
+      have been updated to implement this interface.
+    * Added support for regression ensembles including additive and averaging
+      ensembles with and without weights. Added a learner for regression bagging
+      in BaggingRegressionLearner.
+    * Added a simple univariate regression class in UnivariateLinearRegression.
+    * MultivariateDecorrelator now is a VectorInputEvaluator and
+      VectorOutputEvaluator.
+    * Added bias term to PrimalEstimatedSubGradient.
+  * Text Core:
+    * Fixed issue with the start position for tokens from LetterNumberTokenizer
+      being off by one except for the first one.
 Release 3.3.2 (2011-11-07):
   * Common Core:
     * Added checkedAdd and checkedMultiply functions to MathUtil, providing a 
