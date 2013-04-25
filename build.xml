@@ -81,4 +81,96 @@
         <ant antfile="${project.Cognitive_Foundry_Learning_Core}/build.xml" inheritall="false" target="test"/>
         <ant antfile="${project.Cognitive_Foundry_Learning_Examples}/build.xml" inheritall="false" target="test"/>
     </target>
+
+    <target depends="init" name="package-binary" description="Package binary as zip.">
+        <delete file="${dist.binary.zip}" />
+        
+        
+        <!-- Build the zip. -->
+        <zip destfile="${dist.binary.zip}">
+            
+            <!-- Copy basic information files. -->
+            <mappedresources>
+                <fileset dir=".">
+                    <include name="ChangeLog.txt" />
+                    <include name="License.txt" />
+                </fileset>
+                <globmapper from="*" to="${dist.binary.name}/*" />
+            </mappedresources>
+            
+            <!-- Copy the documents. -->
+            <mappedresources>
+                <url url="http://foundry.sandia.gov/publications/SAND2008-2163C.pdf" />
+                <globmapper from="publications/*" to="${dist.binary.name}/Documents/*" />
+            </mappedresources>
+            
+            <!-- Copy Libraries. -->
+            <mappedresources>
+                <fileset dir="${dist.dir}/lib" includes="*.jar" excludes="*-examples.jar" />
+                <globmapper from="*" to="${dist.binary.name}/Libraries/*" />
+            </mappedresources>
+            
+            <!-- Copy Dependencies. -->
+            <mappedresources>
+                <fileset dir="Dependencies" includes="**">
+                    <exclude name="copylibs-*/**" />
+                    <exclude name="junit-*/**" />
+                </fileset>
+                <globmapper from="*" to="${dist.binary.name}/Dependencies/*" />
+            </mappedresources>
+            
+            <!-- Copy Examples. -->
+            <mappedresources>
+                <fileset dir="Components/CommonExamples/Source" includes="**" />
+                <globmapper from="*" to="${dist.binary.name}/Examples/*" />
+            </mappedresources>
+            <mappedresources>
+                <fileset dir="Components/LearningExamples/Source" includes="**" />
+                <globmapper from="*" to="${dist.binary.name}/Examples/*" />
+            </mappedresources>
+            <mappedresources>
+                <fileset dir="Components/FrameworkExamples/Source" includes="**" />
+                <globmapper from="*" to="${dist.binary.name}/Examples/*" />
+            </mappedresources>
+            <mappedresources>
+                <fileset dir="Components/TextExamples/Source" includes="**" />
+                <globmapper from="*" to="${dist.binary.name}/Examples/*" />
+            </mappedresources>
+            
+        </zip>
+    </target>
+    
+    <target depends="init" name="package-source" description="Package source as zip.">
+        <delete file="${dist.source.zip}" />
+        <zip destfile="${dist.source.zip}">
+            <mappedresources>
+                <fileset dir="." includes="**" excludes="**/Build/**, **/Distribution/**, **/nbproject/private/**" />
+                <globmapper from="*" to="${dist.source.name}/*" />
+            </mappedresources>
+        </zip>
+    </target>
+    
+    <target depends="init" name="javadoc-api" description="Document entire API.">
+        <javadoc additionalparam="${javadoc.additionalparam}" author="${javadoc.author}" charset="UTF-8" destdir="${dist.javadoc-api.dir}" docencoding="UTF-8" encoding="${javadoc.encoding.used}" failonerror="true" noindex="${javadoc.noindex}" nonavbar="${javadoc.nonavbar}" notree="${javadoc.notree}" private="${javadoc.private}" source="${javac.source}" splitindex="${javadoc.splitindex}" use="${javadoc.use}" useexternalfile="true" version="${javadoc.version}" windowtitle="${javadoc.windowtitle}">
+            <classpath>
+                <path path="${javac.classpath}"/>
+            </classpath>
+            <fileset dir="${project.Cognitive_Foundry_Common_Core}/Source" includes="**/*.java"/>
+            <fileset dir="${project.Cognitive_Foundry_Common_Data}/Source" includes="**/*.java"/>
+            <fileset dir="${project.Cognitive_Foundry_Learning_Core}/Source" includes="**/*.java"/>
+            <fileset dir="${project.Cognitive_Foundry_Framework_Core}/Source" includes="**/*.java"/>
+            <fileset dir="${project.Cognitive_Foundry_Framework_Learning}/Source" includes="**/*.java"/>
+            <fileset dir="${project.Cognitive_Foundry_Text_Core}/Source" includes="**/*.java"/>
+            <link href="${reference.jdk.javadoc}" />
+        </javadoc>
+    </target>
+    
+    <target depends="init,javadoc-api" name="package-javadoc-api" description="Package API documentation.">
+        <delete file="${dist.javadoc-api.zip}" />
+        <zip destfile="${dist.javadoc-api.zip}" basedir="${dist.javadoc-api.dir}">
+        </zip>
+    </target>
+    
+    <target depends="init,jar,package-binary,package-source,package-javadoc-api" name="package" description="Package up release."/>
+    
 </project>
