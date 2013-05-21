@@ -2,7 +2,7 @@ This file contains the change log for the Cognitive Foundry.
 
 Changes since last release:
 
-Release 3.3.3 (2013-04-??):
+Release 3.3.3 (2013-05-20):
   * General:
     * Made code able to compile under both Java 1.6 and 1.7. This required
       removing some potentially unsafe methods that used varargs with generics.
