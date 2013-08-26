@@ -88,11 +88,11 @@ public class LogMath
     {
         if (logX > logY)
         {
-            return Math.log(1.0 + Math.exp(logY - logX)) + logX;
+            return MathUtil.log1PlusExp(logY - logX) + logX;
         }
         else if (logY > logX)
         {
-            return Math.log(1.0 + Math.exp(logX - logY)) + logY;
+            return MathUtil.log1PlusExp(logX - logY) + logY;
         }
         else
         {
@@ -120,7 +120,7 @@ public class LogMath
     {
         if (logX > logY)
         {
-            return Math.log(1.0 - Math.exp(logY - logX)) + logX;
+            return MathUtil.log1MinusExp(logY - logX) + logX;
         }
         else if (logY > logX)
         {
