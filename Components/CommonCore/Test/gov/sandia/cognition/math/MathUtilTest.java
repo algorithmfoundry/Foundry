@@ -350,4 +350,94 @@ public class MathUtilTest
             fail("An ArithmeticException should have been thrown!");
         } 
     }
+    
+    /**
+     * Gets the good values that the object can take.
+     *
+     * @return
+     *      The good values the object can take.
+     */
+    protected double[] getGoodValues()
+    {
+        return new double[] { 1.0, 0.0, 0.1, 3.14, Math.PI, Math.E, 10.0,
+            Double.POSITIVE_INFINITY,
+            Double.MIN_VALUE, this.randomDouble(),
+            this.randomDouble(), this.randomDouble(), this.randomDouble(),
+            this.RANDOM.nextGaussian(), this.RANDOM.nextGaussian(),
+            this.RANDOM.nextGaussian(), this.RANDOM.nextGaussian(),
+            -1.0, -0.1, -3.14, -10.0, -Math.PI, -Math.E,
+            Double.MAX_VALUE, -Double.MAX_VALUE, Double.MIN_NORMAL,
+            Double.NEGATIVE_INFINITY,
+            -Double.MIN_VALUE, -RANDOM.nextDouble(), -this.randomDouble()};
+    }
+    
+    /**
+     * Creates a random double in the range of the test.
+     *
+     * @return
+     *      A random double for the test.
+     */
+    protected double randomDouble()
+    {
+        return (this.RANDOM.nextDouble() - 0.5) * 100000.0;
+    }
+    
+    public void testLog1Plus()
+    {
+        for (double value : getGoodValues())
+        {
+            assertEquals(Math.log1p(value), MathUtil.log1Plus(value), 0.0);
+        }
+    }
+    
+    public void testExpMinus1Plus()
+    {
+        for (double value : getGoodValues())
+        {
+            assertEquals(Math.expm1(value), MathUtil.expMinus1Plus(value), 0.0);
+        }
+    }
+    
+    public void testLog1MinusExp()
+    {
+        System.out.println("testLog1MinusExp");
+        for (double x : getGoodValues())
+        {
+            double expected = Math.log(1 - Math.exp(x));
+            double actual = MathUtil.log1MinusExp(x);
+            System.out.println("x = " + x + " " + expected + " " + actual + " " + -MathUtil.expMinus1Plus(x));
+            
+            if (x < 0.0 && !Double.isInfinite(x) && Double.isInfinite(expected))
+            {
+                // For overflows for expected just make sure actual isn't overflowed.
+                assertTrue(!Double.isInfinite(actual));
+            }
+            else
+            {
+                assertEquals(expected, actual, TOLERANCE);
+            }
+        }
+    }
+    
+    public void testLog1PlusExp()
+    {
+        System.out.println("testLog1PlusExp");
+        for (double x : getGoodValues())
+        {
+            double expected = Math.log(1 + Math.exp(x));
+            double actual = MathUtil.log1PlusExp(x);
+            System.out.println("x = " + x + " " + expected + " " + actual);
+            
+            if (x > 0.0 && !Double.isInfinite(x) && Double.isInfinite(expected))
+            {
+                // For overflows for expected just make sure actual isn't overflowed.
+                assertTrue(!Double.isInfinite(actual));
+            }
+            else
+            {
+                assertEquals(expected, actual, TOLERANCE);
+            }
+        }
+    }
+    
 }

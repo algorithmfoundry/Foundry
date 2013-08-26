@@ -689,4 +689,101 @@ public class MathUtil
                 a + " * " + b + " < Integer.MIN_VALUE");
         }
     }
+    
+    /**
+     * Computes log(1 + x). For small values, this is closer to the actual value
+     * than actually calling log(1 + x). This is an alias for Math.log1p(x).
+     * 
+     * @param   x
+     *      The value.
+     * @return 
+     *      The result of log(1 + x).
+     */
+    public static double log1Plus(
+        final double x)
+    {
+        return Math.log1p(x);
+    }
+    
+    /**
+     * Computes exp(x - 1). For small values, this is closer to the actual value
+     * than actually calling exp(x - 1). This is an alias for Math.expm1(x).
+     * 
+     * @param   x
+     *      The value.
+     * @return 
+     *      The result of exp(x - 1).
+     */
+    public static double expMinus1Plus(
+        final double x)
+    {
+        return Math.expm1(x);
+    }
+    
+    /**
+     * Computes log(1 - exp(x)). For small values, this is closer to the actual 
+     * value than actually calling log(1 - exp(x)).
+     * 
+     * @param   x
+     *      The value.
+     * @return 
+     *      The result of log(1 - exp(x)).
+     */
+    @PublicationReference(
+        title="Accurately Computing log(1 − exp(−|a|)): Assessed by the Rmpfr package",
+        author="Martin Machler",
+        year=2012,
+        type=PublicationType.WebPage,
+        url="http://cran.r-project.org/web/packages/Rmpfr/vignettes/log1mexp-note.pdf")
+    public static double log1MinusExp(
+        final double x)
+    {
+        if (x < 0.0 && x >= -LogMath.LOG_2)
+        {
+            // For small x, use the -(exp(x) - 1) with higher precision.
+            return Math.log(-MathUtil.expMinus1Plus(x));
+        }
+        else
+        {
+            // For large x, use log(1 - exp(x)) with higher precision.
+            return Math.log1p(-Math.exp(x));
+        }
+    }
+    
+    /**
+     * Computes log(1 + exp(x)). For small values, this is closer to the actual 
+     * value than actually calling log(1 + exp(x)).
+     * 
+     * @param   x
+     *      The value.
+     * @return 
+     *      The result of log(1 + exp(x)).
+     */
+    @PublicationReference(
+        title="Accurately Computing log(1 − exp(−|a|)): Assessed by the Rmpfr package",
+        author="Martin Machler",
+        year=2012,
+        type=PublicationType.WebPage,
+        url="http://cran.r-project.org/web/packages/Rmpfr/vignettes/log1mexp-note.pdf")
+    public static double log1PlusExp(
+        final double x)
+    {
+        if (x <= 18.0)
+        {
+            // At this scale we can just perform the exponetiation.
+            return Math.log1p(Math.exp(x));
+        }
+        else if (x <= 33.3)
+        {
+            // Intermediate scale.
+            return x + Math.exp(-x);
+        }
+        else
+        {
+            // At this scale exp(x) is sufficiently large that the +1
+            // term goes away so log(1 + exp(x)) ~= log(exp(x)) = x.
+            return x;
+        }
+    }
+
 }
