@@ -16,6 +16,7 @@ package gov.sandia.cognition.learning.algorithm.svm;
 import gov.sandia.cognition.algorithm.MeasurablePerformanceAlgorithm;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.learning.algorithm.AbstractAnytimeSupervisedBatchLearner;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.KernelBinaryCategorizer;
@@ -357,6 +358,10 @@ public class SequentialMinimalOptimization<InputType>
         this.nonBoundAlphaIndices = null;
         this.errorCache = null;
         this.kernelCache = null;
+        
+        // This makes sure that the resulting examples are serializable.
+        this.result.setExamples(
+            CollectionUtil.asArrayList(this.result.getExamples()));
     }
 
     /**
