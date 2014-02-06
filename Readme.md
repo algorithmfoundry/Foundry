@@ -11,7 +11,7 @@ The Foundry requires Java 1.6 or later.
 
 ## License
 
-See [License.txt](https://github.com/algorithmfoundry/Foundry/blob/master/License.txt) for information about the license.
+See [License.txt](License.txt) for information about the license.
 
 ## Binaries
 
@@ -96,21 +96,21 @@ The Foundry has four main packages some of which have multiple modules. Each mod
 Each of the four main packages has example code for how to get started with some of the basic components.
 
 ### Common Package Examples
-  * [Evaluator Example](https://github.com/algorithmfoundry/Foundry/blob/master/Components/CommonExamples/Source/examples/EvaluatorExample.java)
-  * [Matrix and Vector Example](https://github.com/algorithmfoundry/Foundry/blob/master/Components/CommonExamples/Source/examples/MatrixAndVectorExample.java)
-  * [XStream Serialization Handler Example](https://github.com/algorithmfoundry/Foundry/blob/master/Components/CommonExamples/Source/examples/XStreamSerializationHandlerExample.java)
+  * [Evaluator Example](Components/CommonExamples/Source/examples/EvaluatorExample.java)
+  * [Matrix and Vector Example](Components/CommonExamples/Source/examples/MatrixAndVectorExample.java)
+  * [XStream Serialization Handler Example](Components/CommonExamples/Source/examples/XStreamSerializationHandlerExample.java)
 
 ### Learning Package Examples
-  * [Custom Clustering Example](https://github.com/algorithmfoundry/Foundry/blob/master/Components/LearningExamples/Source/examples/CustomClusteringExample.java)
-  * [Learning Experiment Example](https://github.com/algorithmfoundry/Foundry/blob/master/Components/LearningExamples/Source/examples/LearningExperimentExample.java)
-  * [Mixture of Gaussians Example](https://github.com/algorithmfoundry/Foundry/blob/master/Components/LearningExamples/Source/examples/MixtureOfGaussiansExample.java)
-  * [K-Means Example](https://github.com/algorithmfoundry/Foundry/blob/master/Components/LearningExamples/Source/examples/SimpleKMeansExample.java)
+  * [Learning Experiment Example](Components/LearningExamples/Source/examples/LearningExperimentExample.java)
+  * [K-Means Example](Components/LearningExamples/Source/examples/SimpleKMeansExample.java)
+  * [Custom Clustering Example](Components/LearningExamples/Source/examples/CustomClusteringExample.java)
+  * [Mixture of Gaussians Example](Components/LearningExamples/Source/examples/MixtureOfGaussiansExample.java)
 
 ### Text Package Examples
-  * [Text Pipeline Example](https://github.com/algorithmfoundry/Foundry/blob/master/Components/TextExamples/Source/examples/TextPipelineExample.java)
+  * [Text Pipeline Example](Components/TextExamples/Source/examples/TextPipelineExample.java)
 
 ### Framework Package Examples
-  * [Cognitive Model Example](https://github.com/algorithmfoundry/Foundry/blob/master/Components/FrameworkExamples/Source/examples/BasicCognitiveModelLiteExample.java)
+  * [Cognitive Model Example](Components/FrameworkExamples/Source/examples/BasicCognitiveModelLiteExample.java)
 
 For more information about a specific class you can also look at the unit test for examples of how to create and use it.
 
