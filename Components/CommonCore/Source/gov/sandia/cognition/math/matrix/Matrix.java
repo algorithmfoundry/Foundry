@@ -19,6 +19,7 @@ import gov.sandia.cognition.annotation.CodeReviews;
 import gov.sandia.cognition.math.ComplexNumber;
 import gov.sandia.cognition.math.Ring;
 import java.text.NumberFormat;
+import java.util.List;
 
 /**
  * Defines the base functionality for all implementations of a Matrix
@@ -272,9 +273,9 @@ public interface Matrix
     public ComplexNumber logDeterminant();
 
     /**
-     * Computes the trace of <code>this</code>, which is the sum of the
-     * eigenvalues and if equivalent to the sum of the diagonal element (which
-     * is probably the most interesting result in all of algebra!!)
+     * Computes the trace of <code>this</code>, which is the sum of the diagonal
+     * elements. It is equivalent to the sum of the eigenvalues (which
+     * is probably the most interesting result in all of algebra!).
      * 
      * @return trace of <code>this</code>
      */
@@ -314,6 +315,14 @@ public interface Matrix
      * @return Frobenius norm of <code>this</code>
      */
     public double normFrobenius();
+    
+    /**
+     * Compute the squared Frobenius norm of <code>this</code>, which is just a 
+     * fancy way of saying that I will square each element and add those up.
+     *
+     * @return Frobenius norm of <code>this</code>
+     */
+    public double normFrobeniusSquared();
 
     /**
      * Determines if the matrix is square (numRows == numColumns) 
@@ -440,7 +449,61 @@ public interface Matrix
      * @since   3.0
      */
     public Vector sumOfColumns();
-
+    
+    /**
+     * Increments the value at the given position by 1.
+     * 
+     * @param   row
+     *      The zero-based row index.
+     * @param   column 
+     *      The zero-based column index.
+     */
+    public void increment(
+        final int row,
+        final int column);
+    
+    /**
+     * Increments the value at the given position by the given value.
+     * 
+     * @param   row
+     *      The zero-based row index.
+     * @param   column 
+     *      The zero-based column index.
+     * @param   value
+     *      The value to add.
+     */    
+    public void increment(
+        final int row,
+        final int column,
+        final double value);
+    
+    /**
+     * Decrements the value at the given position by 1.
+     * 
+     * @param   row
+     *      The zero-based row index.
+     * @param   column 
+     *      The zero-based column index.
+     */
+    public void decrement(
+        final int row,
+        final int column);
+    
+    /**
+     * Decrements the value at the given position by the given value.
+     * 
+     * @param   row
+     *      The zero-based row index.
+     * @param   column 
+     *      The zero-based column index.
+     * @param   value
+     *      The value to subtract.
+     */    
+    public void decrement(
+        final int row,
+        final int column,
+        final double value);
+    
     /**
      * uploads a matrix from a column-stacked vector of parameters, so that
      * v(k) = A(i,j) = A( k%M, k/M )
@@ -469,6 +532,15 @@ public interface Matrix
      *      layer will be equal to the number of columns.
      */
     public double[][] toArray();
+    
+    /**
+     * Returns a column-stacked view of this matrix as a list. This means that
+     * v(k) = A(i,j) = v(j*M+i).
+     * 
+     * @return 
+     *      The values in this matrix as a column-stacked list.
+     */
+    public List<Double> valuesAsList();
 
     public String toString();
 

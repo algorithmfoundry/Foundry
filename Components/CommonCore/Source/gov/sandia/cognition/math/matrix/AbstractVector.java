@@ -18,6 +18,8 @@ import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.CodeReviews;
 import gov.sandia.cognition.math.UnivariateScalarFunction;
 import java.text.NumberFormat;
+import java.util.AbstractList;
+import java.util.List;
 
 /**
  * Abstract implementation of some of the Vector interface, in a storage-free
@@ -226,6 +228,36 @@ public abstract class AbstractVector
     }
 
     @Override
+    public void increment(
+        final int index)
+    {
+        this.increment(index, 1.0);
+    }
+
+    @Override
+    public void increment(
+        final int index,
+        final double value)
+    {
+        this.setElement(index, this.getElement(index) + value);
+    }
+
+    @Override
+    public void decrement(
+        final int index)
+    {
+        this.decrement(index, 1.0);
+    }
+
+    @Override
+    public void decrement(
+        final int index,
+        final double value)
+    {
+        this.increment(index, -value);
+    }
+    
+    @Override
     public double[] toArray()
     {
         final int dimensionality = this.getDimensionality();
@@ -237,6 +269,12 @@ public abstract class AbstractVector
         return result;
     }
 
+    @Override
+    public List<Double> valuesAsList()
+    {
+        return new ValuesListView();
+    }
+    
     /**
      * Converts a vector to a string that consists of each value in the vector 
      *
@@ -313,6 +351,45 @@ public abstract class AbstractVector
         {
             this.setElement( i, parameters.getElement( i ) );
         }
+    }
+    
+    /**
+     * Implements a view of this vector as a {@link List}.
+     */
+    class ValuesListView
+        extends AbstractList<Double>
+    {
+        /**
+         * Creates a new {@link ValuesListView} for this vector.
+         */
+        public ValuesListView()
+        {
+            super();
+        }
+
+        @Override
+        public Double get(
+            final int i)
+        {
+            return getElement(i);
+        }
+
+        @Override
+        public Double set(
+            final int i,
+            final Double value)
+        {
+            final double previous = getElement(i);
+            setElement(i, value);
+            return previous;
+        }
+
+        @Override
+        public int size()
+        {
+            return getDimensionality();
+        }
+
     }
 
 }

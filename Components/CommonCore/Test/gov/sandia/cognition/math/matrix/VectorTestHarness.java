@@ -19,6 +19,8 @@ import gov.sandia.cognition.math.matrix.mtj.Vector3;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Iterator;
+import java.util.List;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Test suite for implementations of Vector 
@@ -907,6 +909,35 @@ abstract public class VectorTestHarness
         v1.setElement(index, 2 * v1.getElement(index));
         assertFalse(v1.getElement(index) == result[index]);
     }
+    
+    
+    /**
+     * Test of valuesAsList
+     */
+    public void testValuesAsList()
+    {
+        Vector v1 = this.createRandom();
+        int M = v1.getDimensionality();
+        List<Double> result = v1.valuesAsList();
+
+        assertEquals(M, result.size());
+        for (int i = 0; i < M; i++)
+        {
+            assertEquals(v1.getElement(i), result.get(i));
+        }
+
+        int index = this.RANDOM.nextInt(M);
+        double value = result.get(index) + 1;
+        result.set(index, value);
+        assertEquals(value, result.get(index));
+        assertEquals(value, v1.getElement(index));
+
+        index = this.RANDOM.nextInt(M);
+        value = 2 * v1.getElement(index);
+        v1.setElement(index, value);
+        assertEquals(value, result.get(index));
+        assertEquals(value, v1.getElement(index));
+    }
 
     /**
      * Test of isSparse method.
@@ -940,4 +971,103 @@ abstract public class VectorTestHarness
         assertTrue( s.length() > 0 );
     }
 
+    public void testIncrement()
+    {
+        Vector v1 = this.createRandom();
+
+        int M = v1.getDimensionality();
+        int index = RANDOM.nextInt( M );
+        double oldValue = v1.getElement(index);
+        v1.increment(index);
+        assertEquals(oldValue + 1, v1.getElement(index), 0.0);
+        
+        index = RANDOM.nextInt( M );
+        oldValue = v1.getElement(index);
+        double amount = 10.0 * RANDOM.nextGaussian();
+        v1.increment(index, amount);
+        assertEquals(oldValue + amount, v1.getElement(index), 0.0);
+        
+        v1.increment(0, RANDOM.nextDouble());
+
+        for (int badIndex : new int[] {-1, M})
+        {
+            boolean exceptionThrown = false;
+            try
+            {
+                v1.increment(badIndex);
+            }
+            catch (Exception e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                assertTrue(exceptionThrown);
+            }
+            
+            exceptionThrown = false;
+            try
+            {
+                v1.increment(badIndex, RANDOM.nextDouble());
+            }
+            catch (Exception e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                assertTrue(exceptionThrown);
+            }
+        }
+    }
+    
+    public void testDecrement()
+    {
+        Vector v1 = this.createRandom();
+
+        int M = v1.getDimensionality();
+        int index = RANDOM.nextInt( M );
+        double oldValue = v1.getElement(index);
+        v1.decrement(index);
+        assertEquals(oldValue - 1, v1.getElement(index), 0.0);
+        
+        index = RANDOM.nextInt( M );
+        oldValue = v1.getElement(index);
+        double amount = 10.0 * RANDOM.nextGaussian();
+        v1.decrement(index, amount);
+        assertEquals(oldValue - amount, v1.getElement(index), 0.0);
+        
+        v1.increment(0, RANDOM.nextDouble());
+
+        for (int badIndex : new int[] {-1, M})
+        {
+            boolean exceptionThrown = false;
+            try
+            {
+                v1.decrement(badIndex);
+            }
+            catch (Exception e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                assertTrue(exceptionThrown);
+            }
+            
+            exceptionThrown = false;
+            try
+            {
+                v1.decrement(badIndex, RANDOM.nextDouble());
+            }
+            catch (Exception e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                assertTrue(exceptionThrown);
+            }
+        }
+    }
 }

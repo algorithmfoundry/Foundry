@@ -18,6 +18,7 @@ import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.CodeReviews;
 import gov.sandia.cognition.math.UnivariateScalarFunction;
 import java.text.NumberFormat;
+import java.util.List;
 
 /**
  * The <code>Vector</code> interface defines the operations that are expected
@@ -238,7 +239,48 @@ public interface Vector
      */
     public void transformNonZerosEquals(
         final UnivariateScalarFunction function);
-
+    
+    /**
+     * Increments the value of the given index by 1.
+     * 
+     * @param   index 
+     *      The index of the dimension to increment.
+     */
+    public void increment(
+        final int index);
+    
+    /**
+     * Increments the value of the given index by the given value.
+     * 
+     * @param   index 
+     *      The index of the dimension to increment.
+     * @param   value
+     *      The value to add.
+     */
+    public void increment(
+        final int index,
+        final double value);
+    
+    /**
+     * Decrements the value of the given index by 1.
+     * 
+     * @param   index 
+     *      The index of the dimension to decrement.
+     */
+    public void decrement(
+        final int index);
+    
+    /**
+     * Decrements the value of the given index by the given value.
+     * 
+     * @param   index 
+     *      The index of the dimension to decrement.
+     * @param   value
+     *      The value to subtract.
+     */
+    public void decrement(
+        final int index,
+        final double value);
 
     /**
      * Returns true if this vector has a potentially sparse underlying
@@ -264,6 +306,16 @@ public interface Vector
      *      the dimensionality of the vector.
      */
     public double[] toArray();
+    
+
+    /**
+     * Gets a view of this vector as a list. The list is the same size as
+     * this array.
+     * 
+     * @return 
+     *      A list representing this array.
+     */
+    public List<Double> valuesAsList();
     
     @Override
     public String toString();

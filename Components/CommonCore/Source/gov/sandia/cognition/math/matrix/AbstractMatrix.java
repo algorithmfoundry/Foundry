@@ -19,6 +19,8 @@ import gov.sandia.cognition.annotation.CodeReviewResponse;
 import gov.sandia.cognition.annotation.CodeReviews;
 import gov.sandia.cognition.math.AbstractRing;
 import gov.sandia.cognition.math.RingAccumulator;
+import java.util.AbstractList;
+import java.util.List;
 
 /**
  * Abstract implementation of some low-hanging functions in the Matrix 
@@ -403,6 +405,40 @@ public abstract class AbstractMatrix
     }
 
     @Override
+    public void increment(
+        final int row,
+        final int column)
+    {
+        this.increment(row, column, 1.0);
+    }
+
+    @Override
+    public void increment(
+        final int row,
+        final int column,
+        final double value)
+    {
+        this.setElement(row, column, this.getElement(row, column) + value);
+    }
+
+    @Override
+    public void decrement(
+        final int row,
+        final int column)
+    {
+        this.decrement(row, column, 1.0);
+    }
+
+    @Override
+    public void decrement(
+        final int row,
+        final int column,
+        final double value)
+    {
+        this.increment(row, column, -value);
+    }
+
+    @Override
     public double[][] toArray()
     {
         final int rowCount = this.getNumRows();
@@ -418,6 +454,70 @@ public abstract class AbstractMatrix
         }
 
         return result;
+    }
+
+    @Override
+    public List<Double> valuesAsList()
+    {
+        return new ValuesListView();
+    }
+    
+    /**
+     * Implements a view of this matrix as a {@link List}.
+     */
+    class ValuesListView
+        extends AbstractList<Double>
+    {
+        /** The number of rows. */
+        private final int rowCount;
+        
+        /** The number of columns. */
+        private final int columnCount;
+        
+        /** The size of this list, which is the product of the number of rows
+         *  times the number of columns.
+         */
+        private final int size;
+        
+        /**
+         * Creates a new {@link ValuesListView} for this matrix.
+         */
+        public ValuesListView()
+        {
+            super();
+            
+            this.rowCount = getNumRows();
+            this.columnCount = getNumColumns();
+            this.size = this.rowCount * this.columnCount;
+        }
+
+        @Override
+        public Double get(
+            final int i)
+        {
+            final int row = i % this.rowCount;
+            final int column = i / this.rowCount;
+            return getElement(row, column);
+        }
+
+        @Override
+        public Double set(
+            final int i,
+            final Double value)
+        {
+            final int row = i % this.rowCount;
+            final int column = i / this.rowCount;
+            final double previous = getElement(row, column);
+            setElement(row, column, value);
+            return previous;
+        }
+
+        @Override
+        public int size()
+        {
+            return this.size;
+        }
+
     }
     
 }

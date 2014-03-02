@@ -19,6 +19,7 @@ import gov.sandia.cognition.math.ComplexNumber;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
 import java.text.DecimalFormat;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Test suite for all implementations of Matrix
@@ -1377,6 +1378,31 @@ abstract public class MatrixTestHarness
     }
 
     /**
+     * Test of normFrobeniusSquared method, of class gov.sandia.isrc.math.matrix.Matrix.
+     */
+    public void testNormFrobeniusSquared()
+    {
+        System.out.println("normFrobeniusSquared");
+
+        Matrix m1 = this.createRandom();
+
+        double sumSquared = 0.0;
+        int M = m1.getNumRows();
+        int N = m1.getNumColumns();
+        for (int i = 0; i < M; i++)
+        {
+            for (int j = 0; j < N; j++)
+            {
+                double v = m1.getElement(i, j);
+                sumSquared += v * v;
+            }
+        }
+
+        assertEquals(sumSquared, m1.normFrobeniusSquared(), 1e-5);
+
+    }
+
+    /**
      * Test of isSquare method, of class gov.sandia.isrc.math.matrix.Matrix.
      */
     public void testIsSquare()
@@ -1878,6 +1904,50 @@ abstract public class MatrixTestHarness
         assertEquals( v1, v2 );
 
     }
+    
+    
+    /**
+     * Test of valuesList method, of class Matrix.
+     */
+    public void testValuesList()
+    {
+        System.out.println("valuesList");
+
+        Matrix m1 = this.createRandom();
+        int M = m1.getNumRows();
+        int N = m1.getNumColumns();
+
+        List<Double> result = m1.valuesAsList();
+
+        assertEquals(result.size(), M * N);
+
+        int listIndex = 0;
+        
+        for (int j = 0; j < N; j++)
+        {
+            for (int i = 0; i < M; i++)
+            {
+                assertEquals(m1.getElement(i, j), result.get(listIndex));
+                listIndex++;
+            }
+        }
+        
+        // Modifying list modifies matrix.
+        listIndex = this.RANDOM.nextInt(M * N);
+        double value = result.get(listIndex) + 1;
+        result.set(listIndex, value);
+        assertEquals(value, result.get(listIndex));
+        assertEquals(value, m1.getElement(listIndex % M, listIndex / M));
+        
+        // Modifying matrix modifies list.
+        int i = this.RANDOM.nextInt(M);
+        int j = this.RANDOM.nextInt(N);
+        value = m1.getElement(i, j) + 1.0;
+        m1.setElement(i, j, value);
+        assertEquals(value, m1.getElement(i, j));
+        assertEquals(value, result.get(j * M + i));
+    }
+
 
     /**
      * Test of convertToVector method, of class gov.sandia.isrc.math.matrix.Matrix.
@@ -1956,6 +2026,175 @@ abstract public class MatrixTestHarness
         System.out.println( "String:\n" + s );
         assertNotNull( s );
         assertTrue( s.length() > 0 );
+    }
+    
+    
+    public void testIncrement()
+    {
+        Matrix m1 = this.createRandom();
+
+        int M = m1.getNumRows();
+        int N = m1.getNumColumns();
+        int i = RANDOM.nextInt(M);
+        int j = RANDOM.nextInt(N);
+        double oldValue = m1.getElement(i, j);
+        m1.increment(i, j);
+        assertEquals(oldValue + 1, m1.getElement(i, j), 0.0);
+        
+        i = RANDOM.nextInt(M);
+        j = RANDOM.nextInt(N);
+        oldValue = m1.getElement(i, j);
+        double amount = 10.0 * RANDOM.nextGaussian();
+        m1.increment(i, j, amount);
+        assertEquals(oldValue + amount, m1.getElement(i, j), 0.0);
+        
+        m1.increment(0, 0, RANDOM.nextDouble());
+
+        for (int badI : new int[] {-1, M})
+        {
+            boolean exceptionThrown = false;
+            try
+            {
+                m1.increment(badI, j);
+            }
+            catch (Exception e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                assertTrue(exceptionThrown);
+            }
+            
+            exceptionThrown = false;
+            try
+            {
+                m1.increment(badI, j, RANDOM.nextDouble());
+            }
+            catch (Exception e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                assertTrue(exceptionThrown);
+            }
+        }
+        
+        for (int badJ : new int[] {-1, N})
+        {
+            boolean exceptionThrown = false;
+            try
+            {
+                m1.increment(i, badJ);
+            }
+            catch (Exception e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                assertTrue(exceptionThrown);
+            }
+            
+            exceptionThrown = false;
+            try
+            {
+                m1.increment(i, badJ, RANDOM.nextDouble());
+            }
+            catch (Exception e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                assertTrue(exceptionThrown);
+            }
+        }
+    }
+    
+    public void testDecrement()
+    {
+        Matrix m1 = this.createRandom();
+
+        int M = m1.getNumRows();
+        int N = m1.getNumColumns();
+        int i = RANDOM.nextInt(M);
+        int j = RANDOM.nextInt(N);
+        double oldValue = m1.getElement(i, j);
+        m1.decrement(i, j);
+        assertEquals(oldValue - 1, m1.getElement(i, j), 0.0);
+        
+        i = RANDOM.nextInt(M);
+        j = RANDOM.nextInt(N);
+        oldValue = m1.getElement(i, j);
+        double amount = 10.0 * RANDOM.nextGaussian();
+        m1.decrement(i, j, amount);
+        assertEquals(oldValue - amount, m1.getElement(i, j), 0.0);
+        
+        m1.decrement(0, 0, RANDOM.nextDouble());
+
+        for (int badI : new int[] {-1, M})
+        {
+            boolean exceptionThrown = false;
+            try
+            {
+                m1.decrement(badI, j);
+            }
+            catch (Exception e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                assertTrue(exceptionThrown);
+            }
+            
+            exceptionThrown = false;
+            try
+            {
+                m1.decrement(badI, j, RANDOM.nextDouble());
+            }
+            catch (Exception e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                assertTrue(exceptionThrown);
+            }
+        }
+        
+        for (int badJ : new int[] {-1, N})
+        {
+            boolean exceptionThrown = false;
+            try
+            {
+                m1.decrement(i, badJ);
+            }
+            catch (Exception e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                assertTrue(exceptionThrown);
+            }
+            
+            exceptionThrown = false;
+            try
+            {
+                m1.decrement(i, badJ, RANDOM.nextDouble());
+            }
+            catch (Exception e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                assertTrue(exceptionThrown);
+            }
+        }
     }
 
 }

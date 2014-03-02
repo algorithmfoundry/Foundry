@@ -660,6 +660,14 @@ public abstract class AbstractMTJMatrix
             no.uib.cipr.matrix.Matrix.Norm.Frobenius);
     }
 
+    @Override
+    public double normFrobeniusSquared()
+    {
+// TODO: It would be nice to have this without the square root directly rather than squaring the normFrobenius.
+        final double normFrobenius = this.normFrobenius();
+        return normFrobenius * normFrobenius;
+    }
+    
     public boolean isSymmetric(
         double effectiveZero)
     {
@@ -838,6 +846,15 @@ public abstract class AbstractMTJMatrix
             destinationVector.getInternalVector());
     }
 
+    @Override
+    public void increment(
+        final int row,
+        final int column,
+        final double value)
+    {
+        this.internalMatrix.add(row, column, value);
+    }
+    
     public void convertFromVector(
         Vector parameters)
     {
