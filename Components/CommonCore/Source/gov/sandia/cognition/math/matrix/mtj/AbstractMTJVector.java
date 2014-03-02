@@ -101,6 +101,14 @@ public abstract class AbstractMTJVector
     {
         this.internalVector.set( index, value );
     }
+    
+    @Override
+    public void increment(
+        final int index,
+        final double value)
+    {
+        this.internalVector.add(index, value);
+    }
 
     public Vector times(
         Matrix matrix )
