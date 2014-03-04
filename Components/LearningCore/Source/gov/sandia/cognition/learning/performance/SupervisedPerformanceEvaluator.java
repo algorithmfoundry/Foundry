@@ -37,7 +37,7 @@ public interface SupervisedPerformanceEvaluator
     <InputType, TargetType, EstimateType, ResultType>
     extends PerformanceEvaluator
         <Evaluator<? super InputType, ? extends EstimateType>,
-         Collection<? extends InputOutputPair<? extends InputType, TargetType>>,
+         Collection<? extends InputOutputPair<InputType, TargetType>>,
          ResultType>
 {
 
