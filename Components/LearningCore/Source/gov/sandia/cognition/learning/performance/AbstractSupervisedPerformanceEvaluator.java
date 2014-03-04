@@ -63,7 +63,7 @@ public abstract class AbstractSupervisedPerformanceEvaluator<InputType, TargetTy
      */
     public ResultType evaluatePerformance(
         final Evaluator<? super InputType, ? extends EstimateType> evaluator,
-        final Collection<? extends InputOutputPair<InputType, TargetType>> data )
+        final Collection<? extends InputOutputPair<? extends InputType, TargetType>> data )
     {
         // Use the given evaluator to compute the Target-Estimate pairs for
         // the given data.
