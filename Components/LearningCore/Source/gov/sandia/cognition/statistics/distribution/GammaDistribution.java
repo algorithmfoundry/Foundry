@@ -27,6 +27,7 @@ import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
+import gov.sandia.cognition.util.ArgumentChecker;
 import gov.sandia.cognition.util.Pair;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
@@ -172,13 +173,35 @@ public class GammaDistribution
     public void setScale(
         final double scale )
     {
-        if (scale <= 0.0)
-        {
-            throw new IllegalArgumentException( "Scale must be > 0.0" );
-        }
+        ArgumentChecker.assertIsPositive("scale", scale);
         this.scale = scale;
     }
-
+    
+    /**
+     * Gets the rate parameter, which is just the inverse of the scale parameter.
+     * It is commonly referred to as beta.
+     * 
+     * @return 
+     *      The rate parameter (1.0 / scale). Must be greater than 0.0.
+     */
+    public double getRate()
+    {
+        return 1.0 / this.getScale();
+    }
+    
+    /**
+     * Sets the rate parameter, which is just the inverse of the scale parameter.
+     * It is commonly referred to as beta.
+     * 
+     * @return 
+     *      The rate parameter (1.0 / scale). Must be greater than 0.0.
+     */
+    public void setRate(
+        final double rate)
+    {
+        ArgumentChecker.assertIsPositive("rate", rate);
+        this.setScale(1.0 / rate);
+    }
 
     @Override
     public Double getMean()

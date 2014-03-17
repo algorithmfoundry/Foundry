@@ -18,6 +18,7 @@ import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.statistics.SmoothUnivariateDistributionTestHarness;
 
 /**
+ * Unit testsf or class {@link GammaDistribution}.
  * 
  * @author Kevin R. Dixon
  */
@@ -140,6 +141,7 @@ public class GammaDistributionTest
         double s2 = instance.getScale() + 1.0;
         instance.setScale( s2 );
         assertEquals( s2, instance.getScale() );
+        assertEquals(1.0 / s2, instance.getRate(), TOLERANCE);
 
         try
         {
@@ -149,6 +151,50 @@ public class GammaDistributionTest
         catch (Exception e)
         {
             System.out.println( "Good: " + e );
+        }
+    }
+    
+    
+    /**
+     * Test of getRate method, of class GammaDistribution.
+     */
+    public void testGetRate()
+    {
+        System.out.println("getRate");
+
+        double shape = RANDOM.nextDouble() * 5.0;
+        double scale = RANDOM.nextDouble() * 5.0;
+        double rate = 1.0 / scale;
+        GammaDistribution.PDF instance = new GammaDistribution.PDF(shape, scale);
+        assertEquals(rate, instance.getRate(), TOLERANCE);
+    }
+
+    /**
+     * Test of setRate method, of class GammaDistribution.
+     */
+    public void testSetRate()
+    {
+        System.out.println("setRate");
+
+        GammaDistribution instance = this.createInstance();
+        assertTrue(instance.getRate() > 0.0);
+        double r2 = instance.getRate() + 1.0;
+        instance.setRate(r2);
+        assertEquals(r2, instance.getRate(), TOLERANCE);
+        assertEquals(1.0 / r2, instance.getScale(), TOLERANCE);
+
+        boolean exceptionThrown = false;
+        try
+        {
+            instance.setRate(0.0);
+        }
+        catch (Exception e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
         }
     }
 
