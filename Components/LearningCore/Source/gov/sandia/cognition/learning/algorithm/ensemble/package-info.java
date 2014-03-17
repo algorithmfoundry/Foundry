@@ -14,7 +14,7 @@
  */
 
 /**
- * Provides ensmble methods. Ensemble methods is a general term used for a type
+ * Provides ensemble methods. Ensemble methods is a general term used for a type
  * of meta-learner that combines the results of one or more learning algorithms
  * together to create an "ensemble" of learned objects.
  *
