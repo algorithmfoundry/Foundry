@@ -60,7 +60,7 @@ public class LearnerRepeatExperiment
     /** The evaluator to use to compute the performance of the learned object on
      *  each fold. */
     protected PerformanceEvaluator
-        <? super LearnedType, Collection<? extends InputDataType>,
+        <? super LearnedType, ? super Collection<? extends InputDataType>,
          ? extends StatisticType>
         performanceEvaluator;
 
@@ -101,7 +101,7 @@ public class LearnerRepeatExperiment
     public LearnerRepeatExperiment(
         final int numTrials,
         final PerformanceEvaluator
-            <? super LearnedType, Collection<? extends InputDataType>, ? extends StatisticType>
+            <? super LearnedType, ? super Collection<? extends InputDataType>, ? extends StatisticType>
             performanceEvaluator,
         final Summarizer<? super StatisticType, ? extends SummaryType> summarizer)
     {
@@ -193,7 +193,7 @@ public class LearnerRepeatExperiment
      * @return The performance evaluator to apply to each fold.
      */
     public PerformanceEvaluator
-        <? super LearnedType, Collection<? extends InputDataType>, ? extends StatisticType>
+        <? super LearnedType, ? super Collection<? extends InputDataType>, ? extends StatisticType>
         getPerformanceEvaluator()
     {
         return this.performanceEvaluator;
@@ -207,7 +207,7 @@ public class LearnerRepeatExperiment
      */
     public void setPerformanceEvaluator(
         final PerformanceEvaluator
-            <? super LearnedType, Collection<? extends InputDataType>, ? extends StatisticType>
+            <? super LearnedType, ? super Collection<? extends InputDataType>, ? extends StatisticType>
             performanceEvaluator)
     {
         this.performanceEvaluator = performanceEvaluator;

@@ -67,7 +67,7 @@ public class LearnerValidationExperiment
     /** The evaluator to use to compute the performance of the learned object on
      *  each fold. */
     protected PerformanceEvaluator
-        <? super LearnedType, Collection<? extends FoldDataType>,
+        <? super LearnedType, ? super Collection<? extends FoldDataType>,
          ? extends StatisticType> 
         performanceEvaluator;
     
@@ -108,7 +108,7 @@ public class LearnerValidationExperiment
     public LearnerValidationExperiment(
         final ValidationFoldCreator<InputDataType, FoldDataType> foldCreator,
         final PerformanceEvaluator
-            <? super LearnedType, Collection<? extends FoldDataType>, ? extends StatisticType>
+            <? super LearnedType, ? super Collection<? extends FoldDataType>, ? extends StatisticType>
             performanceEvaluator,
         final Summarizer<? super StatisticType, ? extends SummaryType> summarizer)
     {
@@ -183,7 +183,7 @@ public class LearnerValidationExperiment
      * @return The performance evaluator to apply to each fold.
      */
     public PerformanceEvaluator
-        <? super LearnedType, Collection<? extends FoldDataType>, ? extends StatisticType>
+        <? super LearnedType, ? super Collection<? extends FoldDataType>, ? extends StatisticType>
         getPerformanceEvaluator()
     {
         return this.performanceEvaluator;
@@ -197,7 +197,7 @@ public class LearnerValidationExperiment
      */    
     public void setPerformanceEvaluator(
         final PerformanceEvaluator
-            <? super LearnedType, Collection<? extends FoldDataType>, ? extends StatisticType>
+            <? super LearnedType, ? super Collection<? extends FoldDataType>, ? extends StatisticType>
             performanceEvaluator)
     {
         this.performanceEvaluator = performanceEvaluator;

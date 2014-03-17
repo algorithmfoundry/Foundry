@@ -85,7 +85,7 @@ public class ParallelLearnerValidationExperiment<InputDataType, FoldDataType, Le
     public ParallelLearnerValidationExperiment(
         final ValidationFoldCreator<InputDataType, FoldDataType> foldCreator,
         final PerformanceEvaluator
-            <? super LearnedType, Collection<? extends FoldDataType>, ? extends StatisticType>
+            <? super LearnedType, ? super Collection<? extends FoldDataType>, ? extends StatisticType>
             performanceEvaluator,
         final Summarizer<? super StatisticType, ? extends SummaryType> summarizer)
     {

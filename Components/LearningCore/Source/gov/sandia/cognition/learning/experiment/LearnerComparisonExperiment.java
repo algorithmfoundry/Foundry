@@ -63,7 +63,7 @@ public class LearnerComparisonExperiment<InputDataType, FoldDataType, LearnedTyp
 
     /** The evaluator to use to compute the performance of the learned object on
      *  each fold. */
-    protected PerformanceEvaluator<? super LearnedType, Collection<? extends FoldDataType>, ? extends StatisticType> performanceEvaluator;
+    protected PerformanceEvaluator<? super LearnedType, ? super Collection<? extends FoldDataType>, ? extends StatisticType> performanceEvaluator;
 
     /** The summarizer for summarizing the result of the performance evaluator 
      *  from all the folds. */
@@ -108,7 +108,7 @@ public class LearnerComparisonExperiment<InputDataType, FoldDataType, LearnedTyp
      */
     public LearnerComparisonExperiment(
         final ValidationFoldCreator<InputDataType, FoldDataType> foldCreator,
-        final PerformanceEvaluator<? super LearnedType, Collection<? extends FoldDataType>, ? extends StatisticType> performanceEvaluator,
+        final PerformanceEvaluator<? super LearnedType, ? super Collection<? extends FoldDataType>, ? extends StatisticType> performanceEvaluator,
         final NullHypothesisEvaluator<Collection<? extends StatisticType>> statisticalTest,
         final Summarizer<? super StatisticType, ? extends SummaryType> summarizer)
     {
@@ -231,7 +231,7 @@ public class LearnerComparisonExperiment<InputDataType, FoldDataType, LearnedTyp
      *
      * @return The performance evaluator to apply to each fold.
      */
-    public PerformanceEvaluator<? super LearnedType, Collection<? extends FoldDataType>, ? extends StatisticType> getPerformanceEvaluator()
+    public PerformanceEvaluator<? super LearnedType, ? super Collection<? extends FoldDataType>, ? extends StatisticType> getPerformanceEvaluator()
     {
         return this.performanceEvaluator;
     }
@@ -243,7 +243,7 @@ public class LearnerComparisonExperiment<InputDataType, FoldDataType, LearnedTyp
      *      The performance evaluator to apply to each fold.
      */
     public void setPerformanceEvaluator(
-        final PerformanceEvaluator<? super LearnedType, Collection<? extends FoldDataType>, ? extends StatisticType> performanceEvaluator)
+        final PerformanceEvaluator<? super LearnedType, ? super Collection<? extends FoldDataType>, ? extends StatisticType> performanceEvaluator)
     {
         this.performanceEvaluator = performanceEvaluator;
     }

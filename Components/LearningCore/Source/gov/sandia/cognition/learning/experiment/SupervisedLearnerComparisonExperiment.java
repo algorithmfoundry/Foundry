@@ -67,7 +67,7 @@ public class SupervisedLearnerComparisonExperiment<InputType,OutputType,Statisti
      */
     public SupervisedLearnerComparisonExperiment(
         final ValidationFoldCreator<InputOutputPair<InputType, OutputType>, InputOutputPair<InputType, OutputType>> foldCreator,
-        final PerformanceEvaluator<? super Evaluator<? super InputType, OutputType>, Collection<? extends InputOutputPair<InputType, OutputType>>, ? extends StatisticType> performanceEvaluator,
+        final PerformanceEvaluator<? super Evaluator<? super InputType, OutputType>, ? super Collection<? extends InputOutputPair<InputType, OutputType>>, ? extends StatisticType> performanceEvaluator,
         final NullHypothesisEvaluator<Collection<? extends StatisticType>> statisticalTest,
         final Summarizer<? super StatisticType, ? extends SummaryType> summarizer)
     {
