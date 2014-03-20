@@ -21,6 +21,7 @@ import gov.sandia.cognition.math.DifferentiableEvaluator;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.method.StudentTConfidence;
+import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.CloneableSerializable;
 import java.util.ArrayList;
 import java.util.Random;
@@ -187,6 +188,7 @@ public abstract class LineMinimizerTestHarness<EvaluatorType extends Evaluator<D
      * Quadratic function, minimum at vec(0.0)
      */
     class VectorFunctionQuadratic
+        extends AbstractCloneableSerializable
         implements Evaluator<Vector, Double>,
         DifferentiableEvaluator<Vector, Double, Vector>
     {
