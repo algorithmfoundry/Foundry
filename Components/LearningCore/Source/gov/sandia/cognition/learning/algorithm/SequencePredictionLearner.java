@@ -122,7 +122,9 @@ public class SequencePredictionLearner<DataType, LearnedType>
         final Collection<? extends DataType> data,
         final int predictionHorizon)
     {
-        return createPredictionDataset(DatasetUtil.asMultiCollection(data), predictionHorizon);
+        final MultiCollection<? extends DataType> multi = 
+            DatasetUtil.asMultiCollection(data);
+        return createPredictionDataset(multi, predictionHorizon);
     }
 
     /**

@@ -885,8 +885,13 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
 
             }
 
+            @Override
+            public int hashCode()
+            {
+                return this.pair.getFirst().hashCode();
+            }
+            
         }
-
 
         /**
          * Iterator for the Neighborhood.

@@ -362,7 +362,7 @@ public class OnlineBaggingCategorizerLearnerTest
         OnlinePerceptron learner = new OnlinePerceptron();
         double percentToSample = random.nextDouble();
         int ensembleSize = 1 + random.nextInt(1000);
-        OnlineBaggingCategorizerLearner<?, ?, ?> instance = OnlineBaggingCategorizerLearner.create(
+        OnlineBaggingCategorizerLearner<Vector, Boolean, ?> instance = OnlineBaggingCategorizerLearner.create(
             learner, ensembleSize, percentToSample, random);
         assertSame(learner, instance.getLearner());
         assertEquals(percentToSample, instance.getPercentToSample(), 0.0);

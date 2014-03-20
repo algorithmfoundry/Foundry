@@ -150,6 +150,20 @@ public class UnivariateRandomVariable
         return stat.getNullHypothesisProbability() >= pValue;
     }
 
+    /**
+     * Warning: The hashCode of this class is just the default hashCode,
+     * but equality uses a statistical test to see if two random variables
+     * are equal.
+     * 
+     * @return 
+     *      @inheritDoc
+     */
+    @Override
+    public int hashCode()
+    {
+        return super.hashCode();
+    }
+
     @Override
     public void plusEquals(
         final RandomVariable<Number> other )

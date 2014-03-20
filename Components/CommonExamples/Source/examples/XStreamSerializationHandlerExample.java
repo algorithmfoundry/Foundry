@@ -119,6 +119,13 @@ public class XStreamSerializationHandlerExample
             return this.number == other.number && this.name.equals(other.name);
         }
 
+        @Override
+        public int hashCode()
+        {
+            return this.name.hashCode() + this.number;
+        }
+        
+
     }
 
 }

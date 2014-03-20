@@ -104,6 +104,12 @@ public class DefaultInfiniteVector<KeyType>
     }
 
     @Override
+    public int hashCode()
+    {
+        return this.map.hashCode();
+    }
+
+    @Override
     public double sum()
     {
         double sum = 0.0;

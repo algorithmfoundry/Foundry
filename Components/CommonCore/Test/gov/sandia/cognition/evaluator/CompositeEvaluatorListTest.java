@@ -47,7 +47,7 @@ public class CompositeEvaluatorListTest
             new CompositeEvaluatorList<Number, Number>();
         assertTrue(instance.getEvaluators().isEmpty());
         
-        Evaluator[] evaluatorsArray =
+        Evaluator<?, ?>[] evaluatorsArray =
         {
             new Adder(),
             new Multiplier(),
@@ -85,7 +85,7 @@ public class CompositeEvaluatorListTest
     {
         System.out.println( "clone" );
         
-        Evaluator[] evaluatorsArray =
+        Evaluator<?, ?>[] evaluatorsArray =
         {
             new Adder(),
             new Multiplier(),
@@ -145,7 +145,7 @@ public class CompositeEvaluatorListTest
         assertTrue(instance.getEvaluators().isEmpty());
         assertSame(instance.getEvaluators(), instance.getEvaluators());
         
-        Evaluator[] evaluatorsArray =
+        Evaluator<?, ?>[] evaluatorsArray =
         {
             new Adder(),
             new Multiplier(),
