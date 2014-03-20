@@ -15,6 +15,7 @@
 package gov.sandia.cognition.statistics;
 
 import gov.sandia.cognition.collection.CollectionUtil;
+import gov.sandia.cognition.statistics.distribution.BetaDistribution;
 import gov.sandia.cognition.statistics.distribution.GammaDistribution;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import java.util.Collection;
@@ -79,15 +80,15 @@ public class DistributionParameterUtilTest
         assertEquals( "variance", CollectionUtil.getElement(result, 1).getName() );
         assertEquals( g.getVariance(), CollectionUtil.getElement(result, 1).getValue() );
 
-        GammaDistribution gamma = new GammaDistribution(
+        BetaDistribution beta = new BetaDistribution(
             RANDOM.nextDouble(), RANDOM.nextDouble() );
-        Collection<DistributionParameter<?,GammaDistribution>> result2 =
-            DistributionParameterUtil.findAll(gamma);
+        Collection<DistributionParameter<?,BetaDistribution>> result2 =
+            DistributionParameterUtil.findAll(beta);
         assertEquals( 2, result.size() );
-        assertEquals( "scale", CollectionUtil.getElement(result2, 0).getName() );
-        assertEquals( gamma.getScale(), CollectionUtil.getElement(result2, 0).getValue() );
-        assertEquals( "shape", CollectionUtil.getElement(result2, 1).getName() );
-        assertEquals( gamma.getShape(), CollectionUtil.getElement(result2, 1).getValue() );
+        assertEquals( "alpha", CollectionUtil.getElement(result2, 0).getName() );
+        assertEquals( beta.getAlpha(), CollectionUtil.getElement(result2, 0).getValue() );
+        assertEquals( "beta", CollectionUtil.getElement(result2, 1).getName() );
+        assertEquals( beta.getBeta(), CollectionUtil.getElement(result2, 1).getValue() );
 
         try
         {
