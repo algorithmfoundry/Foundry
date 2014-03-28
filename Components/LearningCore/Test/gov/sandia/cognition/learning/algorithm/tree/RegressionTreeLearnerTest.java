@@ -55,11 +55,18 @@ public class RegressionTreeLearnerTest
         
         VectorThresholdVarianceLearner deciderLearner =
             new VectorThresholdVarianceLearner();
+        
+        instance = new RegressionTreeLearner<Vectorizable>(
+            deciderLearner);
+        assertSame(deciderLearner, instance.getDeciderLearner());
+        assertNull(instance.getRegressionLearner());
+        assertEquals(RegressionTreeLearner.DEFAULT_LEAF_COUNT_THRESHOLD, 
+            instance.getLeafCountThreshold());
+        
         KernelBasedIterativeRegression<Vectorizable> regressionLearner =
             new KernelBasedIterativeRegression<Vectorizable>();
         instance = new RegressionTreeLearner<Vectorizable>(
             deciderLearner, regressionLearner);
-        
         assertSame(deciderLearner, instance.getDeciderLearner());
         assertSame(regressionLearner, instance.getRegressionLearner());
         assertEquals(RegressionTreeLearner.DEFAULT_LEAF_COUNT_THRESHOLD, 

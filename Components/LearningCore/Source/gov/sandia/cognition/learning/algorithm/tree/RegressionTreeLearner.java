@@ -25,7 +25,7 @@ import java.util.Collection;
 
 /**
  * The {@code RegressionTreeLearner} class implements a learning algorithm for
- * a regression tree that makes use of a decider learner and a regresion 
+ * a regression tree that makes use of a decider learner and a regression 
  * learner. The tree grows as a decision tree until it gets to a leaf node
  * (determined by a minimum number of nodes), and then learns a regression
  * function at the leaf node.
@@ -47,7 +47,7 @@ public class RegressionTreeLearner<InputType>
 
     /** The learning algorithm for the regression function. */
     protected BatchLearner
-        <Collection<? extends InputOutputPair<? extends InputType, Double>>, 
+        <? super Collection<? extends InputOutputPair<? extends InputType, Double>>, 
          ? extends Evaluator<? super InputType, Double>> 
          regressionLearner;
 
@@ -63,7 +63,19 @@ public class RegressionTreeLearner<InputType>
      */
     public RegressionTreeLearner()
     {
-        this(null, null);
+        this(null);
+    }
+    
+    /**
+     * Creates a new instance of CategorizationTreeLearner with a mean node
+     * learner
+     *
+     * @param  deciderLearner The learner for the decision function.
+     */
+    public RegressionTreeLearner(
+        final DeciderLearner<? super InputType, Double, ?, ?> deciderLearner)
+    {
+        this(deciderLearner, null);
     }
 
     /**
@@ -75,7 +87,7 @@ public class RegressionTreeLearner<InputType>
     public RegressionTreeLearner(
         final DeciderLearner<? super InputType, Double, ?, ?> deciderLearner,
         final BatchLearner
-            <Collection<? extends InputOutputPair<? extends InputType, Double>>, 
+            <? super Collection<? extends InputOutputPair<? extends InputType, Double>>, 
              ? extends Evaluator<? super InputType, Double>>  
              regressionLearner)
     {
@@ -97,7 +109,7 @@ public class RegressionTreeLearner<InputType>
     public RegressionTreeLearner(
         final DeciderLearner<? super InputType, Double, ?, ?> deciderLearner,
         final BatchLearner
-            <Collection<? extends InputOutputPair<? extends InputType, Double>>, 
+            <? super Collection<? extends InputOutputPair<? extends InputType, Double>>, 
              ? extends Evaluator<? super InputType, Double>>  
              regressionLearner,
         final int leafCountThreshold,
@@ -206,7 +218,7 @@ public class RegressionTreeLearner<InputType>
      * @return  The regression learner.
      */
     public BatchLearner
-        <Collection<? extends InputOutputPair<? extends InputType, Double>>, 
+        <? super Collection<? extends InputOutputPair<? extends InputType, Double>>, 
          ? extends Evaluator<? super InputType, Double>>
         getRegressionLearner()
     {
@@ -221,7 +233,7 @@ public class RegressionTreeLearner<InputType>
      */
     public void setRegressionLearner(
         final BatchLearner
-            <Collection<? extends InputOutputPair<? extends InputType, Double>>, 
+            <? super Collection<? extends InputOutputPair<? extends InputType, Double>>, 
              ? extends Evaluator<? super InputType, Double>>  
              regressionLearner)
     {
