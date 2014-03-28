@@ -124,6 +124,42 @@ public class UnivariateStatisticsUtilTest
     }
 
     /**
+     * Test of computeStandardDeviation method, of class UnivariateStatisticsUtil.
+     */
+    public void testComputeStandardDeviation()
+    {
+        System.out.println( "computeStandardDeviation" );
+
+        assertEquals(0.0, UnivariateStatisticsUtil.computeStandardDeviation(new LinkedList<Double>()));
+
+        Collection<Double> data = new LinkedList<Double>();
+        int num = random.nextInt(100) + 10;
+        double sum = 0.0;
+        for (int n = 0; n < num; n++)
+        {
+            double value = random.nextGaussian();
+            data.add( value );
+            sum += value;
+        }
+        double mean = sum / num;
+
+        sum = 0.0;
+        for (double value : data)
+        {
+            double delta = value - mean;
+            sum += delta * delta;
+        }
+
+        double variance = sum / (num - 1);
+        double standardDeviation = Math.sqrt(variance);
+        
+        assertEquals(standardDeviation, UnivariateStatisticsUtil.computeStandardDeviation(data), EPS);
+        assertEquals(standardDeviation, UnivariateStatisticsUtil.computeStandardDeviation(data, mean), EPS);
+        assertEquals(UnivariateStatisticsUtil.computeStandardDeviation(data),
+            UnivariateStatisticsUtil.computeStandardDeviation(data, mean), EPS);
+    }
+
+    /**
      * Test of computeSumSquaredDifference method, of class gov.sandia.cognition.learning.util.statistics.UnivariateStatisticsUtil.
      */
     public void testComputeSumSquaredDifference()
@@ -348,6 +384,9 @@ public class UnivariateStatisticsUtilTest
         System.out.println( "computeMaximum" );
 
         assertEquals( 4.0, UnivariateStatisticsUtil.computeMaximum( Arrays.asList( 3, 1, 4, 1, 4, 2 ) ) );
+        assertEquals(Double.NEGATIVE_INFINITY, UnivariateStatisticsUtil.computeMaximum(new ArrayList<Double>()));
+        assertEquals(Double.NEGATIVE_INFINITY, UnivariateStatisticsUtil.computeMaximum(Arrays.asList(Double.NEGATIVE_INFINITY)));
+        assertEquals(2.0, UnivariateStatisticsUtil.computeMaximum(Arrays.asList(Double.NaN, 2, Double.NaN)));
     }
 
     public void testComputeMinimum()
@@ -355,6 +394,9 @@ public class UnivariateStatisticsUtilTest
         System.out.println( "computeminimum" );
 
         assertEquals( 1.0, UnivariateStatisticsUtil.computeMinimum( Arrays.asList( 3, 1, 4, 1, 4, 2 ) ) );
+        assertEquals(Double.POSITIVE_INFINITY, UnivariateStatisticsUtil.computeMinimum(new ArrayList<Double>()));
+        assertEquals(Double.POSITIVE_INFINITY, UnivariateStatisticsUtil.computeMinimum(Arrays.asList(Double.POSITIVE_INFINITY)));
+        assertEquals(2.0, UnivariateStatisticsUtil.computeMinimum(Arrays.asList(Double.NaN, 2, Double.NaN)));
     }
 
     public void testComputeMinAndMax()

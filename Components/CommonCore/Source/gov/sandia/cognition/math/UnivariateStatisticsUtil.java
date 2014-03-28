@@ -160,6 +160,42 @@ public class UnivariateStatisticsUtil
         return unbiasedVariance;
         
     }
+    
+    /**
+     * Computes the standard deviation of a dataset, which is the square root
+     * of the unbiased variance. It computes the mean first and then computes
+     * the standard deviation. If you already have the mean, then use the
+     * two-argument computeStandardDeviation(data, mean) to save duplication of
+     * effort.
+     *
+     * @param   data
+     *      The data to consider.
+     * @return
+     *      The standard deviation of the given data. Will not be negative.
+     */
+    public static double computeStandardDeviation(
+        final Collection<? extends Number> data)
+    {
+        return Math.sqrt(computeVariance(data));
+    }
+
+    /**
+     * Computes the standard deviation of a dataset, which is the square root
+     * of the unbiased variance.
+     *
+     * @param   data
+     *      The data to consider.
+     * @param   mean
+     *      The pre-computed mean of the given data.
+     * @return
+     *      The standard deviation of the given data. Will not be negative.
+     */
+    public static double computeStandardDeviation(
+        final Collection<? extends Number> data,
+        final double mean)
+    {
+        return Math.sqrt(computeVariance(data, mean));
+    }
 
     /**
      * Computes the Root mean-squared (RMS) error between the data and its mean.
@@ -387,8 +423,7 @@ public class UnivariateStatisticsUtil
     public static double computeMinimum(
         Iterable<? extends Number> data )
     {
-
-        double minimum = Double.MAX_VALUE;
+        double minimum = Double.POSITIVE_INFINITY;
         for( Number value : data )
         {
             double x = value.doubleValue();
@@ -411,7 +446,7 @@ public class UnivariateStatisticsUtil
     public static double computeMaximum(
         Iterable<? extends Number> data )
     {
-        double maximum = -Double.MAX_VALUE;
+        double maximum = Double.NEGATIVE_INFINITY;
         for( Number value : data )
         {
             double x = value.doubleValue();
