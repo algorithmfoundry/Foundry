@@ -19,6 +19,7 @@ import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.VectorElementThresholdCategorizer;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.Vectorizable;
+import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.DefaultPair;
 import java.util.ArrayList;
@@ -73,7 +74,7 @@ public class VectorThresholdVarianceLearner
         final double baseVariance = DatasetUtil.computeOutputVariance(data);
         
         // Figure out the dimensionality of the data.
-        final int dimensionality = this.getDimensionality(data);
+        final int dimensionality = DatasetUtil.getInputDimensionality(data);
         
         // Go through all the dimensions to find the one with the best gain and
         // the best threshold.
@@ -123,30 +124,6 @@ public class VectorThresholdVarianceLearner
     }
     
     /**
-     * Figures out the dimensionality of the Vector data.
-     *
-     * @param  data The data.
-     * @return The dimensionality of the data in the vector.
-     */
-    protected int getDimensionality(
-        final Collection
-            <? extends InputOutputPair<? extends Vectorizable, ?>> 
-            data)
-    {
-        if ( data == null || data.size() <= 0 )
-        {
-            // Bad data.
-            return 0;
-        }
-        else
-        {
-            // Get the dimensionality of the first data element.
-            return data.iterator().next().getInput().convertToVector()
-                .getDimensionality();
-        }
-    }
-    
-    /**
      * Computes the best information gain-threshold pair for the given 
      * dimension on the given data. It does this by sorting the data according
      * to the dimension and then walking the sorted values to find the one that
@@ -175,9 +152,7 @@ public class VectorThresholdVarianceLearner
         final int total = data.size();
         final ArrayList<DefaultPair<Double, Double>> values = 
             new ArrayList<DefaultPair<Double, Double>>(total);
-        double totalOutputSum = 0.0;
-        for ( InputOutputPair<? extends Vectorizable, Double> example 
-            : data )
+        for (InputOutputPair<? extends Vectorizable, Double> example : data)
         {
             // Add this example to the list.
             final Vector input = example.getInput().convertToVector();
@@ -185,8 +160,6 @@ public class VectorThresholdVarianceLearner
             final double value = input.getElement(dimension);
             
             values.add(new DefaultPair<Double, Double>(value, output));
-// TODO: Compute this only once for all dimensions.
-            totalOutputSum += output;
         }
         
         // Sort the list in ascending order by value.
@@ -203,22 +176,28 @@ public class VectorThresholdVarianceLearner
         
         // If all the values on this dimension are the same then there is 
         // nothing to split on.
-        if (    total <= 1 
-             || values.get(0).getFirst().equals(values.get(total - 1).getFirst()) )
+        if (    total <= 1
+             || values.get(0).getFirst().equals(values.get(total - 1).getFirst()))
         {
             // All of the values are the same.
             return null;
         }
         
         // In order to find the best split we are going to keep track of the
-        // counts of each label on each side of the threshold. This means
-        // that we maintain two counting objects.
+        // distributions of each label on each side of the threshold. This means
+        // that we maintain two univariate gaussian distribution objects.
         // To start with all of the examples are on the positive side of
         // the split, so we initialize the base counts (all the data points)
         // and the negative counts with nothing.
-        
-        double sumNegative = 0.0;
-        double sumPositive = totalOutputSum;
+        final UnivariateGaussian.SufficientStatistic positiveGaussian =
+            new UnivariateGaussian.SufficientStatistic();
+        final UnivariateGaussian.SufficientStatistic negativeGaussian =
+            new UnivariateGaussian.SufficientStatistic();
+        for (DefaultPair<Double, Double> valueLabel : values)
+        {
+            final double label = valueLabel.getSecond();
+            positiveGaussian.update(label);
+        }
         
         // We are going to loop over all the values to compute the best gain
         // and the best threshold.
@@ -238,7 +217,7 @@ public class VectorThresholdVarianceLearner
             final double value = valueLabel.getFirst();
             final double label = valueLabel.getSecond();
             
-            if ( i == 0 )
+            if (i == 0)
             {
                 // We are going to loop over a threshold value that is >=. 
                 // Since there is no point on splitting on the first value, 
@@ -248,7 +227,7 @@ public class VectorThresholdVarianceLearner
                 bestTieBreaker = 0.0;
                 bestThreshold = value;
             }
-            else if ( value != previousValue )
+            else if (value != previousValue)
             {   
                 // Evaluate this threshold.
                 
@@ -256,27 +235,13 @@ public class VectorThresholdVarianceLearner
                 final int numNegative = i;
                 final int numPositive = total - i;
                 
-                // Compute the mean and variance of the negatives.
-                final double meanNegative = sumNegative / numNegative;
-                double varianceNegative = 0.0;
-                for ( int j = 0; j < i; j++ )
-                {
-                    final double output = values.get(j).getSecond();
-                    final double difference = output - meanNegative;
-                    varianceNegative += difference * difference;
-                }
-                varianceNegative /= numNegative;
+                // Compute variance of the negatives.
+                final double varianceNegative = 
+                    negativeGaussian.getSampleVariance();
                 
                 // Compute the mean and variance of the positives.
-                final double meanPositive = sumPositive / numPositive;
-                double variancePositive = 0.0;
-                for ( int j = i; j < total; j++ )
-                {
-                    final double output = values.get(j).getSecond();
-                    final double difference = output - meanPositive;
-                    variancePositive += difference * difference;
-                }
-                variancePositive /= numPositive;
+                final double variancePositive =
+                    positiveGaussian.getSampleVariance();
                 
                 // Compute the proportion of positives and negatives.
                 final double proportionPositive = (double) numPositive / total;
@@ -287,7 +252,7 @@ public class VectorThresholdVarianceLearner
                     - proportionPositive * variancePositive
                     - proportionNegative * varianceNegative;
                 
-                if ( gain >= bestGain )
+                if (gain >= bestGain)
                 {
                     // This is our tiebreaker criteria for the case where the
                     // gains are equal. It means that we prefer ties that are
@@ -295,7 +260,7 @@ public class VectorThresholdVarianceLearner
                     final double tieBreaker = 1.0 
                         - Math.abs(proportionPositive - proportionNegative);
                     
-                    if ( gain > bestGain || tieBreaker > bestTieBreaker )
+                    if (gain > bestGain || tieBreaker > bestTieBreaker)
                     {
                         // For the decision threshold we actually want to pick 
                         // the point that is half way between the current value 
@@ -316,8 +281,8 @@ public class VectorThresholdVarianceLearner
             
             // For the next loop we remove the label from the positive side
             // and add it to the negative side of the threshold.
-            sumPositive -= label;
-            sumNegative += label;
+            positiveGaussian.remove(label);
+            negativeGaussian.update(label);
             
             // Store this value as the previous value.
             previousValue = value;
