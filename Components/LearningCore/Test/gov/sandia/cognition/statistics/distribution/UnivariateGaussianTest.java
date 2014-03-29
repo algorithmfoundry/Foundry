@@ -20,6 +20,7 @@ import gov.sandia.cognition.statistics.SmoothUnivariateDistributionTestHarness;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -511,8 +512,10 @@ public class UnivariateGaussianTest
             instance.plusEquals(other);
             count++;
         }
+        assertEquals(count, instance.getCount());
         assertEquals(1e9 + 10.0, instance.getMean(), epsilon);
         assertEquals(30.0, instance.getVariance(), epsilon);
+        assertEquals(22.5, instance.getSampleVariance(), epsilon);
 
         UnivariateGaussian target = new UnivariateGaussian(
             RANDOM.nextGaussian(), RANDOM.nextDouble() );
@@ -535,9 +538,74 @@ public class UnivariateGaussianTest
 
         double mean = UnivariateStatisticsUtil.computeMean(samples);
         double variance = UnivariateStatisticsUtil.computeVariance(samples, mean);
+        double sampleVariance = variance * (i - 1) / i;
+        assertEquals(i, instance.getCount());
         assertEquals(mean, instance.getMean(), epsilon);
         assertEquals(variance, instance.getVariance(), epsilon);
+        assertEquals(sampleVariance, instance.getSampleVariance(), epsilon);
+    }
 
+    public void testSufficientStatisticsRemove()
+    {
+        // This example is from the Wikipedia page: http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
+        // First demonstrate that for these simple values the mean is 10 and variance is 30.
+        double epsilon = 1E-10;
+        List<Double> xd = Arrays.asList(4.0, 7.0, 13.0, 16.0);
+
+        for (int i = 0; i < xd.size(); i++)
+        {
+            UnivariateGaussian.SufficientStatistic instance =
+                new UnivariateGaussian.SufficientStatistic();
+            instance.update(xd);
+            assertEquals(10.0, instance.getMean(), epsilon);
+            assertEquals(30.0, instance.getVariance(), epsilon);
+            instance.remove(xd.get(i));
+
+            List<Double> samples = new LinkedList<Double>(xd);
+            samples.remove(i);
+            double mean = UnivariateStatisticsUtil.computeMean(samples);
+            double variance = UnivariateStatisticsUtil.computeVariance(samples, mean);
+
+            assertEquals(mean, instance.getMean(), epsilon);
+            assertEquals(variance, instance.getVariance(), epsilon);
+
+            instance.update(xd.get(i));
+            for (double value : xd)
+            {
+                instance.remove(value);
+            }
+            assertEquals(0, instance.getCount());
+            assertEquals(0.0, instance.getMean(), epsilon);
+            assertEquals(0.0, instance.getVariance(), epsilon);
+            assertEquals(0.0, instance.getSampleVariance(), epsilon);
+        }
+
+
+        // Now shift the mean by adding 10^9 and check that the variance remains
+        // 30.
+        xd = Arrays.asList(1.0e9 + 4.0, 1e9 + 7, 1e9 + 13, 1e9 + 16);
+        for (int i = 0; i < xd.size(); i++)
+        {
+            UnivariateGaussian.SufficientStatistic instance =
+                new UnivariateGaussian.SufficientStatistic();
+            instance.update(xd);
+            assertEquals(1e9 + 10.0, instance.getMean(), epsilon);
+            assertEquals(30.0, instance.getVariance(), epsilon);
+            assertEquals(22.5, instance.getSampleVariance(), epsilon);
+            instance.remove(xd.get(i));
+
+            List<Double> samples = new LinkedList<Double>(xd);
+            samples.remove(i);
+            int count = xd.size() - 1;
+            double mean = UnivariateStatisticsUtil.computeMean(samples);
+            double variance = UnivariateStatisticsUtil.computeVariance(samples, mean);
+            double sampleVariance = variance * (count - 1) / count;
+
+            assertEquals(count, instance.getCount());
+            assertEquals(mean, instance.getMean(), epsilon);
+            assertEquals(variance, instance.getVariance(), epsilon);
+            assertEquals(sampleVariance, instance.getSampleVariance(), epsilon);
+        }
     }
 
 }

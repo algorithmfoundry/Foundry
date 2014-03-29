@@ -1085,7 +1085,7 @@ public class UnivariateGaussian
             this.create(result);
             return result;
         }
-        
+
         @Override
         public void create(
             final UnivariateGaussian distribution)
@@ -1100,7 +1100,7 @@ public class UnivariateGaussian
         {
             this.update(value.doubleValue());
         }
-        
+
         /**
          * Adds a value to the sufficient statistics for the Gaussian.
          *
@@ -1125,7 +1125,37 @@ public class UnivariateGaussian
             this.sumSquaredDifferences += delta * (value - this.mean);
         }
 
-        
+        /**
+         * Removes a value to the sufficient statistics for the Gaussian.
+         *
+         * @param   value
+         *      The value to add.
+         */
+        public void remove(
+            final double value)
+        {
+            // We've added another value.
+            this.count--;
+
+            // Compute the difference between the value and the current mean.
+            final double delta = value - this.mean;
+
+            // Update the mean based on the difference between the value
+            // and the mean along with the new count.
+            if (count <= 0)
+            {
+                this.mean = 0.0;
+            }
+            else
+            {
+                this.mean -= delta / this.count;
+            }
+
+            // Update the squared differences from the mean, using the new
+            // mean in the process.
+            this.sumSquaredDifferences -= delta * (value - this.mean);
+        }
+
 //
 // TODO: This is not an unreasonable API, but I REALLY do not like the use
 //        of "plus" and "plusEquals"... -- krdixon, 2011-03-15
@@ -1199,6 +1229,28 @@ public class UnivariateGaussian
             else
             {
                 return this.sumSquaredDifferences / (this.count - 1);
+            }
+        }
+
+        /**
+         * Gets the sample variance, which may be a biased estimate. This the 
+         * sum of squared deviations from the mean divided by the number of 
+         * points (n) where as getVariance is divided by n - 1. If the count
+         * is less than or equal to 1, then the initial variance is returned.
+         *
+         * @return
+         *      The sample variance.
+         */
+        public double getSampleVariance()
+        {
+            if (this.count <= 1)
+            {
+                // This allows the default variance to be used.
+                return this.sumSquaredDifferences;
+            }
+            else
+            {
+                return this.sumSquaredDifferences / this.count;
             }
         }
 
