@@ -21,6 +21,9 @@ import gov.sandia.cognition.util.CloneableSerializable;
 /**
  * The Perturber interface defines the functionality of an object that can
  * take an object and perturb it, returning the perturbed value.
+ * 
+ * It is recommended that a {@link Perturber} implement 
+ * {@link CloneableSerializable}, but it is not required.
  *
  * @param <PerturbedType> Class that is given to, and returned from, the
  *  {@code perturb()} method
@@ -50,7 +53,6 @@ import gov.sandia.cognition.util.CloneableSerializable;
     }
 )
 public interface Perturber<PerturbedType>
-    extends CloneableSerializable
 {
     /**
      * Perturbs the given object and returns the perturbed version.

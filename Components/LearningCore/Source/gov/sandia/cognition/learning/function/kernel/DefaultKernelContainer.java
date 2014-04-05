@@ -75,7 +75,7 @@ public class DefaultKernelContainer<InputType>
     public DefaultKernelContainer(
         final DefaultKernelContainer<? super InputType> other)
     {
-        this(ObjectUtil.cloneSafe(other.getKernel()));
+        this(ObjectUtil.cloneSmart(other.getKernel()));
     }
     
     @Override
@@ -84,7 +84,7 @@ public class DefaultKernelContainer<InputType>
         @SuppressWarnings("unchecked")
         final DefaultKernelContainer<InputType> result = 
             (DefaultKernelContainer<InputType>) super.clone();
-        result.kernel = ObjectUtil.cloneSafe(this.kernel);
+        result.kernel = ObjectUtil.cloneSmart(this.kernel);
         return result;
     }
     

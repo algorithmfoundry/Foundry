@@ -214,8 +214,7 @@ public class PartitionalClusterer
         final PartitionalClusterer<DataType, ClusterType> result =
             (PartitionalClusterer<DataType, ClusterType>) super.clone();
 
-        result.divergenceFunction = ObjectUtil.
-                cloneSafe(this.divergenceFunction);
+        result.divergenceFunction = ObjectUtil.cloneSmart(this.divergenceFunction);
         result.creator = ObjectUtil.cloneSafe(this.creator);
 
         result.clusters = null;

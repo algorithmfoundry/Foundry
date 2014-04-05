@@ -226,7 +226,7 @@ public class AgglomerativeClusterer
         final AgglomerativeClusterer<DataType, ClusterType> result =
             (AgglomerativeClusterer<DataType, ClusterType>) super.clone();
         
-        result.divergenceFunction = ObjectUtil.cloneSafe(this.divergenceFunction);
+        result.divergenceFunction = ObjectUtil.cloneSmart(this.divergenceFunction);
         result.creator = ObjectUtil.cloneSafe(this.creator);
         
         result.clusters = null;

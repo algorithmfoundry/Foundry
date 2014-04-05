@@ -104,7 +104,7 @@ public class DivergencesEvaluator<InputType, ValueType>
         @SuppressWarnings("unchecked")
         final DivergencesEvaluator<InputType, ValueType> clone = (DivergencesEvaluator<InputType, ValueType>)
             super.clone();
-        clone.divergenceFunction = ObjectUtil.cloneSafe(this.divergenceFunction);
+        clone.divergenceFunction = ObjectUtil.cloneSmart(this.divergenceFunction);
         clone.values = ObjectUtil.cloneSmartElementsAsArrayList(this.values);
         return clone;
     }
@@ -283,7 +283,7 @@ public class DivergencesEvaluator<InputType, ValueType>
             @SuppressWarnings("unchecked")
             final Learner<DataType, InputType, ValueType> clone = (Learner<DataType, InputType, ValueType>)
                 super.clone();
-            clone.divergenceFunction = ObjectUtil.cloneSafe(this.divergenceFunction);
+            clone.divergenceFunction = ObjectUtil.cloneSmart(this.divergenceFunction);
             return clone;
         }
         

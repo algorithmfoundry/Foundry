@@ -99,7 +99,7 @@ public class KernelBinaryCategorizer<InputType, EntryType extends WeightedValue<
     public KernelBinaryCategorizer(
         final KernelBinaryCategorizer<InputType, ? extends EntryType> other)
     {
-        this(ObjectUtil.cloneSafe(other.getKernel()),
+        this(ObjectUtil.cloneSmart(other.getKernel()),
             (other.getExamples() == null) ? null : new ArrayList<EntryType>(other.getExamples()),
             other.getBias() );
     }

@@ -25,6 +25,9 @@ import gov.sandia.cognition.util.CloneableSerializable;
  *
  *     g(x, y) >= 0
  *     g(x, x) == 0
+ * 
+ * It is recommended that an {@link DivergenceFunction} implement
+ * {@link CloneableSerializable}, though it is not required.
  *
  * @param <FirstType> First class to consider
  * @param <SecondType> Second class to consider
@@ -49,7 +52,6 @@ import gov.sandia.cognition.util.CloneableSerializable;
     }
 )
 public interface DivergenceFunction<FirstType, SecondType>
-    extends CloneableSerializable
 {
 
     /**

@@ -168,7 +168,7 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
         final KMeansClusterer<DataType, ClusterType> result =
             (KMeansClusterer<DataType, ClusterType>) super.clone();
         result.initializer = ObjectUtil.cloneSafe(this.initializer);
-        result.divergenceFunction = ObjectUtil.cloneSafe(this.divergenceFunction);
+        result.divergenceFunction = ObjectUtil.cloneSmart(this.divergenceFunction);
         result.creator = ObjectUtil.cloneSafe(this.creator);
         
         result.clusters = null;

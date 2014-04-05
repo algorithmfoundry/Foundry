@@ -72,7 +72,7 @@ public class DefaultDivergenceFunctionContainer<FirstType, SecondType>
     public DefaultDivergenceFunctionContainer(
         final DefaultDivergenceFunctionContainer<? super FirstType, ? super SecondType> other)
     {
-        this(ObjectUtil.cloneSafe(other.getDivergenceFunction()));
+        this(ObjectUtil.cloneSmart(other.getDivergenceFunction()));
     }
 
     @Override
@@ -82,7 +82,7 @@ public class DefaultDivergenceFunctionContainer<FirstType, SecondType>
         final DefaultDivergenceFunctionContainer<FirstType, SecondType> result =
             (DefaultDivergenceFunctionContainer<FirstType, SecondType>) 
                 super.clone();
-        result.divergenceFunction = ObjectUtil.cloneSafe(this.divergenceFunction);
+        result.divergenceFunction = ObjectUtil.cloneSmart(this.divergenceFunction);
         return result;
     }
     

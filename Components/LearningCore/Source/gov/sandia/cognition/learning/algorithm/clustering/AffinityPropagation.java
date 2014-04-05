@@ -207,7 +207,7 @@ public class AffinityPropagation<DataType>
         @SuppressWarnings("unchecked")
         final AffinityPropagation<DataType> result = 
             (AffinityPropagation<DataType>) super.clone();
-        result.divergence = ObjectUtil.cloneSafe(this.divergence);
+        result.divergence = ObjectUtil.cloneSmart(this.divergence);
         result.exampleCount = 0;
         result.examples = null;
         result.similarities = null;

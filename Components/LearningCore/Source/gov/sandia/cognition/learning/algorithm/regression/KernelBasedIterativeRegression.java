@@ -151,7 +151,7 @@ public class KernelBasedIterativeRegression<InputType>
     {
         KernelBasedIterativeRegression<InputType> clone =
             (KernelBasedIterativeRegression<InputType>) super.clone();
-        clone.setKernel( ObjectUtil.cloneSafe( this.getKernel() ) );
+        clone.setKernel( ObjectUtil.cloneSmart( this.getKernel() ) );
         clone.setResult( ObjectUtil.cloneSafe( this.getResult() ) );
         clone.setSupportsMap( ObjectUtil.cloneSmart( this.getSupportsMap() ) );
 

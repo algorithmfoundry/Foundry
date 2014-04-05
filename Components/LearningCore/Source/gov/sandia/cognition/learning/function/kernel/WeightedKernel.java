@@ -81,7 +81,7 @@ public class WeightedKernel<InputType>
     {
         WeightedKernel<InputType> clone =
             (WeightedKernel<InputType>) super.clone();
-        clone.setKernel( ObjectUtil.cloneSafe(this.getKernel()) );
+        clone.setKernel( ObjectUtil.cloneSmart(this.getKernel()) );
         return clone;
     }
     

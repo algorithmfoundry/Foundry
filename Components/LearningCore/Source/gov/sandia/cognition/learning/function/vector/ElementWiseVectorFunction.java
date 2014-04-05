@@ -70,14 +70,14 @@ public class ElementWiseVectorFunction
     public ElementWiseVectorFunction(
         ElementWiseVectorFunction other )
     {
-        this( (UnivariateScalarFunction) other.getScalarFunction().clone() );
+        this(ObjectUtil.cloneSmart(other.getScalarFunction()));
     }
 
     @Override
     public ElementWiseVectorFunction clone()
     {
         ElementWiseVectorFunction clone = (ElementWiseVectorFunction) super.clone();
-        clone.setScalarFunction( ObjectUtil.cloneSafe(this.getScalarFunction()) );
+        clone.setScalarFunction(ObjectUtil.cloneSmart(this.getScalarFunction()));
         return clone;
     }
 

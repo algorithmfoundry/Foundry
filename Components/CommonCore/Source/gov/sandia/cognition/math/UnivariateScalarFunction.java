@@ -20,7 +20,10 @@ import gov.sandia.cognition.util.CloneableSerializable;
 
 /**
  * Simple interface that describes a function that maps the reals to the reals,
- * has a Double to Double and double to double
+ * has a Double to Double and double to double.
+ * 
+ * It is recommended that a {@link UnivariateScalarFunction} implement
+ * {@link CloneableSerializable}, though it is not required.
  *
  * @author Kevin R. Dixon
  * @since  2.0
@@ -34,8 +37,7 @@ import gov.sandia.cognition.util.CloneableSerializable;
 )
 public interface UnivariateScalarFunction
     extends Evaluator<Double, Double>,
-        ScalarFunction<Double>,
-        CloneableSerializable
+        ScalarFunction<Double>
 {
 
     /**

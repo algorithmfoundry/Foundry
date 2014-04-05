@@ -26,6 +26,9 @@ import gov.sandia.cognition.util.CloneableSerializable;
  * creating the high-dimensional representation, but instead is computed quickly 
  * such that the result would be equivalent to operating in that 
  * high-dimensional space.
+ * 
+ * It is recommended that a {@link Kernel} implement 
+ * {@link CloneableSerializable}, though it is not required.
  *
  * @param  <InputType> The type of the input to the Kernel. For example, Vector.
  * @author Justin Basilico
@@ -38,7 +41,6 @@ import gov.sandia.cognition.util.CloneableSerializable;
     comments="Looks fine."
 )
 public interface Kernel<InputType>
-    extends CloneableSerializable
 {
     /**
      * The role of a kernel is to evaluate some function that is equivalent to 

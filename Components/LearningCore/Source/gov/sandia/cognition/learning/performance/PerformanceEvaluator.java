@@ -20,6 +20,9 @@ import gov.sandia.cognition.util.CloneableSerializable;
 /**
  * The {@code PerformanceEvaluator} class defines the functionality of some
  * object with regards to some data.
+ * 
+ * It is recommended that a {@link PerformanceEvaluator} implement
+ * {@link CloneableSerializable}, though it is not required.
  *
  * @param   <ObjectType> The type of object the class can evaluate the 
  *          performance of.
@@ -29,7 +32,6 @@ import gov.sandia.cognition.util.CloneableSerializable;
  * @since   2.0
  */
 public interface PerformanceEvaluator<ObjectType, DataType, ResultType>
-    extends CloneableSerializable
 {
     /**
      * Evaluates the performance of an object with regards to given data.
