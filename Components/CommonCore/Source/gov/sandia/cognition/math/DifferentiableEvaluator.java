@@ -37,8 +37,7 @@ import gov.sandia.cognition.evaluator.Evaluator;
     comments="Looks fine."
 )
 public interface DifferentiableEvaluator<InputType, OutputType, DerivativeType>
-    extends Evaluator<InputType, OutputType>,
-    CloneableSerializable
+    extends Evaluator<InputType, OutputType>
 {
 
     /**

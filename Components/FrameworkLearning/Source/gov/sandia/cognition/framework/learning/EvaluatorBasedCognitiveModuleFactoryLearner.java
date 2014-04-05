@@ -19,8 +19,8 @@ import gov.sandia.cognition.framework.CognitiveModel;
 import gov.sandia.cognition.framework.CognitiveModelInput;
 import gov.sandia.cognition.framework.CognitiveModelState;
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
-import gov.sandia.cognition.util.CloneableSerializable;
 import gov.sandia.cognition.evaluator.Evaluator;
+import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -41,8 +41,8 @@ import java.util.LinkedList;
  */
 public class EvaluatorBasedCognitiveModuleFactoryLearner<InputType, OutputType, 
         LearningDataType>
-    extends Object
-    implements CognitiveModuleFactoryLearner, CloneableSerializable
+    extends AbstractCloneableSerializable
+    implements CognitiveModuleFactoryLearner
 {
     /**
      * The learner to use to learn the evaluator

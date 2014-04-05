@@ -37,7 +37,6 @@ import java.util.Collection;
     comments="Interface looks fine."
 )
 public interface ClusterCreator<ClusterType extends Cluster<DataType>, DataType>
-    extends CloneableSerializable
 {
     /**
      * Create a new cluster from the given members of that cluster.

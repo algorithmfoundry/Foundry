@@ -18,7 +18,7 @@ package gov.sandia.cognition.learning.function.vector;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.Vectorizable;
-import gov.sandia.cognition.util.CloneableSerializable;
+import gov.sandia.cognition.util.AbstractCloneableSerializable;
 
 /**
  * The {@code VectorizableVectorConverter} class implements a conversion 
@@ -29,9 +29,8 @@ import gov.sandia.cognition.util.CloneableSerializable;
  * @since  2.0
  */
 public class VectorizableVectorConverter
-    extends Object
-    implements Evaluator<Vectorizable, Vector>,
-        CloneableSerializable
+    extends AbstractCloneableSerializable
+    implements Evaluator<Vectorizable, Vector>
 {
     /**
      * Creates a new {@code VectorizableVectorConverter}.
@@ -49,14 +48,7 @@ public class VectorizableVectorConverter
     @Override
     public VectorizableVectorConverter clone()
     {
-        try
-        {
-            return (VectorizableVectorConverter) super.clone();
-        }
-        catch ( CloneNotSupportedException e )
-        {
-            return null;
-        }
+        return (VectorizableVectorConverter) super.clone();
     }
     
     /**

@@ -58,7 +58,7 @@ import gov.sandia.cognition.util.NamedValue;
 )
 public class Perceptron
     extends AbstractAnytimeSupervisedBatchLearner<Vectorizable, Boolean, LinearBinaryCategorizer>
-    implements MeasurablePerformanceAlgorithm, CloneableSerializable, VectorFactoryContainer
+    implements MeasurablePerformanceAlgorithm, VectorFactoryContainer
 {
 
     /** The default maximum number of iterations, {@value}. */

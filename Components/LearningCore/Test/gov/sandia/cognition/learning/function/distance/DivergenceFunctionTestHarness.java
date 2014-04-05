@@ -15,6 +15,7 @@
 package gov.sandia.cognition.learning.function.distance;
 
 import gov.sandia.cognition.math.DivergenceFunction;
+import gov.sandia.cognition.util.ObjectUtil;
 import java.util.Random;
 import junit.framework.TestCase;
 
@@ -89,8 +90,7 @@ public abstract class DivergenceFunctionTestHarness<FirstType,SecondType>
 
         DivergenceFunction<FirstType,SecondType> f = this.createInstance();
         @SuppressWarnings("unchecked")
-        DivergenceFunction<FirstType,SecondType> clone =
-            (DivergenceFunction<FirstType, SecondType>) f.clone();
+        DivergenceFunction<FirstType,SecondType> clone = ObjectUtil.cloneSmart(f);
         assertNotNull( clone );
         assertNotSame( f, clone );
 

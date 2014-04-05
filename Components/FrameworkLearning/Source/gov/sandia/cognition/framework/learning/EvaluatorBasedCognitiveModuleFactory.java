@@ -20,6 +20,7 @@ import gov.sandia.cognition.framework.CognitiveModule;
 import gov.sandia.cognition.framework.CognitiveModuleFactory;
 import gov.sandia.cognition.util.CloneableSerializable;
 import gov.sandia.cognition.evaluator.StatefulEvaluator;
+import gov.sandia.cognition.util.AbstractCloneableSerializable;
 
 /**
  * The EvaluatorBasedCognitiveModuleFactory class implements a factory for the
@@ -35,8 +36,8 @@ import gov.sandia.cognition.evaluator.StatefulEvaluator;
  * @since  2.0
  */
 public class EvaluatorBasedCognitiveModuleFactory<InputType, OutputType>
-    extends Object
-    implements CognitiveModuleFactory, CloneableSerializable
+    extends AbstractCloneableSerializable
+    implements CognitiveModuleFactory
 {
     /** The settings for the module. */
     private EvaluatorBasedCognitiveModuleSettings<InputType, OutputType> 

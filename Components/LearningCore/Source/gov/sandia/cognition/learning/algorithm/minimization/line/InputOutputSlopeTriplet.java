@@ -24,7 +24,6 @@ import gov.sandia.cognition.util.CloneableSerializable;
  */
 public class InputOutputSlopeTriplet 
     extends DefaultInputOutputPair<Double,Double>
-    implements CloneableSerializable
 {
 
     /**

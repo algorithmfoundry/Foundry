@@ -45,7 +45,6 @@ import java.util.Collection;
     }
 )
 public interface FixedClusterInitializer<ClusterType extends Cluster<DataType>, DataType>
-    extends CloneableSerializable
 {
 
     /**
