@@ -83,7 +83,7 @@ public abstract class AbstractMinDistanceFixedClusterInitializer<ClusterType ext
         @SuppressWarnings("unchecked")
         final AbstractMinDistanceFixedClusterInitializer<ClusterType, DataType> clone =
             (AbstractMinDistanceFixedClusterInitializer<ClusterType, DataType>) super.clone();
-        clone.creator = ObjectUtil.cloneSafe(this.creator);
+        clone.creator = ObjectUtil.cloneSmart(this.creator);
         return clone;
     }
 

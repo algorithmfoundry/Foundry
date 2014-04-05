@@ -194,7 +194,7 @@ public class ThreeLayerFeedforwardNeuralNetwork
         clone.inputToHiddenBiasWeights = ObjectUtil.cloneSafe(this.inputToHiddenBiasWeights);
         clone.hiddenToOutputWeights = ObjectUtil.cloneSafe(this.hiddenToOutputWeights);
         clone.hiddenToOutputBiasWeights = ObjectUtil.cloneSafe(this.hiddenToOutputBiasWeights);
-        clone.squashingFunction = ObjectUtil.cloneSafe(this.squashingFunction);
+        clone.squashingFunction = ObjectUtil.cloneSmart(this.squashingFunction);
 
         return clone;
 
