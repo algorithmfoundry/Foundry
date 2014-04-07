@@ -42,7 +42,7 @@ import java.util.Collection;
  */
 public class PolynomialFunction
     extends AbstractDifferentiableUnivariateScalarFunction
-    implements ParameterGradientEvaluator<Double, Vector>
+    implements ParameterGradientEvaluator<Double, Double, Vector>
 {
 
     /**

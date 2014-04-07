@@ -21,10 +21,10 @@ import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorizableVectorFunction;
 
 /**
- * The GradientDescendable interface defines the functionality of an object
- * that is required in order to apply the gradient descent algorithm to it.
- * That is, GradientDescendable can differentiate its output with respect to
- * its parameters for a given input.
+ * Defines the functionality of an object that is required in order to apply 
+ * the gradient descent algorithm to it. That is, an object that can 
+ * differentiate its output (a vector) for a given input (another vector) with 
+ * respect to its parameters (a matrix).
  *
  * @author Justin Basilico
  * @author Kevin R. Dixon
@@ -53,17 +53,24 @@ import gov.sandia.cognition.math.matrix.VectorizableVectorFunction;
 )
 public interface GradientDescendable
     extends VectorizableVectorFunction,
-    ParameterGradientEvaluator<Vector,Matrix>
+        ParameterGradientEvaluator<Vector, Vector, Matrix>
 {
     
     /**
      * Computes the derivative of the function about the input with respect
-     * to the parameters of the function
-     * @param input Point about which to differentiate w.r.t. the parameters
-     * @return Matrix of parameter gradients
+     * to the parameters of the function.
+     * 
+     * @param input Point about which to differentiate w.r.t. the parameters.
+     * @return Matrix of parameter gradients.
      */
-    public Matrix computeParameterGradient( Vector input );
+    public Matrix computeParameterGradient(
+        final Vector input);
     
+    /**
+     * {@inheritDoc}
+     * 
+     * @return {@inheritDoc}
+     */
     public GradientDescendable clone();
     
 }

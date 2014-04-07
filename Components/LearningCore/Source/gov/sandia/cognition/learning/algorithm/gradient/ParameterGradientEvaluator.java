@@ -17,18 +17,23 @@ package gov.sandia.cognition.learning.algorithm.gradient;
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.evaluator.Evaluator;
+import gov.sandia.cognition.math.matrix.Matrix;
+import gov.sandia.cognition.math.matrix.Vector;
 
 /**
  * Interface for computing the derivative of the output with respect to the
- * parameters for a given input.
+ * parameters for a given input. The parameters are exposed through a vector
+ * on this object, which implements {@link Vectorizable}.
  *
- * @param <InputOutputType> Input and Output classes of the {@code Evaluator},
- * such as {@code Vector}, for example
- * @param <GradientType> Class type of the gradient, such as {@code Matrix},
- * for example
+ * @param <InputType> 
+ *      Input type of the {@link Evaluator}. For example, {@link Vector}.
+ * @param <OutputType> 
+ *      Input type of the {@link Evaluator}. For example, {@link Vector}.
+ * @param <GradientType> 
+ *     Type of the gradient. For example, {@link Matrix} when the parameter
+ *     and output types are a {@link Vector}.
  * @author Kevin R. Dixon
  * @since  2.0
- *
  */
 @CodeReview(
     reviewer="Kevin R. Dixon",
@@ -39,20 +44,21 @@ import gov.sandia.cognition.evaluator.Evaluator;
         "Looks fine."
     }
 )
-public interface ParameterGradientEvaluator<InputOutputType,GradientType>
-    extends Evaluator<InputOutputType,InputOutputType>,
-    Vectorizable
+public interface ParameterGradientEvaluator<InputType, OutputType, GradientType>
+    extends Evaluator<InputType, OutputType>,
+        Vectorizable
 {
     
     /**
      * Computes the derivative of the output with respect to the parameters for
      * a particular input.
-     * @param input 
-     * Input about which to compute the parameter gradient
+     * 
+     * @param   input 
+     *      Input about which to compute the parameter gradient.
      * @return 
-     * Change of the parameters with respect to the output
+     *      Change of the parameters with respect to the output.
      */
     public GradientType computeParameterGradient(
-        InputOutputType input );
+        final InputType input);
     
 }
