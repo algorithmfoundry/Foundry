@@ -12,6 +12,7 @@ import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.math.matrix.mtj.Vector1;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
 import java.util.Arrays;
 import java.util.Random;
@@ -195,6 +196,187 @@ public class FactorizationMachineTest
         
         instance = new FactorizationMachine(4, 7);
         assertEquals(7, instance.getFactorCount());
+    }
+    
+    /**
+     * Test of computeParameterGradient method, of class FactorizationMachine.
+     */
+    @Test
+    public void testComputeParameterGradient()
+    {
+        VectorFactory<?> vf = VectorFactory.getSparseDefault();
+        FactorizationMachine instance = new FactorizationMachine();
+        Vector input = vf.createVector(0);
+        Vector result = instance.computeParameterGradient(input);
+        assertEquals(1, result.getDimensionality());
+        assertEquals(1.0, result.getElement(0), 0.0);
+        
+        int d = 3;
+        instance.setWeights(VectorFactory.getDenseDefault().createVector(d));
+        input = vf.createUniformRandom(d, -10, 10, random);
+        result = instance.computeParameterGradient(input);
+        assertEquals(1 + d, result.getDimensionality());
+        assertEquals(1.0, result.getElement(0), 0.0);
+        assertEquals(input, result.subVector(1, d));
+        
+        int k = 2;
+        instance.setFactors(MatrixFactory.getDenseDefault().createUniformRandom(k, d, -10, 10, random));
+        input = vf.createUniformRandom(d, -10, 10, random);
+        result = instance.computeParameterGradient(input);
+        assertEquals(10, result.getDimensionality());
+        assertEquals(1.0, result.getElement(0), 0.0);
+        assertEquals(input, result.subVector(1, d));
+        
+        Vector factorGradients = result.subVector(d + 1, d + d * k);
+        for (int f = 0; f < k; f++)
+        {
+            for (int l = 0; l < d; l++)
+            {
+                double actual = factorGradients.getElement(f * d + l);
+                
+                double expected = 0.0;
+                for (int j = 0; j < d; j++)
+                {
+                    if (j != l)
+                    {
+                        double xl = input.getElement(l);
+                        expected += xl * instance.getFactors().getElement(f, j) * input.getElement(j);
+                    }
+                }
+                assertEquals(expected, actual, epsilon);
+            }
+        }
+    }
+    
+    /**
+     * Test of getParameterCount method, of class FactorizationMachine.
+     */
+    @Test
+    public void testGetParameterCount()
+    {
+        FactorizationMachine instance = new FactorizationMachine();
+        assertEquals(1, instance.getParameterCount());
+        
+        instance.setFactors(MatrixFactory.getDefault().createMatrix(12, 4));
+        assertEquals(1 + 12 * 4, instance.getParameterCount());
+        
+        instance.setFactors(null);
+        instance.setWeights(VectorFactory.getDefault().createVector(4));
+        assertEquals(1 + 4, instance.getParameterCount());
+        
+        instance = new FactorizationMachine(4, 7);
+        assertEquals(1 + 4 + 4 * 7, instance.getParameterCount());
+    }
+    
+    
+    /**
+     * Test of convertToVector method, of class FactorizationMachine.
+     */
+    @Test
+    public void testConvertToVector()
+    {
+        FactorizationMachine instance = new FactorizationMachine();
+        Vector result = instance.convertToVector();
+        assertEquals(instance.getParameterCount(), result.getDimensionality());
+        assertTrue(result.isZero());
+        
+        int d = 7;
+        int k = 4;
+        instance = new FactorizationMachine(d, k);
+        result = instance.convertToVector();
+        assertEquals(instance.getParameterCount(), result.getDimensionality());
+        assertTrue(result.isZero());
+        
+        double bias = this.random.nextGaussian();
+        Vector weights = VectorFactory.getDefault().createUniformRandom(d, -1, 1, random);
+        Matrix factors = MatrixFactory.getDefault().createUniformRandom(k, d, -1, 1, random);
+        instance = new FactorizationMachine(bias, weights.clone(), factors.clone());
+        result = instance.convertToVector();
+        assertEquals(instance.getParameterCount(), result.getDimensionality());
+        assertTrue(result.equals(new Vector1(bias).stack(weights).stack(factors.transpose().convertToVector())));
+        
+        // Try with weights disabled.
+        instance.setWeights(null);
+        result = instance.convertToVector();
+        assertEquals(instance.getParameterCount(), result.getDimensionality());
+        assertTrue(result.equals(new Vector1(bias).stack(factors.transpose().convertToVector())));
+        
+        // Try with factors disabled.
+        instance.setWeights(weights.clone());
+        instance.setFactors(null);
+        result = instance.convertToVector();
+        assertEquals(instance.getParameterCount(), result.getDimensionality());
+        assertTrue(result.equals(new Vector1(bias).stack(weights)));
+    }
+    
+    
+    /**
+     * Test of convertFromVector method, of class FactorizationMachine.
+     */
+    @Test
+    public void testConvertFromVector()
+    {
+        FactorizationMachine instance = new FactorizationMachine();
+        Vector converted = instance.convertToVector();
+        Vector expected = converted.clone();
+        instance.convertFromVector(converted);
+        assertTrue(expected.equals(instance.convertToVector()));
+        
+        int d = 7;
+        int k = 4;
+        instance = new FactorizationMachine(d, k);
+        converted = instance.convertToVector();
+        expected = converted.clone();
+        instance.convertFromVector(converted);
+        assertTrue(expected.equals(instance.convertToVector()));
+        
+        double bias = this.random.nextGaussian();
+        Vector weights = VectorFactory.getDefault().createUniformRandom(d, -1, 1, random);
+        Matrix factors = MatrixFactory.getDefault().createUniformRandom(k, d, -1, 1, random);
+        instance = new FactorizationMachine(bias, weights.clone(), factors.clone());
+        converted = instance.convertToVector();
+        expected = converted.clone();
+        instance.convertFromVector(converted);
+        assertEquals(expected, instance.convertToVector());
+        assertEquals(bias, instance.getBias(), 0.0);
+        assertEquals(weights, instance.getWeights());
+        assertEquals(factors, instance.getFactors());
+        
+        instance = new FactorizationMachine(d, k);
+        instance.convertFromVector(converted);
+        assertTrue(expected.equals(instance.convertToVector()));
+        assertEquals(bias, instance.getBias(), 0.0);
+        assertEquals(weights, instance.getWeights());
+        assertEquals(factors, instance.getFactors());
+        
+        // Try with weights disabled.
+        instance.setWeights(null);
+        converted = instance.convertToVector();
+        expected = converted.clone();
+        instance.convertFromVector(converted);
+        assertTrue(expected.equals(instance.convertToVector()));
+        instance.setBias(0.0);
+        instance.getFactors().zero();
+        instance.convertFromVector(converted);
+        assertTrue(expected.equals(instance.convertToVector()));
+        assertEquals(bias, instance.getBias(), 0.0);
+        assertNull(instance.getWeights());
+        assertEquals(factors, instance.getFactors());
+        
+        // Try with factors disabled.
+        instance.setWeights(weights.clone());
+        instance.setFactors(null);
+        converted = instance.convertToVector();
+        expected = converted.clone();
+        instance.convertFromVector(converted);
+        assertTrue(expected.equals(instance.convertToVector()));
+        instance.setBias(0.0);
+        instance.getWeights().zero();
+        instance.convertFromVector(converted);
+        assertTrue(expected.equals(instance.convertToVector()));
+        assertEquals(bias, instance.getBias(), 0.0);
+        assertEquals(weights, instance.getWeights());
+        assertNull(instance.getFactors());
     }
 
     /**

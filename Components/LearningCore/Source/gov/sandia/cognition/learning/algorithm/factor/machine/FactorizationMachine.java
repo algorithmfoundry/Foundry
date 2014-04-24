@@ -11,6 +11,7 @@ package gov.sandia.cognition.learning.algorithm.factor.machine;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationReferences;
 import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.learning.algorithm.gradient.ParameterGradientEvaluator;
 import gov.sandia.cognition.learning.function.regression.AbstractRegressor;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
@@ -57,7 +58,8 @@ import gov.sandia.cognition.util.ObjectUtil;
 })
 public class FactorizationMachine
     extends AbstractRegressor<Vector>
-    implements VectorInputEvaluator<Vector, Double>
+    implements VectorInputEvaluator<Vector, Double>, 
+        ParameterGradientEvaluator<Vector, Double, Vector>
 {
     
     /** The bias term (b). */
@@ -184,7 +186,7 @@ public class FactorizationMachine
             return 0;
         }
     }
-    
+
     /**
      * Gets the number of factors in the model.
      * 
@@ -194,6 +196,157 @@ public class FactorizationMachine
     public int getFactorCount()
     {
         return this.factors == null ? 0 : this.factors.getNumRows();
+    }
+    
+    @Override
+    public Vector computeParameterGradient(
+        final Vector input)
+    {
+        final int d = this.getInputDimensionality();
+        input.assertDimensionalityEquals(d);
+        
+        final Vector gradient = VectorFactory.getSparseDefault().createVector(
+            this.getParameterCount());
+        
+        // The gradient for the bias is 1.
+        gradient.setElement(0, 1.0);
+        
+        int offset = 1;
+        if (this.hasWeights())
+        {
+            // The gradients for the linear terms are just the values from the
+            // input.
+            for (final VectorEntry entry : input)
+            {
+                gradient.setElement(offset + entry.getIndex(), entry.getValue());
+            }
+            offset += d;
+        }
+        
+        if (this.hasFactors())
+        {   
+            // Compute the gradients per factor.
+            final int factorCount = this.getFactorCount();
+            for (int k = 0; k < factorCount; k++)
+            {
+                double sum = 0.0;
+                for (final VectorEntry entry : input)
+                {
+                    sum += entry.getValue() * this.factors.getElement(k, 
+                        entry.getIndex());
+                }
+
+                for (final VectorEntry entry : input)
+                {
+                    final int index = entry.getIndex();
+                    final double value = entry.getValue();
+                    final double factorElement = this.factors.getElement(k, index);
+                    gradient.setElement(offset + index, 
+                        value * (sum - value * factorElement));
+                }
+                
+                offset += d;
+            }
+        }
+        
+        return gradient;
+    }
+
+    @Override
+    public Vector convertToVector()
+    {
+        final int d = this.getInputDimensionality();
+        
+        final Vector result = VectorFactory.getSparseDefault().createVector(
+            this.getParameterCount());
+        result.setElement(0, this.bias);
+        int offset = 1;
+        if (this.hasWeights())
+        {
+            // Sparse iteration.
+            for (final VectorEntry entry : this.weights)
+            {
+                result.setElement(offset + entry.getIndex(), entry.getValue());
+            }
+            
+            offset += d;
+        }
+        
+        if (this.hasFactors())
+        {   
+            // Stack factors as sparse row-wise.
+            final int factorCount = this.getFactorCount();
+            for (int k = 0; k < factorCount; k++)
+            {
+                // Sparse iteration.
+                for (final VectorEntry entry : this.factors.getRow(k))
+                {
+                    result.setElement(offset + entry.getIndex(), entry.getValue());
+                }
+                
+                offset += d;
+            }
+        }
+        
+        return result;
+    }
+
+    @Override
+    public void convertFromVector(
+        final Vector parameters)
+    {
+        parameters.assertDimensionalityEquals(this.getParameterCount());
+        final int d = this.getInputDimensionality();
+        
+        // Get the bias.
+        this.setBias(parameters.getElement(0));
+        
+        int offset = 1;
+        if (this.hasWeights())
+        {
+            // Set the weights.
+            this.setWeights(parameters.subVector(offset, offset + d - 1));
+            offset += d;
+        }
+        
+        if (this.hasFactors())
+        {
+            final int factorCount = this.getFactorCount();
+            
+            // Extract the factors for each row.
+            for (int k = 0; k < factorCount; k++)
+            {
+                this.factors.setRow(k, 
+                    parameters.subVector(offset, offset + d - 1));
+                offset += d;
+            }
+        }
+    }
+    
+    /**
+     * Gets the number of parameters for this factorization machine. This is
+     * the size of the parameter vector returned by convertToVector(). This
+     * is not the number of factors (which is getFactorCount()) or the
+     * size of the input dimensionality (which is getInputDimensionality()).
+     * 
+     * @return 
+     *      The number of parameters representing this factorization machine.
+     *      It is 1 plus the size of the weight vector (if there is one)
+     *      plus the size of the factors matrix (if there is one).
+     */
+    public int getParameterCount()
+    {
+        final int d = this.getInputDimensionality();
+        int size = 1;
+        if (this.hasWeights())
+        {
+            size += d;
+        }
+        if (this.hasFactors())
+        {
+            size += d * this.getFactorCount();
+        }
+        return size;
     }
     
     /**
