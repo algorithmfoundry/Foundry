@@ -169,6 +169,154 @@ abstract public class MatrixTestHarness
     }
 
     /**
+     * Test of get method, of class Matrix.
+     */
+    public void testGet()
+    {
+        System.out.println( "get" );
+
+        Matrix instance = this.createRandom();
+        int M = instance.getNumRows();
+        int N = instance.getNumColumns();
+
+        for (int i = 0; i < M; i++)
+        {
+            for (int j = 0; j < N; j++)
+            {
+                double element = RANDOM.nextDouble();
+                instance.set( i, j, element );
+                assertEquals( "getElement(" + i + "," + j + ") failed.",
+                    instance.get( i, j ), element, 0.0);
+            }
+        }
+
+        int badRows[] = {-10 * M, -1, M, 10 * M};
+        for (int i = 0; i < badRows.length; i++)
+        {
+            for (int j = 0; j < N; j++)
+            {
+                try
+                {
+                    instance.get( badRows[i], j );
+                    fail( "Should have thrown out of bounds exception for row = " + badRows[i] );
+                }
+                catch (Exception e)
+                {
+                }
+            }
+        }
+
+
+        int badColumns[] = {-10 * N, -1, N, 10 * N};
+        for (int i = 0; i < M; i++)
+        {
+            for (int j = 0; j < badColumns.length; j++)
+            {
+                try
+                {
+                    instance.get( i, badColumns[j] );
+                    fail( "Should have thrown out of bounds exception for column = " + badColumns[j] );
+                }
+                catch (Exception e)
+                {
+                }
+            }
+        }
+
+        for (int i = 0; i < badRows.length; i++)
+        {
+            for (int j = 0; j < badColumns.length; j++)
+            {
+                try
+                {
+                    instance.get( badRows[i], badColumns[j] );
+                    fail( "Should have thrown out of bounds exception for row = " + badRows[i] + ", column = " + badColumns[j] );
+                }
+                catch (Exception e)
+                {
+                }
+
+            }
+        }
+    }
+
+    /**
+     * Test of set method, of class Matrix.
+     */
+    public void testSet()
+    {
+        System.out.println( "set" );
+
+        Matrix instance = this.createRandom();
+        int M = instance.getNumRows();
+        int N = instance.getNumColumns();
+
+        for (int i = 0; i < M; i++)
+        {
+            for (int j = 0; j < N; j++)
+            {
+                double element = RANDOM.nextDouble() + RANGE;
+                assertTrue( instance.get( i, j ) != element );
+
+                instance.set( i, j, element );
+                assertEquals( "setElement(" + i + "," + j + "," + element + ") failed.",
+                    instance.get( i, j ), element, 0.0);
+            }
+        }
+
+        int badRows[] = {-10 * M, -1, M, 10 * M};
+        for (int i = 0; i < badRows.length; i++)
+        {
+            for (int j = 0; j < N; j++)
+            {
+                try
+                {
+                    double element = RANDOM.nextDouble() + RANGE;
+                    instance.set( badRows[i], j, element );
+                    fail( "Should have thrown out of bounds exception for row = " + badRows[i] );
+                }
+                catch (Exception e)
+                {
+                }
+            }
+        }
+
+        int badColumns[] = {-10 * N, -1, N, 10 * N};
+        for (int i = 0; i < M; i++)
+        {
+            for (int j = 0; j < badColumns.length; j++)
+            {
+                try
+                {
+                    double element = RANDOM.nextDouble() + RANGE;
+                    instance.set( i, badColumns[j], element );
+                    fail( "Should have thrown out of bounds exception for column = " + badColumns[j] );
+                }
+                catch (Exception e)
+                {
+                }
+            }
+        }
+
+        for (int i = 0; i < badRows.length; i++)
+        {
+            for (int j = 0; j < badColumns.length; j++)
+            {
+                try
+                {
+                    double element = RANDOM.nextDouble() + RANGE;
+                    instance.set( badRows[i], badColumns[j], element );
+                    fail( "Should have thrown out of bounds exception for row = " + badRows[i] + ", column = " + badColumns[j] );
+                }
+                catch (Exception e)
+                {
+                }
+
+            }
+        }
+    }
+
+    /**
      * Test of getElement method, of class gov.sandia.isrc.math.matrix.Matrix.
      */
     public void testGetElement()
@@ -318,7 +466,7 @@ abstract public class MatrixTestHarness
             }
         }
     }
-
+    
     /**
      * Test of getSubMatrix method, of class gov.sandia.isrc.math.matrix.Matrix.
      */

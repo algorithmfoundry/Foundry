@@ -89,6 +89,21 @@ public abstract class AbstractMTJVector
         return this.internalVector.size();
     }
     
+    @Override
+    public double get(
+        final int index)
+    {
+        return this.internalVector.get(index);
+    }
+
+    @Override
+    public void set(
+        final int index,
+        final double value)
+    {
+        this.internalVector.set(index, value);
+    }
+    
     public double getElement(
         int index)
     {

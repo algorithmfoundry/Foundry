@@ -65,6 +65,47 @@ public interface Matrix
      * @return Number of columns in the Matrix
      */
     public int getNumColumns();
+    
+    /**
+     * Gets the value of the element of the matrix at the zero-based row and
+     * column indices. It throws an ArrayIndexOutOfBoundsException if either
+     * index is out of range.
+     * It is a convenience method for {@code getElement}.
+     * 
+     * @param   rowIndex
+     *      The zero-based row index. Must be between 0 (inclusive) and the
+     *      number of rows (exclusive).
+     * @param   columnIndex
+     *      The zero-based column index. Must be between 0 (inclusive) and the
+     *      number of columns (exclusive).
+     * @return 
+     *      The value at the given row and column in the matrix.
+     * @since   3.4.0
+     */
+    public double get(
+        final int rowIndex,
+        final int columnIndex);
+    
+    /**
+     * Sets the value of the element of the matrix at the zero-based row and
+     * column indices. It throws an ArrayIndexOutOfBoundsException if either
+     * index is out of range.
+     * It is a convenience method for {@code setElement}.
+     * 
+     * @param   rowIndex
+     *      The zero-based row index. Must be between 0 (inclusive) and the
+     *      number of rows (exclusive).
+     * @param   columnIndex
+     *      The zero-based column index. Must be between 0 (inclusive) and the
+     *      number of columns (exclusive).
+     * @param   value 
+     *      The value to set at the given row and column in the matrix.
+     * @since   3.4.0
+     */
+    public void set(
+        final int rowIndex,
+        final int columnIndex,
+        final double value);
 
     /**
      * Gets the Matrix element at the specified zero-based indices

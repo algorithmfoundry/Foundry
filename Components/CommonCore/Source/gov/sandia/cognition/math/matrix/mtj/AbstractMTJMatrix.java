@@ -134,6 +134,23 @@ public abstract class AbstractMTJMatrix
     {
         return this.internalMatrix.numColumns();
     }
+    
+    @Override
+    public double get(
+        final int rowIndex,
+        final int columnIndex)
+    {
+        return this.internalMatrix.get(rowIndex, columnIndex);
+    }
+
+    @Override
+    public void set(
+        final int rowIndex,
+        final int columnIndex,
+        final double value)
+    {
+        this.internalMatrix.set(rowIndex, columnIndex, value);
+    }
 
     public double getElement(
         int rowIndex,

@@ -153,6 +153,84 @@ abstract public class VectorTestHarness
     }
 
     /**
+     * Test of get method, of class Vector.
+     */
+    public void testGet()
+    {
+        System.out.println("get");
+
+        double e0 = RANDOM.nextDouble();
+        double e1 = RANDOM.nextDouble();
+        double e2 = RANDOM.nextDouble();
+        Vector v1 = this.createCopy(new Vector3(e0, e1, e2));
+
+        int M = v1.getDimensionality();
+        assertEquals(e0, v1.get(0));
+        assertEquals(e1, v1.get(1));
+        assertEquals(e2, v1.get(2));
+        v1.getElement(M - 1);
+
+        try
+        {
+            v1.get(-1);
+            fail("Should have thrown exception: " + v1.getClass());
+        }
+        catch (Exception e)
+        {
+        }
+
+        try
+        {
+            v1.get(M);
+            fail("Should have thrown exception: " + v1.getClass());
+        }
+        catch (Exception e)
+        {
+        }
+
+    }
+
+    /**
+     * Test of set method, of class Vector.
+     */
+    public void testSet()
+    {
+        System.out.println("set");
+
+        double value = RANDOM.nextDouble() - 10.0 * RANGE;
+
+        Vector v1 = this.createRandom();
+
+        int M = v1.getDimensionality();
+        int index = RANDOM.nextInt( M );
+        assertFalse(v1.get(index) == value);
+
+        v1.set(index, value);
+        assertEquals(v1.get(index), value);
+
+        v1.set(0, RANDOM.nextDouble());
+
+        try
+        {
+            v1.set(-1, RANDOM.nextDouble());
+            fail("Should have thrown exception: " + v1.getClass());
+        }
+        catch (Exception e)
+        {
+        }
+
+        try
+        {
+            v1.set(M, RANDOM.nextDouble());
+            fail("Should have thrown exception: " + v1.getClass());
+        }
+        catch (Exception e)
+        {
+        }
+
+    }
+    
+    /**
      * Test of getElement method, of class gov.sandia.isrc.math.matrix.Vector.
      */
     public void testGetElement()

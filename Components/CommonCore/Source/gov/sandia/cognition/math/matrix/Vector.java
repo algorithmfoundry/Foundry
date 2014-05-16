@@ -66,6 +66,37 @@ public interface Vector
      * @return number of elements in the Vector
      */
     public int getDimensionality();
+    
+    /**
+     * Gets the value of element of the vector at the zero-based index. 
+     * It throws an ArrayIndexOutOfBoundsException if the index is out of range.
+     * It is a convenience method for {@code getElement}.
+     * 
+     * @param   index
+     *      The zero-based index. Must be between 0 (inclusive) and the 
+     *      dimensionality of the vector (exclusive).
+     * @return 
+     *      The value at the index in the vector.
+     * @since   3.4.0
+     */
+    public double get(
+        final int index);
+    
+    /**
+     * Sets the value for an element at the zero-based index from the vector.
+     * It throws an ArrayIndexOutOfBoundsException if the index is out of range.
+     * It is a convenience method for {@code setElement}.
+     * 
+     * @param   index
+     *      The zero-based index. Must be between 0 (inclusive) and the 
+     *      dimensionality of the vector (exclusive).
+     * @param   value
+     *      The value at the index in the vector.
+     * @since   3.4.0
+     */
+    public void set(
+        final int index,
+        final double value);
 
     /**
      * Gets the zero-based indexed element from the Vector 
