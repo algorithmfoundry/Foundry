@@ -66,7 +66,7 @@ public abstract class AbstractMinimizerBasedParameterCostMinimizer
     /**
      * Default cost function, {@code SumSquaredErrorCostFunction}
      */
-    public static final DifferentiableCostFunction DEFAULT_COST_FUNCTION =
+    public static final SupervisedCostFunction<Vector, Vector> DEFAULT_COST_FUNCTION =
         new ParallelizedCostFunctionContainer( new SumSquaredErrorCostFunction() );
     
 
