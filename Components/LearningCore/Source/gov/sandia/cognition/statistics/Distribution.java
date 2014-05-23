@@ -53,15 +53,24 @@ public interface Distribution<DataType>
      * @return
      * Samples drawn according to this distribution.
      */
-    public ArrayList<? extends DataType> sample(
+    public ArrayList<DataType> sample(
         final Random random,
         final int numSamples);
 
-// TODO: For efficiency purposes, this class should have a method as follows:
-// -- jdbasil (2010-10-06)
-//    public void sampleInto(
-//        final Random random,
-//        final int sampleCount,
-//        final Collection<? super DataType> output);
+    /**
+     * Draws multiple random samples from the distribution and puts the result
+     * into the given collection.
+     * 
+     * @param   random
+     *      Random number generator to use.
+     * @param   sampleCount
+     *      The number of samples to draw. Cannot be negative.
+     * @param   output 
+     *      The collection to add the samples into.
+     */
+    public void sampleInto(
+        final Random random,
+        final int sampleCount,
+        final Collection<? super DataType> output);
     
 }

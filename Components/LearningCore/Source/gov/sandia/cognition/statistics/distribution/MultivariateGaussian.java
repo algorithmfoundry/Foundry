@@ -480,16 +480,17 @@ public class MultivariateGaussian
         hash = 53 * hash + ObjectUtil.hashCodeSafe(this.getCovariance());
         return hash;
     }
-    
+
     @Override
-    public ArrayList<Vector> sample(
-        Random random,
-        int numSamples )
+    public void sampleInto(
+        final Random random,
+        final int sampleCount,
+        final Collection<? super Vector> output)
     {
-        Matrix covSqrt = CholeskyDecompositionMTJ.create(
-            DenseMatrixFactoryMTJ.INSTANCE.copyMatrix( this.getCovariance() ) ).getR();
+        final Matrix covSqrt = CholeskyDecompositionMTJ.create(
+            DenseMatrixFactoryMTJ.INSTANCE.copyMatrix(this.getCovariance())).getR();
         
-        return sample( this.mean, covSqrt, random, numSamples );
+        sampleInto(this.mean, covSqrt, random, sampleCount, output);
     }
 
     /**
@@ -501,7 +502,7 @@ public class MultivariateGaussian
      * @param mean mean of the Gaussian
      * @param covarianceSquareRoot square-root decomposition of the 
      * covariance of the Gaussian
-     * @param numDraws number of times to draw from this random variable
+     * @param sampleCount number of times to draw from this random variable
      * @param random Random-number generator
      * @return ArrayList of Vectors drawn from this Gaussian distribution
      */
@@ -509,14 +510,37 @@ public class MultivariateGaussian
         Vector mean,
         Matrix covarianceSquareRoot,
         Random random,
-        int numDraws )
+        int sampleCount)
     {
-        ArrayList<Vector> retval = new ArrayList<Vector>( numDraws );
-        for( int n = 0; n < numDraws; n++ )
+        final ArrayList<Vector> result = new ArrayList<Vector>(sampleCount);
+        sampleInto(mean, covarianceSquareRoot, random, sampleCount, result);
+        return result;
+    }
+    
+    /**
+     * Performs a collection of draws this Gaussian with the given mean
+     * and covariance. If you need random draws from a Gaussian many times, I
+     * would recommend that you cache the square-root decomposition of the
+     * covariance and pass that to the method randomCovarianceSquareRoot().
+     * 
+     * @param mean mean of the Gaussian
+     * @param covarianceSquareRoot square-root decomposition of the 
+     * covariance of the Gaussian
+     * @param sampleCount number of times to draw from this random variable
+     * @param random Random-number generator
+     * @param output The collection to put the samples into.
+     */
+    public static void sampleInto(
+        final Vector mean,
+        final Matrix covarianceSquareRoot,
+        final Random random,
+        final int sampleCount,
+        final Collection<? super Vector> output)
+    {
+        for( int n = 0; n < sampleCount; n++ )
         {
-            retval.add( sample( mean, covarianceSquareRoot, random ) );
+            output.add(sample(mean, covarianceSquareRoot, random));
         }
-        return retval;        
     }
 
     /**

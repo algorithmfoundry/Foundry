@@ -28,6 +28,7 @@ import gov.sandia.cognition.statistics.ClosedFormComputableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityDensityFunction;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -238,30 +239,28 @@ public class MultivariateStudentTDistribution
         return C;
     }
 
-    public ArrayList<Vector> sample(
-        Random random,
-        int numSamples)
+    @Override
+    public void sampleInto(
+        final Random random,
+        final int sampleCount,
+        final Collection<? super Vector> output)
     {
-
         final int dim = this.getInputDimensionality();
         Vector zeroMean = VectorFactory.getDefault().createVector(dim);
 
         MultivariateGaussian mvg = new MultivariateGaussian(
             zeroMean, this.precision.inverse() );
-        ArrayList<Double> Vs = ChiSquareDistribution.sample(
-            this.degreesOfFreedom, random, numSamples);
-        ArrayList<Vector> Zs = mvg.sample(random, numSamples);
-        ArrayList<Vector> samples = new ArrayList<Vector>( numSamples );
-        for( int n = 0; n < numSamples; n++ )
+        double[] Vs = ChiSquareDistribution.sampleAsDoubles(
+            this.degreesOfFreedom, random, sampleCount);
+        ArrayList<Vector> Zs = mvg.sample(random, sampleCount);
+        for( int n = 0; n < sampleCount; n++ )
         {
             Vector z = Zs.get(n);
-            double v = Vs.get(n);
+            double v = Vs[n];
             z.scaleEquals( Math.sqrt(this.degreesOfFreedom/v) );
             z.plusEquals(this.mean);
-            samples.add( z );
+            output.add( z );
         }
-        
-        return samples;
     }
 
     public Vector convertToVector()

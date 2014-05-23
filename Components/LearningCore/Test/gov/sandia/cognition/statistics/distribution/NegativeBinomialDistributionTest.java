@@ -18,7 +18,7 @@ import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.collection.IntegerSpan;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistributionTestHarness;
+import gov.sandia.cognition.statistics.ClosedFormIntegerDistributionTestHarness;
 
 /**
  * Unit tests for NegativeBinomialDistributionTest.
@@ -26,7 +26,7 @@ import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistributionT
  * @author krdixon
  */
 public class NegativeBinomialDistributionTest
-    extends ClosedFormDiscreteUnivariateDistributionTestHarness<Number>
+    extends ClosedFormIntegerDistributionTestHarness
 {
 
     /**

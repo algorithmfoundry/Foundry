@@ -30,6 +30,7 @@ import gov.sandia.cognition.statistics.ClosedFormComputableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityDensityFunction;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -196,28 +197,24 @@ public class InverseWishartDistribution
         }
         return sum.getSum().inverse();
     }
-
+    
     @Override
-    public ArrayList<Matrix> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples)
+        final int sampleCount,
+        final Collection<? super Matrix> output)
     {
-
         // We need to sample from a Multivariate Gaussian here.
         // The inverse of the inverseScale matrix is the covariance.
         Matrix covarianceSqrt = this.getScaleSqrt();
         Vector mean = VectorFactory.getDefault().createVector(
             this.getInputDimensionality() );
 
-        ArrayList<Matrix> samples = new ArrayList<Matrix>( numSamples );
-        for( int n = 0; n < numSamples; n++ )
+        for( int n = 0; n < sampleCount; n++ )
         {
             Matrix B = sample(random, mean, covarianceSqrt, this.degreesOfFreedom );
-            samples.add( B );
+            output.add( B );
         }
-
-        return samples;
-        
     }
 
     @Override

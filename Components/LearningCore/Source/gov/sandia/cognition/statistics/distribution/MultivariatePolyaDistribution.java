@@ -26,6 +26,7 @@ import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -139,26 +140,25 @@ public class MultivariatePolyaDistribution
     }
 
     @Override
-    public ArrayList<Vector> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples)
+        final int sampleCount,
+        final Collection<? super Vector> output)
     {
         DirichletDistribution prior =
             new DirichletDistribution( this.parameters );
-        ArrayList<Vector> dirichletSamples = prior.sample(random, numSamples);
+        ArrayList<Vector> dirichletSamples = prior.sample(random, sampleCount);
 
         final int dim = this.getInputDimensionality();
         final int N = this.getNumTrials();
         MultinomialDistribution conditional =
             new MultinomialDistribution( dim, N );
         conditional.setNumTrials(N);
-        ArrayList<Vector> samples = new ArrayList<Vector>( numSamples );
-        for( int i = 0; i < numSamples; i++ )
+        for( int i = 0; i < sampleCount; i++ )
         {
             conditional.setParameters(dirichletSamples.get(i));
-            samples.add( conditional.sample(random) );
+            output.add( conditional.sample(random) );
         }
-        return samples;
     }
 
     /**

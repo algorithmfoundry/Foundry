@@ -97,6 +97,12 @@ public class ScalarDataDistribution
     @Override
     public Double getMean()
     {
+        return this.getMeanAsDouble();
+    }
+    
+    @Override
+    public double getMeanAsDouble()
+    {
         double sum = 0.0;
         for (Entry<Double> entry : this.entrySet())
         {

@@ -29,6 +29,7 @@ import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.ObjectUtil;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
+import java.util.Collection;
 import junit.framework.TestCase;
 import java.util.Random;
 
@@ -182,18 +183,18 @@ public class NRCMCMCTest
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
-        public ArrayList<Double> sample(
-            Random random,
-            int numSamples)
+        @Override
+        public void sampleInto(
+            final Random random,
+            final int sampleCount,
+            final Collection<? super Double> output)
         {
-
-            ArrayList<Double> samples = new ArrayList<Double>( numSamples );
             double tn = this.block1.sample(random);
             double tnm1;
             int num = 0;
             while( tn < this.tc )
             {
-                if( num >= numSamples )
+                if( num >= sampleCount )
                 {
                     break;
                 }
@@ -201,22 +202,19 @@ public class NRCMCMCTest
                 tnm1 = tn;
                 double delta = this.block1.sample(random);
                 tn = tnm1 + delta;
-                samples.add( tn );
+                output.add( tn );
                 num++;
 
             }
 
-            while( num < numSamples )
+            while( num < sampleCount )
             {
                 tnm1 = tn;
                 double delta = this.block2.sample(random);
                 tn = tnm1 + delta;
-                samples.add( tn );
+                output.add( tn );
                 num++;
             }
-
-            return samples;
-
         }
 
     }

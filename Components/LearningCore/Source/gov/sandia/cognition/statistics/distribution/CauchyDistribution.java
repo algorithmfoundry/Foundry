@@ -162,20 +162,34 @@ public class CauchyDistribution
     }
 
     @Override
-    public ArrayList<? extends Double> sample(
-        final Random random,
-        final int numSamples)
+    public double getMeanAsDouble()
     {
-        ArrayList<Double> samples = new ArrayList<Double>( numSamples );
-        for( int n = 0; n < numSamples; n++ )
+        return this.getLocation();
+    }
+    
+    @Override
+    public double sampleAsDouble(
+        final Random random)
+    {
+        double g1 = random.nextGaussian();
+        double g2 = random.nextGaussian();
+        double ratio = g1/g2;
+        double scaled = ratio * this.scale;
+        return scaled + this.location;
+    }
+
+    @Override
+    public void sampleInto(
+        final Random random,
+        final double[] output,
+        final int start,
+        final int length)
+    {
+        final int end = start + length;
+        for (int i = start; i < end; i++)
         {
-            double g1 = random.nextGaussian();
-            double g2 = random.nextGaussian();
-            double ratio = g1/g2;
-            double scaled = ratio * this.scale;
-            samples.add( scaled + this.location );
+            output[i] = this.sampleAsDouble(random);
         }
-        return samples;
     }
 
     @Override

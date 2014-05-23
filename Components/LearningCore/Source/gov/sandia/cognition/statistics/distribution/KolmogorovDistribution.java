@@ -22,6 +22,7 @@ import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
 import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.method.InverseTransformSampling;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -69,12 +70,19 @@ public class KolmogorovDistribution
     }
 
     @Override
-    public ArrayList<Double> sample(
-        final Random random,
-        final int numSamples )
+    public double getMeanAsDouble()
     {
-        return InverseTransformSampling.sample(
-            this.getCDF(), random, numSamples);
+        return MEAN;
+    }
+
+    @Override
+    public void sampleInto(
+        final Random random,
+        final int sampleCount,
+        final Collection<? super Double> output)
+    {
+        InverseTransformSampling.sampleInto(
+            this.getCDF(), random, sampleCount, output);
     }
 
     @Override

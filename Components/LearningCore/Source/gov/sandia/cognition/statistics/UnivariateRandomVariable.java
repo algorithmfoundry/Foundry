@@ -21,6 +21,7 @@ import gov.sandia.cognition.statistics.method.ConfidenceInterval;
 import gov.sandia.cognition.statistics.method.GaussianConfidence;
 import gov.sandia.cognition.statistics.method.KolmogorovSmirnovConfidence;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -245,12 +246,27 @@ public class UnivariateRandomVariable
     }
 
     @Override
+    public Number sample(
+        final Random random)
+    {
+        return this.getDistribution().sample(random);
+    }
+
+    @Override
     public ArrayList<Number> sample(
         final Random random,
-        final int numSamples )
+        final int numSamples)
     {
-        return new ArrayList<Number>(
-            this.getDistribution().sample( random, numSamples ) );
+        return new ArrayList<Number>(this.getDistribution().sample(random, numSamples));
+    }
+    
+    @Override
+    public void sampleInto(
+        final Random random,
+        final int sampleCount,
+        final Collection<? super Number> output)
+    {
+        this.getDistribution().sampleInto(random, sampleCount, output);
     }
 
     /**
@@ -323,6 +339,12 @@ public class UnivariateRandomVariable
         return this.getDistribution().getMean();
     }
 
+    @Override
+    public double getMeanAsDouble()
+    {
+        return this.getDistribution().getMeanAsDouble();
+    }
+    
     @Override
     public double getVariance()
     {

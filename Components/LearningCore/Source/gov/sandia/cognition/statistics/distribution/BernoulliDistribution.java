@@ -20,12 +20,12 @@ import gov.sandia.cognition.collection.IntegerSpan;
 import gov.sandia.cognition.math.ProbabilityUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
+import gov.sandia.cognition.statistics.AbstractClosedFormIntegerDistribution;
 import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistribution;
 import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -44,7 +44,7 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Bernoulli_distribution"
 )
 public class BernoulliDistribution 
-    extends AbstractClosedFormUnivariateDistribution<Number>
+    extends AbstractClosedFormIntegerDistribution
     implements ClosedFormDiscreteUnivariateDistribution<Number>
 {
 
@@ -92,6 +92,12 @@ public class BernoulliDistribution
     @Override
     public Double getMean()
     {
+        return this.getMeanAsDouble();
+    }
+    
+    @Override
+    public double getMeanAsDouble()
+    {
         return this.getP();
     }
 
@@ -108,27 +114,44 @@ public class BernoulliDistribution
     }
 
     @Override
-    public ArrayList<Integer> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples )
+        final int sampleCount,
+        final Collection<? super Number> output)
     {
-        
-        ArrayList<Integer> samples = new ArrayList<Integer>( numSamples );
-        for( int i = 0; i < numSamples; i++ )
+        for (int i = 0; i < sampleCount; i++)
         {
-            double x = random.nextDouble();
-            if( x < this.p )
-            {
-                samples.add( 1 );
-            }
-            else
-            {
-                samples.add( 0 );
-            }
+            output.add(Integer.valueOf(this.sampleAsInt(random)));
         }
-        
-        return samples;
-        
+    }
+
+    @Override
+    public int sampleAsInt(
+        final Random random)
+    {
+        if (this.sampleAsBoolean(random))
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    
+    /**
+     * Samples from the Bernoulli distribution as a boolean.
+     * 
+     * @param   random
+     *      The random number generator to use.
+     * @return 
+     *      A true or false value sampled from the distribution. The value is
+     *      true with probability p.
+     */
+    public boolean sampleAsBoolean(
+        final Random random)
+    {
+        return random.nextDouble() < this.p;
     }
 
     @Override

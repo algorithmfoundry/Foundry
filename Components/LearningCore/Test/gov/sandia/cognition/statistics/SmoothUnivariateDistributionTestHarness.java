@@ -77,6 +77,95 @@ public abstract class SmoothUnivariateDistributionTestHarness
     }
 
     /**
+     * Test of sampleAsDouble method, of class SmoothUnivariateDistribution.
+     */
+    public void testDistributionSampleAsDouble()
+    {
+        System.out.println("SmoothUnivariateDistribution.sampleAsDouble(random)");
+
+        // Make sure that when we re-feed an identical RANDOM seed, then
+        // we get an equal sample from the distribution.  But different seeds
+        // should give us different results... maybe.
+        Random random1a = new Random(1);
+        SmoothUnivariateDistribution instance = this.createInstance();
+        double r11 = instance.sampleAsDouble(random1a);
+        double rx2 = instance.sampleAsDouble(random1a);
+        assertFalse(r11 == rx2);
+
+        Random random1b = new Random(1);
+        double r13 = instance.sampleAsDouble(random1b);
+        assertEquals(r11, r13, TOLERANCE);
+
+        double r21 = instance.sampleAsDouble(new Random(2));
+        assertEquals(instance.sample(new Random(2)), r21, TOLERANCE);
+        assertFalse(r13 == r21);
+        assertFalse(r11 == r21);
+
+        Random random1c = new Random(1);
+        double r14 = instance.sampleAsDouble(random1c);
+        assertEquals(r11, r14, TOLERANCE);
+        assertEquals(r13, r14, TOLERANCE);
+    }
+    
+    /**
+     * Test of sampleAsDoubles method, of class SmoothUnivariateDistribution.
+     */
+    public void testDistributionSampleAsDoubles()
+    {
+        System.out.println("SmoothUnivariateDistribution.sampleAsDoubles(random,int)");
+        SmoothUnivariateDistribution instance = this.createInstance();
+
+        // Identical RANDOM seeds should produce equal squences.
+        // (Can't say anything about different seeds because deterministic
+        // distributions always return the same result, regardless of seed.)
+        Random r1a = new Random(1);
+        double[] s1a = instance.sampleAsDoubles(r1a, NUM_SAMPLES);
+        assertEquals(NUM_SAMPLES, s1a.length);
+
+        Random r1b = new Random(1);
+        double[] s1b = instance.sampleAsDoubles(r1b, NUM_SAMPLES);
+        assertEquals(NUM_SAMPLES, s1b.length);
+
+        assertEquals(s1a.length, s1b.length);
+        assertTrue(this.distributionSamplesEqual(s1a, s1b));
+    }
+    
+    /**
+     * Test of sampleInto method, of class SmoothUnivariateDistribution.
+     */
+    public void testDistributionSampleInto_doubles()
+    {
+        System.out.println("SmoothUnivariateDistribution.sampleInto(random,double[],int,int)");
+        SmoothUnivariateDistribution instance = this.createInstance();
+
+        // Identical RANDOM seeds should produce equal squences.
+        // (Can't say anything about different seeds because deterministic
+        // distributions always return the same result, regardless of seed.)
+        Random r1a = new Random(1);
+        double[] s1a = new double[NUM_SAMPLES];
+        instance.sampleInto(r1a, s1a, 0, NUM_SAMPLES);
+
+        Random r1b = new Random(1);
+        double[] s1b = instance.sampleAsDoubles(r1b, NUM_SAMPLES);
+
+        assertEquals(s1a.length, s1b.length);
+        assertTrue(this.distributionSamplesEqual(s1a, s1b));
+        
+        // Make sure the data isn't over-written.
+        double[] r1c = new double[3 * NUM_SAMPLES + 5];
+        for (int i = 0; i < r1c.length; i++)
+        {
+            r1c[i] = i;
+        }
+        instance.sampleInto(new Random(1), r1c, 2, 3 * NUM_SAMPLES);
+        assertEquals(0.0, r1c[0], 0.0);
+        assertEquals(1.0, r1c[1], 0.0);
+        assertEquals(r1c.length - 3, r1c[r1c.length - 3], 0.0);
+        assertEquals(r1c.length - 2, r1c[r1c.length - 2], 0.0);
+        assertEquals(r1c.length - 1, r1c[r1c.length - 1], 0.0);
+    }
+    
+    /**
      * PDF.getProbabilityFunction
      */
     public void testPDFGetDistributionFunction()
@@ -366,4 +455,32 @@ public abstract class SmoothUnivariateDistributionTestHarness
 
     }
 
+    /**
+     * Determines if two distribution samples are equal within tolerance.
+     * 
+     * @param   s1
+     *      The first set of samples.
+     * @param   s2
+     *      The second set of samples.
+     * @return
+     *      True if the distributions are approximately equal
+     */
+    public boolean distributionSamplesEqual(
+        double[] s1,
+        double[] s2 )
+    {
+        if (s1.length != s2.length)
+        {
+            return false;
+        }
+        for (int n = 0; n < s1.length; n++)
+        {
+            if (Math.abs(s1[n] - s2[n]) > TOLERANCE)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

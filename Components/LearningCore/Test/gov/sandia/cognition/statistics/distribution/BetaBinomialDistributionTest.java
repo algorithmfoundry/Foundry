@@ -15,7 +15,7 @@
 package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistributionTestHarness;
+import gov.sandia.cognition.statistics.ClosedFormIntegerDistributionTestHarness;
 import java.util.Collection;
 
 /**
@@ -24,7 +24,7 @@ import java.util.Collection;
  * @author krdixon
  */
 public class BetaBinomialDistributionTest
-    extends ClosedFormDiscreteUnivariateDistributionTestHarness<Number>
+    extends ClosedFormIntegerDistributionTestHarness
 {
 
     /**

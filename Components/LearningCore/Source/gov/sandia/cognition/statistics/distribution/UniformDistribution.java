@@ -109,13 +109,13 @@ public class UniformDistribution
     {
         return (UniformDistribution) super.clone();
     }    
-    
+
     @Override
-    public Double getMean()
+    public double getMeanAsDouble()
     {
         return (this.getMaxSupport() + this.getMinSupport()) / 2.0;
     }
-
+    
     @Override
     public double getVariance()
     {
@@ -124,20 +124,31 @@ public class UniformDistribution
     }
 
     @Override
-    public ArrayList<Double> sample(
-        final Random random,
-        final int numSamples )
+    public Double sample(
+        final Random random)
     {
-        ArrayList<Double> samples = new ArrayList<Double>( numSamples );
-        final double a = UniformDistribution.this.getMinSupport();
-        final double delta = UniformDistribution.this.getMaxSupport() - a;
-        for( int n = 0; n < numSamples; n++ )
+        final double a = this.getMinSupport();
+        final double delta = this.getMaxSupport() - a;
+
+        double x = random.nextDouble();
+        return (x * delta) + a;
+    }
+    
+    @Override
+    public void sampleInto(
+        final Random random,
+        final double[] output,
+        final int start,
+        final int length)
+    {
+        final double a = this.getMinSupport();
+        final double delta = this.getMaxSupport() - a;
+        final int end = start + length;
+        for (int i = start; i < end; i++)
         {
             double x = random.nextDouble();
-            samples.add( (x*delta) + a );
+            output[i] = (x * delta) + a;
         }
-
-        return samples;
     }
     
     @Override

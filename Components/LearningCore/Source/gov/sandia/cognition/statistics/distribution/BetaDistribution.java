@@ -113,7 +113,7 @@ public class BetaDistribution
     }
 
     @Override
-    public Double getMean()
+    public double getMeanAsDouble()
     {
         return this.getAlpha() / (this.getAlpha() + this.getBeta());
     }
@@ -126,24 +126,36 @@ public class BetaDistribution
         double denominator = apb * apb * (apb + 1);
         return numerator / denominator;
     }
+
+    @Override
+    public double sampleAsDouble(
+        final Random random)
+    {
+        final double x = GammaDistribution.sampleAsDouble(
+            this.alpha, 1.0, random);
+        final double y = GammaDistribution.sampleAsDouble(
+            this.beta, 1.0, random);
+        return x / (x + y);
+    }
     
     @Override
-    public ArrayList<Double> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples )
+        final double[] output,
+        final int start,
+        final int length)
     {
-        ArrayList<Double> samples = new ArrayList<Double>( numSamples );
-        ArrayList<Double> Xs = GammaDistribution.sample(
-            this.alpha, 1.0, random,numSamples);
-        ArrayList<Double> Ys = GammaDistribution.sample(
-            this.beta, 1.0, random,numSamples);
-        for( int n = 0; n < numSamples; n++ )
+        final double[] Xs = GammaDistribution.sampleAsDoubles(
+            this.alpha, 1.0, random, length);
+        final double[] Ys = GammaDistribution.sampleAsDoubles(
+            this.beta, 1.0, random, length);
+        final int end = start + length;
+        for (int i = start; i < end; i++)
         {
-            final double x = Xs.get(n);
-            final double y = Ys.get(n);
-            samples.add( x/(x+y) );
+            final double x = Xs[i - start];
+            final double y = Ys[i - start];
+            output[i] = x / (x + y);
         }
-        return samples;
     }    
     
     /**

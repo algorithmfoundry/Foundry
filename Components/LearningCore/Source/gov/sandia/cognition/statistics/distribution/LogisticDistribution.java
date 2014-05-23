@@ -107,18 +107,25 @@ public class LogisticDistribution
     }
 
     @Override
-    public ArrayList<Double> sample(
-        final Random random,
-        final int numSamples)
+    public double sampleAsDouble(
+        final Random random)
     {
+        final double p = random.nextDouble();
+        return this.mean + this.scale * Math.log(p / (1.0 - p));
+    }
 
-        ArrayList<Double> samples = new ArrayList<Double>( numSamples );
-        for( int n = 0; n < numSamples; n++ )
+    @Override
+    public void sampleInto(
+        final Random random,
+        final double[] output,
+        final int start,
+        final int length)
+    {
+        final int end = start + length;
+        for (int i = start; i < end; i++)
         {
-            final double p = random.nextDouble();
-            samples.add( this.mean + this.scale * Math.log( p/(1.0-p) ) );
+            output[i] = this.sampleAsDouble(random);
         }
-        return samples;
     }
 
     @Override
@@ -169,7 +176,7 @@ public class LogisticDistribution
     }
 
     @Override
-    public Double getMean()
+    public double getMeanAsDouble()
     {
         return this.mean;
     }

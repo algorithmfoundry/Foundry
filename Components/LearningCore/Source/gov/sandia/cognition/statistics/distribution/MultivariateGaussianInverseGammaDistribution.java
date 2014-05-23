@@ -19,6 +19,7 @@ import gov.sandia.cognition.statistics.AbstractDistribution;
 import gov.sandia.cognition.statistics.ClosedFormDistribution;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -101,23 +102,21 @@ public class MultivariateGaussianInverseGammaDistribution
     }
 
     @Override
-    public ArrayList<Vector> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples)
+        final int sampleCount,
+        final Collection<? super Vector> output)
     {
-
-        ArrayList<? extends Double> varianceScales =
-            this.getInverseGamma().sample(random,numSamples);
+        final double[] varianceScales =
+            this.getInverseGamma().sampleAsDoubles(random, sampleCount);
         MultivariateGaussian sampler = this.getGaussian().clone();
-        ArrayList<Vector> samples = new ArrayList<Vector>( numSamples );
-        for( int n = 0; n < numSamples; n++ )
+        for( int n = 0; n < sampleCount; n++ )
         {
-            double varianceScale = varianceScales.get(n);
+            double varianceScale = varianceScales[n];
             sampler.setCovariance(
                 this.getGaussian().getCovariance().scale( varianceScale ) );
-            samples.add( sampler.sample(random) );
+            output.add( sampler.sample(random) );
         }
-        return samples;
     }
 
     /**

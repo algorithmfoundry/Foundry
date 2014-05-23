@@ -17,7 +17,7 @@ package gov.sandia.cognition.statistics.distribution;
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.collection.IntegerSpan;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistributionTestHarness;
+import gov.sandia.cognition.statistics.ClosedFormIntegerDistributionTestHarness;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import gov.sandia.cognition.util.WeightedValue;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import java.util.ArrayList;
  * @author krdixon
  */
 public class PoissonDistributionTest
-    extends ClosedFormDiscreteUnivariateDistributionTestHarness<Number>
+    extends ClosedFormIntegerDistributionTestHarness
 {
 
     /**

@@ -25,6 +25,7 @@ import gov.sandia.cognition.statistics.ClosedFormComputableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityDensityFunction;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -230,15 +231,16 @@ public class NormalInverseWishartDistribution
         return R;
     }
 
-    public ArrayList<Matrix> sample(
-        Random random,
-        int numSamples)
+    @Override
+    public void sampleInto(
+        final Random random,
+        final int sampleCount,
+        final Collection<? super Matrix> output)
     {
         final int d = this.gaussian.getInputDimensionality();
 
-        ArrayList<Matrix> samples = new ArrayList<Matrix>( numSamples );
         ArrayList<Matrix> covariances =
-            this.inverseWishart.sample(random,numSamples);
+            this.inverseWishart.sample(random, sampleCount);
         for( Matrix covariance : covariances )
         {
             Matrix meanAndCovariance =
@@ -248,10 +250,8 @@ public class NormalInverseWishartDistribution
             this.gaussian.setCovariance(covariance);
             Vector mean = this.gaussian.sample(random);
             meanAndCovariance.setColumn(0, mean);
-            samples.add( meanAndCovariance );
+            output.add( meanAndCovariance );
         }
-
-        return samples;
     }
 
     public Vector convertToVector()

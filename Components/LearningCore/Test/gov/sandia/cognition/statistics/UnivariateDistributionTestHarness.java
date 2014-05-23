@@ -22,6 +22,7 @@ import gov.sandia.cognition.statistics.method.GaussianConfidence;
 import gov.sandia.cognition.statistics.method.KolmogorovSmirnovConfidence;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import junit.framework.TestCase;
 
@@ -112,8 +113,8 @@ public abstract class UnivariateDistributionTestHarness<NumberType extends Numbe
      * @return
      */
     public boolean distributionSamplesEqual(
-        ArrayList<? extends Number> s1,
-        ArrayList<? extends Number> s2 )
+        List<? extends Number> s1,
+        List<? extends Number> s2 )
     {
 
         if( s1.size() != s2.size() )
@@ -221,6 +222,19 @@ public abstract class UnivariateDistributionTestHarness<NumberType extends Numbe
         System.out.println( "Sample mean: " + UnivariateStatisticsUtil.computeMean( samples ) + ", Mean: " + mean );
         assertEquals( 1.0, confidence.getNullHypothesisProbability(), CONFIDENCE );
     }
+    
+        /**
+     * Test of getMean method, of class Distribution.
+     */
+    public void testDistributionGetMeanAsDouble()
+    {
+        System.out.println( "Distribution.getMeanAsDouble" );
+        UnivariateDistribution<NumberType> instance = this.createInstance();
+
+        // Ask the distribution for its mean
+        double mean = instance.getMeanAsDouble();
+        assertEquals(mean, instance.getMean().doubleValue(), TOLERANCE);
+    }
 
     /**
      * CDF.getMean
@@ -295,6 +309,32 @@ public abstract class UnivariateDistributionTestHarness<NumberType extends Numbe
 
         Random r1b = new Random( 1 );
         ArrayList<? extends Number> s1b = instance.sample( r1b, NUM_SAMPLES );
+        assertEquals( NUM_SAMPLES, s1b.size() );
+
+        assertEquals( s1a.size(), s1b.size() );
+        assertTrue( this.distributionSamplesEqual(s1a, s1b) );
+
+    }
+    
+    /**
+     * Test of sampleInto method, of class Distribution.
+     */
+    public void testDistributionSampleInto()
+    {
+        System.out.println( "Distribution.sampleInto(random,int,Collection)" );
+        Distribution<? extends Number> instance = this.createInstance();
+
+        // Identical RANDOM seeds should produce equal squences.
+        // (Can't say anything about different seeds because deterministic
+        // distributions always return the same result, regardless of seed.)
+        Random r1a = new Random( 1 );
+        ArrayList<Number> s1a = new ArrayList<Number>();
+        instance.sampleInto( r1a, NUM_SAMPLES, s1a);
+        assertEquals( NUM_SAMPLES, s1a.size() );
+
+        Random r1b = new Random( 1 );
+        ArrayList<Number> s1b = new ArrayList<Number>();
+        instance.sampleInto( r1b, NUM_SAMPLES, s1b );
         assertEquals( NUM_SAMPLES, s1b.size() );
 
         assertEquals( s1a.size(), s1b.size() );

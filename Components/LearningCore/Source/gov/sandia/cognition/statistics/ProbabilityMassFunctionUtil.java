@@ -65,7 +65,7 @@ public class ProbabilityMassFunctionUtil
         return UnivariateStatisticsUtil.computeEntropy(data);
 
     }
-
+    
     /**
      * Samples from the ProbabilityMassFunction.  The return value will be
      * sampled according to the given PMF.
@@ -81,17 +81,34 @@ public class ProbabilityMassFunctionUtil
         final Random random,
         final int numSamples )
     {
-        ArrayList<DataType> samples;
-        if( numSamples == 1 )
-        {
-            samples = new ArrayList<DataType>( 1 );
-            samples.add( sampleSingle(pmf, random) );
-        }
-        else
-        {
-            samples = sampleMultiple(pmf, random, numSamples);
-        }
+        ArrayList<DataType> samples = new ArrayList<DataType>(numSamples);
+        sampleInto(pmf, random, numSamples, samples);
         return samples;
+    }
+    
+    /**
+     * Samples from the ProbabilityMassFunction.  The return value will be
+     * sampled according to the given PMF.
+     * @param <DataType> Type of data to use
+     * @param pmf PMF from which to sample
+     * @param random Random to sample from
+     * @param numSamples Number of samples to draw from the given PMF.
+     * @param output Collection to add samples drawn according to the given PMF.
+     */
+    public static <DataType> void sampleInto(
+        final ProbabilityMassFunction<DataType> pmf,
+        final Random random,
+        final int numSamples,
+        final Collection<? super DataType> output)
+    {
+        if (numSamples == 1)
+        {
+            output.add(sampleSingle(pmf, random));
+        }
+        else if (numSamples > 1)
+        {
+            sampleMultipleInto(pmf, random, numSamples, output);
+        }
     }
 
     /**
@@ -137,7 +154,27 @@ public class ProbabilityMassFunctionUtil
         final Random random,
         final int numSamples )
     {
-
+        final ArrayList<DataType> result = new ArrayList<DataType>(numSamples);
+        sampleMultipleInto(pmf, random, numSamples, result);
+        return result;
+    }
+    
+    /**
+     * Samples from the ProbabilityMassFunction.  The return value will be
+     * sampled according to the given PMF.
+     * @param <DataType> Type of data to use
+     * @param pmf PMF from which to sample
+     * @param random Random to sample from
+     * @param numSamples Number of samples to draw from the given PMF.
+     * @param output Collection to add samples drawn according to the given PMF.
+     */
+    @SuppressWarnings("unchecked")
+    public static <DataType> void sampleMultipleInto(
+        final ProbabilityMassFunction<DataType> pmf,
+        final Random random,
+        final int numSamples,
+        final Collection<? super DataType> output)
+    {
         // Compute the cumulative probability counts.
         // We can then use binary search to make the lookup process VERY zoomy.
         int N = pmf.getDomain().size();
@@ -153,7 +190,8 @@ public class ProbabilityMassFunctionUtil
             cumulativeProbabilities[index] = psum;
         }
 
-        return sampleMultiple(cumulativeProbabilities, psum, domain, random, numSamples);
+        sampleMultipleInto(cumulativeProbabilities, domain, random, numSamples, 
+            output);
     }
 
     /**
@@ -164,8 +202,6 @@ public class ProbabilityMassFunctionUtil
      * Type of data to be sampled
      * @param cumulativeWeights
      * Cumulative weights to sample from
-     * @param weightSum
-     * Maximum value of the cumulative weights
      * @param domain
      * Domain from which to sample
      * @param random
@@ -177,27 +213,69 @@ public class ProbabilityMassFunctionUtil
      */
     public static <DataType> ArrayList<DataType> sampleMultiple(
         final double[] cumulativeWeights,
-        final double weightSum,
         final List<? extends DataType> domain,
         final Random random,
         final int numSamples )
     {
-
-        int index;
-        ArrayList<DataType> samples = new ArrayList<DataType>( numSamples );
+        final ArrayList<DataType> result = new ArrayList<DataType>(numSamples);
+        sampleMultipleInto(cumulativeWeights, domain, random,
+            numSamples, result);
+        return result;
+    }
+    
+    /**
+     * Samples multiple elements from the domain proportionately to the
+     * cumulative weights in the given weight array using a fast
+     * binary search algorithm
+     * @param <DataType>
+     * Type of data to be sampled
+     * @param cumulativeWeights
+     * Cumulative weights to sample from
+     * @param domain
+     * Domain from which to sample
+     * @param random
+     * Random number generator
+     * @param numSamples
+     * Number of samples to draw from the distribution
+     * @param   output
+     *      The collection to put the samples in.
+     */
+    public static <DataType> void sampleMultipleInto(
+        final double[] cumulativeWeights,
+        final List<? extends DataType> domain,
+        final Random random,
+        final int numSamples,
+        final Collection<? super DataType> output)
+    {
         for( int n = 0; n < numSamples; n++ )
         {
-            double p = weightSum*random.nextDouble();
-            index = Arrays.binarySearch( cumulativeWeights, p );
-            if( index < 0 )
-            {
-                int insertionPoint = -index - 1;
-                index = insertionPoint;
-            }
-            samples.add( domain.get(index) );
+            output.add(sample(cumulativeWeights, domain, random));
         }
-        return samples;
-        
+    }
+    
+    /**
+     * Samples an element from the domain proportionately to the
+     * cumulative weights in the given weight array using a fast
+     * binary search algorithm.
+     * @param <DataType>
+     * Type of data to be sampled
+     * @param cumulativeWeights
+     * Cumulative weights to sample from
+     * @param domain
+     * Domain from which to sample
+     * @param random
+     * Random number generator
+     * @return
+     * A sample from the domain according to the weights.
+     */
+    public static <DataType> DataType sample(
+        final double[] cumulativeWeights,
+        final List<? extends DataType> domain,
+        final Random random)
+    {
+        final int index = DiscreteSamplingUtil.sampleIndexFromCumulativeProportions(
+            random, cumulativeWeights);
+        return domain.get(index);
     }
 
     /**

@@ -16,6 +16,7 @@ package gov.sandia.cognition.learning.function.scalar;
 
 import gov.sandia.cognition.math.DifferentiableUnivariateScalarFunction;
 import gov.sandia.cognition.math.matrix.NumericalDifferentiator;
+import gov.sandia.cognition.util.ObjectUtil;
 import junit.framework.TestCase;
 import java.util.Random;
 
@@ -73,8 +74,7 @@ public abstract class DifferentiableUnivariateScalarFunctionTestHarness
         System.out.println( "Clone" );
 
         DifferentiableUnivariateScalarFunction f = this.createInstance();
-        DifferentiableUnivariateScalarFunction clone =
-            (DifferentiableUnivariateScalarFunction) f.clone();
+        DifferentiableUnivariateScalarFunction clone = ObjectUtil.cloneSmart(f);
         assertNotNull( clone );
         assertNotSame( f, clone );
 

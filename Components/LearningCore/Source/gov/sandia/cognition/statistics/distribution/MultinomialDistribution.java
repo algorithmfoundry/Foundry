@@ -28,6 +28,7 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.AbstractSet;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -218,11 +219,11 @@ public class MultinomialDistribution
     }
 
     @Override
-    public ArrayList<Vector> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples)
+        final int sampleCount,
+        final Collection<? super Vector> output)
     {
-
         final int numClasses = this.parameters.getDimensionality();
         final double []probs = new double[ numClasses ];
         final double probsum = this.parameters.norm1();
@@ -231,8 +232,7 @@ public class MultinomialDistribution
             probs[j] = this.parameters.getElement(j) / probsum;
         }
 
-        ArrayList<Vector> samples = new ArrayList<Vector>( numSamples );
-        for( int n = 0; n < numSamples; n++ )
+        for( int n = 0; n < sampleCount; n++ )
         {
             double[] successes = new double[ numClasses ];
             for( int i = 0; i < this.numTrials; i++ )
@@ -248,10 +248,8 @@ public class MultinomialDistribution
                     p -= probs[k];
                 }
             }
-            samples.add( VectorFactory.getDefault().copyArray(successes) );
+            output.add( VectorFactory.getDefault().copyArray(successes) );
         }
-
-        return samples;
     }
 
     @Override

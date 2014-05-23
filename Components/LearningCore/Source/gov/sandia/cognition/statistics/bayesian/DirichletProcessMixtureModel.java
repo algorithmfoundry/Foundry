@@ -87,7 +87,7 @@ public class DirichletProcessMixtureModel<ObservationType>
     public static final int DEFAULT_NUM_INITIAL_CLUSTERS = 2;
 
     /**
-     * 
+     * The default value for re-estimating alpha is {@value}.
      */
     public static final boolean DEFAULT_REESTIMATE_ALPHA = true;
 

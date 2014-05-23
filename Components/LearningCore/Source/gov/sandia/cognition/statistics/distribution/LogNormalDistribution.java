@@ -195,7 +195,7 @@ public class LogNormalDistribution
     }
 
     @Override
-    public Double getMean()
+    public double getMeanAsDouble()
     {
         double exp = this.getLogNormalMean() + 0.5 * this.getLogNormalVariance();
         return Math.exp( exp );
@@ -212,19 +212,30 @@ public class LogNormalDistribution
     }
 
     @Override
-    public ArrayList<Double> sample(
-        final Random random,
-        final int numSamples )
+    public double sampleAsDouble(
+        final Random random)
     {
-        ArrayList<Double> samples = new ArrayList<Double>( numSamples );
         final double std = Math.sqrt(this.logNormalVariance);
-        for( int n = 0; n < numSamples; n++ )
+        double normal = random.nextGaussian();
+        double exponent = this.logNormalMean + std * normal;
+        return Math.exp(exponent);
+    }
+    
+    @Override
+    public void sampleInto(
+        final Random random,
+        final double[] output,
+        final int start,
+        final int length)
+    {
+        final double std = Math.sqrt(this.logNormalVariance);
+        final int end = start + length;
+        for (int i = start; i < end; i++)
         {
             double normal = random.nextGaussian();
             double exponent = this.logNormalMean + std * normal;
-            samples.add( Math.exp( exponent ) );
+            output[i] = Math.exp(exponent);
         }
-        return samples;
     }
 
     @Override

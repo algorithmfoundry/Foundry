@@ -123,11 +123,11 @@ public class ChiSquareDistribution
     }
 
     @Override
-    public Double getMean()
+    public double getMeanAsDouble()
     {
         return this.getDegreesOfFreedom();
     }
-
+    
     @Override
     public double getVariance()
     {
@@ -163,13 +163,36 @@ public class ChiSquareDistribution
     }
 
     @Override
-    public ArrayList<Double> sample(
+    public void sampleInto(
+        final Random random,
+        final double[] output,
+        final int start,
+        final int length)
+    {
+        GammaDistribution.sampleInto(
+            degreesOfFreedom/2.0, 2.0, random, output, start, length);
+    }
+
+    /**
+     * Samples from a Chi-Square distribution with the given degrees of freedom
+     * @param degreesOfFreedom
+     * Degrees of freedom of the Chi-Square distribution
+     * @param random
+     * Random number generator
+     * @param numSamples
+     * Number of samples to generate
+     * @return
+     * Samples from the GammaDistribution using the Chi-Square DOFs.
+     */
+    public static double[] sampleAsDoubles(
+        final double degreesOfFreedom,
         final Random random,
         final int numSamples )
     {
-        return sample( this.degreesOfFreedom, random, numSamples);
+        return GammaDistribution.sampleAsDoubles(
+            degreesOfFreedom/2.0, 2.0, random, numSamples);
     }
-
+    
     /**
      * Samples from a Chi-Square distribution with the given degrees of freedom
      * @param degreesOfFreedom

@@ -22,7 +22,7 @@ import gov.sandia.cognition.math.ProbabilityUtil;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
+import gov.sandia.cognition.statistics.AbstractClosedFormIntegerDistribution;
 import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistribution;
 import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.DistributionEstimator;
@@ -33,7 +33,6 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * Binomial distribution, which is a collection of Bernoulli trials
@@ -50,7 +49,7 @@ import java.util.Set;
     url="http://en.wikipedia.org/wiki/Binomial_distribution"
 )
 public class BinomialDistribution
-    extends AbstractClosedFormUnivariateDistribution<Number>
+    extends AbstractClosedFormIntegerDistribution
     implements ClosedFormDiscreteUnivariateDistribution<Number>,
     EstimableDistribution<Number,BinomialDistribution>
 {
@@ -117,6 +116,11 @@ public class BinomialDistribution
     @Override
     public Double getMean()
     {
+        return this.getMeanAsDouble();
+    }
+    
+    public double getMeanAsDouble()
+    {
         return this.N * this.p;
     }
 
@@ -134,14 +138,39 @@ public class BinomialDistribution
     }
     
     @Override
-    public ArrayList<Number> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples )
+        final int sampleCount,
+        final Collection<? super Number> output)
     {
-        return ProbabilityMassFunctionUtil.sample(
-            this.getProbabilityFunction(), random, numSamples);
+        ProbabilityMassFunctionUtil.sampleInto(
+            this.getProbabilityFunction(), random, sampleCount, output);
     }
 
+    @Override
+    public int sampleAsInt(
+        final Random random)
+    {
+// TODO: See if there is a way to do this without any boxing.
+        return ProbabilityMassFunctionUtil.sampleSingle(
+            this.getProbabilityFunction(), random).intValue();
+    }
+
+    @Override
+    public void sampleInto(
+        final Random random,
+        final int[] output,
+        final int start,
+        final int length)
+    {
+// TODO: See if there is a way to do this without any boxing.
+        final ArrayList<Number> samples = this.sample(random, length);
+        for (int i = 0; i < length; i++)
+        {
+            output[start + i] = samples.get(i).intValue();
+        }
+    }
+    
     @Override
     public Vector convertToVector()
     {

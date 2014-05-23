@@ -24,6 +24,7 @@ import gov.sandia.cognition.statistics.AbstractDistribution;
 import gov.sandia.cognition.statistics.ClosedFormComputableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityDensityFunction;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -162,26 +163,23 @@ public class NormalInverseGammaDistribution
         }
     }
 
-    public ArrayList<Vector> sample(
-        Random random,
-        int numSamples)
+    @Override
+    public void sampleInto(
+        final Random random,
+        final int sampleCount,
+        final Collection<? super Vector> output)
     {
-
         InverseGammaDistribution.CDF inverseGamma =
-            new InverseGammaDistribution.CDF( this.shape, this.scale );
+            new InverseGammaDistribution.CDF(this.shape, this.scale);
         UnivariateGaussian.CDF gaussian =
-            new UnivariateGaussian.CDF( this.location, 1.0/this.precision );
-        ArrayList<? extends Double> variances =
-            inverseGamma.sample(random,numSamples);
-        ArrayList<Vector> samples = new ArrayList<Vector>( numSamples );
-        for( Double variance : variances )
+            new UnivariateGaussian.CDF(this.location, 1.0 / this.precision);
+        final double[] variances = inverseGamma.sampleAsDoubles(random, sampleCount);
+        for (double variance : variances)
         {
-            gaussian.setVariance( variance / this.precision );
+            gaussian.setVariance(variance / this.precision);
             double mean = gaussian.sample(random);
-            samples.add( VectorFactory.getDefault().copyValues( mean, variance ) );
+            output.add(VectorFactory.getDefault().copyValues(mean, variance));
         }
-
-        return samples;
     }
 
     public Vector convertToVector()

@@ -26,6 +26,7 @@ import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Set;
@@ -153,9 +154,10 @@ public class CategoricalDistribution
     }
 
     @Override
-    public ArrayList<Vector> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples)
+        final int sampleCount,
+        final Collection<? super Vector> output)
     {
         ArrayList<Vector> domain = CollectionUtil.asArrayList(this.getDomain());
         final int N = domain.size();
@@ -169,8 +171,8 @@ public class CategoricalDistribution
             cumulativeWeights[n] = sum;
         }
 
-        return ProbabilityMassFunctionUtil.sampleMultiple(
-            cumulativeWeights, sum, domain, random, numSamples);
+        ProbabilityMassFunctionUtil.sampleMultipleInto(
+            cumulativeWeights, domain, random, sampleCount, output);
     }
 
     @Override

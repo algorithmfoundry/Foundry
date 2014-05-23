@@ -46,6 +46,14 @@ public interface UnivariateDistribution<NumberType extends Number>
     public CumulativeDistributionFunction<NumberType> getCDF();
 
     /**
+     * Gets the mean of the distribution as a double.
+     * 
+     * @return 
+     *      The mean as a double.
+     */
+    public double getMeanAsDouble();
+    
+    /**
      * Gets the variance of the distribution.  This is sometimes called
      * the second central moment by more pedantic people, which is equivalent
      * to the square of the standard deviation.

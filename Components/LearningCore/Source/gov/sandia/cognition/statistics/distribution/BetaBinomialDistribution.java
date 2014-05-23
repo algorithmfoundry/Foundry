@@ -21,7 +21,7 @@ import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
+import gov.sandia.cognition.statistics.AbstractClosedFormIntegerDistribution;
 import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistribution;
 import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.DistributionEstimator;
@@ -48,7 +48,7 @@ import java.util.Random;
     url="http://mathworld.wolfram.com/BetaBinomialDistribution.html"
 )
 public class BetaBinomialDistribution 
-    extends AbstractClosedFormUnivariateDistribution<Number>
+    extends AbstractClosedFormIntegerDistribution
     implements ClosedFormDiscreteUnivariateDistribution<Number>,
     EstimableDistribution<Number,BetaBinomialDistribution>
 {
@@ -209,16 +209,47 @@ public class BetaBinomialDistribution
     @Override
     public Number getMean()
     {
+        return this.getMeanAsDouble();
+    }
+    
+    @Override
+    public double getMeanAsDouble()
+    {
         return this.n * this.shape / (this.shape+this.scale);
     }
 
     @Override
-    public ArrayList<? extends Number> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples)
+        final int sampleCount,
+        final Collection<? super Number> output)
     {
-        return ProbabilityMassFunctionUtil.sample(
-            this.getProbabilityFunction(), random, numSamples);
+        ProbabilityMassFunctionUtil.sampleInto(
+            this.getProbabilityFunction(), random, sampleCount, output);
+    }
+    
+    @Override
+    public int sampleAsInt(
+        final Random random)
+    {
+// TODO: See if there is a way to do this without any boxing.
+        return ProbabilityMassFunctionUtil.sampleSingle(
+            this.getProbabilityFunction(), random).intValue();
+    }
+
+    @Override
+    public void sampleInto(
+        final Random random,
+        final int[] output,
+        final int start,
+        final int length)
+    {
+// TODO: See if there is a way to do this without any boxing.
+        final ArrayList<Number> samples = this.sample(random, length);
+        for (int i = 0; i < length; i++)
+        {
+            output[start + i] = samples.get(i).intValue();
+        }
     }
 
     @Override

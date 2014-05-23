@@ -155,21 +155,33 @@ public class InverseGammaDistribution
     }
 
     @Override
-    public ArrayList<? extends Double> sample(
-        final Random random,
-        final int numSamples)
+    public double sampleAsDouble(
+        final Random random)
     {
-        ArrayList<Double> gammas = GammaDistribution.sample(
-            this.shape, 1.0/this.scale, random, numSamples);
-        ArrayList<Double> samples = new ArrayList<Double>( numSamples );
-        for( int n = 0; n < numSamples; n++ )
-        {
-            final double g = gammas.get(n);
-            samples.add( 1.0/g );
-        }
-        return samples;
+        final double g = GammaDistribution.sampleAsDouble(
+            this.shape, 1.0 / this.scale, random);
+        return 1.0 / g;
     }
-
+    
+    @Override
+    public void sampleInto(
+        final Random random,
+        final double[] output,
+        final int start,
+        final int length)
+    {
+        // Sample the requested number of gammas.
+        GammaDistribution.sampleInto(this.shape, 1.0 / this.scale, 
+            random, output, start, length);
+        
+        // Now invert the gammas.
+        final int end = start + length;
+        for (int i = start; i < end; i++)
+        {
+            output[i] = 1.0 / output[i];
+        }
+    }
+    
     @Override
     public Vector convertToVector()
     {
@@ -186,7 +198,7 @@ public class InverseGammaDistribution
     }
 
     @Override
-    public Double getMean()
+    public double getMeanAsDouble()
     {
         if( this.shape > 1.0 )
         {

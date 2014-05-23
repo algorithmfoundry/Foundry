@@ -29,6 +29,7 @@ import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.SmoothUnivariateDistribution;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -87,8 +88,28 @@ public class InverseTransformSampling
         Random random,
         int numSamples )
     {
-
         ArrayList<Double> samples = new ArrayList<Double>( numSamples );
+        sampleInto(cdf, random, numSamples, samples);
+        return samples;
+    }
+    
+    /**
+     * Samples from the given CDF using the inverseRootFinder transform sampling method.
+     * @param cdf
+     * CDF from which to sample.
+     * @param random
+     * Random number generator.
+     * @param numSamples
+     * Number of samples to draw from the CDF.
+     * @param output
+     * Collection to put samples drawn according to the given CDF.
+     */
+    public static void sampleInto(
+        final CumulativeDistributionFunction<Double> cdf,
+        final Random random,
+        final int numSamples,
+        final Collection<? super Double> output)
+    {
         for( int n = 0; n < numSamples; n++ )
         {
             double p = random.nextDouble();
@@ -98,10 +119,8 @@ public class InverseTransformSampling
                 throw new IllegalArgumentException(
                     "Could not invert the CDF (" + cdf + ") at p = " + p + "(" + result.getOutput() + ")" );
             }
-            samples.add( result.getInput() );
+            output.add( result.getInput() );
         }
-
-        return samples;
     }
 
     /**

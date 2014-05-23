@@ -230,7 +230,7 @@ public class AdaptiveRejectionSampling
         final int maxRejections = 100;
         for( int rejections = 0; rejections < maxRejections; rejections++ )
         {
-            final double x = this.upperEnvelope.sample(random);
+            final double x = this.upperEnvelope.sampleAsDouble(random);
             final double u = random.nextDouble();
             final double logLower = this.lowerEnvelope.logEvaluate(x);
             final double logUpper = this.upperEnvelope.logEvaluate(x);
@@ -507,12 +507,26 @@ public class AdaptiveRejectionSampling
             return this;
         }
 
+        /**
+         * Gets the mean, which is not a supported operation. An exception is
+         * thrown.
+         * 
+         * @return  Nothing.
+         */
         public Double getMean()
         {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
-        public Double sample(
+        /**
+         * Samples from this distribution as a double.
+         * 
+         * @param   random
+         *      The random number generator to use.
+         * @return 
+         *      A sample from this distribution.
+         */
+        public double sampleAsDouble(
             Random random)
         {
             // This is really just a trick to make sure we re-compute the lines
@@ -531,18 +545,35 @@ public class AdaptiveRejectionSampling
             return segment.sampleExp(p2);
         }
 
-        public ArrayList<Double> sample(
-            Random random,
-            int numSamples)
+        @Override
+        public Double sample(
+            final Random random)
         {
-            ArrayList<Double> samples = new ArrayList<Double>( numSamples );
-            for( int n = 0; n < numSamples; n++ )
-            {
-                samples.add( this.sample(random) );
-            }
-            return samples;
+            return this.sampleAsDouble(random);
         }
-
+        
+        @Override
+        public ArrayList<Double> sample(
+            final Random random,
+            final int numSamples)
+        {
+            final ArrayList<Double> result = new ArrayList<Double>(numSamples);
+            this.sampleInto(random, numSamples, result);
+            return result;
+        }
+        
+        @Override
+        public void sampleInto(
+            final Random random,
+            final int sampleCount,
+            final Collection<? super Double> output)
+        {
+            for (int i = 0; i < sampleCount; i++)
+            {
+                output.add(this.sampleAsDouble(random));
+            }
+        }
+        
         /**
          * Recomputes the line segments that comprise the upper envelope
          */

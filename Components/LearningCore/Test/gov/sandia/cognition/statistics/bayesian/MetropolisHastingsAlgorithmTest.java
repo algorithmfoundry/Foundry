@@ -140,10 +140,10 @@ public class MetropolisHastingsAlgorithmTest
         double p = 0.75;
         BernoulliDistribution.PMF target = new BernoulliDistribution.PMF(p);
         final int numSamples = 1000;
-        ArrayList<Integer> samples = target.sample(RANDOM, numSamples);
+        ArrayList<Number> samples = target.sample(RANDOM, numSamples);
 
-        MetropolisHastingsAlgorithm<Integer,BernoulliDistribution.PMF> mcmc =
-            new MetropolisHastingsAlgorithm<Integer,BernoulliDistribution.PMF>();
+        MetropolisHastingsAlgorithm<Number,BernoulliDistribution.PMF> mcmc =
+            new MetropolisHastingsAlgorithm<Number,BernoulliDistribution.PMF>();
         mcmc.setBurnInIterations(1000);
         mcmc.setIterationsPerSample(10);
         mcmc.setUpdater( new BernoulliUpdater() );
@@ -212,7 +212,7 @@ public class MetropolisHastingsAlgorithmTest
 
     public class BernoulliUpdater
         extends AbstractCloneableSerializable
-        implements MetropolisHastingsAlgorithm.Updater<Integer,BernoulliDistribution.PMF>
+        implements MetropolisHastingsAlgorithm.Updater<Number,BernoulliDistribution.PMF>
     {
 
         private Distribution<Double> tweaker;
@@ -245,7 +245,7 @@ public class MetropolisHastingsAlgorithmTest
 
         public double computeLogLikelihood(
             BernoulliDistribution.PMF parameter,
-            Iterable<? extends Integer> data)
+            Iterable<? extends Number> data)
         {
             return BayesianUtil.logLikelihood(parameter, data);
         }

@@ -14,11 +14,13 @@
 
 package gov.sandia.cognition.statistics.distribution;
 
+import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.statistics.SmoothUnivariateDistributionTestHarness;
 import gov.sandia.cognition.statistics.method.KolmogorovSmirnovConfidence;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * Tests for class ScalarMixtureDensityModelTest.
@@ -78,13 +80,14 @@ public class ScalarMixtureDensityModelTest
     public void testLearner3Distribution()
     {
         System.out.println( "Learner 3 Distributions" );
-
+        RANDOM.setSeed(1234);
         ScalarMixtureDensityModel target = new ScalarMixtureDensityModel(
             new UnivariateGaussian( 1.0, 1.0 ),
             new ExponentialDistribution( 10.0 ),
             new LaplaceDistribution( -1.0, 2.0 ) );
         ArrayList<Double> samples = target.sample(RANDOM, NUM_SAMPLES);
-
+System.out.println("Samples: " + samples);
+System.out.println("Mean: " + UnivariateStatisticsUtil.computeMean(samples));
         @SuppressWarnings("unchecked")
         ScalarMixtureDensityModel.EMLearner learner =
             new ScalarMixtureDensityModel.EMLearner(

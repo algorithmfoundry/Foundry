@@ -25,6 +25,7 @@ import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Set;
@@ -110,20 +111,25 @@ public class DeterministicDistribution
     @Override
     public Double getMean()
     {
+        return this.getMeanAsDouble();
+    }
+    
+    @Override
+    public double getMeanAsDouble()
+    {
         return this.getPoint();
     }
 
     @Override
-    public ArrayList<Double> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples )
+        final int sampleCount,
+        final Collection<? super Double> output)
     {
-        ArrayList<Double> samples = new ArrayList<Double>( numSamples );
-        for( int n = 0; n < numSamples; n++ )
+        for( int n = 0; n < sampleCount; n++ )
         {
-            samples.add( this.getPoint() );
+            output.add( this.getPoint() );
         }
-        return samples;
     }
 
     @Override

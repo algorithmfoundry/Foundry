@@ -348,12 +348,20 @@ public class HiddenMarkovModel<ObservationType>
         Random random,
         int numSamples )
     {
+        final ArrayList<ObservationType> samples = new ArrayList<ObservationType>(numSamples);
+        this.sampleInto(random, numSamples, samples);
+        return samples;
+    }
 
-        ArrayList<ObservationType> samples =
-            new ArrayList<ObservationType>( numSamples );
+    @Override
+    public void sampleInto(
+        final Random random,
+        final int sampleCount,
+        final Collection<? super ObservationType> output)
+    {
         Vector p = this.getInitialProbability();
         int state = -1;
-        for( int n = 0; n < numSamples; n++ )
+        for( int n = 0; n < sampleCount; n++ )
         {
             double value = random.nextDouble();
             state = -1;
@@ -365,12 +373,9 @@ public class HiddenMarkovModel<ObservationType>
 
             ObservationType sample = CollectionUtil.getElement(
                 this.getEmissionFunctions(), state ).sample(random);
-            samples.add( sample );
+            output.add( sample );
             p = this.getTransitionProbability().getColumn(state);
         }
-
-        return samples;
-
     }
 
     /**

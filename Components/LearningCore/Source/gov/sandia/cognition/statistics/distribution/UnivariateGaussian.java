@@ -160,6 +160,12 @@ public class UnivariateGaussian
     }
 
     @Override
+    public double getMeanAsDouble()
+    {
+        return this.mean;
+    }
+
+    @Override
     public double getVariance()
     {
         return this.variance;
@@ -176,6 +182,17 @@ public class UnivariateGaussian
         ArgumentChecker.assertIsPositive("variance", variance);
         this.variance = variance;
     }
+    
+    /**
+     * Gets the standard deviation, which is the square root of the variance.
+     * 
+     * @return 
+     *      The standard deviation.
+     */
+    public double getStandardDeviation()
+    {
+        return Math.sqrt(this.getVariance());
+    }
 
     /**
      * Returns the string representation of the object.
@@ -186,28 +203,38 @@ public class UnivariateGaussian
     public String toString()
     {
         return "Mean: " + this.getMean() + " Variance: " + this.getVariance();
-    }    
+    }
     
     @Override
-    public ArrayList<Double> sample(
-        final Random random,
-        final int numSamples )
+    public double sampleAsDouble(
+        final Random random)
     {
-        
-        ArrayList<Double> samples = new ArrayList<Double>( numSamples );
-        double stddev = Math.sqrt( this.getVariance() );
-        for( int n = 0; n < numSamples; n++ )
+        // NOTE: It is about twice as fast to use random.nextGaussian()
+        // than to compute a compute the method properly, using:
+        // UnivariateGaussian.CDF.Inverse.evaluate( random.nextDouble(), stddev )
+        // on my test battery.
+        //      -- krdixon, 2009-01-23
+        return this.mean + random.nextGaussian() * this.getStandardDeviation();
+    }
+    
+    @Override
+    public void sampleInto(
+        final Random random,
+        final double[] output,
+        final int start,
+        final int length)
+    {
+        final double standardDeviation = this.getStandardDeviation();
+        final int end = start + length;
+        for (int i = start; i < end; i++)
         {
             // NOTE: It is about twice as fast to use random.nextGaussian()
             // than to compute a compute the method properly, using:
             // UnivariateGaussian.CDF.Inverse.evaluate( random.nextDouble(), stddev )
             // on my test battery.
             //      -- krdixon, 2009-01-23
-            double x = random.nextGaussian();
-            samples.add( x*stddev + this.mean );
+            output[i] = this.mean + random.nextGaussian() * standardDeviation;
         }
-        
-        return samples;
     }
 
     @Override

@@ -21,9 +21,9 @@ import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistribution;
+import gov.sandia.cognition.statistics.AbstractClosedFormIntegerDistribution;
 import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
+import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistribution;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
 import gov.sandia.cognition.statistics.EstimableDistribution;
@@ -51,7 +51,7 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Poisson_distribution"
 )
 public class PoissonDistribution
-    extends AbstractClosedFormUnivariateDistribution<Number>
+    extends AbstractClosedFormIntegerDistribution
     implements ClosedFormDiscreteUnivariateDistribution<Number>,
     EstimableDistribution<Number,PoissonDistribution>
 {
@@ -109,18 +109,48 @@ public class PoissonDistribution
     @Override
     public Double getMean()
     {
+        return this.getMeanAsDouble();
+    }
+    
+    public double getMeanAsDouble()
+    {
         return this.getRate();
     }
 
     @Override
-    public ArrayList<Number> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples)
+        final int sampleCount,
+        final Collection<? super Number> output)
     {
-        return ProbabilityMassFunctionUtil.sample(
-            this.getProbabilityFunction(), random, numSamples);
+        ProbabilityMassFunctionUtil.sampleInto(
+            this.getProbabilityFunction(), random, sampleCount, output);
     }
 
+    @Override
+    public int sampleAsInt(
+        final Random random)
+    {
+// TODO: See if there is a way to do this without any boxing.
+        return ProbabilityMassFunctionUtil.sampleSingle(
+            this.getProbabilityFunction(), random).intValue();
+    }
+
+    @Override
+    public void sampleInto(
+        final Random random,
+        final int[] output,
+        final int start,
+        final int length)
+    {
+// TODO: See if there is a way to do this without any boxing.
+        final ArrayList<Number> samples = this.sample(random, length);
+        for (int i = 0; i < length; i++)
+        {
+            output[start + i] = samples.get(i).intValue();
+        }
+    }
+    
     @Override
     public PoissonDistribution.CDF getCDF()
     {

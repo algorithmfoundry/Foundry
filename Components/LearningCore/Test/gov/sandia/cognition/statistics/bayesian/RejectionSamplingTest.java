@@ -99,7 +99,7 @@ public class RejectionSamplingTest
         double p = 0.75;
         BernoulliDistribution.PMF target = new BernoulliDistribution.PMF(p);
         final int numSamples = 100;
-        ArrayList<Integer> samples = target.sample(RANDOM, numSamples);
+        ArrayList<Number> samples = target.sample(RANDOM, numSamples);
 
         RejectionSampling<Number,Double> instance =
             new RejectionSampling<Number, Double>();
@@ -140,7 +140,7 @@ public class RejectionSamplingTest
         double p = 0.75;
         BernoulliDistribution.PMF target = new BernoulliDistribution.PMF(p);
         final int numSamples = 100;
-        ArrayList<Integer> samples = target.sample(RANDOM, numSamples);
+        ArrayList<Number> samples = target.sample(RANDOM, numSamples);
 
         RejectionSampling<Number,Double> instance =
             new RejectionSampling<Number, Double>();

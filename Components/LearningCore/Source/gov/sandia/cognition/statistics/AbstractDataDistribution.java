@@ -21,6 +21,7 @@ import gov.sandia.cognition.math.matrix.InfiniteVector;
 import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.MutableDouble;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -99,7 +100,7 @@ public abstract class AbstractDataDistribution<KeyType>
 
     @Override
     public KeyType sample(
-        Random random)
+        final Random random)
     {
         double w = random.nextDouble() * this.getTotal();
         for (ScalarMap.Entry<KeyType> entry : this.entrySet())
@@ -115,8 +116,19 @@ public abstract class AbstractDataDistribution<KeyType>
 
     @Override
     public ArrayList<KeyType> sample(
-        Random random,
-        int numSamples)
+        final Random random,
+        final int numSamples)
+    {
+        final ArrayList<KeyType> result = new ArrayList<KeyType>(numSamples);
+        this.sampleInto(random, numSamples, result);
+        return result;
+    }
+
+    @Override
+    public void sampleInto(
+        final Random random,
+        final int sampleCount,
+        final Collection<? super KeyType> output)
     {
         // Compute the cumulative weights
         final int size = this.getDomainSize();
@@ -132,9 +144,9 @@ public abstract class AbstractDataDistribution<KeyType>
             cumulativeWeights[index] = cumulativeSum;
             index++;
         }
-
-        return ProbabilityMassFunctionUtil.sampleMultiple(
-            cumulativeWeights, cumulativeSum, domain, random, numSamples);
+        
+        ProbabilityMassFunctionUtil.sampleMultipleInto(
+            cumulativeWeights, domain, random, sampleCount, output);
     }
 
     @Override

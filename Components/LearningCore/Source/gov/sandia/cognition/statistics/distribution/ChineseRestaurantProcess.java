@@ -20,6 +20,7 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.statistics.AbstractDistribution;
 import gov.sandia.cognition.statistics.ClosedFormComputableDiscreteDistribution;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
@@ -64,7 +65,7 @@ import java.util.Set;
     }
 )
 public class ChineseRestaurantProcess 
-    extends AbstractCloneableSerializable
+    extends AbstractDistribution<Vector>
     implements ClosedFormComputableDiscreteDistribution<Vector>
 {
 
@@ -210,16 +211,15 @@ public class ChineseRestaurantProcess
     }
 
     @Override
-    public ArrayList<Vector> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples)
+        final int sampleCount,
+        final Collection<? super Vector> output)
     {
-        ArrayList<Vector> samples = new ArrayList<Vector>( numSamples );
-        for( int n = 0; n < numSamples; n++ )
+        for (int i = 0; i < sampleCount; i++)
         {
-            samples.add( this.sample(random) );
+            output.add(this.sample(random));
         }
-        return samples;
     }
 
     /**

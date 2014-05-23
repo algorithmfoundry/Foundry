@@ -233,24 +233,25 @@ public class StudentTDistribution
     }
 
     @Override
-    public ArrayList<Double> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples )
+        final double[] output,
+        final int start,
+        final int length)
     {
-        // This is a Chi-square with degreesOfFreedom degrees of freedom
-        ArrayList<Double> Vs = ChiSquareDistribution.sample(
-            this.degreesOfFreedom, random, numSamples);
-        ArrayList<Double> samples = new ArrayList<Double>( numSamples );
+        final double[] Vs = ChiSquareDistribution.sampleAsDoubles(
+            this.degreesOfFreedom, random, length);
         final double sp = Math.sqrt(this.precision);
-        for( int n = 0; n < numSamples; n++ )
+
+        final int end = start + length;
+        for (int i = start; i < end; i++)
         {
             final double z = random.nextGaussian()/sp;
-            final double v = Vs.get(n);
-            samples.add( z * Math.sqrt(this.degreesOfFreedom/v)+this.mean );
+            final double v = Vs[i - start];
+            output[i] = z * Math.sqrt(this.degreesOfFreedom / v) + this.mean;
         }
-        return samples;
     }
-
+        
     @Override
     public StudentTDistribution.CDF getCDF()
     {
@@ -303,7 +304,7 @@ public class StudentTDistribution
     }
 
     @Override
-    public Double getMean()
+    public double getMeanAsDouble()
     {
         return this.mean;
     }

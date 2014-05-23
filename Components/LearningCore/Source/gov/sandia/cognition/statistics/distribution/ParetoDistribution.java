@@ -174,7 +174,7 @@ public class ParetoDistribution
     }
 
     @Override
-    public Double getMean()
+    public double getMeanAsDouble()
     {
         if( this.shape > 1.0 )
         {
@@ -207,19 +207,29 @@ public class ParetoDistribution
     }
 
     @Override
-    public ArrayList<? extends Double> sample(
-        final Random random,
-        final int numSamples)
+    public double sampleAsDouble(
+        final Random random)
     {
-        ArrayList<Double> samples = new ArrayList<Double>( numSamples );
-        final double exp = 1.0/this.shape;
-        for( int n = 0; n < numSamples; n++ )
+        final double exp = 1.0 / this.shape;        
+        final double u = random.nextDouble();
+        return this.scale / Math.pow(u, exp) - this.shift;
+    }
+    
+    @Override
+    public void sampleInto(
+        final Random random,
+        final double[] output,
+        final int start,
+        final int length)
+    {
+        final double exp = 1.0 / this.shape;
+        
+        final int end = start + length;
+        for (int i = start; i < end; i++)
         {
             final double u = random.nextDouble();
-            samples.add( this.scale / Math.pow(u, exp) - this.shift );
+            output[i] = this.scale / Math.pow(u, exp) - this.shift;
         }
-
-        return samples;
     }
 
     @Override

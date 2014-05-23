@@ -20,12 +20,12 @@ import gov.sandia.cognition.collection.IntegerSpan;
 import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
+import gov.sandia.cognition.statistics.AbstractClosedFormIntegerDistribution;
 import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistribution;
 import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -45,7 +45,7 @@ import java.util.Random;
     url="http://en.wikipedia.org/wiki/Yule%E2%80%93Simon_distribution"
 )
 public class YuleSimonDistribution 
-    extends AbstractClosedFormUnivariateDistribution<Number>
+    extends AbstractClosedFormIntegerDistribution
     implements ClosedFormDiscreteUnivariateDistribution<Number>
 {
 
@@ -123,7 +123,13 @@ public class YuleSimonDistribution
     @Override
     public Double getMean()
     {
-        return this.shape / (this.shape-1.0);
+        return this.getMeanAsDouble();
+    }
+    
+    @Override
+    public double getMeanAsDouble()
+    {
+        return this.shape / (this.shape - 1.0);
     }
 
     @Override
@@ -131,7 +137,7 @@ public class YuleSimonDistribution
     {
         if( this.shape > 2.0 )
         {
-            final double mean = this.getMean();
+            final double mean = this.getMeanAsDouble();
             return mean*mean / (this.shape-2.0);
         }
         else
@@ -139,27 +145,32 @@ public class YuleSimonDistribution
             return 0.0;
         }
     }
+    
+    @Override
+    public int sampleAsInt(
+        final Random random)
+    {
+        // First, generate exponential(shape)
+        final double u = random.nextDouble();
+        final double e = Math.log(u) / -this.shape;
+
+        // Next, generate geometric(Math.exp(-e))
+        final double geo = Math.exp(-e);
+        final double denom = Math.log(1.0 - geo);
+        final double lnu = Math.log(random.nextDouble());
+        return (int) Math.floor(lnu / denom) + 1;
+    }
 
     @Override
-    public ArrayList<Integer> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples)
+        final int sampleCount,
+        final Collection<? super Number> output)
     {
-        ArrayList<Integer> samples = new ArrayList<Integer>( numSamples );
-        final double negativeInverseScale = -1.0/this.shape;
-        for( int n = 0; n < numSamples; n++ )
+        for (int i = 0; i < sampleCount; i++)
         {
-            // First, generate exponential( shape )
-            final double u = random.nextDouble();
-            final double e = Math.log(u) * negativeInverseScale;
-
-            // Next, generate geometric( Math.exp(-e) )
-            final double geo = Math.exp( -e );
-            final double denom = Math.log( 1.0 - geo );
-            final double lnu = Math.log( random.nextDouble() );
-            samples.add( (int) Math.floor( lnu / denom ) + 1 );
+            output.add(this.sampleAsInt(random));
         }
-        return samples;
     }
 
     @Override

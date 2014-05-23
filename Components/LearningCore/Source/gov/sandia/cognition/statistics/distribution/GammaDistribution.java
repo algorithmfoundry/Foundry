@@ -193,7 +193,7 @@ public class GammaDistribution
      * Sets the rate parameter, which is just the inverse of the scale parameter.
      * It is commonly referred to as beta.
      * 
-     * @return 
+     * @param   rate 
      *      The rate parameter (1.0 / scale). Must be greater than 0.0.
      */
     public void setRate(
@@ -204,7 +204,7 @@ public class GammaDistribution
     }
 
     @Override
-    public Double getMean()
+    public double getMeanAsDouble()
     {
         return this.getShape() * this.getScale();
     }
@@ -270,87 +270,187 @@ public class GammaDistribution
         final Random random,
         final int numSamples )
     {
-
-        if( shape <= 0.0 )
+        final double[] values = sampleAsDoubles(shape, scale, random, numSamples);
+        final ArrayList<Double> result = new ArrayList<Double>(numSamples);
+        for (final double value : values)
         {
-            throw new IllegalArgumentException(
-                "Shape must be > 0.0" );
+            result.add(value);
         }
-        if( scale <= 0.0 )
+        return result;
+    }
+    
+    /**
+     * Efficiently samples from a Gamma distribution given by the
+     * shape and scale parameters.
+     * @param shape
+     * Shape parameter of the Gamma distribution, often written as "k",
+     * must be greater than zero
+     * @param scale
+     * Scale parameters of the Gamma distribution, often written as "theta",
+     * must be greater than zero.
+     * Note that this is the INVERSE of what octave uses!!
+     * @param random
+     * Random number generator
+     * @return
+     * Samples simulated from the Gamma distribution.
+     */
+    public static double sampleAsDouble(
+        final double shape,
+        final double scale,
+        final Random random)
+    {
+        ArgumentChecker.assertIsPositive("shape", shape);
+        ArgumentChecker.assertIsPositive("scale", scale);
+        
+        final int k = (int) Math.floor(shape);
+        final double delta = shape - k;
+        final double v0 = (delta > 0.0) ? Math.E / (Math.E + delta) : 0.0;
+        return sample(random, shape, scale, k, delta, v0);
+    }
+    
+    /**
+     * Efficiently samples from a Gamma distribution given by the
+     * shape and scale parameters.
+     * @param shape
+     * Shape parameter of the Gamma distribution, often written as "k",
+     * must be greater than zero
+     * @param scale
+     * Scale parameters of the Gamma distribution, often written as "theta",
+     * must be greater than zero.
+     * Note that this is the INVERSE of what octave uses!!
+     * @param random
+     * Random number generator
+     * @param numSamples
+     * Number of samples to generate
+     * @return
+     * Samples simulated from the Gamma distribution.
+     */
+    public static double[] sampleAsDoubles(
+        final double shape,
+        final double scale,
+        final Random random,
+        final int numSamples)
+    {
+        final double[] result = new double[numSamples];
+        sampleInto(shape, scale, random, result, 0, numSamples);
+        return result;
+    }
+
+    /**
+     * Efficiently samples from a Gamma distribution given by the
+     * shape and scale parameters.
+     * @param shape
+     * Shape parameter of the Gamma distribution, often written as "k",
+     * must be greater than zero
+     * @param scale
+     * Scale parameters of the Gamma distribution, often written as "theta",
+     * must be greater than zero.
+     * Note that this is the INVERSE of what octave uses!!
+     * @param random
+     * Random number generator
+     * @param output Array to write samples from Gamma distribution into.
+     * @param start Starting point in output array to add samples.
+     * @param length Number of samples to generate
+     */
+    public static void sampleInto(
+        final double shape,
+        final double scale,
+        final Random random,
+        final double[] output,
+        final int start,
+        final int length)
+    {
+        ArgumentChecker.assertIsPositive("shape", shape);
+        ArgumentChecker.assertIsPositive("scale", scale);
+
+        // Note: This code is duplicated in sampleAsDouble to avoid overhead
+        // of creating objects.
+        final int k = (int) Math.floor(shape);
+        final double delta = shape - k;
+        final double v0 = (delta > 0.0) ? Math.E / (Math.E + delta) : 0.0;
+        final int end = start + length;
+        for (int i = start; i < end; i++)
         {
-            throw new IllegalArgumentException(
-                "Scale must be > 0.0" );
+            output[i] = sample(random, shape, scale, k, delta, v0);
+        }
+    }
+    
+    // Internal sampling function implementation.
+    private static double sample(
+        final Random random,
+        final double shape,
+        final double scale,
+        final int k,
+        final double delta,
+        final double v0)
+    {
+        double logSum = 0.0;
+        for( int i = 0; i < k; i++ )
+        {
+            double u = random.nextDouble();
+            logSum += Math.log( u );
         }
 
-        ArrayList<Double> samples = new ArrayList<Double>( numSamples );
-        int k = (int) Math.floor(shape);
-        double delta = shape - k;
-        final double v0 = (delta > 0.0) ? Math.exp(1) / (Math.exp(1)+delta) : 0.0;
-        for( int n = 0; n < numSamples; n++ )
+        double xi = 0.0;
+        if( delta > 0.0 )
         {
-            double logSum = 0.0;
-            for( int i = 0; i < k; i++ )
+            double nu = 0.0;
+            double xidm1;
+            double emxi;
+            final int MAX_ITERATIONS = 100;
+            int m = 0;
+            for( m = 0; m < MAX_ITERATIONS; m++ )
             {
-                double u = random.nextDouble();
-                logSum += Math.log( u );
-            }
-
-            double xi = 0.0;
-            if( delta > 0.0 )
-            {
-                double nu = 0.0;
-                double xidm1;
-                double emxi;
-                final int MAX_ITERATIONS = 100;
-                int m = 0;
-                for( m = 0; m < MAX_ITERATIONS; m++ )
+                double vm2 = random.nextDouble();
+                double vm1 = random.nextDouble();
+                double vm0 = random.nextDouble();
+                if( vm2 < v0 )
                 {
-                    double vm2 = random.nextDouble();
-                    double vm1 = random.nextDouble();
-                    double vm0 = random.nextDouble();
-                    if( vm2 < v0 )
-                    {
-                        xi = Math.pow( vm1, 1.0/delta );
-                        xidm1 = Math.pow(xi,delta-1.0);
-                        emxi = Math.exp(-xi);
-                        nu = vm0 * xidm1;
-                    }
-                    else
-                    {
-                        xi = 1.0 - Math.log(vm1);
-                        xidm1 = Math.pow(xi,delta-1.0);
-                        emxi = Math.exp(-xi);
-                        nu = vm0 * emxi;
-                    }
-
-                    if( nu <= xidm1*emxi )
-                    {
-                        break;
-                    }
+                    xi = Math.pow( vm1, 1.0/delta );
+                    xidm1 = Math.pow(xi,delta-1.0);
+                    emxi = Math.exp(-xi);
+                    nu = vm0 * xidm1;
+                }
+                else
+                {
+                    xi = 1.0 - Math.log(vm1);
+                    xidm1 = Math.pow(xi,delta-1.0);
+                    emxi = Math.exp(-xi);
+                    nu = vm0 * emxi;
                 }
 
-                if( m >= MAX_ITERATIONS )
+                if( nu <= xidm1*emxi )
                 {
-                    throw new IllegalArgumentException(
-                        "Exceeded max iterations in GammaDistribution.sample" );
+                    break;
                 }
-
             }
 
-            samples.add( scale * (xi - logSum) );
+            if( m >= MAX_ITERATIONS )
+            {
+                throw new IllegalArgumentException(
+                    "Exceeded max iterations in GammaDistribution.sample" );
+            }
 
         }
+        return scale * (xi - logSum);
+    }
 
-        return samples;
-
+    @Override
+    public double sampleAsDouble(
+        final Random random)
+    {
+        return sampleAsDouble(this.getShape(), this.getScale(), random);
     }
     
     @Override
-    public ArrayList<Double> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples )
+        final double[] output,
+        final int start,
+        final int length)
     {
-        return sample( this.getShape(), this.getScale(), random, numSamples );
+        sampleInto(this.getShape(), this.getScale(), random, 
+            output, start, length);
     }
 
     @Override

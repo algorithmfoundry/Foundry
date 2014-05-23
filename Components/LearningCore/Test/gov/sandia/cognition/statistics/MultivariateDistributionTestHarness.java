@@ -196,6 +196,37 @@ public abstract class MultivariateDistributionTestHarness<RingType extends Ring<
         }
 
     }
+    
+    
+    /**
+     * Test of sampleInto method, of class Distribution.
+     */
+    public void testSampleInto()
+    {
+        System.out.println("sampleInto");
+        final int rs = RANDOM.nextInt();
+        Random r1 = new Random(rs);
+        Random r2 = new Random(rs);
+
+        Distribution<RingType> d = this.createInstance();
+
+        ArrayList<RingType> x1 = new ArrayList<RingType>();
+        ArrayList<RingType> x2 = new ArrayList<RingType>();
+        d.sampleInto(r1, NUM_SAMPLES, x1);
+        d.sampleInto(r2, NUM_SAMPLES, x2);
+
+        assertEquals(NUM_SAMPLES, x1.size());
+        assertEquals(NUM_SAMPLES, x2.size());
+        for (int n = 0; n < NUM_SAMPLES; n++)
+        {
+            RingType y1 = x1.get(n);
+            RingType y2 = x2.get(n);
+            assertNotNull(y1);
+            assertNotNull(y2);
+            assertNotSame(y1, y2);
+            assertTrue(y1.equals(y2, TOLERANCE));
+        }
+    }
 
     /**
      * toString

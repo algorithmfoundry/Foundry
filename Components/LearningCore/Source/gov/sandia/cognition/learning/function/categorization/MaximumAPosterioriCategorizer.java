@@ -243,23 +243,21 @@ public class MaximumAPosterioriCategorizer<ObservationType,CategoryType>
         return mean;
 
     }
-
+    
     @Override
-    public ArrayList<? extends ObservationType> sample(
-        Random random,
-        int numSamples)
+    public void sampleInto(
+        final Random random,
+        final int numSamples,
+        final Collection<? super ObservationType> output)
     {
         ArrayList<? extends CategoryType> categories =
             this.categoryPriors.sample(random, numSamples);
-        ArrayList<ObservationType> observations =
-            new ArrayList<ObservationType>( numSamples );
         for( CategoryType category : categories )
         {
             ProbabilityFunction<ObservationType> pdf =
                 this.categoryConditionals.get(category);
-            observations.add( pdf.sample(random) );
+            output.add( pdf.sample(random) );
         }
-        return observations;
     }
 
     /**

@@ -25,6 +25,7 @@ import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.DistributionEstimator;
 import gov.sandia.cognition.statistics.DistributionWeightedEstimator;
+import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
 import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.SmoothUnivariateDistribution;
@@ -268,6 +269,12 @@ public class ScalarMixtureDensityModel
     @Override
     public Double getMean()
     {
+        return this.getMeanAsDouble();
+    }
+    
+    @Override
+    public double getMeanAsDouble()
+    {
         double sum = 0.0;
         int i = 0;
         final double priorSum = this.getPriorWeightSum();
@@ -275,7 +282,7 @@ public class ScalarMixtureDensityModel
         for( SmoothUnivariateDistribution d : this.getDistributions() )
         {
             final double prior = this.getPriorWeights()[i];
-            sum += prior * d.getMean();
+            sum += prior * d.getMeanAsDouble();
             i++;
         }
         return sum / priorSum;
@@ -318,6 +325,53 @@ public class ScalarMixtureDensityModel
         return result;
     }
 
+    @Override
+    public double sampleAsDouble(
+        final Random random)
+    {
+        final SmoothUnivariateDistribution d = ProbabilityMassFunctionUtil.sampleSingle(
+            this.getPriorWeights(), this.getDistributions(), random);
+        return d.sampleAsDouble(random);
+    }
+
+    @Override
+    public double[] sampleAsDoubles(
+        final Random random,
+        final int count)
+    {
+        final double[] result = new double[count];
+        this.sampleInto(random, result, 0, count);
+        return result;
+    }
+    
+    @Override
+    public void sampleInto(
+        final Random random,
+        final double[] output,
+        final int start,
+        final int length)
+    {
+        // Build the cumulative distribution for batch sampling.
+        final int distributionCount = this.getDistributionCount();
+        final double[] priorWeights = this.getPriorWeights();
+        final double[] cumulativeWeights = new double[distributionCount];
+        double sum = 0.0;
+        for(int n = 0; n < distributionCount; n++)
+        {
+            sum += priorWeights[n];
+            cumulativeWeights[n] = sum;
+        }
+
+        // Sample each of the mixtures.
+        final int end = start + length;
+        for (int i = start; i < end; i++)
+        {
+            final SmoothUnivariateDistribution d = ProbabilityMassFunctionUtil.sample(
+                cumulativeWeights, this.getDistributions(), random);
+            output[i] = d.sampleAsDouble(random);
+        }
+    }
+    
     @Override
     public ScalarMixtureDensityModel.PDF getProbabilityFunction()
     {

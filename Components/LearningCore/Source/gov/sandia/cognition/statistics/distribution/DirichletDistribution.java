@@ -25,6 +25,7 @@ import gov.sandia.cognition.statistics.ClosedFormComputableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityDensityFunction;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -113,11 +114,11 @@ public class DirichletDistribution
     }
 
     @Override
-    public ArrayList<Vector> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples)
+        final int numSamples,
+        final Collection<? super Vector> output)
     {
-
         GammaDistribution.CDF gammaRV = new GammaDistribution.CDF(1.0, 1.0);
 
         int K = this.getParameters().getDimensionality();
@@ -130,7 +131,6 @@ public class DirichletDistribution
             gammaData.add( gammaRV.sample(random, numSamples) );
         }
 
-        ArrayList<Vector> data = new ArrayList<Vector>( numSamples );
         for( int n = 0; n < numSamples; n++ )
         {
             Vector y = VectorFactory.getDefault().createVector(K);
@@ -145,10 +145,8 @@ public class DirichletDistribution
             {
                 y.scaleEquals(1.0/ysum);
             }
-            data.add( y );
+            output.add( y );
         }
-
-        return data;
     }
 
     @Override

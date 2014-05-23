@@ -230,4 +230,12 @@ public class StudentizedRangeDistributionTest
 //        super.testCDFConvertFromVector();
     }
 
+    @Override
+    public void testDistributionGetMeanAsDouble()
+    {
+        TOLERANCE = 1e-2;
+        super.testDistributionGetMeanAsDouble();
+    }
+
+    
 }

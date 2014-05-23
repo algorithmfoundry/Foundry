@@ -169,35 +169,35 @@ public abstract class LinearMixtureModel<DataType, DistributionType extends Dist
     public DataType sample(
         Random random)
     {
-        DistributionType d = ProbabilityMassFunctionUtil.sampleSingle(
+        final DistributionType d = ProbabilityMassFunctionUtil.sampleSingle(
             this.getPriorWeights(), this.getDistributions(), random);
         return d.sample(random);
     }
-
+    
     @Override
-    public ArrayList<DataType> sample(
-        Random random,
-        int numSamples)
+    public void sampleInto(
+        final Random random,
+        final int sampleCount,
+        final Collection<? super DataType> output)
     {
-
-        final int N = this.getDistributionCount();
-        double[] cumulativeWeights = new double[ N ];
+        // Build the cumulative distribution for batch sampling.
+        final int distributionCount = this.getDistributionCount();
+        final double[] priorWeights = this.getPriorWeights();
+        final double[] cumulativeWeights = new double[distributionCount];
         double sum = 0.0;
-        for( int n = 0; n < N; n++ )
+        for(int n = 0; n < distributionCount; n++)
         {
-            sum += this.getPriorWeights()[n];
+            sum += priorWeights[n];
             cumulativeWeights[n] = sum;
         }
 
-        ArrayList<DistributionType> whichDistributions =
-            ProbabilityMassFunctionUtil.sampleMultiple(
-                cumulativeWeights, sum, this.getDistributions(), random, numSamples);
-        ArrayList<DataType> samples = new ArrayList<DataType>( numSamples );
-        for( DistributionType d : whichDistributions )
+        // Sample each of the mixtures.
+        for (int i = 0; i < sampleCount; i++)
         {
-            samples.add( d.sample(random) );
+            final DistributionType d = ProbabilityMassFunctionUtil.sample(
+                cumulativeWeights, this.getDistributions(), random);
+            output.add(d.sample(random));
         }
-        return samples;
     }
 
     /**

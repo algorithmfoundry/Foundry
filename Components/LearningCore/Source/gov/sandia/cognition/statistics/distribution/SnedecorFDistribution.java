@@ -22,6 +22,7 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
 import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -157,6 +158,12 @@ public class SnedecorFDistribution
     @Override
     public Double getMean()
     {
+        return this.getMeanAsDouble();
+    }
+
+    @Override
+    public double getMeanAsDouble()
+    {
         if( this.v2 > 2.0 )
         {
             return this.v2 / (this.v2 - 2.0);
@@ -210,20 +217,20 @@ public class SnedecorFDistribution
     }
 
     @Override
-    public ArrayList<Double> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples )
+        final int sampleCount,
+        final Collection<? super Double> output)
     {
-        ArrayList<Double> g1 = GammaDistribution.sample(
-            this.v1/2.0, 2.0/this.v1, random,numSamples);
-        ArrayList<Double> g2 = GammaDistribution.sample(
-            this.v2/2.0, 2.0/this.v2, random,numSamples);
-        ArrayList<Double> samples = new ArrayList<Double>( numSamples );
-        for( int n = 0; n < numSamples; n++ )
+        final double[] g1 = GammaDistribution.sampleAsDoubles(
+            this.v1/2.0, 2.0/this.v1, random, sampleCount);
+        final double[] g2 = GammaDistribution.sampleAsDoubles(
+            this.v2/2.0, 2.0/this.v2, random, sampleCount);
+        for( int n = 0; n < sampleCount; n++ )
         {
-            samples.add( g1.get(n) / g2.get(n) );
+// TODO: Should there be a double[] version of this function too?
+            output.add( g1[n] / g2[n] );
         }
-        return samples;
     }
 
     @Override

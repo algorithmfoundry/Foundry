@@ -16,6 +16,7 @@ package gov.sandia.cognition.statistics;
 
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -34,7 +35,17 @@ public abstract class AbstractDistribution<DataType>
     public DataType sample(
         final Random random )
     {
-        return CollectionUtil.getFirst( this.sample( random, 1 ) );
+        return CollectionUtil.getFirst(this.sample(random, 1));
+    }
+
+    @Override
+    public ArrayList<DataType> sample(
+        final Random random,
+        final int numSamples)
+    {
+        final ArrayList<DataType> result = new ArrayList<DataType>(numSamples);
+        this.sampleInto(random, numSamples, result);
+        return result;
     }
     
 }

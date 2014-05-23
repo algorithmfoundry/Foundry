@@ -16,14 +16,14 @@ package gov.sandia.cognition.statistics.distribution;
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.collection.IntegerSpan;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistributionTestHarness;
+import gov.sandia.cognition.statistics.ClosedFormIntegerDistributionTestHarness;
 
 /**
  * JUnit tests for class BernoulliDistributionTest
  * @author Kevin R. Dixon
  */
 public class BernoulliDistributionTest
-    extends ClosedFormDiscreteUnivariateDistributionTestHarness<Number>
+    extends ClosedFormIntegerDistributionTestHarness
 {
 
     /**

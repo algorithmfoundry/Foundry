@@ -118,6 +118,12 @@ public class LaplaceDistribution
         return this.mean;
     }
 
+    @Override
+    public double getMeanAsDouble()
+    {
+        return this.mean;
+    }
+    
     /**
      * Setter for mean
      * @param mean
@@ -155,18 +161,25 @@ public class LaplaceDistribution
     }
 
     @Override
-    public ArrayList<Double> sample(
-        final Random random,
-        final int numSamples)
+    public double sampleAsDouble(
+        final Random random)
     {
-        ArrayList<Double> samples = new ArrayList<Double>( numSamples );
-        for( int n = 0; n < numSamples; n++ )
-        {
-            double p = random.nextDouble();
-            samples.add( LaplaceDistribution.CDF.inverse(this, p) );
-        }
+        final double p = random.nextDouble();
+        return LaplaceDistribution.CDF.inverse(this, p);            
+    }
 
-        return samples;
+    @Override
+    public void sampleInto(
+        final Random random,
+        final double[] output,
+        final int start,
+        final int length)
+    {
+        final int end = start + length;
+        for (int i = start; i < end; i++)
+        {
+            output[i] = this.sampleAsDouble(random);
+        }
     }
 
     @Override

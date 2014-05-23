@@ -30,6 +30,7 @@ import gov.sandia.cognition.util.ObjectUtil;
 import gov.sandia.cognition.util.Pair;
 import gov.sandia.cognition.util.Randomized;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
@@ -141,12 +142,12 @@ public class StudentizedRangeDistribution
     }
 
     @Override
-    public ArrayList<Double> sample(
+    public void sampleInto(
         final Random random,
-        final int numSamples)
+        final int sampleCount,
+        final Collection<? super Double> output)
     {
-
-        ArrayList<SampleRange> tasks = new ArrayList<SampleRange>( numSamples );
+        ArrayList<SampleRange> tasks = new ArrayList<SampleRange>(sampleCount);
         SmoothUnivariateDistribution t;
         if( this.getDegreesOfFreedom() < 30.0 )
         {
@@ -156,14 +157,14 @@ public class StudentizedRangeDistribution
         {
             t = new UnivariateGaussian();
         }
-        for( int n = 0; n < numSamples; n++ )
+        for( int n = 0; n < sampleCount; n++ )
         {
             tasks.add( new SampleRange(random, this.getTreatmentCount(), t) );
         }
 
         try
         {
-            return ParallelUtil.executeInSequence(tasks);
+            output.addAll(ParallelUtil.executeInSequence(tasks));
         }
         catch (Exception ex)
         {
@@ -180,6 +181,12 @@ public class StudentizedRangeDistribution
 
     @Override
     public Double getMean()
+    {
+        return this.getMeanAsDouble();
+    }
+    
+    @Override
+    public double getMeanAsDouble()
     {
         return UnivariateStatisticsUtil.computeMean(
             this.sample(this.getRandom(), DEFAULT_NUM_SAMPLES ) );

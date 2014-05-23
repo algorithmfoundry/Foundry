@@ -21,7 +21,7 @@ import gov.sandia.cognition.math.ProbabilityUtil;
 import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.statistics.AbstractClosedFormUnivariateDistribution;
+import gov.sandia.cognition.statistics.AbstractClosedFormIntegerDistribution;
 import gov.sandia.cognition.statistics.ClosedFormDiscreteUnivariateDistribution;
 import gov.sandia.cognition.statistics.ClosedFormCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.DistributionEstimator;
@@ -29,7 +29,6 @@ import gov.sandia.cognition.statistics.EstimableDistribution;
 import gov.sandia.cognition.statistics.ProbabilityMassFunction;
 import gov.sandia.cognition.statistics.ProbabilityMassFunctionUtil;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
@@ -47,7 +46,7 @@ import java.util.Random;
     url="http://www.mathworks.com/access/helpdesk/help/toolbox/stats/brn2ivz-58.html"
 )
 public class GeometricDistribution 
-    extends AbstractClosedFormUnivariateDistribution<Number>
+    extends AbstractClosedFormIntegerDistribution
     implements ClosedFormDiscreteUnivariateDistribution<Number>,
     EstimableDistribution<Number,GeometricDistribution>
 {
@@ -123,6 +122,12 @@ public class GeometricDistribution
     @Override
     public Double getMean()
     {
+        return this.getMeanAsDouble();
+    }
+    
+    @Override
+    public double getMeanAsDouble()
+    {
         return (1.0-this.p)/this.p;
     }
 
@@ -133,18 +138,26 @@ public class GeometricDistribution
     }
 
     @Override
-    public ArrayList<Integer> sample(
-        final Random random,
-        final int numSamples)
+    public int sampleAsInt(
+        final Random random)
     {
-        final double denom = Math.log( 1.0 - this.p );
-        ArrayList<Integer> samples = new ArrayList<Integer>( numSamples );
-        for( int n = 0; n < numSamples; n++ )
+        final double denom = Math.log(1.0 - this.p);
+        final double lnu = Math.log(random.nextDouble());
+        return (int) Math.floor(lnu / denom);
+    }
+
+    @Override
+    public void sampleInto(
+        final Random random,
+        final int sampleCount,
+        final Collection<? super Number> output)
+    {
+        final double denom = Math.log(1.0 - this.p);
+        for (int n = 0; n < sampleCount; n++)
         {
-            final double lnu = Math.log( random.nextDouble() );
-            samples.add( (int) Math.floor( lnu / denom ) );
+            final double lnu = Math.log(random.nextDouble());
+            output.add((int) Math.floor(lnu / denom));
         }
-        return samples;
     }
 
     @Override

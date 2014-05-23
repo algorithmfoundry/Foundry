@@ -155,7 +155,7 @@ public class WeibullDistribution
     }
 
     @Override
-    public Double getMean()
+    public double getMeanAsDouble()
     {
         return this.scale * Math.exp( MathUtil.logGammaFunction(
             1.0 + 1.0/this.shape ) );
@@ -170,20 +170,29 @@ public class WeibullDistribution
     }
 
     @Override
-    public ArrayList<Double> sample(
-        final Random random,
-        final int numSamples)
-    {        
-        ArrayList<Double> samples = new ArrayList<Double>( numSamples );
-        final double exp = 1.0/this.shape;
-        for( int n = 0; n < numSamples; n++ )
-        {
-            double u = random.nextDouble();
-            samples.add( this.scale * Math.pow(-Math.log(u), exp) );
-        }
-        return samples;
+    public double sampleAsDouble(Random random)
+    {
+        final double exp = 1.0 / this.shape;
+        final double u = random.nextDouble();
+        return this.scale * Math.pow(-Math.log(u), exp);
     }
 
+    @Override
+    public void sampleInto(
+        final Random random,
+        final double[] output,
+        final int start,
+        final int length)
+    {
+        final double exp = 1.0/this.shape;
+        final int end = start + length;
+        for (int n = start; n < end; n++)
+        {
+            final double u = random.nextDouble();
+            output[n] = this.scale * Math.pow(-Math.log(u), exp);
+        }
+    }
+    
     @Override
     public Vector convertToVector()
     {

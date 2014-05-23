@@ -27,8 +27,8 @@ import gov.sandia.cognition.statistics.InvertibleCumulativeDistributionFunction;
 import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
+import gov.sandia.cognition.util.ArgumentChecker;
 import gov.sandia.cognition.util.WeightedValue;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
@@ -114,17 +114,14 @@ public class ExponentialDistribution
     public void setRate(
         final double rate)
     {
-        if( rate <= 0.0 )
-        {
-            throw new IllegalArgumentException( "Rate must be > 0.0" );
-        }
+        ArgumentChecker.assertIsPositive("rate", rate);
         this.rate = rate;
     }
-
+    
     @Override
-    public Double getMean()
+    public double getMeanAsDouble()
     {
-        return 1.0/this.getRate();
+        return 1.0 / this.getRate();
     }
 
     @PublicationReference(
@@ -139,20 +136,27 @@ public class ExponentialDistribution
         notes="Example 2.5"
     )
     @Override
-    public ArrayList<Double> sample(
-        final Random random,
-        final int numSamples)
+    public double sampleAsDouble(
+        final Random random)
     {
-
-        final double negativeInverseScale = -1.0/this.rate;
-        ArrayList<Double> retval = new ArrayList<Double>( numSamples );
-        for( int n = 0; n < numSamples; n++ )
+        final double u = random.nextDouble();
+        return Math.log(u) / -this.rate;
+    }
+    
+    @Override
+    public void sampleInto(
+        final Random random,
+        final double[] output,
+        final int start,
+        final int length)
+    {
+        final double negativeInverseScale = -1.0 / this.rate;
+        final int end = start + length;
+        for (int i = start; i < end; i++)
         {
             final double u = random.nextDouble();
-            retval.add( Math.log(u) * negativeInverseScale );
+            output[i] = Math.log(u) * negativeInverseScale;
         }
-
-        return retval;
     }
 
     @Override

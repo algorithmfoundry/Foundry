@@ -216,10 +216,10 @@ public class SamplingImportanceResamplingParticleFilterTest
         double p = 0.75;
         BernoulliDistribution.PMF target = new BernoulliDistribution.PMF(p);
         final int numSamples = 1000;
-        ArrayList<Integer> samples = target.sample(RANDOM, numSamples);
+        ArrayList<Number> samples = target.sample(RANDOM, numSamples);
 
-        SamplingImportanceResamplingParticleFilter<Integer,BernoulliDistribution.PMF> particleFilter =
-            new SamplingImportanceResamplingParticleFilter<Integer,BernoulliDistribution.PMF>();
+        SamplingImportanceResamplingParticleFilter<Number,BernoulliDistribution.PMF> particleFilter =
+            new SamplingImportanceResamplingParticleFilter<Number,BernoulliDistribution.PMF>();
         particleFilter.setRandom(RANDOM);
         particleFilter.setNumParticles(200);
         particleFilter.setParticlePctThreadhold(0.5);
@@ -252,10 +252,10 @@ public class SamplingImportanceResamplingParticleFilterTest
         double p = 0.75;
         BernoulliDistribution.PMF target = new BernoulliDistribution.PMF(p);
         final int numSamples = 100;
-        ArrayList<Integer> samples = target.sample(RANDOM, numSamples);
+        ArrayList<Number> samples = target.sample(RANDOM, numSamples);
 
-        SamplingImportanceResamplingParticleFilter<Integer,BernoulliDistribution.PMF> particleFilter =
-            new SamplingImportanceResamplingParticleFilter<Integer,BernoulliDistribution.PMF>();
+        SamplingImportanceResamplingParticleFilter<Number,BernoulliDistribution.PMF> particleFilter =
+            new SamplingImportanceResamplingParticleFilter<Number,BernoulliDistribution.PMF>();
         particleFilter.setRandom(RANDOM);
         particleFilter.setNumParticles(100);
         particleFilter.setParticlePctThreadhold(1.0);
@@ -320,7 +320,7 @@ public class SamplingImportanceResamplingParticleFilterTest
 
     public class BernoulliUpdater
         extends AbstractCloneableSerializable
-        implements ParticleFilter.Updater<Integer,BernoulliDistribution.PMF>
+        implements ParticleFilter.Updater<Number,BernoulliDistribution.PMF>
     {
 
         private Distribution<Double> tweaker;
@@ -355,7 +355,7 @@ public class SamplingImportanceResamplingParticleFilterTest
 
         public double computeLogLikelihood(
             BernoulliDistribution.PMF particle,
-            Integer observation)
+            Number observation)
         {
             return particle.logEvaluate(observation);
         }
