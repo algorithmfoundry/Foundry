@@ -35,11 +35,11 @@ import gov.sandia.cognition.util.ArgumentChecker;
  */
 @PublicationReference(
     author={"Koby Crammer", "Alex Kulesza", "Mark Dredze"},
-    title="Adpative Regularization of Weight Vectors",
+    title="Adaptive Regularization of Weight Vectors",
     year=2009,
     type=PublicationType.Conference,
     publication="Advances in Neural Information Processing Systems",
-    url="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.169.4127&rep=rep1&type=pdf")
+    url="http://papers.nips.cc/paper/3848-adaptive-regularization-of-weight-vectors.pdf")
 public class AdaptiveRegularizationOfWeights
     extends AbstractSupervisedBatchAndIncrementalLearner<Vectorizable, Boolean, DefaultConfidenceWeightedBinaryCategorizer>
 {
