@@ -60,7 +60,7 @@ import gov.sandia.cognition.util.ArgumentChecker;
     type=PublicationType.Journal,
     publication="Journal of Machine Learning Research",
     pages={551, 585},
-    url="http://portal.acm.org/citation.cfm?id=1248566")
+    url="http://jmlr.org/papers/volume7/crammer06a/crammer06a.pdf")
 public class OnlinePassiveAggressivePerceptron
     extends AbstractLinearCombinationOnlineLearner
 {
