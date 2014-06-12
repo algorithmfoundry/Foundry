@@ -8,10 +8,10 @@
 
 package gov.sandia.cognition.learning.function.distance;
 
+import gov.sandia.cognition.data.convert.vector.AbstractToVectorEncoder;
 import gov.sandia.cognition.learning.algorithm.AbstractBatchLearnerContainer;
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
 import gov.sandia.cognition.math.DivergenceFunction;
-import gov.sandia.cognition.math.matrix.DefaultVectorFactoryContainer;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.VectorFactoryContainer;
@@ -38,11 +38,9 @@ import java.util.Collection;
  * @since   3.3.3
  */
 public class DivergencesEvaluator<InputType, ValueType>
-    extends DefaultVectorFactoryContainer
+    extends AbstractToVectorEncoder<InputType>
     implements VectorOutputEvaluator<InputType, Vector>,
         DivergenceFunctionContainer<ValueType, InputType>
-// TODO: This should be a DataToVectorEncoder, which is from Common Data.
-// -- jbasilico
 {
 
     /** The divergence function to apply between the data and the input. */
@@ -108,28 +106,22 @@ public class DivergencesEvaluator<InputType, ValueType>
         clone.values = ObjectUtil.cloneSmartElementsAsArrayList(this.values);
         return clone;
     }
-
+    
     @Override
-    public Vector evaluate(
-        final InputType input)
+    public void encode(
+        final InputType input,
+        final Vector result,
+        final int startIndex)
     {
-        // Create the result vector.
-        final int dimensionality = this.getOutputDimensionality();
-        final Vector result = this.getVectorFactory().createVector(
-            dimensionality);
-
         // Go through the values and compute the divergence to each one.
-        int index = 0;
-        for (ValueType cluster : this.getValues())
+        int index = startIndex;
+        for (final ValueType cluster : this.getValues())
         {
             final double distance =
                 this.divergenceFunction.evaluate(cluster, input);
             result.setElement(index, distance);
             index++;
         }
-
-        // Return the result.
-        return result;
     }
 
     @Override
@@ -182,7 +174,7 @@ public class DivergencesEvaluator<InputType, ValueType>
     }
 
     /**
-     * Convinience method for creation a {@code DivergeceEvaluator}.
+     * Convenience method for creation a {@code DivergeceEvaluator}.
      *
      * @param   <InputType>
      *      The type of input value that the class evaluates.
@@ -203,6 +195,7 @@ public class DivergencesEvaluator<InputType, ValueType>
         return new DivergencesEvaluator<InputType, ValueType>(
             divergenceFunction, values);
     }
+
 
     /**
      * A learner adapter for the {@code DivergencesEvaluator}. It calls a

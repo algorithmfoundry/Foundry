@@ -17,6 +17,7 @@ package gov.sandia.cognition.data.convert.vector;
 import gov.sandia.cognition.data.convert.AbstractDataConverter;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.math.matrix.VectorFactoryContainer;
 
 /**
  * An abstract implementation of the {@code DataToVectorEncoder} interface. It
@@ -30,7 +31,7 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
  */
 public abstract class AbstractToVectorEncoder<InputType>
     extends AbstractDataConverter<InputType, Vector>
-    implements DataToVectorEncoder<InputType>
+    implements DataToVectorEncoder<InputType>, VectorFactoryContainer
 {
 
     /** The vector factory to use to create new vectors. */
@@ -55,8 +56,8 @@ public abstract class AbstractToVectorEncoder<InputType>
         final VectorFactory<?> vectorFactory)
     {
         super();
-
-        this.vectorFactory = vectorFactory;
+        
+        this.setVectorFactory(vectorFactory);
     }
 
     /**
@@ -67,11 +68,12 @@ public abstract class AbstractToVectorEncoder<InputType>
      * @return
      *      The {@code Vector} representing the object.
      */
+    @Override
     public Vector evaluate(
         final InputType input)
     {
         // Create a new vector.
-        final Vector result = this.vectorFactory.createVector(
+        final Vector result = this.getVectorFactory().createVector(
             this.getOutputDimensionality());
         
         // Encode the input into the vector.
@@ -81,11 +83,30 @@ public abstract class AbstractToVectorEncoder<InputType>
         return result;
     }
 
+    @Override
     public void encode(
         final InputType object,
         final Vector vector)
     {
         this.encode(object, vector, 0);
+    }
+
+    @Override
+    public VectorFactory<?> getVectorFactory()
+    {
+        return this.vectorFactory;
+    }
+
+    /**
+     * Sets the vector factory used by this encoder.
+     * 
+     * @param   vectorFactory 
+     *      The vector factory to use.
+     */
+    public void setVectorFactory(
+        VectorFactory<?> vectorFactory)
+    {
+        this.vectorFactory = vectorFactory;
     }
 
 }
