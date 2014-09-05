@@ -24,7 +24,6 @@ import gov.sandia.cognition.util.ObjectUtil;
 import gov.sandia.cognition.util.Pair;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Tukey-Kramer test is the multiple-comparison generalization of the unpaired
@@ -97,22 +96,25 @@ public class TukeyKramerConfidence
         ArrayList<Integer> subjectCounts = new ArrayList<Integer>( K );
 
         ArrayList<Double> treatmentMeans = new ArrayList<Double>( K );
-        LinkedList<Number> allData = new LinkedList<Number>();
+        double treatmentVariancesSum = 0.0;
+        
+        // There are "N" total subjects
+        int N = 0;
         for( Collection<? extends Number> treatment : data )
         {
             final int Ni = treatment.size();
+            N += Ni;
             subjectCounts.add( Ni );
-            treatmentMeans.add( UnivariateStatisticsUtil.computeMean(treatment) );
-            allData.addAll(treatment);
+            Pair<Double,Double> meanAndVariance = UnivariateStatisticsUtil.computeMeanAndVariance(treatment);
+            treatmentMeans.add( meanAndVariance.getFirst() );
+            treatmentVariancesSum += meanAndVariance.getSecond() * (Ni-1);
         }
 
-        final Pair<Double,Double> result =
-            UnivariateStatisticsUtil.computeMeanAndVariance(allData);
-        double totalVariance = result.getSecond();
+        final double meanSquaredResiduals = treatmentVariancesSum / (N-K);        
         return new TukeyKramerConfidence.Statistic(
-            uncompensatedAlpha, subjectCounts, treatmentMeans, totalVariance );
+            uncompensatedAlpha, subjectCounts, treatmentMeans, meanSquaredResiduals );       
     }
-
+    
     /**
      * Statistic from Tukey-Kramer's multiple comparison test
      */
@@ -131,17 +133,17 @@ public class TukeyKramerConfidence
         protected ArrayList<Double> treatmentMeans;
 
         /**
-         * Variance over all subjects in the experiment
+         * Mean-squared difference over all subjects
          */
-        protected double totalVariance;
+        protected double meanSquaredResiduals;
 
         /**
          * Gets the standard errors in the experiment
          */
         protected Matrix standardErrors;
-
+        
         /**
-         * Creates a new instance of StudentizedMultipleComparisonStatistic
+         * Creates a new instance of Statistic
          * @param uncompensatedAlpha
          * Uncompensated alpha (p-value threshold) for the multiple comparison
          * test
@@ -149,22 +151,22 @@ public class TukeyKramerConfidence
          * Number of subjects in each treatment
          * @param treatmentMeans
          * Mean for each treatment
-         * @param totalVariance
-         * Variance over all subjects in the experiment
+         * @param meanSquaredResiduals
+         * Mean-squared difference over all subjects
          */
         public Statistic(
             final double uncompensatedAlpha,
             final ArrayList<Integer> subjectCounts,
             final ArrayList<Double> treatmentMeans,
-            final double totalVariance )
+            final double meanSquaredResiduals )
         {
             this.treatmentCount = treatmentMeans.size();
             this.uncompensatedAlpha = uncompensatedAlpha;
             this.subjectCounts = subjectCounts;
             this.treatmentMeans = treatmentMeans;
-            this.totalVariance = totalVariance;
+            this.meanSquaredResiduals = meanSquaredResiduals;
             this.testStatistics = this.computeTestStatistics(
-                subjectCounts, treatmentMeans, totalVariance);
+                subjectCounts, treatmentMeans, meanSquaredResiduals);
             this.nullHypothesisProbabilities = this.computeNullHypothesisProbabilities(
                 subjectCounts, this.testStatistics );
         }
@@ -175,8 +177,8 @@ public class TukeyKramerConfidence
          * Number of subjects in each treatment
          * @param treatmentMeans
          * Mean for each treatment
-         * @param totalVariance
-         * Variance over all subjects in the experiment
+         * @param meanSquaredResiduals
+         * Mean-squared difference over all subjects
          * @return
          * Test statistics, where the (i,j) element compares treatment "i" to
          * treatment "j", the statistic is symmetric
@@ -184,7 +186,7 @@ public class TukeyKramerConfidence
         public Matrix computeTestStatistics(
             final ArrayList<Integer> subjectCounts,
             final ArrayList<Double> treatmentMeans,
-            final double totalVariance )
+            final double meanSquaredResiduals )
         {
             int K = treatmentMeans.size();
             Matrix Z = MatrixFactory.getDefault().createMatrix(K,K);
@@ -198,7 +200,7 @@ public class TukeyKramerConfidence
                     final int nj = subjectCounts.get(j);
                     final double yj = treatmentMeans.get(j);
                     double standardError =
-                        Math.sqrt( totalVariance * 0.5 * ((1.0/ni) + (1.0/nj)));
+                        Math.sqrt( meanSquaredResiduals * 0.5 * ((1.0/ni) + (1.0/nj)));
                     final double zij = Math.abs(yi-yj) / standardError;
                     Z.setElement(i, j, zij);
                     Z.setElement(j, i, zij);
@@ -227,7 +229,6 @@ public class TukeyKramerConfidence
 
             Matrix P = MatrixFactory.getDefault().createMatrix(K, K);
             StudentizedRangeDistribution.CDF cdf =
-//                new StudentizedRangeDistribution.CDF( K, N-1 );
                 new StudentizedRangeDistribution.CDF( K, N-K );
             for( int i = 0; i < K; i++ )
             {
@@ -237,7 +238,7 @@ public class TukeyKramerConfidence
                 {
                     // The difference is symmetric
                     double zij = Z.getElement(i,j);
-                    double pij = 1.0-cdf.evaluate( zij*Math.sqrt(2) );
+                    double pij = 1.0-cdf.evaluate( zij );
                     P.setElement(i, j, pij);
                     P.setElement(j, i, pij);
                 }
@@ -279,15 +280,15 @@ public class TukeyKramerConfidence
         }
 
         /**
-         * Getter for totalVariance
-         * @return
-         * Variance over all subjects in the experiment
+         * Getter for meanSquaredResiduals
+         * @return 
+         * Mean-squared difference over all subjects
          */
-        public double getTotalVariance()
+        public double getMeanSquaredResiduals()
         {
-            return this.totalVariance;
-        }
-
+            return this.meanSquaredResiduals;
+        }        
+        
         @Override
         public boolean acceptNullHypothesis(
             final int i,
@@ -307,5 +308,5 @@ public class TukeyKramerConfidence
         }
 
     }
-
+    
 }
