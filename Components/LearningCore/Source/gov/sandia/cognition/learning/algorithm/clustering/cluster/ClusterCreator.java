@@ -15,7 +15,6 @@
 package gov.sandia.cognition.learning.algorithm.clustering.cluster;
 
 import gov.sandia.cognition.annotation.CodeReview;
-import gov.sandia.cognition.util.CloneableSerializable;
 import java.util.Collection;
 
 /**
@@ -23,7 +22,7 @@ import java.util.Collection;
  * new cluster from a given collection of members of that cluster.
  *
  * @param   <ClusterType>
- *      The type of Cluster<DataType> created by this object.
+ *      The type of {@code Cluster<DataType>} created by this object.
  * @param   <DataType>
  *      The data type from which to create a new cluster.
  * @author Justin Basilico
