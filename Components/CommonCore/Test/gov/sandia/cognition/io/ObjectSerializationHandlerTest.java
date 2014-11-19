@@ -173,17 +173,17 @@ public class ObjectSerializationHandlerTest
         final File testFileDate = new File("testDate.txt");
         final File testFileString = new File("testString.txt");
 
-        final BufferedInputStream testFileDateStream = new BufferedInputStream(
-                new FileInputStream(testFileDate));
-        final BufferedInputStream testFileStringStream = new BufferedInputStream(
-                new FileInputStream(testFileString));
-
         final Date testDate = new Date();
         final String testString = "testString";
 
         ObjectSerializationHandler.writeObjectToFile(testFileDate, testDate);
         ObjectSerializationHandler
                 .writeObjectToFile(testFileString, testString);
+
+        final BufferedInputStream testFileDateStream = new BufferedInputStream(
+                new FileInputStream(testFileDate));
+        final BufferedInputStream testFileStringStream = new BufferedInputStream(
+                new FileInputStream(testFileString));
 
         final Object objectDate = ObjectSerializationHandler
                 .readFromStream(testFileDateStream);
