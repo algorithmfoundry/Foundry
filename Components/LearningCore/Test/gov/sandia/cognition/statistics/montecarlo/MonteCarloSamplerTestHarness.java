@@ -41,7 +41,7 @@ public abstract class MonteCarloSamplerTestHarness<DataType extends Number,Sampl
     /**
      * Random number generator to use for a fixed random seed.
      */
-    public final Random RANDOM = new Random( 1 );
+    public final Random RANDOM = new Random( 17011 );
 
     /**
      * Number of samples.
@@ -150,13 +150,13 @@ public abstract class MonteCarloSamplerTestHarness<DataType extends Number,Sampl
         UnivariateGaussian.PDF pdf;
         if( CollectionUtil.getFirst(samples) instanceof Number )
         {
-            pdf = UnivariateMonteCarloIntegrator.INSTANCE.getMean(
-                (ArrayList<? extends Double>) samples );
+            pdf = UnivariateGaussian.MaximumLikelihoodEstimator.learn(
+                (ArrayList<? extends Double>) samples, 0.0);
          }
         else
         {
-            pdf = UnivariateMonteCarloIntegrator.INSTANCE.getMean(
-                (ArrayList<? extends WeightedValue<? extends Double>>) samples );
+            pdf = UnivariateGaussian.WeightedMaximumLikelihoodEstimator.learn(
+                (ArrayList<? extends WeightedValue<? extends Double>>) samples, 0.0);
         }
 
         double mean = f.getMean();
