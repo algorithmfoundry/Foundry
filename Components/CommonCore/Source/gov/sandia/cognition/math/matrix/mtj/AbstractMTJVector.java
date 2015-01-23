@@ -373,6 +373,7 @@ public abstract class AbstractMTJVector
         {
             this.internalIterator.remove();
         }
+        
     }
 
     /**
@@ -388,7 +389,15 @@ public abstract class AbstractMTJVector
         private no.uib.cipr.matrix.VectorEntry internalEntry;
         
         /**
-         * Creates a new instances of AbstractMTJVectorEntry.
+         * Creates a new instance of {@link AbstractMTJVectorEntry}.
+         */
+        public AbstractMTJVectorEntry()
+        {
+            this(null);
+        }
+        
+        /**
+         * Creates a new instance of {@link AbstractMTJVectorEntry}.
          * 
          * @param internalEntry
          *      The internal MTJ vector entry to wrap.
@@ -411,7 +420,7 @@ public abstract class AbstractMTJVector
         public void setValue(
             double value)
         {
-            this.internalEntry.set(value);;
+            this.internalEntry.set(value);
         }
 
         @Override
