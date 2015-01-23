@@ -324,145 +324,110 @@ public abstract class AbstractMTJVector
     public abstract AbstractMTJMatrix outerProduct(
         final AbstractMTJVector other);
     
-
     /**
-     * Definition for an Iterator over all MTJ vectors
+     * Implements an iterator over {@link VectorEntry} objects for MTJ
+     * Vectors. It is implemented with an emphasis on efficiency. As such,
+     * it reuses the vector entry for each element so as not to create a lot 
+     * of new objects. It relies on the MTJ internal iterator to provide the 
+     * actual iteration implementation.
      */
-    class AbstractMTJVectorIterator
+    private final class AbstractMTJVectorIterator
         extends AbstractCloneableSerializable
         implements Iterator<VectorEntry>
     {
         
-        /**
-         * Internal MTJ-based vector that does the heavy lifting for this package
-         */
-        private Iterator<no.uib.cipr.matrix.VectorEntry> internalIterator;
-        /**
-         * Current VectorEntry for this iterator
-         */
-        private VectorEntry entry;
+        /** Internal MTJ-based vector that does the heavy lifting. */
+        private final Iterator<no.uib.cipr.matrix.VectorEntry> internalIterator;
+        
+        /** The vector entry that is reused when cycling through the iterator.
+         *  Each time next is called it is updated to the next element, but
+         *  the same entry is returned with this new state as an optimization to
+         *  avoid creating a lot of extra objects when iterating. */
+        private final AbstractMTJVectorEntry entry;
         
         /**
          * Creates a new instance of AbstractMTJVectorIterator
          */
         public AbstractMTJVectorIterator()
         {
-            setInternalIterator(
-                AbstractMTJVector.this.internalVector.iterator() );
-            setEntry( new AbstractMTJVectorEntry() );
-        }   
-        
-        /**
-         * Gets the internal MTJ iterator
-         * @return
-         * Internal MTJ-based vector that does the heavy lifting for this package
-         */
-        protected Iterator<no.uib.cipr.matrix.VectorEntry> getInternalIterator()
-        {
-            return this.internalIterator;
-        }
+            this.internalIterator = 
+                AbstractMTJVector.this.internalVector.iterator();
+            this.entry = new AbstractMTJVectorEntry(null);
+        }  
 
-        /**
-         * Setter for internalIterator
-         * @param internalIterator 
-         * Internal MTJ-based vector that does the heavy lifting for this package
-         */
-        protected void setInternalIterator(
-            Iterator<no.uib.cipr.matrix.VectorEntry> internalIterator)
-        {
-            this.internalIterator = internalIterator;
-        }
-
+        @Override
         public boolean hasNext()
         {
-            return this.getInternalIterator().hasNext();
+            return this.internalIterator.hasNext();
         }
 
+        @Override
         public VectorEntry next()
         {
-            no.uib.cipr.matrix.VectorEntry internalNext =
-                getInternalIterator().next();
-
-            getEntry().setIndex( internalNext.index() );
-            return getEntry();
-        }
-        
-        public void remove()
-        {
-            getInternalIterator().remove();
-        }
-
-        /**
-         * Gets the underlying VectorEntry
-         * @return VectorEntry specified by this iterator
-         */
-        public VectorEntry getEntry()
-        {
+            this.entry.internalEntry = this.internalIterator.next();
             return this.entry;
         }
-
-        /**
-         * Sets the VectorEntry
-         * @param entry VectorEntry specified by this iterator
-         */
-        public void setEntry(
-            VectorEntry entry)
+        
+        @Override
+        public void remove()
         {
-            this.entry = entry;
+            this.internalIterator.remove();
         }
     }
 
-
     /**
-     * VectorEntry for MTJ Vectors
+     * Implements a VectorEntry for MTJ Vectors. It is just a wrapper for
+     * the internal MTJ entry that has the actual data methods.
      */
-    class AbstractMTJVectorEntry
+    private static final class AbstractMTJVectorEntry
         extends AbstractCloneableSerializable
         implements VectorEntry
     {
-        /**
-         * Current index into the vector for the iterator
-         */
-        private int index;
+        
+        /** Internally wrapped MTJ entry. */
+        private no.uib.cipr.matrix.VectorEntry internalEntry;
         
         /**
-         * Creates a new instance of AbstractMTJVectorEntry
-         */
-        public AbstractMTJVectorEntry()
-        {
-            this( 0 );
-        }
-        
-        /**
-         * Creates a new instances of AbstractMTJVectorEntry
-         * @param index index to start in the Vector
+         * Creates a new instances of AbstractMTJVectorEntry.
+         * 
+         * @param internalEntry
+         *      The internal MTJ vector entry to wrap.
          */
         public AbstractMTJVectorEntry(
-            int index)
+            final no.uib.cipr.matrix.VectorEntry internalEntry)
         {
-            this.setIndex( index );
+            super();
+            
+            this.internalEntry = internalEntry;
         }
         
+        @Override
         public double getValue()
         {
-            return AbstractMTJVector.this.getElement( this.getIndex() );
+            return this.internalEntry.get();
         }
 
+        @Override
         public void setValue(
             double value)
         {
-            AbstractMTJVector.this.setElement( this.getIndex(), value );
+            this.internalEntry.set(value);;
         }
 
+        @Override
         public int getIndex()
         {
-            return this.index;
+            return this.internalEntry.index();
         }
 
+        @Override
         public void setIndex(
             int index)
         {
-            this.index = index;
+            // Setting the index on this entry doesn't make sense.
+            throw new UnsupportedOperationException(
+                "setIndex not supported on iterator VectorEntry.");
         }
+        
     }
 }
