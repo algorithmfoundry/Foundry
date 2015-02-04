@@ -126,5 +126,44 @@ public class Permutation
 
         return result;
     }
+    
+    /**
+     * Creates a random partial permutation of size k of the numbers 0 
+     * (inclusive) through n (exclusive). The permutation contains k unique
+     * values of the numbers 0 through n in a random order. There are no 
+     * duplicates.
+     * 
+     * @param  n 
+     *      The size of the set of numbers to get values of the partial 
+     *      permutation from.
+     * @param  k
+     *      The size of the partial permutation. Must be less than or equal to
+     *      n. Cannot be negative.
+     * @param  random 
+     *      The Random generator to use.
+     * @return 
+     *      A random permutation of the numbers 0 through n.
+     */
+    public static int[] createPartialPermutation(
+        final int n,
+        final int k,
+        final Random random)
+    {
+        if (k > n)
+        {
+            throw new IllegalArgumentException(
+                "The value k (" + k + ") cannot be greater than n (" + n + ")");
+        }
+        else if (k == n)
+        {
+            return createPermutation(n, random);
+        }
+        
+// TODO; There should be a faster algorithm that isn't O(n) but instead O(k).
+        final int[] permutation = createPermutation(n, random);
+        final int[] result = new int[k];
+        System.arraycopy(permutation, 0, result, 0, k);
+        return result;
+    }
 
 }
