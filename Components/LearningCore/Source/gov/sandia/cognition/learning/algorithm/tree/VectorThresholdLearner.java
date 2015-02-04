@@ -14,6 +14,7 @@
 
 package gov.sandia.cognition.learning.algorithm.tree;
 
+import gov.sandia.cognition.learning.algorithm.DimensionFilterableLearner;
 import gov.sandia.cognition.learning.function.categorization.VectorElementThresholdCategorizer;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 
@@ -26,31 +27,9 @@ import gov.sandia.cognition.math.matrix.Vectorizable;
  * @author  Justin Basilico
  * @since   3.1
  */
-public interface VectorThresholdMaximumGainLearner<OutputType>
+public interface VectorThresholdLearner<OutputType>
     extends
-    DeciderLearner<Vectorizable, OutputType, Boolean, VectorElementThresholdCategorizer>
+    DeciderLearner<Vectorizable, OutputType, Boolean, VectorElementThresholdCategorizer>,
+        DimensionFilterableLearner
 {
-
-    /**
-     * Gets the dimensions that the learner is to consider. Null means that all
-     * of them are included.
-     *
-     * @return
-     *      The array of vector dimensions to consider. Null means all of them
-     *      are considered.
-     */
-    public int[] getDimensionsToConsider();
-
-    /**
-     *
-     * Gets the dimensions that the learner is to consider. Null means that all
-     * of them are included.
-     *
-     * @param   dimensionsToConsider
-     *      The array of vector dimensions to consider. Null means all of them
-     *      are considered.
-     */
-    public void setDimensionsToConsider(
-        final int[] dimensionsToConsider);
-
 }

@@ -40,8 +40,15 @@ public class VectorThresholdVarianceLearnerTest
     {
         super(testName);
     }
-
     
+    /**
+     * Test of constructors of class VectorThresholdVarianceLearner.
+     */
+    public void testConstructors()
+    {
+        VectorThresholdVarianceLearner instance = new VectorThresholdVarianceLearner();
+        assertNull(instance.getDimensionsToConsider());
+    }
 
     /**
      * Test of learn method, of class gov.sandia.cognition.learning.algorithm.tree.VectorThresholdVarianceLearner.
@@ -90,6 +97,13 @@ public class VectorThresholdVarianceLearnerTest
         assertNotNull(result);
         assertEquals(1, result.getIndex());
         assertEquals(1.5, result.getThreshold());
+        
+        // Try to only use some dimensions.
+        instance.setDimensionsToConsider(0, 2);
+        result = instance.learn(data);
+        assertNotNull(result);
+        assertEquals(2, result.getIndex());
+        assertEquals(2.5, result.getThreshold());
     }
 
     /**
@@ -147,4 +161,29 @@ public class VectorThresholdVarianceLearnerTest
         assertEquals(1.297, result.getFirst(), 0.001);
         assertEquals(2.5, result.getSecond());
     }
+    
+    public void testGetDimensionsToConsider()
+    {
+        this.testSetDimensionsToConsider();
+    }
+    
+    public void testSetDimensionsToConsider()
+    {
+        int[] dimensionsToConsider = null;
+        VectorThresholdVarianceLearner instance = new VectorThresholdVarianceLearner();
+        assertSame(dimensionsToConsider, instance.getDimensionsToConsider());
+        
+        dimensionsToConsider = new int[] {1,2,5};
+        instance.setDimensionsToConsider(dimensionsToConsider);
+        assertSame(dimensionsToConsider, instance.getDimensionsToConsider());
+
+        dimensionsToConsider = new int[] {0, 9, 12};
+        instance.setDimensionsToConsider(dimensionsToConsider);
+        assertSame(dimensionsToConsider, instance.getDimensionsToConsider());
+        
+        dimensionsToConsider = null;
+        instance.setDimensionsToConsider(dimensionsToConsider);
+        assertSame(dimensionsToConsider, instance.getDimensionsToConsider()); 
+    }
+    
 }

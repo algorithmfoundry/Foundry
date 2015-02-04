@@ -15,6 +15,7 @@
 package gov.sandia.cognition.learning.algorithm.tree;
 
 import gov.sandia.cognition.collection.CollectionUtil;
+import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.VectorElementThresholdCategorizer;
 import gov.sandia.cognition.math.matrix.Vector;
@@ -41,7 +42,7 @@ import java.util.Collections;
  */
 public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
     extends AbstractCloneableSerializable
-    implements VectorThresholdMaximumGainLearner<OutputType>
+    implements VectorThresholdLearner<OutputType>
 {
 
     /** The array of dimensions for the learner to consider. If this is null,
@@ -54,6 +55,8 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
     public AbstractVectorThresholdMaximumGainLearner()
     {
         super();
+        
+        this.setDimensionsToConsider(null);
     }
 
     @Override
@@ -80,7 +83,7 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
         }
 
         // Figure out the dimensionality of the data.
-        final int dimensionality = getDimensionality(data);
+        final int dimensionality = DatasetUtil.getInputDimensionality(data);
 
         // Go through all the dimensions to find the one with the best gain
         // and the best threshold.
@@ -365,33 +368,9 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
 
     @Override
     public void setDimensionsToConsider(
-        final int[] dimensionsToConsider)
+        final int... dimensionsToConsider)
     {
         this.dimensionsToConsider = dimensionsToConsider;
-    }
-
-    /**
-     * Figures out the dimensionality of the Vector data.
-     *
-     * @param  data The data.
-     * @return The dimensionality of the data in the vector.
-     */
-    protected static int getDimensionality(
-        final Collection
-            <? extends InputOutputPair<? extends Vectorizable, ?>>
-            data)
-    {
-        if (CollectionUtil.isEmpty(data))
-        {
-            // Bad data.
-            return 0;
-        }
-        else
-        {
-            // Get the dimensionality of the first data element.
-            return CollectionUtil.getFirst(data).getInput().convertToVector()
-                .getDimensionality();
-        }
     }
 
 }

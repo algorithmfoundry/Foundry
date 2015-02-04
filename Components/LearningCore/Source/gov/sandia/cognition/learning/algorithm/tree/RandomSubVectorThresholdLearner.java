@@ -17,7 +17,6 @@ package gov.sandia.cognition.learning.algorithm.tree;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
-import gov.sandia.cognition.learning.function.categorization.Categorizer;
 import gov.sandia.cognition.learning.function.categorization.VectorElementThresholdCategorizer;
 import gov.sandia.cognition.math.Permutation;
 import gov.sandia.cognition.math.matrix.Vector;
@@ -45,7 +44,7 @@ import java.util.Random;
 // -- jdbasil (2009-12-23)
 public class RandomSubVectorThresholdLearner<OutputType>
     extends AbstractRandomized
-    implements DeciderLearner<Vectorizable, OutputType, Boolean, Categorizer<? super Vectorizable, ? extends Boolean>>,
+    implements VectorThresholdLearner<OutputType>,
         VectorFactoryContainer
 {
 
@@ -58,6 +57,9 @@ public class RandomSubVectorThresholdLearner<OutputType>
     /** The percentage of the dimensionality to sample. */
     protected double percentToSample;
 
+    /** The dimensions to sample from in the learner. */
+    protected int[] dimensionsToConsider;
+    
     /** The vector factory to use. */
     protected VectorFactory<? extends Vector> vectorFactory;
 
@@ -107,13 +109,41 @@ public class RandomSubVectorThresholdLearner<OutputType>
         final Random random,
         final VectorFactory<? extends Vector> vectorFactory)
     {
+        this(subLearner, percentToSample, null, random, vectorFactory);
+    }
+    
+    /**
+     * Creates a new {@code RandomSubVectorThresholdLearner}.
+     *
+     * @param   subLearner
+     *      The threshold decision function learner to use over the subspace.
+     * @param   percentToSample
+     *      The percentage of the dimensionality to sample (must be between
+     *      0.0 and 1.0.
+     * @param   dimensionsToConsider
+     *      The array of vector dimensions to consider. Null means all of them
+     *      are considered.
+     * @param   random
+     *      The random number generator.
+     * @param   vectorFactory
+     *      The vector factory to use.
+     */
+    public RandomSubVectorThresholdLearner(
+        final DeciderLearner<Vectorizable, OutputType, Boolean, VectorElementThresholdCategorizer> subLearner,
+        final double percentToSample,
+        final int[] dimensionsToConsider,
+        final Random random,
+        final VectorFactory<? extends Vector> vectorFactory)
+    {
         super(random);
 
         this.setSubLearner(subLearner);
         this.setPercentToSample(percentToSample);
+        this.setDimensionsToConsider(dimensionsToConsider);
         this.setVectorFactory(vectorFactory);
     }
 
+    @Override
     public VectorElementThresholdCategorizer learn(
         final Collection<? extends InputOutputPair<? extends Vectorizable, OutputType>> data)
     {
@@ -123,7 +153,16 @@ public class RandomSubVectorThresholdLearner<OutputType>
         }
         
         // Gets the dimensionality of the input.
-        final int dimensionality = DatasetUtil.getInputDimensionality(data);
+        final int dimensionality;
+        if (this.dimensionsToConsider == null)
+        {
+            // Include all dimensions.
+            dimensionality = DatasetUtil.getInputDimensionality(data);
+        }
+        else
+        {
+            dimensionality = this.dimensionsToConsider.length;
+        }
 
         // Get the dimensionality of the subspace.
         final int subDimensionality = this.getSubDimensionality(dimensionality);
@@ -135,17 +174,26 @@ public class RandomSubVectorThresholdLearner<OutputType>
             return this.subLearner.learn(data);
         }
 
-        // Create a permutation of the indices of the dimensionality.
-        final int[] permutation = Permutation.createPermutation(
-            dimensionality, this.random);
+        // Create a partial permutation of the indices of the dimensionality.
+        final int[] subDimensions = Permutation.createPartialPermutation(
+            dimensionality, subDimensionality, this.random);
+        
+        if (this.dimensionsToConsider != null)
+        {
+            // We only use the dimensions to consider based on the array.
+            for (int i = 0; i < subDimensionality; i++)
+            {
+                // Replace the index with the one from the dimensions to
+                // consider.
+                subDimensions[i] = this.dimensionsToConsider[subDimensions[i]];
+            }
+        }
 
-        if (this.subLearner instanceof VectorThresholdMaximumGainLearner<?>)
+        if (this.subLearner instanceof VectorThresholdLearner<?>)
         {
             // In this case we can avoid copying the data by giving the learner
             // the indices to learn using.
-            final int[] subDimensions = new int[subDimensionality];
-            System.arraycopy(permutation, 0, subDimensions, 0, subDimensionality);
-            ((VectorThresholdMaximumGainLearner<?>) this.subLearner).setDimensionsToConsider(
+            ((VectorThresholdLearner<?>) this.subLearner).setDimensionsToConsider(
                 subDimensions);
             return this.subLearner.learn(data);
         }
@@ -164,7 +212,7 @@ public class RandomSubVectorThresholdLearner<OutputType>
             final Vector vector = example.getInput().convertToVector();
             for (int i = 0; i < subDimensionality; i++)
             {
-                subVector.setElement(i, vector.getElement(permutation[i]));
+                subVector.setElement(i, vector.getElement(subDimensions[i]));
             }
 
             // Add the new example.
@@ -180,7 +228,7 @@ public class RandomSubVectorThresholdLearner<OutputType>
         {
             // Change the index the threshold is applied to.
             final int subIndex = subDecider.getIndex();
-            final int index = permutation[subIndex];
+            final int index = subDimensions[subIndex];
             subDecider.setIndex(index);
         }
         // else - Null just gets returned.
@@ -266,12 +314,26 @@ public class RandomSubVectorThresholdLearner<OutputType>
         this.percentToSample = percentToSample;
     }
 
+    @Override
+    public int[] getDimensionsToConsider()
+    {
+        return this.dimensionsToConsider;
+    }
+
+    @Override
+    public void setDimensionsToConsider(
+        final int... dimensionsToConsider)
+    {
+        this.dimensionsToConsider = dimensionsToConsider;
+    }
+    
     /**
      * Gets the vector factory.
      *
      * @return
      *      The vector factory.
      */
+    @Override
     public VectorFactory<? extends Vector> getVectorFactory()
     {
         return this.vectorFactory;

@@ -55,9 +55,11 @@ public class RandomSubVectorThresholdLearnerTest
         VectorThresholdInformationGainLearner<String> subLearner = null;
         double percentToSample = RandomSubVectorThresholdLearner.DEFAULT_PERCENT_TO_SAMPLE;
         VectorFactory<?> vectorFactory = VectorFactory.getDefault();
+        int[] dimensionsToConsider = null;
         RandomSubVectorThresholdLearner<String> instance = new RandomSubVectorThresholdLearner<String>();
         assertSame(subLearner, instance.getSubLearner());
         assertEquals(percentToSample, instance.getPercentToSample());
+        assertSame(dimensionsToConsider, instance.getDimensionsToConsider());
         assertNotNull(instance.getRandom());
         assertSame(vectorFactory, instance.getVectorFactory());
 
@@ -67,6 +69,7 @@ public class RandomSubVectorThresholdLearnerTest
             percentToSample, random);
         assertSame(subLearner, instance.getSubLearner());
         assertEquals(percentToSample, instance.getPercentToSample());
+        assertSame(dimensionsToConsider, instance.getDimensionsToConsider());
         assertSame(random, instance.getRandom());
         assertSame(vectorFactory, instance.getVectorFactory());
 
@@ -75,6 +78,17 @@ public class RandomSubVectorThresholdLearnerTest
             percentToSample, random, vectorFactory);
         assertSame(subLearner, instance.getSubLearner());
         assertEquals(percentToSample, instance.getPercentToSample());
+        assertSame(dimensionsToConsider, instance.getDimensionsToConsider());
+        assertSame(random, instance.getRandom());
+        assertSame(vectorFactory, instance.getVectorFactory());
+        
+        dimensionsToConsider = new int[] {5, 12};
+        vectorFactory = VectorFactory.getSparseDefault();
+        instance = new RandomSubVectorThresholdLearner<String>(subLearner,
+            percentToSample, dimensionsToConsider, random, vectorFactory);
+        assertSame(subLearner, instance.getSubLearner());
+        assertEquals(percentToSample, instance.getPercentToSample());
+        assertSame(dimensionsToConsider, instance.getDimensionsToConsider());
         assertSame(random, instance.getRandom());
         assertSame(vectorFactory, instance.getVectorFactory());
     }
@@ -107,6 +121,15 @@ public class RandomSubVectorThresholdLearnerTest
         assertNotNull(result);
         assertTrue(result.getIndex() >= 0);
         assertTrue(result.getIndex() < 100);
+        
+        // Change the dimensions to consider.
+        instance.setDimensionsToConsider(new int[] {10, 20, 30, 40, 50});
+        instance.setPercentToSample(0.5);
+        result = instance.learn(data);
+        assertNotNull(result);
+        assertTrue(result.getIndex() >= 10);
+        assertTrue(result.getIndex() <= 50);
+        assertTrue(result.getIndex() % 10 == 0);
     }
 
     /**
@@ -225,6 +248,31 @@ public class RandomSubVectorThresholdLearnerTest
             assertTrue(exceptionThrown);
         }
         assertEquals(percentToSample, instance.getPercentToSample());
+    }
+    
+    public void testGetDimensionsToConsider()
+    {
+        this.testSetDimensionsToConsider();
+    }
+
+    public void testSetDimensionsToConsider()
+    {
+        int[] dimensionsToConsider = null;
+        RandomSubVectorThresholdLearner<String> instance
+            = new RandomSubVectorThresholdLearner<>();
+        assertSame(dimensionsToConsider, instance.getDimensionsToConsider());
+
+        dimensionsToConsider = new int[] {1,2,5};
+        instance.setDimensionsToConsider(dimensionsToConsider);
+        assertSame(dimensionsToConsider, instance.getDimensionsToConsider());
+
+        dimensionsToConsider = new int[] {0, 9, 12};
+        instance.setDimensionsToConsider(dimensionsToConsider);
+        assertSame(dimensionsToConsider, instance.getDimensionsToConsider());
+        
+        dimensionsToConsider = null;
+        instance.setDimensionsToConsider(dimensionsToConsider);
+        assertSame(dimensionsToConsider, instance.getDimensionsToConsider()); 
     }
 
     /**
