@@ -148,4 +148,62 @@ public class PermutationTest extends TestCase
         }
     }
     
+    /**
+     * Test of createPartialPermutation method, of class Permutation.
+     */
+    public void testCreatePartialPermutation()
+    {
+        int n = 100;
+        int k = 90;
+        long seed = (long) (Math.random() * Long.MAX_VALUE);
+        Random random = new Random(seed);
+        Random randomCopy = new Random(seed);
+        
+        int[] perm = Permutation.createPartialPermutation(n, k, random);
+        assertEquals(k, perm.length);
+        
+        
+        for (int value : perm)
+        {
+            assertTrue(value >= 0);
+            assertTrue(value < n);
+        }
+        
+        for (int i = 0; i < n; i++)
+        {
+            int numMatch = 0;
+            
+            for (int j = 0; j < k; j++)
+            {
+                if ( i == perm[j] )
+                {
+                    numMatch++;
+                }
+            }
+            
+            assertTrue(numMatch == 1 || numMatch == 0);
+        }
+        
+        
+        int[] perm2 = Permutation.createPartialPermutation(n, k, randomCopy);
+        assertEquals(k, perm2.length);
+        for (int i = 0; i < k; i++)
+        {
+            assertEquals(perm[i], perm2[i]);
+        }
+        
+        boolean exceptionThrown = false;
+        try
+        {
+            Permutation.createPartialPermutation(n, n + 1, random);
+        }
+        catch (IllegalArgumentException e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+    }
 }
