@@ -38,14 +38,20 @@ import java.util.Comparator;
  */
 public class VectorThresholdVarianceLearner
     extends AbstractCloneableSerializable
-    implements DeciderLearner<Vectorizable, Double, Boolean, VectorElementThresholdCategorizer>
+    implements VectorThresholdLearner<Double>
 {
+    /** The array of 0-based dimensions to consider in the input. Null means
+     *  all dimensions are considered. */
+    protected int[] dimensionsToConsider;
+    
     /**
      * Creates a new instance of VectorThresholdVarianceLearner.
      */
     public VectorThresholdVarianceLearner()
     {
         super();
+        
+        this.setDimensionsToConsider(null);
     }
     
     /**
@@ -81,12 +87,18 @@ public class VectorThresholdVarianceLearner
         double bestGain = -1.0;
         int bestIndex = -1;
         double bestThreshold = 0.0;
-        for (int i = 0; i < dimensionality; i++)
+
+        final int dimensionsCount = this.dimensionsToConsider == null ?
+            dimensionality : this.dimensionsToConsider.length;
+        for (int i = 0; i < dimensionsCount; i++)
         {
+            final int index = this.dimensionsToConsider == null ?
+                i : this.dimensionsToConsider[i];
+            
             // Compute the best gain-threshold pair for the given dimension of
             // the data.
             final DefaultPair<Double, Double> gainThresholdPair = 
-                this.computeBestGainThreshold(data, i, baseVariance);
+                this.computeBestGainThreshold(data, index, baseVariance);
             
             if ( gainThresholdPair == null )
             {
@@ -104,7 +116,7 @@ public class VectorThresholdVarianceLearner
                 // index.
                 final double threshold = gainThresholdPair.getSecond();
                 bestGain = gain;
-                bestIndex = i;
+                bestIndex = index;
                 bestThreshold = threshold;
             }
         }
@@ -157,7 +169,7 @@ public class VectorThresholdVarianceLearner
             // Add this example to the list.
             final Vector input = example.getInput().convertToVector();
             final Double output = example.getOutput();
-            final double value = input.getElement(dimension);
+            final double value = Double.valueOf(input.getElement(dimension));
             
             values.add(new DefaultPair<Double, Double>(value, output));
         }
@@ -291,4 +303,18 @@ public class VectorThresholdVarianceLearner
         // Return the pair containing the best gain and best threshold found.
         return new DefaultPair<Double, Double>(bestGain, bestThreshold);
     }
+
+    @Override
+    public int[] getDimensionsToConsider()
+    {
+        return this.dimensionsToConsider;
+    }
+
+    @Override
+    public void setDimensionsToConsider(
+        final int... dimensionsToConsider)
+    {
+        this.dimensionsToConsider = dimensionsToConsider;
+    }
+    
 }
