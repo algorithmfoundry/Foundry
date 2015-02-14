@@ -128,6 +128,54 @@ public class VectorUtilTest
         VectorUtil.divideByNorm1Equals(input);
         assertEquals(expected, input);
     }
+    
+    /**
+     * Test of divideByNorm1 method, of class VectorUtil.
+     */
+    public void testDivideByNorm2()
+    {
+        Vector input = new Vector2();
+        Vector inputCopy = input.clone();
+        Vector result = VectorUtil.divideByNorm2(input);
+        assertEquals(input, result);
+        assertNotSame(input, result);
+        assertEquals(inputCopy, input);
+
+        input = new Vector2(1.0, 0.0);
+        inputCopy = input.clone();
+        result = VectorUtil.divideByNorm2(input);
+        assertEquals(input, result);
+        assertNotSame(input, result);
+        assertEquals(inputCopy, input);
+
+        input = new Vector3(-1.0, 3.0, 0.0);
+        inputCopy = input.clone();
+        result = VectorUtil.divideByNorm2(input);
+        assertEquals(new Vector3(-1 / Math.sqrt(10), 3 / Math.sqrt(10), 0.0), result);
+        assertNotSame(input, result);
+        assertEquals(inputCopy, input);
+    }
+    
+    /**
+     * Test of divideByNorm2Equals method, of class VectorUtil.
+     */
+    public void testDivideByNorm2Equals()
+    {
+        Vector input = new Vector2();
+        Vector expected = input.clone();
+        VectorUtil.divideByNorm2Equals(input);
+        assertEquals(expected, input);
+
+        input = new Vector2(1.0, 0.0);
+        expected = input.clone();
+        VectorUtil.divideByNorm2Equals(input);
+        assertEquals(expected, input);
+
+        input = new Vector3(-1.0, 3.0, 0.0);
+        expected = new Vector3(-1 / Math.sqrt(10), 3 / Math.sqrt(10), 0.0);
+        VectorUtil.divideByNorm2Equals(input);
+        assertEquals(expected, input);
+    }
 
     /**
      * Test of interpolateLinear method, of class VectorUtil.

@@ -70,7 +70,6 @@ public class VectorUtil
         }
     }
 
-
     /**
      * Returns a new vector whose elements are the elements of the original
      * vector, divided by the 1-norm of the vector (the sum of the absolute
@@ -94,7 +93,7 @@ public class VectorUtil
 
     /**
      * Divides all of the given elements of the vector by the 1-norm (the sum
-     * of the absolute values of the elements. If the 1-norm is zero (which
+     * of the absolute values of the elements). If the 1-norm is zero (which
      * means all the elements are zero), then the vector is not modified.
      *
      * @param   vector
@@ -111,6 +110,47 @@ public class VectorUtil
         }
     }
 
+    /**
+     * Returns a new vector whose elements are the elements of the original
+     * vector, divided by the 2-norm of the vector (the square root of the sum
+     * of the squared values of the elements). If the 2-norm is zero (which 
+     * means all the elements are zero), then the result is just a duplicate 
+     * of the input (zero) vector.
+     *
+     * @param   input
+     *      The vector to divide by its 2-norm.
+     * @return
+     *      A new vector whose elements are the elements from the given vector,
+     *      divided by its 2-norm.
+     */
+    public static Vector divideByNorm2(
+        final Vector input)
+    {
+        final Vector clone = input.clone();
+        divideByNorm2Equals(clone);
+        return clone;
+    }
+
+    /**
+     * Divides all of the given elements of the vector by the 2-norm (the square 
+     * root of the sum of the squared values of the elements). If the 2-norm is 
+     * zero (which means all the elements are zero), then the vector is not 
+     * modified.
+     *
+     * @param   vector
+     *      The vector to divide the elements by the 2-norm. It is modified by
+     *      this method.
+     */
+    public static void divideByNorm2Equals(
+        final Vector vector)
+    {
+        final double norm2 = vector.norm2();
+        if (norm2 != 0.0)
+        {
+            vector.scaleEquals(1.0 / norm2);
+        }
+    }
+    
     /**
      * Performs linear interpolation between two vectors.
      *
