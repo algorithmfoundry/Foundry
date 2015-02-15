@@ -246,6 +246,20 @@ public abstract class VectorSpaceTestHarness<VectorType extends VectorSpace<Vect
     }
 
     /**
+     * Test of dot method, of class VectorSpace.
+     */
+    public void testDot()
+    {
+        System.out.println("dot");
+
+        VectorType a = this.createCopy(VectorFactory.getDefault().copyValues(1.0, 2.0, 3.0));
+        VectorType b = this.createCopy(VectorFactory.getDefault().copyValues(2.0, 1.0, 3.0));
+        assertEquals(13.0, a.dot(b), TOLERANCE);
+        assertEquals(a.dot(b), b.dot(a), TOLERANCE);
+        assertEquals(a.dotProduct(b), a.dot(b), TOLERANCE);
+    }
+    
+    /**
      * Test of dotProduct method, of class VectorSpace.
      */
     public void testDotProduct()

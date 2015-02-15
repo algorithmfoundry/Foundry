@@ -96,12 +96,29 @@ public interface VectorSpace<VectorType extends VectorSpace<VectorType,?>,EntryT
         final double power);
 
     /**
-     * Inner Vector product between two Vectors
+     * The inner product of this vector with the given vector. That is, the
+     * sum of each element of this vector times the corresponding element in the
+     * other vector. The same as dotProduct.
      *
-     * @param other
-     *          the Vector with which to compute the dot product with this,
-     *          must be the same dimension as this
-     * @return dot product, (0,\infty)
+     * @param   other
+     *      The Vector with which to compute the dot product with this.
+     *      Must have the same dimensionality as this.
+     * @return 
+     *      The dot product. The value is between 0 and Infinity.
+     */
+    public double dot(
+        final VectorType other);
+    
+    /**
+     * The inner product of this vector with the given vector. That is, the
+     * sum of each element of this vector times the corresponding element in the
+     * other vector. The same as dot.
+     *
+     * @param   other
+     *      The Vector with which to compute the dot product with this.
+     *      Must have the same dimensionality as this.
+     * @return 
+     *      The dot product. The value is between 0 and Infinity.
      */
     public double dotProduct(
         final VectorType other);

@@ -260,6 +260,13 @@ public class DefaultInfiniteVector<KeyType>
     }
 
     @Override
+    public double dot(
+        final InfiniteVector<KeyType> other)
+    {
+        return this.dotProduct(other);
+    }
+    
+    @Override
     public double dotProduct(
         final InfiniteVector<KeyType> other)
     {

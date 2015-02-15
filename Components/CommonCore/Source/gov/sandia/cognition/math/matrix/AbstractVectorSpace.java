@@ -142,6 +142,13 @@ public abstract class AbstractVectorSpace<VectorType extends VectorSpace<VectorT
     }
 
     @Override
+    public double dot(
+        final VectorType other)
+    {
+        return this.dotProduct(other);
+    }
+    
+    @Override
     public double angle(
         final VectorType other)
     {
