@@ -52,6 +52,12 @@ public class VectorThresholdGiniImpurityLearner<OutputType>
         super();
     }
 
+    @Override
+    public VectorThresholdGiniImpurityLearner<OutputType> clone()
+    {
+        return (VectorThresholdGiniImpurityLearner<OutputType>) super.clone();
+    }
+    
     /**
      * Computes the split gain by computing the Gini impurity for the
      * given split.

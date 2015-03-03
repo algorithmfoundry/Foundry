@@ -16,7 +16,7 @@
 package gov.sandia.cognition.learning.algorithm.tree;
 
 import gov.sandia.cognition.learning.function.categorization.Categorizer;
-import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -56,6 +56,14 @@ public class CategorizationTree<InputType, OutputType>
         super(rootNode);
         
         this.setCategories(categories);
+    }
+
+    @Override
+    public CategorizationTree<InputType, OutputType> clone()
+    {
+        final CategorizationTree<InputType, OutputType> result = (CategorizationTree<InputType, OutputType>) super.clone();
+        result.categories = this.categories == null ? null : new LinkedHashSet<>(this.categories);
+        return result;
     }
     
     /**

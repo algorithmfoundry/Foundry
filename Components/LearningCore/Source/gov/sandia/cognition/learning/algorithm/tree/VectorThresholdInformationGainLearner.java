@@ -14,9 +14,11 @@
 
 package gov.sandia.cognition.learning.algorithm.tree;
 
+import gov.sandia.cognition.collection.ArrayUtil;
 import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.matrix.mtj.Vector2;
 import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
+import gov.sandia.cognition.util.CloneableSerializable;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -63,6 +65,21 @@ public class VectorThresholdInformationGainLearner<OutputType>
     public VectorThresholdInformationGainLearner()
     {
         super();
+    }
+
+    @Override
+    public VectorThresholdInformationGainLearner<OutputType> clone()
+    {
+        @SuppressWarnings("unchecked")
+        final VectorThresholdInformationGainLearner<OutputType> result = (VectorThresholdInformationGainLearner<OutputType>) 
+            super.clone();
+        
+        result.categories = this.categories == null ? null : new ArrayList<>(this.categories);
+        result.categoryPriors = ArrayUtil.copy(this.categoryPriors);
+        result.categoryCounts = ArrayUtil.copy(this.categoryCounts);
+        result.categoryProbabilities = ArrayUtil.copy(this.categoryProbabilities);
+        
+        return result;
     }
     
     @Override

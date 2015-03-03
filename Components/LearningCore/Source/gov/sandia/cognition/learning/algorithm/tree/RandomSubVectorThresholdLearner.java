@@ -14,6 +14,7 @@
 
 package gov.sandia.cognition.learning.algorithm.tree;
 
+import gov.sandia.cognition.collection.ArrayUtil;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
@@ -24,6 +25,7 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.VectorFactoryContainer;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.util.AbstractRandomized;
+import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
@@ -143,6 +145,18 @@ public class RandomSubVectorThresholdLearner<OutputType>
         this.setVectorFactory(vectorFactory);
     }
 
+    @Override
+    public RandomSubVectorThresholdLearner<OutputType> clone()
+    {
+        @SuppressWarnings("unchecked")
+        final RandomSubVectorThresholdLearner<OutputType> result = (RandomSubVectorThresholdLearner<OutputType>)
+            super.clone();
+        result.subLearner = ObjectUtil.cloneSmart(this.subLearner);
+        result.dimensionsToConsider = ArrayUtil.copy(this.dimensionsToConsider);
+        
+        return result;
+    }
+    
     @Override
     public VectorElementThresholdCategorizer learn(
         final Collection<? extends InputOutputPair<? extends Vectorizable, OutputType>> data)

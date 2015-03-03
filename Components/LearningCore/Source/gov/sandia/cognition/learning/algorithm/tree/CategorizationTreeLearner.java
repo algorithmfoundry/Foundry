@@ -22,6 +22,7 @@ import gov.sandia.cognition.util.ArgumentChecker;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -60,7 +61,7 @@ public class CategorizationTreeLearner<InputType, OutputType>
     /**
      * How often each category appears in training data.
      */
-    protected Map<OutputType,Integer> trainCounts;
+    protected transient Map<OutputType,Integer> trainCounts;
 
 
     /**
@@ -129,6 +130,18 @@ public class CategorizationTreeLearner<InputType, OutputType>
         this.setCategoryPriors(priors);
     }
 
+    @Override
+    public CategorizationTreeLearner<InputType, OutputType> clone()
+    {
+        final CategorizationTreeLearner<InputType, OutputType> result = (CategorizationTreeLearner<InputType, OutputType>) 
+            super.clone();
+        
+        result.priors = this.priors == null ? null : new LinkedHashMap<>(this.priors);
+        result.trainCounts = this.trainCounts == null ? null : new LinkedHashMap<>(this.trainCounts);
+        
+        return result;
+    }
+    
     @Override
     public CategorizationTree<InputType, OutputType> learn(
         Collection<? extends InputOutputPair<? extends InputType, OutputType>>
@@ -395,7 +408,7 @@ public class CategorizationTreeLearner<InputType, OutputType>
             this.priors = null;
         }
         else {
-            this.priors = new HashMap<OutputType,Double>(priors);
+            this.priors = new LinkedHashMap<OutputType,Double>(priors);
         }
     }
 }

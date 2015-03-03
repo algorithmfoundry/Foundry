@@ -48,6 +48,12 @@ public class RegressionTree<InputType>
     }
 
     @Override
+    public RegressionTree<InputType> clone()
+    {
+        return (RegressionTree<InputType>) super.clone();
+    }
+    
+    @Override
     public double evaluateAsDouble(
         final InputType input)
     {

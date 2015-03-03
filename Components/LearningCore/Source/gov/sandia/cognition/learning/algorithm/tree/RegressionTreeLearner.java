@@ -21,6 +21,7 @@ import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.Categorizer;
 import gov.sandia.cognition.util.ArgumentChecker;
+import gov.sandia.cognition.util.ObjectUtil;
 import java.util.Collection;
 
 /**
@@ -122,6 +123,14 @@ public class RegressionTreeLearner<InputType>
         this.setMaxDepth(maxDepth);
     }
 
+    @Override
+    public RegressionTreeLearner<InputType> clone()
+    {
+        final RegressionTreeLearner<InputType> result = (RegressionTreeLearner<InputType>) super.clone();
+        result.regressionLearner = ObjectUtil.cloneSafe(this.regressionLearner);
+        return result;
+    }
+    
     @Override
     public RegressionTree<InputType> learn(
         Collection<? extends InputOutputPair<? extends InputType, Double>> data)

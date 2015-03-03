@@ -18,6 +18,7 @@ package gov.sandia.cognition.learning.algorithm.tree;
 import gov.sandia.cognition.algorithm.AbstractIterativeAlgorithm;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.Categorizer;
+import gov.sandia.cognition.util.ObjectUtil;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -59,6 +60,16 @@ public abstract class AbstractDecisionTreeLearner<InputType, OutputType>
         super();
         
         this.setDeciderLearner(deciderLearner);
+    }
+
+    @Override
+    public AbstractDecisionTreeLearner<InputType, OutputType> clone()
+    {
+        @SuppressWarnings("unchecked")
+        final AbstractDecisionTreeLearner<InputType, OutputType> result = (AbstractDecisionTreeLearner<InputType, OutputType>)
+            super.clone();
+        result.deciderLearner = ObjectUtil.cloneSafe(this.deciderLearner);
+        return result;
     }
     
     /**

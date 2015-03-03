@@ -69,6 +69,12 @@ public class VectorThresholdHellingerDistanceLearner<OutputType>
         super();
     }
 
+    @Override
+    public VectorThresholdHellingerDistanceLearner<OutputType> clone()
+    {
+        return (VectorThresholdHellingerDistanceLearner<OutputType>) super.clone();
+    }
+    
     /**
      * Computes the split gain by computing the mean Hellinger distance for the
      * given split. The gain is equal to the distance since the base has a

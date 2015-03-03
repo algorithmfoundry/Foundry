@@ -16,6 +16,7 @@ package gov.sandia.cognition.learning.algorithm.tree;
 
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.function.categorization.Categorizer;
+import gov.sandia.cognition.util.ObjectUtil;
 
 /**
  * The {@code RegressionTreeNode} implements a {@code DecisionTreeNode} for
@@ -137,8 +138,12 @@ public class RegressionTreeNode<InputType, InteriorType>
     public RegressionTreeNode<InputType, InteriorType> 
         clone()
     {
-        return (RegressionTreeNode<InputType, InteriorType>)
+        RegressionTreeNode<InputType, InteriorType> result = (RegressionTreeNode<InputType, InteriorType>)
             super.clone();
+        
+        result.scalarFunction = ObjectUtil.cloneSmart(this.scalarFunction);
+        
+        return result;
     }
 
     public Double getOutput(

@@ -14,6 +14,7 @@
 
 package gov.sandia.cognition.learning.algorithm.tree;
 
+import gov.sandia.cognition.collection.ArrayUtil;
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
@@ -57,6 +58,16 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
         super();
         
         this.setDimensionsToConsider(null);
+    }
+
+    @Override
+    public AbstractVectorThresholdMaximumGainLearner<OutputType> clone()
+    {
+        @SuppressWarnings("unchecked")
+        final AbstractVectorThresholdMaximumGainLearner<OutputType> result = (AbstractVectorThresholdMaximumGainLearner<OutputType>)
+            super.clone();
+        result.dimensionsToConsider = ArrayUtil.copy(this.dimensionsToConsider);
+        return result;
     }
 
     @Override

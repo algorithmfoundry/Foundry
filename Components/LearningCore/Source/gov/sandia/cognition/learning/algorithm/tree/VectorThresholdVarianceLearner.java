@@ -14,6 +14,7 @@
 
 package gov.sandia.cognition.learning.algorithm.tree;
 
+import gov.sandia.cognition.collection.ArrayUtil;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.VectorElementThresholdCategorizer;
@@ -21,6 +22,7 @@ import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
+import gov.sandia.cognition.util.CloneableSerializable;
 import gov.sandia.cognition.util.DefaultPair;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,6 +54,15 @@ public class VectorThresholdVarianceLearner
         super();
         
         this.setDimensionsToConsider(null);
+    }
+
+    @Override
+    public VectorThresholdVarianceLearner clone()
+    {
+        final VectorThresholdVarianceLearner result = (VectorThresholdVarianceLearner)
+            super.clone();
+        result.dimensionsToConsider = ArrayUtil.copy(this.dimensionsToConsider);
+        return result;
     }
     
     /**

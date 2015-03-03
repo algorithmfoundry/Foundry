@@ -16,6 +16,8 @@ package gov.sandia.cognition.learning.algorithm.tree;
 
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
+import gov.sandia.cognition.util.CloneableSerializable;
+import gov.sandia.cognition.util.ObjectUtil;
 
 /**
  * The {@code DecisionTree} class implements a standard decision tree that is
@@ -55,6 +57,16 @@ public class DecisionTree<InputType, OutputType>
         
         this.setRootNode(rootNode);
     }
+
+    @Override
+    public DecisionTree<InputType, OutputType> clone()
+    {
+        @SuppressWarnings("unchecked")
+        final DecisionTree<InputType, OutputType> result = (DecisionTree<InputType, OutputType>) super.clone();
+        result.rootNode = ObjectUtil.cloneSafe(this.rootNode);
+        return result;
+    }
+    
 
     /**
      * Evaluates the decision tree against the given input.

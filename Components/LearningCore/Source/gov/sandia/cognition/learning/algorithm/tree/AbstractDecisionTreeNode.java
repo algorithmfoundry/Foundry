@@ -15,7 +15,10 @@
 
 package gov.sandia.cognition.learning.algorithm.tree;
 
+import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.learning.function.categorization.Categorizer;
+import gov.sandia.cognition.util.AbstractCloneableSerializable;
+import gov.sandia.cognition.util.ObjectUtil;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,9 +37,8 @@ import java.util.Map;
  * @since  2.0
  */
 public abstract class AbstractDecisionTreeNode<InputType, OutputType, InteriorType>
-    extends Object
-    implements DecisionTreeNode<InputType, OutputType>,
-        Serializable
+    extends AbstractCloneableSerializable
+    implements DecisionTreeNode<InputType, OutputType>
 {
 
     /** The parent node of this node. */
@@ -89,16 +91,29 @@ public abstract class AbstractDecisionTreeNode<InputType, OutputType, InteriorTy
     public AbstractDecisionTreeNode<InputType, OutputType, InteriorType> 
         clone()
     {
-        try
+        final AbstractDecisionTreeNode<InputType, OutputType, InteriorType> result = (AbstractDecisionTreeNode<InputType, OutputType, InteriorType>)
+            super.clone();
+        
+        if (this.childMap != null)
         {
-            return 
-                (AbstractDecisionTreeNode<InputType, OutputType, InteriorType>)
-                        super.clone();
+            result.childMap = CollectionUtil.createLinkedHashMapWithSize(this.childMap.size());
+            for (Map.Entry<InteriorType, DecisionTreeNode<InputType, OutputType>> entry
+                : this.childMap.entrySet())
+            {
+                final DecisionTreeNode<InputType, OutputType> node = (DecisionTreeNode<InputType, OutputType>)
+                    entry.getValue().clone();
+                if (node instanceof AbstractDecisionTreeNode)
+                {
+                    // Fix the parent pointer.
+                    ((AbstractDecisionTreeNode<InputType, OutputType, ?>) node).parent = result;
+                }
+                result.childMap.put(entry.getKey(), node);
+            }
         }
-        catch ( CloneNotSupportedException e )
-        {
-            return null;
-        }
+        result.decider = ObjectUtil.cloneSmart(this.decider);
+        result.incomingValue = ObjectUtil.cloneSmart(this.incomingValue);
+        
+        return result;
     }
     
     /**
