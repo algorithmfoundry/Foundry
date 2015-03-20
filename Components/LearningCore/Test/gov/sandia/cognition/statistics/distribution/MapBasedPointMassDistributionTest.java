@@ -316,10 +316,32 @@ public class MapBasedPointMassDistributionTest
         assertEquals( tm, f.getTotal() );
         assertEquals( n0+1, f.getDomain().size() );
 
+        tm -= mz;
         f.set( z, -0.1 );
         assertEquals( 0.0, f.get(z) );
         assertEquals( tm, f.getTotal() );
 
+    }
+    
+    public void testSetBelowZeroBug()
+    {
+        DefaultDataDistribution<String> f = new DefaultDataDistribution<>();
+        
+        f.set("a", 3);
+        f.set("b", 4);
+        assertEquals(7, f.getTotal(), 0.0);
+        
+        f.set("b", 2);
+        assertEquals(5, f.getTotal(), 0.0);
+        
+        f.set("b", 0);
+        assertEquals(3, f.getTotal(), 0.0);
+
+        f.set("b", 5);
+        assertEquals(8, f.getTotal(), 0.0);
+        
+        f.set("b", -4);
+        assertEquals(3, f.getTotal(), 0.0);
     }
 
     /**

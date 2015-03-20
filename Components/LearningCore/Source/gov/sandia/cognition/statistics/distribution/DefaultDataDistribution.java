@@ -15,7 +15,6 @@ package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.factory.Factory;
 import gov.sandia.cognition.learning.algorithm.AbstractBatchAndIncrementalLearner;
-import gov.sandia.cognition.statistics.DataDistribution.PMF;
 import gov.sandia.cognition.math.MutableDouble;
 import gov.sandia.cognition.statistics.AbstractDataDistribution;
 import gov.sandia.cognition.statistics.DataDistribution;
@@ -127,7 +126,7 @@ public class DefaultDataDistribution<KeyType>
         final double value)
     {
         final MutableDouble entry = this.map.get(key);
-        double newValue;
+        double newValue = 0.0;
         double delta;
         if( entry == null )
         {
@@ -137,13 +136,13 @@ public class DefaultDataDistribution<KeyType>
                 // our total tracker in some subclasses...
                 // Also it's more efficient this way (avoid another get)
                 this.map.put( key, new MutableDouble(value) );
+                newValue = value;
                 delta = value;
             }
             else
             {
                 delta = 0.0;
             }
-            newValue = value;
         }
         else
         {
@@ -151,13 +150,13 @@ public class DefaultDataDistribution<KeyType>
             {
                 delta = value;
                 entry.value += value;
+                newValue = entry.value;
             }
             else
             {
                 delta = -entry.value;
                 entry.value = 0.0;
             }
-            newValue = entry.value;
         }
 
         this.total += delta;
@@ -189,6 +188,7 @@ public class DefaultDataDistribution<KeyType>
         }
         else
         {
+            this.total -= entry.value;
             entry.value = 0.0;
         }
     }
