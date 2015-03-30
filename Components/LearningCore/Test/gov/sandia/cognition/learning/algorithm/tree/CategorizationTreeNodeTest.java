@@ -88,7 +88,8 @@ public class CategorizationTreeNodeTest
         
         CategorizationTreeNode<Vector3, String, Boolean> clone = instance.clone();
         assertSame(outputCategory, clone.getOutputCategory());
-        assertSame(decider, clone.getDecider());
+        assertEquals(decider.toString(), clone.getDecider().toString());
+        assertNotSame(decider, clone.getDecider());
         assertSame(incomingValue, clone.getIncomingValue());
     }
 
