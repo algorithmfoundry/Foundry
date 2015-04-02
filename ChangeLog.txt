@@ -2,6 +2,45 @@ This file contains the change log for the Cognitive Foundry.
 
 Changes since last release:
 
+Release 3.4.0 (2015-04-02):
+  * General:
+    * Now requires Java 1.7 or higher.
+    * Improved compatibility with Java 1.8 functions by removing 
+      ClonableSerializable requirement from many function-style interfaces.
+  * Common Core:
+    * Improved iteration speed over sparse MTJ vectors.
+    * Added utility methods for more stable log(1+x), exp(1-x), log(1 - exp(x)), 
+      and log(1 + exp(x)) to LogMath.
+    * Added method for creating a partial permutations to Permutation.
+    * Added methods for computing standard deviation to UnivariateStatisticsUtil.
+    * Added increment, decrement, and list view methods to Vector and Matrix.
+    * Added shorter versions of get and set for Vector and Matrix getElement and
+      setElement.
+    * Added aliases of dot for dotProduct in VectorSpace.
+    * Added utility methods for divideByNorm2 to VectorUtil.
+  * Learning:
+    * Added a learner for a Factorization Machine using SGD.
+    * Added a iterative reporter for validation set performance.
+    * Added new methods to statistical distribution classes to allow for faster
+      sampling without boxing, in batches, or without creating extra memory.
+    * Made generics for performance evaluators more permissive.
+    * ParameterGradientEvaluator changed to not require input, output, and 
+      gradient types to be the same. This allows more sane gradient definitions
+      for scalar functions.
+    * Added ability to filter which dimensions to use in the random subspace
+      and variance tree node splitter.
+    * Added ReLU, leaky ReLU, and soft plus activation functions for neural
+      networks.
+    * Added IntegerDistribution interface for distributions over natural numbers.
+    * Added a method to get the mean of a numeric distribution without boxing.
+    * Fixed an issue in DefaultDataDistribution that caused the total to be off
+      when a value was set to less than or equal to 0.
+    * Added property for rate to GammaDistribution.
+    * Added method to get standard deviation from a UnivariateGaussian.
+    * Added clone operations for decision tree classes.
+    * Fixed issue TukeyKramerConfidence interval computation.
+    * Fixed serialization issue with SMO output.
+
 Release 3.3.3 (2013-05-20):
   * General:
     * Made code able to compile under both Java 1.6 and 1.7. This required
@@ -87,6 +126,7 @@ Release 3.3.3 (2013-05-20):
   * Text Core:
     * Fixed issue with the start position for tokens from LetterNumberTokenizer
       being off by one except for the first one.
+
 Release 3.3.2 (2011-11-07):
   * Common Core:
     * Added checkedAdd and checkedMultiply functions to MathUtil, providing a 
