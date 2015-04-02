@@ -35,10 +35,10 @@ public abstract class AbstractFactorizationMachineLearner
     public static final int DEFAULT_FACTOR_COUNT = 10;
     
     /** The default for bias enabled is {@value}. */
-    public static boolean DEFAULT_BIAS_ENABLED = true;
+    public static final boolean DEFAULT_BIAS_ENABLED = true;
     
     /** The default for weights enabled is {@value}. */
-    public static boolean DEFAULT_WEIGHTS_ENABLED = true;
+    public static final boolean DEFAULT_WEIGHTS_ENABLED = true;
     
     /** The default bias regularization parameter is {@value}. */
     public static final double DEFAULT_BIAS_REGULARIZATION = 0.0;

@@ -19,7 +19,7 @@
  *
  * @author  Justin Basilico
  * @since   3.4.0
- * @see     FactorizationMachine
+ * @see     gov.sandia.cognition.learning.algorithm.factor.machine.FactorizationMachine
  */
 @PublicationReference(
     title="Factorization Machines",

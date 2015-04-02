@@ -156,8 +156,7 @@ public class UnivariateRandomVariable
      * but equality uses a statistical test to see if two random variables
      * are equal.
      * 
-     * @return 
-     *      @inheritDoc
+     * @return @inheritDoc
      */
     @Override
     public int hashCode()
