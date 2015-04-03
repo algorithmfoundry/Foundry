@@ -46,8 +46,22 @@ public class VectorThresholdVarianceLearnerTest
      */
     public void testConstructors()
     {
+        int minSplitSize = VectorThresholdVarianceLearner.DEFAULT_MIN_SPLIT_SIZE;
+        int[] dimensionsToConsider = null;
         VectorThresholdVarianceLearner instance = new VectorThresholdVarianceLearner();
-        assertNull(instance.getDimensionsToConsider());
+        assertEquals(minSplitSize, instance.minSplitSize);
+        assertSame(dimensionsToConsider, instance.getDimensionsToConsider());
+        
+        minSplitSize = 5;
+        instance = new VectorThresholdVarianceLearner(minSplitSize);
+        assertEquals(minSplitSize, instance.minSplitSize);
+        assertSame(dimensionsToConsider, instance.getDimensionsToConsider());
+        
+        minSplitSize = 11;
+        dimensionsToConsider = new int[] { 3, 4 };
+        instance = new VectorThresholdVarianceLearner(minSplitSize, dimensionsToConsider);
+        assertEquals(minSplitSize, instance.minSplitSize);
+        assertSame(dimensionsToConsider, instance.getDimensionsToConsider());
     }
 
     /**
@@ -186,4 +200,70 @@ public class VectorThresholdVarianceLearnerTest
         assertSame(dimensionsToConsider, instance.getDimensionsToConsider()); 
     }
     
+    /**
+     * Test of learn method with childCountThreshold.
+     */
+    public void testLearnChildThreshold()
+    {
+        
+        VectorElementThresholdCategorizer result;
+        
+        LinkedList<InputOutputPair<Vector3, Double>> data = 
+            new LinkedList<InputOutputPair<Vector3, Double>>();
+        data.add(new DefaultInputOutputPair<Vector3, Double>(new Vector3(1.0, 4.0, 2.0), 10.0));
+        data.add(new DefaultInputOutputPair<Vector3, Double>(new Vector3(1.0, 3.0, 2.0), 2.0));
+        data.add(new DefaultInputOutputPair<Vector3, Double>(new Vector3(1.0, 1.0, 2.0), 3.0));
+        data.add(new DefaultInputOutputPair<Vector3, Double>(new Vector3(1.0, 1.5, 3.0), 1.0));
+        data.add(new DefaultInputOutputPair<Vector3, Double>(new Vector3(1.0, 3.0, 4.0), 2.5));
+
+        VectorThresholdVarianceLearner instance = 
+            new VectorThresholdVarianceLearner();
+        result = instance.learn(data);
+        assertNotNull(result);
+        assertEquals(1, result.getIndex());
+        assertEquals(3.5, result.getThreshold());
+        
+        instance = new VectorThresholdVarianceLearner(2);
+        result = instance.learn(data);
+        assertNotNull(result);
+        assertEquals(2, result.getIndex());
+        assertEquals(2.5, result.getThreshold());
+
+        instance = new VectorThresholdVarianceLearner(3);
+        result = instance.learn(data);
+        assertNull(result);
+
+        // Now create a dataset that cannot possibly be split into two children of at least two members
+        data = new LinkedList<InputOutputPair<Vector3, Double>>();
+        data.add(new DefaultInputOutputPair<Vector3, Double>(new Vector3(1.0, 1.0, 1.0), 2.0));
+        data.add(new DefaultInputOutputPair<Vector3, Double>(new Vector3(1.0, 2.0, 2.0), 2.0));
+        data.add(new DefaultInputOutputPair<Vector3, Double>(new Vector3(1.0, 2.0, 2.0), 3.0));
+        data.add(new DefaultInputOutputPair<Vector3, Double>(new Vector3(1.0, 2.0, 2.0), 4.0));
+        data.add(new DefaultInputOutputPair<Vector3, Double>(new Vector3(1.0, 3.0, 2.0), 5.0));    
+
+        instance = new VectorThresholdVarianceLearner(1);
+        result = instance.learn(data);
+        assertNotNull(result);
+        assertEquals(1, result.getIndex());
+        assertEquals(2.5, result.getThreshold());
+
+        instance = new VectorThresholdVarianceLearner(2);
+        result = instance.learn(data);
+        assertNull(result);
+
+        // Setting childLeafCount to zero should be overridden inside so it becomes 1.
+        boolean exceptionThrown = false;
+        try
+        {
+            instance = new VectorThresholdVarianceLearner(0);
+        }
+        catch (IllegalArgumentException e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+    }
 }
