@@ -27,6 +27,8 @@ Release 3.4.0 (2015-04-02):
     * ParameterGradientEvaluator changed to not require input, output, and 
       gradient types to be the same. This allows more sane gradient definitions
       for scalar functions.
+    * Added parameter to enforce a minimum size in a leaf node for decision
+      tree learning. It is configured through the splitting function.
     * Added ability to filter which dimensions to use in the random subspace
       and variance tree node splitter.
     * Added ReLU, leaky ReLU, and soft plus activation functions for neural
