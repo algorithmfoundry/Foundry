@@ -7,7 +7,7 @@ The Cognitive Foundry is an open-source Java library for building intelligent sy
 
 The Foundry contains four primary packages: Common, Learning, Text, and Framework. Common defines many of the basic interfaces and types in the Foundry. It also includes a linear algebra package and other generally useful Java utilities. Learning contains components and algorithms for machine learning and statistics. Text contains components and algorithms for text analysis and information retrieval such as topic modeling. Framework contains a framework for building multi-level models.
 
-The Foundry requires Java 1.6 or later.
+The Foundry requires Java 1.7 or later.
 
 ## License
 
