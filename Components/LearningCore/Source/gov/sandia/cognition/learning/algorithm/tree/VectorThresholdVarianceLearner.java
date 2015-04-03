@@ -23,10 +23,11 @@ import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ArgumentChecker;
 import gov.sandia.cognition.util.DefaultPair;
+import gov.sandia.cognition.util.DefaultWeightedValue;
+import gov.sandia.cognition.util.DefaultWeightedValue.WeightComparator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 
 /**
  * The {@code VectorThresholdVarianceLearner} computes the best threshold over
@@ -47,7 +48,7 @@ public class VectorThresholdVarianceLearner
     
     /** The threshold for allowing a split to be made, determined by how many
      *  instances fall in each left or right sides of the split. Both sides
-     *  must have at least this number of instances. */
+     *  must have at least this number of instances. Must be positive. */
     protected int minSplitSize;
 
     /** The array of 0-based dimensions to consider in the input. Null means
@@ -98,7 +99,8 @@ public class VectorThresholdVarianceLearner
      * picking the vector element and threshold that best maximizes information
      * gain.
      *
-     * @param  data The data to learn from.
+     * @param  data 
+     *      The data to learn from.
      * @return
      *      The learned threshold categorizer, or none if there is no good
      *      categorizer.
@@ -127,20 +129,20 @@ public class VectorThresholdVarianceLearner
         double bestThreshold = 0.0;
 
         final int dimensionsCount = this.dimensionsToConsider == null ?
-                dimensionality : this.dimensionsToConsider.length;
+            dimensionality : this.dimensionsToConsider.length;
         for (int i = 0; i < dimensionsCount; i++)
         {
             final int index = this.dimensionsToConsider == null ?
-                    i : this.dimensionsToConsider[i];
+                i : this.dimensionsToConsider[i];
 
             // Compute the best gain-threshold pair for the given dimension of
             // the data.
             final DefaultPair<Double, Double> gainThresholdPair =
-                    this.computeBestGainThreshold(data, index, baseVariance);
+                this.computeBestGainThreshold(data, index, baseVariance);
 
             if ( gainThresholdPair == null )
             {
-                // There was no gain-threshold pair that created a threshold.s
+                // There was no gain-threshold pair that created a threshold.
                 continue;
             }
 
@@ -198,10 +200,21 @@ public class VectorThresholdVarianceLearner
         // dimension and then walk along the values to determine the best
         // threshold.
 
-        // The first step is to create a list of (value, output) pairs.
+        // The first step is to create a list of (value, output) pairs. Note
+        // that the value is stored as the weight in the pair and the output
+        // is called the value. Unfortuate terminology but that is the easiest
+        // existing data structure to use.
         final int total = data.size();
-        final ArrayList<DefaultPair<Double, Double>> values =
-            new ArrayList<DefaultPair<Double, Double>>(total);
+        
+        // Need enough data for there to have the minimum split size on each
+        // side.
+        if (total < 2 * this.minSplitSize)
+        {
+            return null;
+        }
+        
+        final ArrayList<DefaultWeightedValue<Double>> values = 
+            new ArrayList<>(total);
         for (InputOutputPair<? extends Vectorizable, Double> example : data)
         {
             // Add this example to the list.
@@ -209,25 +222,16 @@ public class VectorThresholdVarianceLearner
             final Double value = Double.valueOf(input.getElement(dimension));
             final Double output = example.getOutput();
 
-            values.add(new DefaultPair<Double, Double>(value, output));
+            values.add(new DefaultWeightedValue<>(output, value));
         }
 
         // Sort the list in ascending order by value.
-        Collections.sort(values, new Comparator<DefaultPair<Double, Double>>()
-        {
-            @Override
-            public int compare(
-                DefaultPair<Double, Double> o1,
-                DefaultPair<Double, Double> o2)
-            {
-                return o1.getFirst().compareTo(o2.getFirst());
-            }
-        });
+        Collections.sort(values, WeightComparator.getInstance());
 
         // If all the values on this dimension are the same then there is
-        // nothing to split on.
-        if (    total <= 1
-             || values.get(0).getFirst().equals(values.get(total - 1).getFirst()))
+        // nothing to split on. We've made sure that indxing is fine by 
+        // checking above the minimum split size (which must be positive).
+        if (values.get(0).getWeight() == values.get(total - 1).getWeight())
         {
             // All of the values are the same.
             return null;
@@ -243,9 +247,9 @@ public class VectorThresholdVarianceLearner
             new UnivariateGaussian.SufficientStatistic();
         final UnivariateGaussian.SufficientStatistic negativeGaussian =
             new UnivariateGaussian.SufficientStatistic();
-        for (DefaultPair<Double, Double> valueLabel : values)
+        for (DefaultWeightedValue<Double> valueLabel : values)
         {
-            final double label = valueLabel.getSecond();
+            final double label = valueLabel.getValue();
             positiveGaussian.update(label);
         }
 
@@ -265,9 +269,9 @@ public class VectorThresholdVarianceLearner
         boolean splitFound = false;
         for (int i = 0; i <= maxIndex; i++)
         {
-            final DefaultPair<Double, Double> valueLabel = values.get(i);
-            final double value = valueLabel.getFirst();
-            final double label = valueLabel.getSecond();
+            final DefaultWeightedValue<Double> valueLabel = values.get(i);
+            final double value = valueLabel.getWeight();
+            final double label = valueLabel.getValue();
 
             if (i < this.minSplitSize)
             {
@@ -345,7 +349,7 @@ public class VectorThresholdVarianceLearner
         }
         
         // Return the pair containing the best gain and best threshold found.
-        return new DefaultPair<Double, Double>(bestGain, bestThreshold);
+        return new DefaultPair<>(bestGain, bestThreshold);
     }
 
     @Override
