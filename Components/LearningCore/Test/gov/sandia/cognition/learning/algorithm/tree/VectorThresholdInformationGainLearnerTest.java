@@ -49,9 +49,14 @@ public class VectorThresholdInformationGainLearnerTest
      */
     public void testConstructors()
     {
+        int minSplitSize = VectorThresholdInformationGainLearner.DEFAULT_MIN_SPLIT_SIZE;
         VectorThresholdInformationGainLearner<Boolean> instance =
-            new VectorThresholdInformationGainLearner<Boolean>();
-        assertNotNull(instance);
+            new VectorThresholdInformationGainLearner<>();
+        assertEquals(minSplitSize, instance.getMinSplitSize());
+        
+        minSplitSize = 6;
+        instance = new VectorThresholdInformationGainLearner<>(minSplitSize);
+        assertEquals(minSplitSize, instance.getMinSplitSize());
     }
     
     /**

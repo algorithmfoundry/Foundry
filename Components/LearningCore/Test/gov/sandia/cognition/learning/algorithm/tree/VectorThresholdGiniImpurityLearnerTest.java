@@ -14,7 +14,16 @@
 
 package gov.sandia.cognition.learning.algorithm.tree;
 
+import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
+import gov.sandia.cognition.learning.data.InputOutputPair;
+import gov.sandia.cognition.learning.function.categorization.VectorElementThresholdCategorizer;
+import gov.sandia.cognition.math.matrix.mtj.Vector3;
 import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
+import java.util.LinkedList;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
 
 /**
@@ -35,6 +44,21 @@ public class VectorThresholdGiniImpurityLearnerTest
         String testName)
     {
         super(testName);
+    }
+    
+    /**
+     * Test of constructors of class VectorThresholdGiniImpurityLearner.
+     */
+    public void testConstructors()
+    {
+        int minSplitSize = VectorThresholdGiniImpurityLearner.DEFAULT_MIN_SPLIT_SIZE;
+        VectorThresholdGiniImpurityLearner<Boolean> instance =
+            new VectorThresholdGiniImpurityLearner<>();
+        assertEquals(minSplitSize, instance.getMinSplitSize());
+        
+        minSplitSize = 6;
+        instance = new VectorThresholdGiniImpurityLearner<>(minSplitSize);
+        assertEquals(minSplitSize, instance.getMinSplitSize());
     }
 
     /**
@@ -76,7 +100,6 @@ public class VectorThresholdGiniImpurityLearnerTest
         moreBs.increment("b", 25);
         assertEquals(0.3125, instance.computeSplitGain(baseCounts, tenAs, moreBs), epsilon);
         assertEquals(0.3125, instance.computeSplitGain(baseCounts, moreBs, tenAs), epsilon);
-
     }
 
     /**
@@ -110,5 +133,68 @@ public class VectorThresholdGiniImpurityLearnerTest
         assertEquals(0.99, VectorThresholdGiniImpurityLearner.giniImpurity(lots), epsilon);
 
     }
+    
+    public void testLearnWithMinSplitSize()
+    {
+        
+        VectorElementThresholdCategorizer result;
+        
+        LinkedList<InputOutputPair<Vector3, String>> data = new LinkedList<>();
+        data.add(new DefaultInputOutputPair<>(new Vector3(1.0, 4.0, 2.0), "c"));
+        data.add(new DefaultInputOutputPair<>(new Vector3(1.0, 3.0, 2.0), "b"));
+        data.add(new DefaultInputOutputPair<>(new Vector3(1.0, 1.0, 2.0), "b"));
+        data.add(new DefaultInputOutputPair<>(new Vector3(1.0, 1.5, 3.0), "a"));
+        data.add(new DefaultInputOutputPair<>(new Vector3(1.0, 2.5, 4.0), "a"));
+        data.add(new DefaultInputOutputPair<>(new Vector3(1.0, 2.5, 5.0), "b"));
 
+        VectorThresholdGiniImpurityLearner<String> instance = 
+            new VectorThresholdGiniImpurityLearner<>();
+        result = instance.learn(data);
+        assertNotNull(result);
+        assertEquals(1, result.getIndex());
+        assertEquals(3.5, result.getThreshold());
+        
+        instance = new VectorThresholdGiniImpurityLearner<>(2);
+        result = instance.learn(data);
+        assertNotNull(result);
+        assertEquals(2, result.getIndex());
+        assertEquals(2.5, result.getThreshold());
+
+        instance = new VectorThresholdGiniImpurityLearner<>(4);
+        result = instance.learn(data);
+        assertNull(result);
+
+        // Now create a dataset that cannot possibly be split into two children of at least two members
+        data = new LinkedList<>();
+        data.add(new DefaultInputOutputPair<>(new Vector3(1.0, 1.0, 1.0), "a"));
+        data.add(new DefaultInputOutputPair<>(new Vector3(1.0, 2.0, 2.0), "b"));
+        data.add(new DefaultInputOutputPair<>(new Vector3(1.0, 2.0, 2.0), "b"));
+        data.add(new DefaultInputOutputPair<>(new Vector3(1.0, 2.0, 2.0), "a"));
+        data.add(new DefaultInputOutputPair<>(new Vector3(1.0, 3.0, 2.0), "a"));    
+
+        instance = new VectorThresholdGiniImpurityLearner<>(1);
+        result = instance.learn(data);
+        assertNotNull(result);
+        assertEquals(1, result.getIndex());
+        assertEquals(1.5, result.getThreshold());
+
+        instance = new VectorThresholdGiniImpurityLearner<>(2);
+        result = instance.learn(data);
+        assertNull(result);
+
+        // Setting childLeafCount to zero should be overridden inside so it becomes 1.
+        boolean exceptionThrown = false;
+        try
+        {
+            instance = new VectorThresholdGiniImpurityLearner<>(0);
+        }
+        catch (IllegalArgumentException e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+    }
 }

@@ -18,7 +18,6 @@ import gov.sandia.cognition.collection.ArrayUtil;
 import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.matrix.mtj.Vector2;
 import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
-import gov.sandia.cognition.util.CloneableSerializable;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -65,6 +64,18 @@ public class VectorThresholdInformationGainLearner<OutputType>
     public VectorThresholdInformationGainLearner()
     {
         super();
+    }
+    
+    /**
+     * Creates a new {@code VectorThresholdInformationGainLearner}.
+     * 
+     * @param   minSplitSize
+     *      The minimum split size. Must be positive.
+     */
+    public VectorThresholdInformationGainLearner(
+        final int minSplitSize)
+    {
+        super(minSplitSize, null);
     }
 
     @Override

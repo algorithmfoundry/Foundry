@@ -24,7 +24,6 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ArgumentChecker;
 import gov.sandia.cognition.util.DefaultPair;
 import gov.sandia.cognition.util.DefaultWeightedValue;
-import gov.sandia.cognition.util.DefaultWeightedValue.WeightComparator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,6 +42,9 @@ public class VectorThresholdVarianceLearner
     implements VectorThresholdLearner<Double>
 {
     
+// TODO: Eventually merge some of the duplicate code with AbstractVectorThresholdMaximumGainLearner.
+// -- jbasilico (2015-04-02)
+
     /** The default value for the minimum split size is {@value}. */
     public static final int DEFAULT_MIN_SPLIT_SIZE = 1;
     
@@ -78,19 +80,19 @@ public class VectorThresholdVarianceLearner
     /**
      * Creates a new {@code VectorThresholdVarianceLearner}.
      *
-     * @param   minLeafSize
+     * @param   minSplitSize
      *      The minimum split size. Must be positive.
      * @param   dimensionsToConsider
      *      The array of vector dimensions to consider. Null means all of them
      *      are considered.
      */
     public VectorThresholdVarianceLearner(
-        final int minLeafSize, 
+        final int minSplitSize, 
         final int... dimensionsToConsider)
     {
         super();
 
-        this.setMinSplitSize(minLeafSize);
+        this.setMinSplitSize(minSplitSize);
         this.setDimensionsToConsider(dimensionsToConsider);
     }
 
@@ -204,17 +206,17 @@ public class VectorThresholdVarianceLearner
         // that the value is stored as the weight in the pair and the output
         // is called the value. Unfortuate terminology but that is the easiest
         // existing data structure to use.
-        final int total = data.size();
+        final int totalCount = data.size();
         
         // Need enough data for there to have the minimum split size on each
         // side.
-        if (total < 2 * this.minSplitSize)
+        if (totalCount < 2 * this.minSplitSize)
         {
             return null;
         }
         
         final ArrayList<DefaultWeightedValue<Double>> values = 
-            new ArrayList<>(total);
+            new ArrayList<>(totalCount);
         for (InputOutputPair<? extends Vectorizable, Double> example : data)
         {
             // Add this example to the list.
@@ -226,12 +228,18 @@ public class VectorThresholdVarianceLearner
         }
 
         // Sort the list in ascending order by value.
-        Collections.sort(values, WeightComparator.getInstance());
+        Collections.sort(values, 
+            DefaultWeightedValue.WeightComparator.getInstance());
+
+        // Get the smallest and largest values. We've made sure that indxing is
+        // fine by checking above the minimum split size (which must be 
+        // positive).
+        final double smallestValue = values.get(0).getWeight();
+        final double largestValue = values.get(totalCount - 1).getWeight();
 
         // If all the values on this dimension are the same then there is
-        // nothing to split on. We've made sure that indxing is fine by 
-        // checking above the minimum split size (which must be positive).
-        if (values.get(0).getWeight() == values.get(total - 1).getWeight())
+        // nothing to split on.
+        if (smallestValue >= largestValue)
         {
             // All of the values are the same.
             return null;
@@ -265,7 +273,7 @@ public class VectorThresholdVarianceLearner
         //    2) So that the threshold can be computed to be half way between
         //       two values.
         double previousValue = 0.0;
-        final int maxIndex = total - this.minSplitSize;
+        final int maxIndex = totalCount - this.minSplitSize;
         boolean splitFound = false;
         for (int i = 0; i <= maxIndex; i++)
         {
@@ -286,7 +294,7 @@ public class VectorThresholdVarianceLearner
 
                 // Compute the total positive and negative at this point.
                 final int numNegative = i;
-                final int numPositive = total - i;
+                final int numPositive = totalCount - i;
 
                 // Compute variance of the negatives.
                 final double varianceNegative =
@@ -297,8 +305,8 @@ public class VectorThresholdVarianceLearner
                     positiveGaussian.getSampleVariance();
 
                 // Compute the proportion of positives and negatives.
-                final double proportionPositive = (double) numPositive / total;
-                final double proportionNegative = (double) numNegative / total;
+                final double proportionPositive = (double) numPositive / totalCount;
+                final double proportionNegative = (double) numNegative / totalCount;
 
                 // Compute the gain.
                 final double gain = baseVariance

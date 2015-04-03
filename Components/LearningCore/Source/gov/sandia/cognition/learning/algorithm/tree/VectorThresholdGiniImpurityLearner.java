@@ -51,6 +51,18 @@ public class VectorThresholdGiniImpurityLearner<OutputType>
     {
         super();
     }
+    
+    /**
+     * Creates a new {@code VectorThresholdGiniImpurityLearner}.
+     * 
+     * @param   minSplitSize
+     *      The minimum split size. Must be positive.
+     */
+    public VectorThresholdGiniImpurityLearner(
+        final int minSplitSize)
+    {
+        super(minSplitSize, null);
+    }
 
     @Override
     public VectorThresholdGiniImpurityLearner<OutputType> clone()

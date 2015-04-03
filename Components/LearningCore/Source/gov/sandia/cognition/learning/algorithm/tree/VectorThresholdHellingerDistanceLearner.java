@@ -69,6 +69,18 @@ public class VectorThresholdHellingerDistanceLearner<OutputType>
         super();
     }
 
+    /**
+     * Creates a new {@code VectorThresholdHellingerDistanceLearner}.
+     * 
+     * @param   minSplitSize
+     *      The minimum split size. Must be positive.
+     */
+    public VectorThresholdHellingerDistanceLearner(
+        final int minSplitSize)
+    {
+        super(minSplitSize, null);
+    }
+    
     @Override
     public VectorThresholdHellingerDistanceLearner<OutputType> clone()
     {

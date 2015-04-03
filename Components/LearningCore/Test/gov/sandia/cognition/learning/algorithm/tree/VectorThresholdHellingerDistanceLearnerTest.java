@@ -48,9 +48,14 @@ public class VectorThresholdHellingerDistanceLearnerTest
      */
     public void testConstructors()
     {
+        int minSplitSize = VectorThresholdHellingerDistanceLearner.DEFAULT_MIN_SPLIT_SIZE;
         VectorThresholdHellingerDistanceLearner<Boolean> instance =
-            new VectorThresholdHellingerDistanceLearner<Boolean>();
-        assertNotNull(instance);
+            new VectorThresholdHellingerDistanceLearner<>();
+        assertEquals(minSplitSize, instance.getMinSplitSize());
+        
+        minSplitSize = 6;
+        instance = new VectorThresholdHellingerDistanceLearner<>(minSplitSize);
+        assertEquals(minSplitSize, instance.getMinSplitSize());
     }
 
     /**

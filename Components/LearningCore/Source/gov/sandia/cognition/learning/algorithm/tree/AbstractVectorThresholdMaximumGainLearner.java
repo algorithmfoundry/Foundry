@@ -23,6 +23,7 @@ import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
+import gov.sandia.cognition.util.ArgumentChecker;
 import gov.sandia.cognition.util.DefaultPair;
 import gov.sandia.cognition.util.DefaultWeightedValue;
 import java.util.ArrayList;
@@ -46,6 +47,14 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
     implements VectorThresholdLearner<OutputType>
 {
 
+    /** The default value for the minimum split size is {@value}. */
+    public static final int DEFAULT_MIN_SPLIT_SIZE = 1;
+    
+    /** The threshold for allowing a split to be made, determined by how many
+     *  instances fall in each left or right sides of the split. Both sides
+     *  must have at least this number of instances. Must be positive. */
+    protected int minSplitSize;
+
     /** The array of dimensions for the learner to consider. If this is null,
      *  then all dimensions are considered. */
     protected int[] dimensionsToConsider;
@@ -55,11 +64,29 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
      */
     public AbstractVectorThresholdMaximumGainLearner()
     {
-        super();
-        
-        this.setDimensionsToConsider(null);
+        this(DEFAULT_MIN_SPLIT_SIZE, null);
     }
 
+    /**
+     * 
+     * Creates a new {@code AbstractVectorThresholdMaximumGainLearner}.
+     * 
+     * @param   minSplitSize
+     *      The minimum split size. Must be positive.
+     * @param   dimensionsToConsider
+     *      The array of vector dimensions to consider. Null means all of them
+     *      are considered.
+     */
+    public AbstractVectorThresholdMaximumGainLearner(
+        final int minSplitSize,
+        final int[] dimensionsToConsider)
+    {
+        super();
+        
+        this.setMinSplitSize(minSplitSize);
+        this.setDimensionsToConsider(dimensionsToConsider);
+    }
+    
     @Override
     public AbstractVectorThresholdMaximumGainLearner<OutputType> clone()
     {
@@ -208,9 +235,10 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
         final DefaultDataDistribution<OutputType> baseCounts,
         final ArrayList<DefaultWeightedValue<OutputType>> values)
     {
-        // We can only compute thresholds for at least 1 value.
+        // We can only compute thresholds if we can put the minimum split
+        // size on each side.
         final int totalCount = data.size();
-        if (totalCount <= 1)
+        if (totalCount < 2 * this.minSplitSize)
         {
             return null;
         }
@@ -267,29 +295,35 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
         double bestGain = Double.NEGATIVE_INFINITY;
         double bestTieBreaker = Double.NEGATIVE_INFINITY;
         double bestThreshold = Double.NEGATIVE_INFINITY;
+        boolean validSplit = false;
 
         // We need to keep track of the previous value for two reasons:
         //    1) To determine if we've already tested the value, since we loop
         //       over a >= threshold.
         //    2) So that the threshold can be computed to be half way between
         //       two values.
-	       //
+	    //
         // We advance i through values and stop whenever value[i] != value[i-1].
         // These are all the points where it is meaningful to evaluate a split.
         // All values to the left of i go into the negative count bucket.
-        double previousValue = smallestValue;
-        for (int i = 1; i < totalCount; i++)
+        final int maxIndex = totalCount - this.minSplitSize;
+        double previousValue = 0.0;
+        for (int i = 0; i <= maxIndex; i++)
         {
-            // Move previous value to negative count bucket.
-            final OutputType label = values.get(i - 1).getValue();
-            positiveCounts.decrement(label);
-            negativeCounts.increment(label);
-
-            final double value = values.get(i).getWeight();
+            final DefaultWeightedValue<OutputType> valueLabel = values.get(i);
+            final OutputType label = valueLabel.getValue();
+            final double value = valueLabel.getWeight();
 
             // Check if it is worth evaluating a threshold between
             // previous and next value.
-            if (value != previousValue)
+            if (i < this.minSplitSize)
+            {
+                // We are going to loop over a threshold value that is >=
+                // to handle equivalent values properly. However, we also need
+                // to ignore the first minSplitSize values.
+                bestThreshold = value;
+            }
+            else if (value != previousValue)
             {
                 // Compute the gain.
                 final double gain = computeSplitGain(
@@ -328,12 +362,17 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
                         bestGain = gain;
                         bestTieBreaker = tieBreaker;
                         bestThreshold = threshold;
+                        validSplit = true;
                     }
                 }
-
-                // Store this value as the previous value.
-                previousValue = value;
             }
+            
+            // Store this value as the previous value.
+            previousValue = value;
+            
+            // Update the sides of the split.
+            positiveCounts.decrement(label);
+            negativeCounts.increment(label);
         }
 
         // Sanity check to make sure we found a threshold that
@@ -346,6 +385,11 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
                 + "values (" + smallestValue + ", " + largestValue + "]");
         }
 
+        if (!validSplit)
+        {
+            return null;
+        }
+        
         // Return the pair containing the best gain and best threshold
         // found.
         return new DefaultPair<Double, Double>(bestGain, bestThreshold);
@@ -382,6 +426,36 @@ public abstract class AbstractVectorThresholdMaximumGainLearner<OutputType>
         final int... dimensionsToConsider)
     {
         this.dimensionsToConsider = dimensionsToConsider;
+    }
+
+    /**
+     * Gets the minimum split size. This is the minimum number of examples
+     * that can fall on either side of the split for it to be valid. If there
+     * is not at least twice this number of examples in the input data, then
+     * no split is returned.
+     * 
+     * @return 
+     *      The minimum split size. Must be positive.
+     */
+    public int getMinSplitSize()
+    {
+        return this.minSplitSize;
+    }
+    
+    /**
+     * Sets the minimum split size. This is the minimum number of examples
+     * that can fall on either side of the split for it to be valid. If there
+     * is not at least twice this number of examples in the input data, then
+     * no split is returned.
+     * 
+     * @param   minSplitSize
+     *      The minimum split size. Must be positive.
+     */
+    public void setMinSplitSize(
+        final int minSplitSize)
+    {
+        ArgumentChecker.assertIsPositive("minSplitSize", minSplitSize);
+        this.minSplitSize = minSplitSize;
     }
 
 }
