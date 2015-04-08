@@ -14,7 +14,7 @@
 
 package gov.sandia.cognition.algorithm;
 
-import gov.sandia.cognition.io.XStreamSerializationHandler;
+import gov.sandia.cognition.io.serialization.XStreamSerializationHandler;
 import gov.sandia.cognition.math.LentzMethod;
 import java.util.Random;
 import junit.framework.TestCase;
@@ -328,9 +328,10 @@ extends TestCase
         AAWrapper instance = this.createInstance();
         assertTrue(instance.getAlgorithm().getListeners().contains(instance));
 
-        String serialized = XStreamSerializationHandler.convertToString(instance);
+        XStreamSerializationHandler handler = XStreamSerializationHandler.getDefault();
+        String serialized = handler.convertToString(instance);
         System.out.println(serialized);
-        AAWrapper deserialized = (AAWrapper) XStreamSerializationHandler.convertFromString(
+        AAWrapper deserialized = (AAWrapper) handler.convertFromString(
             serialized);
 
         // The main part of read-resolve is to make sure that the wrapper is
