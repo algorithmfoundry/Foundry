@@ -15,8 +15,8 @@
 
 package gov.sandia.cognition.math.matrix.mtj;
 
-import org.netlib.blas.BLAS;
-import org.netlib.lapack.LAPACK;
+import com.github.fommil.netlib.BLAS;
+import com.github.fommil.netlib.LAPACK;
 
 /**
  * Tests to see if native versions of LAPACK and BLAS are loaded.

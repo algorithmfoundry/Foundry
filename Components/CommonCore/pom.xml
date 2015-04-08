@@ -15,13 +15,13 @@
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
-            <version>1.4.4</version>
+            <version>1.4.8</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.googlecode.matrix-toolkits-java</groupId>
             <artifactId>mtj</artifactId>
-            <version>0.9.14</version>
+            <version>1.0.2</version>
         </dependency>
     </dependencies>
 </project>
