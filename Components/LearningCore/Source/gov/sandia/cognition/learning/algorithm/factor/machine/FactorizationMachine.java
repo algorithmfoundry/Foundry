@@ -141,7 +141,7 @@ public class FactorizationMachine
         
         if (this.weights != null)
         {
-            result += this.weights.dotProduct(input);
+            result += input.dot(this.weights);
         }
         // else - No weights.
         
