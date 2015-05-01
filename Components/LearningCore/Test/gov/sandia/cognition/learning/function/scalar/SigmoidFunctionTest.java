@@ -70,4 +70,35 @@ public class SigmoidFunctionTest extends TestCase
 
     }
 
+    /**
+     * Test of logistic method, of class SigmoidFunction.
+     */
+    public void testLogistic()
+    {
+
+        double EPSILON = 1e-5;
+
+        assertEquals(0.5, SigmoidFunction.logistic(0.0), EPSILON);
+        assertEquals(0.0, SigmoidFunction.logistic(Double.NEGATIVE_INFINITY), EPSILON);
+        assertEquals(1.0, SigmoidFunction.logistic(Double.POSITIVE_INFINITY), EPSILON);
+        assertEquals(Double.NaN, SigmoidFunction.logistic(Double.NaN), EPSILON);
+        
+        double x, y;
+
+        x = 1e10;
+        y = 1.0;
+        assertEquals(y, SigmoidFunction.logistic(x), EPSILON);
+        assertEquals(1.0 - y, SigmoidFunction.logistic(-x), EPSILON);
+
+        x = 1.0;
+        y = 0.73106;
+        assertEquals(y, SigmoidFunction.logistic(x), EPSILON);
+        assertEquals(1.0 - y, SigmoidFunction.logistic(-x), EPSILON);
+
+        x = 0.1;
+        y = 0.52498;
+        assertEquals(y, SigmoidFunction.logistic(x), EPSILON);
+        assertEquals(1.0 - y, SigmoidFunction.logistic(-x), EPSILON);
+
+    }
 }

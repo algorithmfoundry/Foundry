@@ -21,7 +21,9 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 
 /**
- * An implementation of a sigmoid squashing function.
+ * An implementation of a sigmoid squashing function. Also known as a logistic
+ * sigmoid. It is computed as f(x) = 1 / (1 + e^-x). Thus, its output is between
+ * 0 and 1.
  *
  * @author Kevin R. Dixon
  * @since  1.0
@@ -77,17 +79,33 @@ public class SigmoidFunction
      * @param  input The input value to squash.
      * @return The output of the sigmoid.
      */
+    @Override
     public double evaluate(
-        double input )
+        final double input)
     {
-        return 1.0 / (1.0 + Math.exp( -input ));
+        return logistic(input);
     }
 
+    @Override
     public double differentiate(
-        double input )
+        final double input)
     {
-        double y = this.evaluate( input );
+        double y = this.evaluate(input);
         return y * (1.0 - y);
     }
 
+    /**
+     * Utility method to evaluate a logistic sigmoid.
+     * 
+     * @param   input
+     *      The input value.
+     * @return 
+     *      The output of the sigmoid. It is between 0 and 1.
+     */
+    public static double logistic(
+        final double input)
+    {
+        return 1.0 / (1.0 + Math.exp(-input));
+    }
+    
 }
