@@ -143,12 +143,12 @@ public class VectorUnionIterator
                 "Problem: Not advancing any iterators..." );
         }
         
-        if( advanceFirst == true )
+        if( advanceFirst )
         {
             this.safeFirstNext();
         }
         
-        if( advanceSecond == true )
+        if( advanceSecond )
         {
             this.safeSecondNext();
         }
@@ -164,17 +164,23 @@ public class VectorUnionIterator
      */
     public boolean safeFirstNext()
     {
-        boolean valid_next;
+        boolean valid_next = false;
         
         try
         {
-            this.setFirstInternalEntry( this.getFirstIterator().next() );
-            valid_next = true;
+            if (this.getFirstIterator().hasNext())
+            {
+                this.setFirstInternalEntry( this.getFirstIterator().next() );
+                valid_next = true;
+            }
+            else
+            {
+                this.setFirstInternalEntry(null);
+            }
         }
         catch (Exception e)
         {
             this.setFirstInternalEntry( null );
-            valid_next = false;
         }
         
         return valid_next;
@@ -190,17 +196,23 @@ public class VectorUnionIterator
      */
     public boolean safeSecondNext()
     {
-        boolean valid_next;
+        boolean valid_next = false;
         
         try
         {
-            this.setSecondInternalEntry( this.getSecondIterator().next() );
-            valid_next = true;
+            if (this.getSecondIterator().hasNext())
+            {
+                this.setSecondInternalEntry( this.getSecondIterator().next() );
+                valid_next = true;
+            }
+            else
+            {
+                this.setSecondInternalEntry(null);
+            }
         }
         catch (Exception e)
         {
             this.setSecondInternalEntry( null );
-            valid_next = false;
         }
         
         return valid_next;
@@ -306,8 +318,11 @@ public class VectorUnionIterator
     @Override
     public boolean hasNext()
     {
-        return (this.getFirstIterator().hasNext() == true) ||
-            (this.getSecondIterator().hasNext() == true);
+        return 
+               this.getFirstIterator().hasNext()
+            || this.getSecondIterator().hasNext()
+            || (this.firstInternalEntry != null && this.secondInternalEntry != null
+                && this.firstInternalEntry.getIndex() != this.secondInternalEntry.getIndex());
     }
 
     @Override
