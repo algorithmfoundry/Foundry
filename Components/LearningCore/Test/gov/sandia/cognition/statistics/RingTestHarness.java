@@ -86,7 +86,7 @@ abstract public class RingTestHarness<RingType extends Ring<RingType>> extends T
         assertEquals( r1, r1 );
         assertEquals( r1, r1clone );
 
-        double delta = RANDOM.nextDouble() + 1.0;
+        double delta = RANDOM.nextDouble() + 10.0;
         RingType r2 = r1.scale( delta );
         assertEquals( r1, r1clone );
 
