@@ -2,6 +2,19 @@ This file contains the change log for the Cognitive Foundry.
 
 Changes since last release:
 
+Release 3.4.1 (2015-05-11):
+  * General:
+    * Updated MTJ to version 1.0.2 and netlib-java to 1.1.2.
+    * Updated XStream to version 1.4.8.
+  * Common:
+    * Fixed issue in VectorUnionIterator.
+  * Learning:
+    * Added Alternating Least Squares (ALS) Factorization Machine training
+      implementation.
+    * Fixed performance issue in Factorization Machine where linear component
+      was not making use of sparsity.
+    * Added utility function to sigmoid unit.
+
 Release 3.4.0 (2015-04-02):
   * General:
     * Now requires Java 1.7 or higher.

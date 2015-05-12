@@ -2,3 +2,13 @@
 **/Build/
 **/Distribution/
 .DS_Store
+/nbproject/private/
+/Components/LearningCore/nbproject/private/
+/Components/CommonData/nbproject/private/
+/Components/LearningExamples/nbproject/private/
+/Components/FrameworkExamples/nbproject/private/
+/Components/TextCore/nbproject/private/
+/Components/CommonExamples/nbproject/private/
+/Components/FrameworkLearning/nbproject/private/
+/Components/FrameworkCore/nbproject/private/
+/Components/TextExamples/nbproject/private/
