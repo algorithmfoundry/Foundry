@@ -19,7 +19,7 @@ import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 
 /**
- * The <code>SigmoidKernel<code> class implements a sigmoid kernel based on the
+ * The <code>SigmoidKernel</code> class implements a sigmoid kernel based on the
  * hyperbolic tangent. The kernel it computes is:
  *    
  *     tanh(kappa * (x dot y) + c)

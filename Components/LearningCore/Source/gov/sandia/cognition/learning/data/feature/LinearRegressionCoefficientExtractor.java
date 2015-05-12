@@ -159,7 +159,7 @@ public class LinearRegressionCoefficientExtractor
     /**
      * Setter for maxBufferSize
      * @param maxBufferSize 
-     * Maximum buffer size, must be >= 2
+     * Maximum buffer size, must be greater than or equal to 2
      */
     public void setMaxBufferSize(
         int maxBufferSize )

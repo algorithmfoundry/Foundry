@@ -40,11 +40,6 @@ public class VectorizableVectorConverter
         super();
     }
     
-    /**
-     * {@inheritDoc}
-     * 
-     * @return {@inheritDoc}
-     */
     @Override
     public VectorizableVectorConverter clone()
     {

@@ -167,7 +167,7 @@ public class GaussianContextRecognizer
     }
 
     /**
-     * Creates a GaussianContextRecognizer from a Dataset<Vector> using
+     * Creates a GaussianContextRecognizer from a Dataset[Vector] using
      * a BatchClusterer
      */
     public static class Learner
