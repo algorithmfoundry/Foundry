@@ -208,7 +208,6 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
         // First, assign each data point to a cluster, given the current
         // location of the clusters
         int[] newAssignements = this.assignDataToClusters( this.getData() );
-//        this.clusterCounts = new int[this.getNumClusters()];
         int nc = 0;
         for( int i = 0; i < newAssignements.length; i++ )
         {
@@ -217,14 +216,6 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
             {
                 nc++;
             }
-            /*
-                        int assignment = newAssignements[i];
-            if( this.assignments[i] != assignment )
-            {
-                nc++;
-                this.assignments[i] = assignment;
-            }
-             */
         }
         
         this.setNumChanged( nc );
@@ -318,14 +309,14 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
     {
         // Loop through the clusters and initialize their membership lists
         // based on who is in them.
-        int numClusters = this.getNumClusters();
-        ArrayList<ArrayList<DataType>> clustersMembers = this.assignDataFromIndices();
+        final ArrayList<ArrayList<DataType>> clustersMembers = 
+            this.assignDataFromIndices();
 
         // Create the clusters from their memberships.
-        for (int i = 0; i < numClusters; i++)
+        int clusterIndex = 0;
+        for (final ArrayList<DataType> members : clustersMembers)
         {
-            ArrayList<DataType> members = clustersMembers.get(i);
-            ClusterType cluster;
+            final ClusterType cluster;
             if (members.size() > 0)
             {
                 cluster = this.creator.createCluster(members);
@@ -334,9 +325,8 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
             {
                 cluster = null;
             }
-            
-            this.clusters.set( i, cluster );
-            
+            this.clusters.set(clusterIndex, cluster);
+            clusterIndex++;
         }
         
     }
@@ -360,17 +350,21 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
             // Get the i-th cluster.
             ClusterType cluster = this.clusters.get(i);
 
-            // Compute the distance to the i-th cluster.
-            double distance =
-                this.divergenceFunction.evaluate(cluster, element);
-
-            if (closestClusterIndex < 0 || distance < minDistance)
+            if (cluster != null)
             {
-                // This is the closest so far.
-                minDistance = distance;
-                closestClusterIndex = i;
+                // Compute the distance to the i-th cluster.
+                double distance =
+                    this.divergenceFunction.evaluate(cluster, element);
+
+                if (closestClusterIndex < 0 || distance < minDistance)
+                {
+                    // This is the closest so far.
+                    minDistance = distance;
+                    closestClusterIndex = i;
+                }
+                // else - There is already a closer cluster.
             }
-        // else - There is already a closer cluster.
+            // else - Ignore empty clusters.
         }
 
         // Return the index of the closest cluster.

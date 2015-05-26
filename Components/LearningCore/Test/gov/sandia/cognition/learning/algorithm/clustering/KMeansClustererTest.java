@@ -14,11 +14,13 @@
 
 package gov.sandia.cognition.learning.algorithm.clustering;
 
+import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.learning.algorithm.clustering.cluster.CentroidCluster;
 import gov.sandia.cognition.learning.algorithm.clustering.divergence.CentroidClusterDivergenceFunction;
 import gov.sandia.cognition.learning.algorithm.clustering.initializer.GreedyClusterInitializer;
 import gov.sandia.cognition.learning.function.distance.EuclideanDistanceMetric;
 import gov.sandia.cognition.learning.algorithm.clustering.cluster.VectorMeanCentroidClusterCreator;
+import gov.sandia.cognition.learning.algorithm.clustering.initializer.FixedClusterInitializer;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.mtj.Vector2;
 import gov.sandia.cognition.util.NamedValue;
@@ -219,6 +221,43 @@ public class KMeansClustererTest
         {
             assertTrue(exceptionThrown);
         }
+    }
+    
+    public void testClusteringAvoidNulls()
+    {   
+        KMeansClusterer<Vector, CentroidCluster<Vector>> instance =
+            this.createClusterer();
+        
+        // Create a bad initializer.
+        instance.setInitializer(new FixedClusterInitializer<CentroidCluster<Vector>, Vector>()
+        {
+
+            @Override
+            public ArrayList<CentroidCluster<Vector>> initializeClusters(
+                final int numClusters,
+                final Collection<? extends Vector> elements)
+            {
+                final ArrayList<CentroidCluster<Vector>> result = new ArrayList<>();
+                result.add(new CentroidCluster<Vector>(CollectionUtil.getElement(elements, 0)));
+                result.add(new CentroidCluster<Vector>(CollectionUtil.getElement(elements, 1)));
+                result.add(new CentroidCluster<Vector>(CollectionUtil.getElement(elements, 2)));
+                return result;
+            }
+        });
+        ArrayList<Vector> data = new ArrayList<Vector>();
+
+        Vector2 v1 = new Vector2(1.0, 1.0);
+        Vector2 v2 = new Vector2(2.0, 2.0);
+        data.add(v1.clone());
+        data.add(v1.clone());
+        data.add(v2.clone());
+        data.add(v1.clone());
+        data.add(v2.clone());
+        data.add(v2.clone());
+        
+        instance.setNumRequestedClusters(3);
+        
+        Collection<CentroidCluster<Vector>> result = instance.learn(data);
     }
 
 }

@@ -67,7 +67,7 @@ public class CentroidClusterDivergenceFunction<DataType>
      * Evaluates the divergence between the cluster centroid and the given
      * object. 
      *
-     * @param cluster The cluster to compute distance from.
+     * @param cluster The cluster to compute distance from. Cannot be null.
      * @param other The object to compute the distance to.
      * @return The divergence between the center of the cluster and the given
      *         object.
