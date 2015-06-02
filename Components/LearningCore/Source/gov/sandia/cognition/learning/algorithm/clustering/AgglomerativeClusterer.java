@@ -26,6 +26,7 @@ import gov.sandia.cognition.learning.algorithm.clustering.hierarchy.ClusterHiera
 import gov.sandia.cognition.learning.algorithm.clustering.hierarchy.DefaultClusterHierarchyNode;
 import gov.sandia.cognition.learning.algorithm.clustering.divergence.ClusterToClusterDivergenceFunction;
 import gov.sandia.cognition.learning.function.distance.DivergenceFunctionContainer;
+import gov.sandia.cognition.util.ArgumentChecker;
 import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -83,8 +84,12 @@ public class AgglomerativeClusterer
     /** The default minimum number of clusters is {@value}. */
     public static final int DEFAULT_MIN_NUM_CLUSTERS = 1;
 
+    /** The default maximum distance is {@value}. */
+    public static final double DEFAULT_MAX_DISTANCE = Double.MAX_VALUE;
+
     /** The default maximum minimum distance is {@value}. */
-    public static final double DEFAULT_MAX_MIN_DISTANCE = Double.MAX_VALUE;
+    @Deprecated
+    public static final double DEFAULT_MAX_MIN_DISTANCE = DEFAULT_MAX_DISTANCE;
 
     /** The default maximum number of iterations {@value} */
     public static final int DEFAULT_MAX_ITERATIONS = Integer.MAX_VALUE;
@@ -101,8 +106,8 @@ public class AgglomerativeClusterer
     /** The minimum number of clusters allowed. */
     protected int minNumClusters;
 
-    /** The maximum minimum distance between clusters allowed. */
-    protected double maxMinDistance;
+    /** The maximum distance between clusters allowed. */
+    protected double maxDistance;
 
     /** The current set of clusters. */
     protected ArrayList<ClusterType> clusters;
@@ -163,26 +168,26 @@ public class AgglomerativeClusterer
         int minNumClusters)
     {
         this(divergenceFunction, creator, minNumClusters,
-            DEFAULT_MAX_MIN_DISTANCE);
+            DEFAULT_MAX_DISTANCE);
     }
 
     /** 
      * Initializes the clustering to use the given metric between
-     * clusters, the given cluster merger, and the maximum minimum
-     * distance between clusters to allow.
+     * clusters, the given cluster merger, and the maximum 
+     * distance between clusters to allow when merging.
      *
      * @param  divergenceFunction The distance metric between clusters.
      * @param  creator The method for creating clusters.
-     * @param  maxMinDistance The maximum minimum distance between clusters 
-     *         to allow.
+     * @param  maxDistance The maximum distance between clusters to allow when
+     *      merging them. Cannot be negative.
      */
     public AgglomerativeClusterer(
         ClusterToClusterDivergenceFunction<? super ClusterType, ? super DataType>
             divergenceFunction,
         ClusterCreator<ClusterType, DataType> creator,
-        double maxMinDistance)
+        double maxDistance)
     {
-        this(divergenceFunction, creator, 1, maxMinDistance);
+        this(divergenceFunction, creator, 1, maxDistance);
     }
 
     /**
@@ -195,15 +200,15 @@ public class AgglomerativeClusterer
      * @param  creator The method for creating clusters.
      * @param  minNumClusters The minimum number of clusters to allow. Must 
      *         be greater than zero.
-     * @param  maxMinDistance The maximum minimum distance between clusters 
-     *         to allow.
+     * @param  maxDistance The maximum distance between clusters to allow when
+     *      merging them. Cannot be negative.
      */
     public AgglomerativeClusterer(
         ClusterToClusterDivergenceFunction<? super ClusterType, ? super DataType>
             divergenceFunction,
         ClusterCreator<ClusterType, DataType> creator,
         int minNumClusters,
-        double maxMinDistance)
+        double maxDistance)
     {
         super(DEFAULT_MAX_ITERATIONS);
 
@@ -211,7 +216,7 @@ public class AgglomerativeClusterer
         this.setCreator(creator);
 
         this.setMinNumClusters(minNumClusters);
-        this.setMaxMinDistance(maxMinDistance);
+        this.setMaxDistance(maxDistance);
 
         this.setClusters(null);
         this.setClustersHierarchy(null);
@@ -243,14 +248,14 @@ public class AgglomerativeClusterer
         // Turn off the stopping criteria to do with the minimum number of
         // clusters or the maximum minimum distance.
         final int tempMinNumClusters = this.getMinNumClusters();
-        final double tempMaxMinDistance = this.getMaxMinDistance();
+        final double tempMaxMinDistance = this.getMaxDistance();
         this.setMinNumClusters(1);
-        this.setMaxMinDistance(Double.MAX_VALUE);
+        this.setMaxDistance(Double.MAX_VALUE);
         
         this.learn(data);
         
         this.setMinNumClusters(tempMinNumClusters);
-        this.setMaxMinDistance(tempMaxMinDistance);
+        this.setMaxDistance(tempMaxMinDistance);
         
         
         if (CollectionUtil.isEmpty(this.clustersHierarchy))
@@ -350,7 +355,7 @@ public class AgglomerativeClusterer
             }
         }
 
-        if (minDistance > this.maxMinDistance)
+        if (minDistance > this.maxDistance)
         {
             // The minimum distance clusters are too far apart
             // to merge.
@@ -628,34 +633,54 @@ public class AgglomerativeClusterer
     }
 
     /**
-     * The maximum minimum distance between clusters that is allowed 
-     * for the two clusters to be merged. If there are no clusters 
-     * that remain that have a distance between them less than or 
-     * equal to this value, then the clustering will halt. To not
-     * have this value factored into the clustering, set it to 
-     * something such as Double.MAX_VALUE.
-     *
-     * @return The maximum minimum distance between clusters.
+     * 
+     * @return
+     * @deprecated Use getMaxDistance
      */
+    @Deprecated
     public double getMaxMinDistance()
     {
-        return this.maxMinDistance;
+        return this.getMaxDistance();
+    }
+    
+    @Deprecated
+    public void setMaxMinDistance(
+        final double maxMinDistance)
+    {
+        this.setMaxDistance(maxMinDistance);
     }
 
     /**
-     * The maximum minimum distance between clusters that is allowed 
+     * The maximum distance between clusters that is allowed 
      * for the two clusters to be merged. If there are no clusters 
      * that remain that have a distance between them less than or 
      * equal to this value, then the clustering will halt. To not
      * have this value factored into the clustering, set it to 
      * something such as Double.MAX_VALUE.
      *
-     * @param  maxMinDistance The new maximum minimum distance.
+     * @return The maximum distance between clusters to merge.
      */
-    public void setMaxMinDistance(
-        double maxMinDistance)
+    public double getMaxDistance()
     {
-        this.maxMinDistance = maxMinDistance;
+        return this.maxDistance;
+    }
+
+    /**
+     * The maximum distance between clusters that is allowed 
+     * for the two clusters to be merged. If there are no clusters 
+     * that remain that have a distance between them less than or 
+     * equal to this value, then the clustering will halt. To not
+     * have this value factored into the clustering, set it to 
+     * something such as Double.MAX_VALUE.
+     *
+     * @param  maxDistance The new maximum distance between clusters to merge.
+     *      Cannot be negative.
+     */
+    public void setMaxDistance(
+        final double maxDistance)
+    {
+        ArgumentChecker.assertIsNonNegative("maxDistance", maxDistance);
+        this.maxDistance = maxDistance;
     }
 
     /**
@@ -669,7 +694,6 @@ public class AgglomerativeClusterer
         this.clusters = clusters;
     }
     
-
     /**
      * Gets the hierarchy of clusters.
      * 

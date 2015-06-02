@@ -298,29 +298,29 @@ public class AgglomerativeClustererTest
     }
 
     /**
-     * Test of getMaxMinDistance method, of class gov.sandia.cognition.learning.clustering.AgglomerativeClusterer.
+     * Test of getMaxDistance method, of class AgglomerativeClusterer.
      */
-    public void testGetMaxMinDistance()
+    public void testGetMaxDistance()
     {
-        this.testSetMaxMinDistance();
+        this.testSetMaxDistance();
     }
 
     /**
-     * Test of setMaxMinDistance method, of class gov.sandia.cognition.learning.clustering.AgglomerativeClusterer.
+     * Test of setMaxDistance method, of class AgglomerativeClusterer.
      */
-    public void testSetMaxMinDistance()
+    public void testSetMaxDistance()
     {
         AgglomerativeClusterer<Vector, CentroidCluster<Vector>> instance
             = new AgglomerativeClusterer<Vector, CentroidCluster<Vector>>();
-        assertEquals(AgglomerativeClusterer.DEFAULT_MAX_MIN_DISTANCE, instance.getMaxMinDistance());
+        assertEquals(AgglomerativeClusterer.DEFAULT_MAX_MIN_DISTANCE, instance.getMaxDistance());
         
-        double maxMinDistance = Math.random();
-        instance.setMaxMinDistance(maxMinDistance);
-        assertEquals(maxMinDistance, instance.getMaxMinDistance());
+        double maxDistance = Math.random();
+        instance.setMaxDistance(maxDistance);
+        assertEquals(maxDistance, instance.getMaxDistance());
         
-        maxMinDistance = -Math.random();
-        instance.setMaxMinDistance(maxMinDistance);
-        assertEquals(maxMinDistance, instance.getMaxMinDistance());
+        maxDistance = -Math.random();
+        instance.setMaxDistance(maxDistance);
+        assertEquals(maxDistance, instance.getMaxDistance());
     }
 
 }
