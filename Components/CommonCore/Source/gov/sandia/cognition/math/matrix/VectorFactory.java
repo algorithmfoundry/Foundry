@@ -122,24 +122,33 @@ public abstract class VectorFactory<VectorType extends Vector>
     }
 
     /**
-     * Copies the values from the given Collection
-     * @param values Values to copy
-     * @return Vector with the same dimension and values as "values" has size.
+     * Copies the values from the given Collection. It does this by iterating
+     * through collection and initializing the by iterating through them
+     * in the order specified by the collection. Thus, this should probably
+     * not be used with collections that do not have a very well determined
+     * iteration order, like a HashSet (as such, LinkedHashSet may be a better
+     * option to preserve insertion order).
+     * 
+     * @param values 
+     *      Values to create a vector from. Cannot be null and cannot contain
+     *      null values.
+     * @return 
+     *      A vector of dimensionality equal to the size of the given
+     *      collection and whose values are initialized to the values in the
+     *      collection in order of iteration.
      */
     public VectorType copyValues(
-        Collection<? extends Number> values )
+        final Collection<? extends Number> values)
     {
-
-        VectorType v = this.createVector( values.size() );
+        final VectorType v = this.createVector(values.size());
         int index = 0;
-        for( Number value : values )
+        for (final Number value : values)
         {
-            v.setElement(index, value.doubleValue());
+            v.set(index, value.doubleValue());
             index++;
         }
 
         return v;
-
     }
 
     /**
