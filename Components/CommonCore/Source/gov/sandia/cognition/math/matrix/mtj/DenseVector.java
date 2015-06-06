@@ -20,6 +20,7 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
+import gov.sandia.cognition.math.matrix.VectorIndexValueConsumer;
 import gov.sandia.cognition.math.matrix.VectorReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -57,6 +58,13 @@ public class DenseVector
     extends AbstractMTJVector
     implements Serializable
 {
+
+    /** Internal pointer to the same backing data array as used in the internal
+     * dense MTJ vector. This is used to speed up certain operations on this 
+     * vector so they don't have to go through the MTJ version to get to the
+     * array. Cannot be null.
+     */
+    private transient double[] array;
     
     /**
      * Creates a new instance of DenseVector
@@ -65,7 +73,7 @@ public class DenseVector
     protected DenseVector(
         int numDimensions)
     {
-        super( new no.uib.cipr.matrix.DenseVector( numDimensions ) );
+        this( new no.uib.cipr.matrix.DenseVector( numDimensions ) );
         if( numDimensions < 0 )
         {
             throw new IllegalArgumentException(
@@ -80,7 +88,7 @@ public class DenseVector
     protected DenseVector(
         DenseVector vector )
     {
-        super( (no.uib.cipr.matrix.DenseVector)
+        this( (no.uib.cipr.matrix.DenseVector)
             vector.getInternalVector().copy() );
     }
     
@@ -95,7 +103,7 @@ public class DenseVector
         
         for( VectorEntry e : vector )
         {
-            this.setElement( e.getIndex(), e.getValue() );
+            this.set( e.getIndex(), e.getValue() );
         }
     }
     
@@ -106,7 +114,7 @@ public class DenseVector
     protected DenseVector(
         AbstractMTJVector vector )
     {
-        super( new no.uib.cipr.matrix.DenseVector( vector.getInternalVector() ) );
+        this( new no.uib.cipr.matrix.DenseVector( vector.getInternalVector() ) );
     }
     
     /**
@@ -114,7 +122,7 @@ public class DenseVector
      * @param values The array of values to give the vector
      */
     protected DenseVector(
-        double[] values)
+        double... values)
     {
         this( new no.uib.cipr.matrix.DenseVector( values ) );
     }
@@ -127,6 +135,7 @@ public class DenseVector
         no.uib.cipr.matrix.DenseVector internalVector)
     {
         super( internalVector );
+        this.array = internalVector.getData();
     }
 
     /**
@@ -141,6 +150,14 @@ public class DenseVector
         this( reader.read() );
     }
 
+    @Override
+    protected void setInternalVector(
+        final no.uib.cipr.matrix.Vector internalVector)
+    {
+        // Force it to be a dense vector.
+        this.setInternalVector((no.uib.cipr.matrix.DenseVector) internalVector);
+    }
+
     /**
      * Sets the internalVector using MTJ's DenseVector
      * @param internalVector internal MTJ-based DenseVector
@@ -149,8 +166,50 @@ public class DenseVector
         no.uib.cipr.matrix.DenseVector internalVector)
     {
         super.setInternalVector( internalVector );
+        this.array = internalVector.getData();
+    }
+    
+    @Override
+    public double getElement(
+        final int index)
+    {
+        // Avoid overhead of: this.internalVector.get(index)
+        return this.array[index];
     }
 
+    @Override
+    public void setElement(
+        final int index,
+        final double value)
+    {
+        // Avoid overhead of: this.internalVector.set(index, value)
+        this.array[index] = value;
+    }
+    
+    @Override
+    public double get(
+        final int index)
+    {
+        // Avoid overhead of: this.internalVector.get(index)
+        return this.array[index];
+    }
+
+    @Override
+    public void set(
+        final int index,
+        final double value)
+    {
+        // Avoid overhead of: this.internalVector.set(index, value)
+        this.array[index] = value;
+    }
+
+    @Override
+    public int getDimensionality()
+    {
+        // Avoid overhead of: this.internalVector.size()
+        return this.array.length;
+    }
+    
     @Override
     public boolean equals(
         final Vector other,
@@ -169,8 +228,9 @@ public class DenseVector
         //
         // Please note: this structure does not exploit ANY type of sparseness
         // in either vector.
-        double[] values = this.getArray();
-        for( int i = 0; i < this.getDimensionality(); i++ )
+        final double[] values = this.getArray();
+        final int dimensionality = this.getDimensionality();
+        for( int i = 0; i < dimensionality; i++ )
         {
             double difference = values[i] - other.getElement( i );
             if( Math.abs( difference ) > effectiveZero )
@@ -201,7 +261,7 @@ public class DenseVector
         return sumSquared;
     }
     
-    
+    @Override
     public DenseMatrix outerProduct(
         final AbstractMTJVector other)
     {
@@ -222,6 +282,7 @@ public class DenseVector
         
     }
     
+    @Override
     public DenseVector stack(
         Vector other)
     {
@@ -248,6 +309,7 @@ public class DenseVector
      * @param maxIndex maximum index to get (inclusive)
      * @return vector of dimension (maxIndex-minIndex+1)
      */
+    @Override
     public DenseVector subVector(
         int minIndex,
         int maxIndex )
@@ -262,14 +324,14 @@ public class DenseVector
         }
         return retval;
     }
-    
+
     /**
      * Returns the underlying double array for this DenseVector
      * @return internal double array for this DenseVector
      */
     public double[] getArray()
     {
-        return ((no.uib.cipr.matrix.DenseVector) this.getInternalVector()).getData();
+        return this.array;
     }
 
 
