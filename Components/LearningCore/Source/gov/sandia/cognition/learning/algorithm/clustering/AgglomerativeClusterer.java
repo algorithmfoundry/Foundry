@@ -179,7 +179,7 @@ public class AgglomerativeClusterer
      * @param  divergenceFunction The distance metric between clusters.
      * @param  creator The method for creating clusters.
      * @param  maxDistance The maximum distance between clusters to allow when
-     *      merging them. Cannot be negative.
+     *      merging them.
      */
     public AgglomerativeClusterer(
         ClusterToClusterDivergenceFunction<? super ClusterType, ? super DataType>
@@ -201,7 +201,7 @@ public class AgglomerativeClusterer
      * @param  minNumClusters The minimum number of clusters to allow. Must 
      *         be greater than zero.
      * @param  maxDistance The maximum distance between clusters to allow when
-     *      merging them. Cannot be negative.
+     *      merging them.
      */
     public AgglomerativeClusterer(
         ClusterToClusterDivergenceFunction<? super ClusterType, ? super DataType>
@@ -674,12 +674,10 @@ public class AgglomerativeClusterer
      * something such as Double.MAX_VALUE.
      *
      * @param  maxDistance The new maximum distance between clusters to merge.
-     *      Cannot be negative.
      */
     public void setMaxDistance(
         final double maxDistance)
     {
-        ArgumentChecker.assertIsNonNegative("maxDistance", maxDistance);
         this.maxDistance = maxDistance;
     }
 

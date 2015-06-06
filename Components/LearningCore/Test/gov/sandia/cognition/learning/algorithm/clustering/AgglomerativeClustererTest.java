@@ -34,6 +34,7 @@ import junit.framework.TestCase;
  * @author Justin Basilico
  * @since  2.0
  */
+
 public class AgglomerativeClustererTest
     extends TestCase
 {
@@ -57,9 +58,11 @@ public class AgglomerativeClustererTest
             this.metric);
     }
     
+    @SuppressWarnings("deprecation")
     public void testConstants()
     {
         assertEquals(1, AgglomerativeClusterer.DEFAULT_MIN_NUM_CLUSTERS);
+        assertEquals(Double.MAX_VALUE, AgglomerativeClusterer.DEFAULT_MAX_DISTANCE);
         assertEquals(Double.MAX_VALUE, AgglomerativeClusterer.DEFAULT_MAX_MIN_DISTANCE);
     }
     
@@ -70,14 +73,14 @@ public class AgglomerativeClustererTest
         assertNull(instance.getDivergenceFunction());
         assertNull(instance.getCreator());
         assertEquals(AgglomerativeClusterer.DEFAULT_MIN_NUM_CLUSTERS, instance.getMinNumClusters());
-        assertEquals(AgglomerativeClusterer.DEFAULT_MAX_MIN_DISTANCE, instance.getMaxMinDistance());
+        assertEquals(AgglomerativeClusterer.DEFAULT_MAX_DISTANCE, instance.getMaxDistance());
         
         instance = new AgglomerativeClusterer<Vector, CentroidCluster<Vector>>(
                 this.clusterMetric, this.creator);
         assertSame(this.clusterMetric, instance.getDivergenceFunction());
         assertSame(this.creator, instance.getCreator());
         assertEquals(AgglomerativeClusterer.DEFAULT_MIN_NUM_CLUSTERS, instance.getMinNumClusters());
-        assertEquals(AgglomerativeClusterer.DEFAULT_MAX_MIN_DISTANCE, instance.getMaxMinDistance());
+        assertEquals(AgglomerativeClusterer.DEFAULT_MAX_DISTANCE, instance.getMaxDistance());
         
         int minNumClusters = 4;
         instance = new AgglomerativeClusterer<Vector, CentroidCluster<Vector>>(
@@ -85,22 +88,22 @@ public class AgglomerativeClustererTest
         assertSame(this.clusterMetric, instance.getDivergenceFunction());
         assertSame(this.creator, instance.getCreator());
         assertEquals(minNumClusters, instance.getMinNumClusters());
-        assertEquals(AgglomerativeClusterer.DEFAULT_MAX_MIN_DISTANCE, instance.getMaxMinDistance());
+        assertEquals(AgglomerativeClusterer.DEFAULT_MAX_DISTANCE, instance.getMaxDistance());
         
-        double maxMinDistance = 0.47;
+        double maxDistance = 0.47;
         instance = new AgglomerativeClusterer<Vector, CentroidCluster<Vector>>(
-                this.clusterMetric, this.creator, maxMinDistance);
+                this.clusterMetric, this.creator, maxDistance);
         assertSame(this.clusterMetric, instance.getDivergenceFunction());
         assertSame(this.creator, instance.getCreator());
         assertEquals(AgglomerativeClusterer.DEFAULT_MIN_NUM_CLUSTERS, instance.getMinNumClusters());
-        assertEquals(maxMinDistance, instance.getMaxMinDistance());
+        assertEquals(maxDistance, instance.getMaxDistance());
         
         instance = new AgglomerativeClusterer<Vector, CentroidCluster<Vector>>(
-                this.clusterMetric, this.creator, minNumClusters, maxMinDistance);
+                this.clusterMetric, this.creator, minNumClusters, maxDistance);
         assertSame(this.clusterMetric, instance.getDivergenceFunction());
         assertSame(this.creator, instance.getCreator());
         assertEquals(minNumClusters, instance.getMinNumClusters());
-        assertEquals(maxMinDistance, instance.getMaxMinDistance());
+        assertEquals(maxDistance, instance.getMaxDistance());
         
     }
 
@@ -312,7 +315,7 @@ public class AgglomerativeClustererTest
     {
         AgglomerativeClusterer<Vector, CentroidCluster<Vector>> instance
             = new AgglomerativeClusterer<Vector, CentroidCluster<Vector>>();
-        assertEquals(AgglomerativeClusterer.DEFAULT_MAX_MIN_DISTANCE, instance.getMaxDistance());
+        assertEquals(AgglomerativeClusterer.DEFAULT_MAX_DISTANCE, instance.getMaxDistance());
         
         double maxDistance = Math.random();
         instance.setMaxDistance(maxDistance);
