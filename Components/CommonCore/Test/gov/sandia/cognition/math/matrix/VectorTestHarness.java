@@ -20,7 +20,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.List;
-import static junit.framework.Assert.assertTrue;
 
 /**
  * Test suite for implementations of Vector 
