@@ -35,7 +35,29 @@ public interface InfiniteVector<KeyType>
      * Removes the zero elements from the vector.
      */
     public void compact();
-
+    
+    /**
+     * Applies the given function to each active entry in this vector. This can
+     * be faster than looping over the entries using an iterator.
+     * 
+     * @param   consumer 
+     *      The consumer for the entries. It is called for each active entry in
+     *      the vector, in order by increasing index.
+     */
+    public void forEachEntry(
+        final KeyValueConsumer<? super KeyType> consumer);
+        
+    /**
+     * Applies the given function to each non-zero entry in this vector. This 
+     * can be faster than looping over the entries using an iterator.
+     * 
+     * @param   consumer 
+     *      The consumer for the non-zero entries. It is called for each  
+     *      non-zero entry in the vector, in order by increasing index.
+     */
+    public void forEachNonZero(
+        final KeyValueConsumer<? super KeyType> consumer);
+    
     /**
      * Entry for a InfiniteVector
      * @param <KeyType>
@@ -46,4 +68,29 @@ public interface InfiniteVector<KeyType>
     {
     }
 
+    /**
+     * Defines the functionality for a consumer of vector entries, which are an
+     * index and a value. Typically this interface is used in conjunction with
+     * the Vector forEachEntry method.
+     *
+     * @since   3.4.2
+     * @param   <KeyType> 
+     *      The type of key in the infinite vector.
+     */
+    public interface KeyValueConsumer<KeyType>
+    {
+
+        /**
+         * Consumes one entry in the infinite vector.
+         * 
+         * @param   key
+         *      The key.
+         * @param   value 
+         *      The value for that key in the vector.
+         */
+        public void consume(
+            final KeyType key,
+            final double value);
+
+    }
 }

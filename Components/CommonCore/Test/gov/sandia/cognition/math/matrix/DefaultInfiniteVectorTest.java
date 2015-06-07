@@ -36,6 +36,12 @@ public class DefaultInfiniteVectorTest
     }
 
     @Override
+    protected DefaultInfiniteVector<String> createZero()
+    {
+        return new DefaultInfiniteVector<>();
+    }
+    
+    @Override
     protected DefaultInfiniteVector<String> createRandom()
     {
         String[] s2 = { "f", "e", "d", "c", "b" };
@@ -585,5 +591,5 @@ public class DefaultInfiniteVectorTest
         instance.compact();
         assertTrue( instance.size() < s1 );
     }
-
+    
 }

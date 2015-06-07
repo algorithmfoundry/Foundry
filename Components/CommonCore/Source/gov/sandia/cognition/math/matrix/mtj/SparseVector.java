@@ -129,6 +129,14 @@ public class SparseVector
             super.getInternalVector();
     }
 
+    @Override
+    protected void setInternalVector(
+        final no.uib.cipr.matrix.Vector internalVector)
+    {
+        // Force it to be sparse.
+        this.setInternalVector((no.uib.cipr.matrix.sparse.SparseVector) internalVector);
+    }
+    
     /**
      * Setter for the internal MTJ vector.
      *
@@ -218,6 +226,46 @@ public class SparseVector
         return stacked;
     }
 
+    @Override
+    public void forEachEntry(
+        final IndexValueConsumer consumer)
+    {
+        final no.uib.cipr.matrix.sparse.SparseVector internal = this.getInternalVector();
+        
+// TODO: Switch this to get the raw internal indices. Requires new release of MTJ.
+// -- jbasilico (2015-06-05)
+//        final int[] indices = internal.getRawIndex();
+        final int[] indices = internal.getIndex();
+        final double[] values = internal.getData();
+        final int used = internal.getUsed();
+        for (int i = 0; i < used; i++)
+        {
+            consumer.consume(indices[i], values[i]);
+        }
+    }
+    
+    @Override
+    public void forEachNonZero(
+        final IndexValueConsumer consumer)
+    {
+        final no.uib.cipr.matrix.sparse.SparseVector internal = this.getInternalVector();
+        
+// TODO: Switch this to get the raw internal indices. Requires new release of MTJ.
+// -- jbasilico (2015-06-05)
+//        final int[] indices = internal.getRawIndex();
+        final int[] indices = internal.getIndex();
+        final double[] values = internal.getData();
+        final int used = internal.getUsed();
+        for (int i = 0; i < used; i++)
+        {
+            final double value = values[i];
+            if (value != 0.0)
+            {
+                consumer.consume(indices[i], value);
+            }
+        }
+    }
+    
     @Override
     public boolean isSparse()
     {

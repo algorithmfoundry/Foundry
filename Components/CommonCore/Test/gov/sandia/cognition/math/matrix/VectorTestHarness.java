@@ -15,6 +15,7 @@
 package gov.sandia.cognition.math.matrix;
 
 import gov.sandia.cognition.math.AbstractUnivariateScalarFunction;
+import gov.sandia.cognition.math.MutableInteger;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -780,6 +781,245 @@ abstract public class VectorTestHarness
         try
         {
             v1.transformNonZeros(null);
+        }
+        catch (Exception e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+    }
+    
+    public void testForEachElement()
+    {
+        Vector empty = this.createVector(0);
+        empty.forEachElement(new Vector.IndexValueConsumer()
+        {
+            @Override
+            public void consume(
+                final int index,
+                final double value)
+            {
+                fail("Should not be called.");
+            }
+        });
+        
+        Vector v1 = this.createRandom();
+        final Vector v1clone = v1.clone();
+        final MutableInteger expectedIndex = new MutableInteger();
+        v1.forEachElement(new Vector.IndexValueConsumer()
+        {
+            @Override
+            public void consume(
+                final int index,
+                final double value)
+            {
+                assertEquals(expectedIndex.value, index);
+                assertEquals(v1clone.get(index), value);
+                expectedIndex.value++;
+            }
+        });
+        assertEquals(v1clone.getDimensionality(), expectedIndex.value);
+        
+        Vector zeros = this.createRandom().clone();
+        zeros.zero();
+        expectedIndex.value = 0;
+        zeros.forEachElement(new Vector.IndexValueConsumer()
+        {
+            @Override
+            public void consume(
+                final int index,
+                final double value)
+            {
+                assertEquals(expectedIndex.value, index);
+                assertEquals(0.0, value);
+                expectedIndex.value++;
+            }
+        });
+        assertEquals(zeros.getDimensionality(), expectedIndex.value);
+
+        boolean exceptionThrown = false;
+        try
+        {
+            this.createRandom().forEachElement(null);
+        }
+        catch (Exception e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+    }
+    
+    public void testForEachEntry()
+    {
+        Vector empty = this.createVector(0);
+        empty.forEachEntry(new Vector.IndexValueConsumer()
+        {
+            @Override
+            public void consume(
+                final int index,
+                final double value)
+            {
+                fail("Should not be called.");
+            }
+        });
+        
+        
+        int repeats = 10;
+        for (int r = 0; r < repeats; r++)
+        {
+            Vector v = this.createRandom();
+
+            // Set a few elements to zero randomly
+            int nz = RANDOM.nextInt(1 + v.getDimensionality() / 2);
+            for (int i = 0; i < nz; i++)
+            {
+                v.set(RANDOM.nextInt(v.getDimensionality()), 0.0);
+            }
+            Vector vClone = v.clone();
+
+            // Looping through elements should be equivalent to an iterator.
+            final Iterator<VectorEntry> it = vClone.iterator();
+            v.forEachEntry(new Vector.IndexValueConsumer()
+            {
+                @Override
+                public void consume(
+                    final int index,
+                    final double value)
+                {
+                    assertTrue(it.hasNext());
+                    VectorEntry entry = it.next();
+                    assertEquals(entry.getIndex(), index);
+                    assertEquals(entry.getValue(), value);
+                }
+            });
+            assertFalse(it.hasNext());
+            assertEquals(vClone, v);
+        }
+        
+        Vector zeros = this.createRandom().clone();
+        zeros.zero();
+        Vector zerosClone = zeros.clone();
+        {
+            final Iterator<VectorEntry> it = zerosClone.iterator();
+            zeros.forEachEntry(new Vector.IndexValueConsumer()
+            {
+                @Override
+                public void consume(
+                    final int index,
+                    final double value)
+                {
+                    assertTrue(it.hasNext());
+                    VectorEntry entry = it.next();
+                    assertEquals(entry.getIndex(), index);
+                    assertEquals(entry.getValue(), value);
+                    assertEquals(0.0, value);
+                }
+            });
+            assertFalse(it.hasNext());
+        }
+        assertEquals(zerosClone, zeros);
+
+        boolean exceptionThrown = false;
+        try
+        {
+            this.createRandom().forEachEntry(null);
+        }
+        catch (Exception e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+    }
+
+    
+    public void testForEachNonZero()
+    {
+        Vector empty = this.createVector(0);
+        empty.forEachNonZero(new Vector.IndexValueConsumer()
+        {
+            @Override
+            public void consume(
+                final int index,
+                final double value)
+            {
+                fail("Should not be called.");
+            }
+        });
+        
+        int repeats = 10;
+        for (int r = 0; r < repeats; r++)
+        {
+            Vector v = this.createRandom();
+            
+            // Set a few elements to zero randomly
+            int nz = RANDOM.nextInt(1 + v.getDimensionality() / 2);
+            for (int i = 0; i < nz; i++)
+            {
+                v.set(RANDOM.nextInt(v.getDimensionality()), 0.0);
+            }
+            final Vector vClone = v.clone();
+            
+
+            // Looping through elements should be equivalent to an iterator,
+            // except skipping zeros.
+            final Iterator<VectorEntry> it = vClone.iterator();
+            v.forEachNonZero(new Vector.IndexValueConsumer()
+            {
+                @Override
+                public void consume(
+                    final int index,
+                    final double value)
+                {
+                    assertTrue(it.hasNext());
+                    VectorEntry entry = it.next();
+                    while (entry.getValue() == 0.0)
+                    {
+                        entry = it.next();
+                    }
+                    assertEquals(entry.getIndex(), index);
+                    assertEquals(entry.getValue(), value);
+                }
+            });
+            // All the remaining values in the iterator must be zero.
+            while (it.hasNext())
+            {
+                VectorEntry entry = it.next();
+                assertEquals(0.0, entry.getValue());
+            }
+            assertEquals(vClone, v);
+        }
+
+        // Zeros should never get called.
+        Vector zeros = this.createRandom();
+        zeros.zero();
+        Vector zerosClone = zeros.clone();
+        {
+            zeros.forEachNonZero(new Vector.IndexValueConsumer()
+            {
+                @Override
+                public void consume(
+                    final int index,
+                    final double value)
+                {
+                    fail("Should not be called.");
+                }
+            });
+        }
+        assertEquals(zerosClone, zeros);
+
+        boolean exceptionThrown = false;
+        try
+        {
+            this.createRandom().forEachNonZero(null);
         }
         catch (Exception e)
         {

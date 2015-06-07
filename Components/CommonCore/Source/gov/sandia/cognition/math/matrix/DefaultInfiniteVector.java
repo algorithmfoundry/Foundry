@@ -17,7 +17,6 @@ package gov.sandia.cognition.math.matrix;
 import gov.sandia.cognition.collection.AbstractMutableDoubleMap;
 import gov.sandia.cognition.collection.ScalarMap;
 import gov.sandia.cognition.math.MutableDouble;
-import gov.sandia.cognition.math.matrix.InfiniteVector.Entry;
 import gov.sandia.cognition.util.ArgumentChecker;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -461,6 +460,32 @@ public class DefaultInfiniteVector<KeyType>
         }
     }
 
+    @Override
+    public void forEachEntry(
+        final KeyValueConsumer<? super KeyType> consumer)
+    {
+        for (final Map.Entry<KeyType, MutableDouble> entry 
+            : this.map.entrySet())
+        {
+            consumer.consume(entry.getKey(), entry.getValue().getValue());
+        }
+    }
+    
+    @Override
+    public void forEachNonZero(
+        final KeyValueConsumer<? super KeyType> consumer)
+    {
+        for (final Map.Entry<KeyType, MutableDouble> entry 
+            : this.map.entrySet())
+        {
+            final double value = entry.getValue().getValue();
+            if (value != 0.0)
+            {
+                consumer.consume(entry.getKey(), value);
+            }
+        }
+    }
+    
     @Override
     public String toString()
     {

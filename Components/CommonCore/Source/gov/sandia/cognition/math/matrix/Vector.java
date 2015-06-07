@@ -31,6 +31,7 @@ import java.util.List;
  * not represented.
  *
  * @author Kevin R. Dixon
+ * @author Justin Basilico
  * @since  1.0
  */
 @CodeReviews(
@@ -270,6 +271,39 @@ public interface Vector
      */
     public void transformNonZerosEquals(
         final UnivariateScalarFunction function);
+
+    /**
+     * Applies the given function to each element in this vector. This is a
+     * dense operation that includes all values.
+     * 
+     * @param   consumer 
+     *      The consumer for the entries. It is called for each element in
+     *      the vector, in order by increasing index.
+     */
+    public void forEachElement(
+        final IndexValueConsumer consumer);
+    
+    /**
+     * Applies the given function to each active entry in this vector. This can
+     * be faster than looping over the entries using an iterator.
+     * 
+     * @param   consumer 
+     *      The consumer for the entries. It is called for each active entry in
+     *      the vector, in order by increasing index.
+     */
+    public void forEachEntry(
+        final IndexValueConsumer consumer);
+    
+    /**
+     * Applies the given function to each non-zero entry in this vector. This 
+     * can be faster than looping over the entries using an iterator.
+     * 
+     * @param   consumer 
+     *      The consumer for the non-zero entries. It is called for each  
+     *      non-zero entry in the vector, in order by increasing index.
+     */
+    public void forEachNonZero(
+        final IndexValueConsumer consumer);
     
     /**
      * Increments the value of the given index by 1.
@@ -372,4 +406,27 @@ public interface Vector
         final NumberFormat format,
         final String delimiter);
 
+    /**
+     * Defines the functionality for a consumer of vector entries, which are an
+     * index and a value. Typically this interface is used in conjunction with
+     * the Vector forEachEntry method.
+     *
+     * @since   3.4.2
+     */
+    public interface IndexValueConsumer
+    {
+
+        /**
+         * Consumes one entry in the vector.
+         * 
+         * @param   index
+         *      The vector index. Cannot be negative.
+         * @param   value
+         *      The value in the vector for that index.
+         */
+        public void consume(
+            final int index,
+            final double value);
+
+    }
 }

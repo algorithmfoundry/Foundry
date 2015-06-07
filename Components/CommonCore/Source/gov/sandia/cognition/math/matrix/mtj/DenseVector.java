@@ -20,7 +20,6 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
-import gov.sandia.cognition.math.matrix.VectorIndexValueConsumer;
 import gov.sandia.cognition.math.matrix.VectorReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -324,7 +323,42 @@ public class DenseVector
         }
         return retval;
     }
-
+    
+    @Override
+    public void forEachElement(
+        final IndexValueConsumer consumer)
+    {
+        final double[] values = this.getArray();
+        final int dimensionality = values.length;
+        for (int i = 0; i < dimensionality; i++)
+        {
+            consumer.consume(i, values[i]);
+        }
+    }
+    
+    @Override
+    public void forEachEntry(
+        final IndexValueConsumer consumer)
+    {
+        this.forEachElement(consumer);
+    }
+    
+    @Override
+    public void forEachNonZero(
+        final IndexValueConsumer consumer)
+    {
+        final double[] values = this.getArray();
+        final int dimensionality = values.length;
+        for (int i = 0; i < dimensionality; i++)
+        {
+            final double value = values[i];
+            if (value != 0.0)
+            {
+                consumer.consume(i, value);
+            }
+        }
+    }
+    
     /**
      * Returns the underlying double array for this DenseVector
      * @return internal double array for this DenseVector

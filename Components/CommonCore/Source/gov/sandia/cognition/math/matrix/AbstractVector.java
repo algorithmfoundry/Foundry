@@ -217,12 +217,52 @@ public abstract class AbstractVector
     public void transformNonZerosEquals(
         final UnivariateScalarFunction function)
     {
-        for (Entry entry : this)
+        for (final VectorEntry entry : this)
         {
             final double value = entry.getValue();
             if (value != 0.0)
             {
                 entry.setValue(function.evaluateAsDouble(value));
+            }
+        }
+    }
+
+    @Override
+    public void forEachElement(
+        final IndexValueConsumer consumer)
+    {
+        // This is by definition a dense iteration.
+        final int dimensionality = this.getDimensionality();
+        for (int i = 0; i < dimensionality; i++)
+        {
+            consumer.consume(i, this.get(i));
+        }
+    }
+    
+    @Override
+    public void forEachEntry(
+        final IndexValueConsumer consumer)
+    {
+        // Default implementation uses an iterator. However, specialized 
+        // sub-classes can add optimizations.
+        for (final VectorEntry entry : this)
+        {
+            consumer.consume(entry.getIndex(), entry.getValue());
+        }
+    }
+
+    @Override
+    public void forEachNonZero(
+        final IndexValueConsumer consumer)
+    {
+        // Default implementation uses an iterator. However, specialized 
+        // sub-classes can add optimizations.
+        for (final VectorEntry entry : this)
+        {
+            final double value = entry.getValue();
+            if (value != 0.0)
+            {
+                consumer.consume(entry.getIndex(), value);
             }
         }
     }
@@ -347,7 +387,8 @@ public abstract class AbstractVector
     {
         this.assertSameDimensionality( parameters );
 
-        for (int i = 0; i < this.getDimensionality(); i++)
+        final int dimensionality = this.getDimensionality();
+        for (int i = 0; i < dimensionality; i++)
         {
             this.setElement( i, parameters.getElement( i ) );
         }

@@ -16,6 +16,7 @@ package gov.sandia.cognition.math.matrix;
 
 import gov.sandia.cognition.collection.ScalarMap;
 import gov.sandia.cognition.collection.CollectionUtil;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -37,6 +38,8 @@ public abstract class InfiniteVectorTestHarness<DataType>
         super( name );
     }
 
+    abstract protected InfiniteVector<DataType> createZero();
+    
     /**
      * Random2
      * @return
@@ -308,5 +311,120 @@ System.out.println(v1clone);
         }
 
     }
+    
+    public void testForEachEntry()
+    {
+        InfiniteVector<DataType> zero = this.createZero();
+        zero.forEachEntry(new InfiniteVector.KeyValueConsumer<DataType>()
+        {
+            @Override
+            public void consume(
+                final DataType key,
+                final double value)
+            {
+                fail("Should not be called.");
+            }
+        });
+        
+        InfiniteVector<DataType> instance = this.createRandom();
+        InfiniteVector<DataType> clone = instance.clone();
+        {
+            final Iterator<InfiniteVector.Entry<DataType>> it = 
+                instance.iterator();
+            instance.forEachEntry(new InfiniteVector.KeyValueConsumer<DataType>()
+            {
+                @Override
+                public void consume(
+                    final DataType key,
+                    final double value)
+                {
+                    assertTrue(it.hasNext());
+                    InfiniteVector.Entry<DataType> entry = it.next();
+                    assertEquals(entry.getKey(), key);
+                    assertEquals(entry.getValue(), value);
+                }
+            });
+            assertFalse(it.hasNext());
+            assertEquals(clone, instance);
+        }
+        
+        
+        boolean exceptionThrown = false;
+        try
+        {
+            this.createRandom().forEachEntry(null);
+        }
+        catch (Exception e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+    }
+    
+    public void testForEachNonZero()
+    {
+        InfiniteVector<DataType> zero = this.createZero();
+        zero.forEachNonZero(new InfiniteVector.KeyValueConsumer<DataType>()
+        {
+            @Override
+            public void consume(
+                final DataType key,
+                final double value)
+            {
+                fail("Should not be called.");
+            }
+        });
+        
+        InfiniteVector<DataType> instance = this.createRandom();
+        instance.set(instance.getMinValueKey(), 0.0);
+        InfiniteVector<DataType> clone = instance.clone();
+        {
+            final Iterator<InfiniteVector.Entry<DataType>> it = 
+                instance.iterator();
+            instance.forEachNonZero(new InfiniteVector.KeyValueConsumer<DataType>()
+            {
+                @Override
+                public void consume(
+                    final DataType key,
+                    final double value)
+                {
+                    assertTrue(it.hasNext());
+                    InfiniteVector.Entry<DataType> entry = it.next();
+                    while (entry.getValue() == 0.0)
+                    {
+                        entry = it.next();
+                    }
+                    assertEquals(entry.getKey(), key);
+                    assertEquals(entry.getValue(), value);
+                }
+            });
+            // All the remaining values in the iterator must be zero.
+            while (it.hasNext())
+            {
+                InfiniteVector.Entry<DataType> entry = it.next();
+                assertEquals(0.0, entry.getValue());
+            }
+            assertEquals(clone, instance);
+        }
+        
+        
+        boolean exceptionThrown = false;
+        try
+        {
+            this.createRandom().forEachNonZero(null);
+        }
+        catch (Exception e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+    }
+
 
 }
