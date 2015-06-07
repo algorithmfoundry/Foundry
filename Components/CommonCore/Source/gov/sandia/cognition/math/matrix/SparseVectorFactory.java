@@ -14,6 +14,9 @@
 
 package gov.sandia.cognition.math.matrix;
 
+import gov.sandia.cognition.util.ArgumentChecker;
+import java.util.Map;
+
 
 /**
  * Abstract factory class for creating sparse vectors.
@@ -52,5 +55,21 @@ public abstract class SparseVectorFactory<VectorType extends Vector>
     public abstract VectorType createVectorCapacity(
         final int dimensionality,
         final int initialCapacity);
+    
+    @Override
+    public VectorType copyMap(
+        final int dimensionality,
+        final Map<Integer, ? extends Number> map)
+    {
+        ArgumentChecker.assertIsNotNull("map", map);
+        
+        final VectorType result = this.createVectorCapacity(dimensionality,
+            map.size());
+        for (final Map.Entry<Integer, ? extends Number> entry : map.entrySet())
+        {
+            result.set(entry.getKey(), entry.getValue().doubleValue());
+        }
+        return result;
+    }
     
 }

@@ -16,8 +16,10 @@ package gov.sandia.cognition.math.matrix;
 
 import gov.sandia.cognition.math.matrix.mtj.DenseVectorFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.SparseVectorFactoryMTJ;
+import gov.sandia.cognition.util.ArgumentChecker;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -333,6 +335,32 @@ public abstract class VectorFactory<VectorType extends Vector>
             }
         }
 
+        return result;
+    }
+    
+    /**
+     * Creates a vector from the given map of indices to values.
+     * 
+     * @param   dimensionality
+     *      The dimensionality of the vector. Cannot be negative.
+     * @param   map
+     *      The map of indices to values to fill in the vector. All indices
+     *      must be 0-based and between 0 (inclusive) and dimensionality 
+     *      (exclusive). Cannot be null.
+     * @return 
+     *      A new vector with elements initialized to the ones in the map.
+     */
+    public VectorType copyMap(
+        final int dimensionality,
+        final Map<Integer, ? extends Number> map)
+    {
+        ArgumentChecker.assertIsNotNull("map", map);
+        
+        final VectorType result = this.createVector(dimensionality);
+        for (final Map.Entry<Integer, ? extends Number> entry : map.entrySet())
+        {
+            result.set(entry.getKey(), entry.getValue().doubleValue());
+        }
         return result;
     }
 

@@ -15,7 +15,9 @@
 package gov.sandia.cognition.math.matrix;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Unit tests for VectorFactoryTest.
@@ -83,13 +85,91 @@ public class VectorFactoryTest
 
         List<Double> values = Arrays.asList(
             RANDOM.nextGaussian(), RANDOM.nextGaussian(), RANDOM.nextGaussian() );
-        Vector v = VectorFactory.getDefault().copyValues(values);
+        Vector v = this.createFactory().copyValues(values);
         assertEquals( values.size(), v.getDimensionality() );
         for( int i = 0; i < v.getDimensionality(); i++ )
         {
             assertEquals( values.get(i), v.getElement(i) );
         }
 
+    }
+    
+    public void testCopyMap()
+    {
+        VectorFactory<?> instance = this.createFactory();
+        Map<Integer, Double> map = new LinkedHashMap<>();
+        Vector empty = instance.copyMap(0, map);
+        assertEquals(0, empty.getDimensionality());
+        
+        Vector zeros = instance.copyMap(10, map);
+        assertEquals(10, zeros.getDimensionality());
+        assertTrue(zeros.isZero());
+
+        map.put(0, RANDOM.nextGaussian());
+        map.put(2, RANDOM.nextGaussian());
+        map.put(3, RANDOM.nextGaussian());
+        map.put(7, RANDOM.nextGaussian());
+        int d = 8;
+        
+        Vector v = instance.copyMap(d, map);
+        assertEquals(d, v.getDimensionality());
+        for (int i = 0; i < d; i++)
+        {
+            Double entry = map.get(i);
+            double expectedValue = entry == null ? 0.0 : entry;
+            assertEquals(expectedValue, v.get(i));
+        }
+        
+        // Negative values should throw an exception.
+        int[] badIndices = {-1, d, d+1};
+        for (int badIndex : badIndices)
+        {
+            map.put(badIndex, 1.0);
+            boolean exceptionThrown = false;
+            try
+            {
+                instance.copyMap(d, map);
+            }
+            catch (Exception e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                assertTrue(exceptionThrown);
+            }
+            map.remove(badIndex);
+        }
+        
+        // Negative dimensionalities not allowed.
+        boolean exceptionThrown = false;
+        try
+        {
+            instance.copyMap(-1, new LinkedHashMap<Integer, Double>());
+        }
+        catch (Exception e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
+        
+        // Empty maps not allowed.
+        exceptionThrown = false;
+        try
+        {
+            instance.copyMap(d, null);
+        }
+        catch (Exception e)
+        {
+            exceptionThrown = true;
+        }
+        finally
+        {
+            assertTrue(exceptionThrown);
+        }
     }
 
 }
