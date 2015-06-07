@@ -18,7 +18,6 @@ import gov.sandia.cognition.annotation.CodeReview;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 /**
@@ -70,27 +69,27 @@ public class DefaultPairTest
         Object o4 = new Object();
         DefaultPair<Object, Object> pair = new DefaultPair<Object, Object>(o1, o2);
         
-        Assert.assertSame(o1, pair.getFirst());
-        Assert.assertSame(o2, pair.getSecond());
+        assertSame(o1, pair.getFirst());
+        assertSame(o2, pair.getSecond());
         
         pair.setFirst(o3);
-        Assert.assertSame(o3, pair.getFirst());
+        assertSame(o3, pair.getFirst());
         
         pair.setSecond(o4);
-        Assert.assertSame(o4, pair.getSecond());
+        assertSame(o4, pair.getSecond());
         
         pair.setFirst(null);
-        Assert.assertNull(pair.getFirst());
+        assertNull(pair.getFirst());
         pair.setSecond(null);
-        Assert.assertNull(pair.getSecond());
+        assertNull(pair.getSecond());
         
         pair = new DefaultPair<Object, Object>();
-        Assert.assertNull(pair.getFirst());
-        Assert.assertNull(pair.getSecond());
+        assertNull(pair.getFirst());
+        assertNull(pair.getSecond());
         
         pair = new DefaultPair<Object, Object>(null, null);
-        Assert.assertNull(pair.getFirst());
-        Assert.assertNull(pair.getSecond());
+        assertNull(pair.getFirst());
+        assertNull(pair.getSecond());
     }
 
     public void testEquals()
