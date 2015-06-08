@@ -274,7 +274,7 @@ public interface Vector
 
     /**
      * Applies the given function to each element in this vector. This is a
-     * dense operation that includes all values.
+     * dense operation that includes all values, even on a sparse vector.
      * 
      * @param   consumer 
      *      The consumer for the entries. It is called for each element in
