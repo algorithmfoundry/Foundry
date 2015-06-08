@@ -225,6 +225,53 @@ public class SparseVector
         
         return stacked;
     }
+    
+    @Override
+    public void forEachElement(
+        final IndexValueConsumer consumer)
+    {
+        // This is an optimized version of the method so that it doesn't end
+        // up doing a d * log(nnz) cost to iterate, even though it is a dense
+        // method.
+        final no.uib.cipr.matrix.sparse.SparseVector internal = 
+            this.getInternalVector();
+        
+// TODO: Switch this to get the raw internal indices. Requires new release of MTJ.
+// -- jbasilico (2015-06-05)
+//        final int[] indices = internal.getRawIndex();
+        final int[] indices = internal.getIndex();
+        final double[] values = internal.getData();
+        final int used = internal.getUsed();
+        final int dimensionality = internal.size();
+        
+        int i = 0;
+        int index = 0;
+        while (i < used && index < dimensionality)
+        {
+            final double value;
+            if (index < indices[i])
+            {
+                // Index is for a missing (zero) value.
+                value = 0.0;
+            }
+            else
+            {
+                // Get the value at the sparse index.
+                value = values[i];
+                i++;
+            }
+            
+            consumer.consume(index, value);
+            index++;
+        }
+        
+        // Passed the last used element fill in the rest in zeros.
+        while (index < dimensionality)
+        {
+            consumer.consume(index, 0.0);
+            index++;
+        }
+    }
 
     @Override
     public void forEachEntry(
