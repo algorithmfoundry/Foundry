@@ -125,7 +125,7 @@ public abstract class VectorFactory<VectorType extends Vector>
 
     /**
      * Copies the values from the given Collection. It does this by iterating
-     * through collection and initializing the by iterating through them
+     * through collection and initializing by iterating through them
      * in the order specified by the collection. Thus, this should probably
      * not be used with collections that do not have a very well determined
      * iteration order, like a HashSet (as such, LinkedHashSet may be a better
