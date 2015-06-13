@@ -9,9 +9,6 @@
 package gov.sandia.cognition.statistics;
 
 import java.util.Random;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
 import org.junit.Assert;
 
 /**

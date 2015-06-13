@@ -20,10 +20,6 @@ import gov.sandia.cognition.learning.function.categorization.VectorElementThresh
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
 import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
 import java.util.LinkedList;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
 
 /**
