@@ -61,7 +61,7 @@ public class MathUtil
     public static double log2(
         final double x)
     {
-        return MathUtil.log(x, 2.0);
+        return Math.log(x) / LogMath.LOG_2;
     }
 
     /**
