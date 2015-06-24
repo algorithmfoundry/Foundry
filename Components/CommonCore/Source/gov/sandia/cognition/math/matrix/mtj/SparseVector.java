@@ -236,10 +236,7 @@ public class SparseVector
         final no.uib.cipr.matrix.sparse.SparseVector internal = 
             this.getInternalVector();
         
-// TODO: Switch this to get the raw internal indices. Requires new release of MTJ.
-// -- jbasilico (2015-06-05)
-//        final int[] indices = internal.getRawIndex();
-        final int[] indices = internal.getIndex();
+        final int[] indices = internal.getRawIndex();
         final double[] values = internal.getData();
         final int used = internal.getUsed();
         final int dimensionality = internal.size();
@@ -279,10 +276,7 @@ public class SparseVector
     {
         final no.uib.cipr.matrix.sparse.SparseVector internal = this.getInternalVector();
         
-// TODO: Switch this to get the raw internal indices. Requires new release of MTJ.
-// -- jbasilico (2015-06-05)
-//        final int[] indices = internal.getRawIndex();
-        final int[] indices = internal.getIndex();
+        final int[] indices = internal.getRawIndex();
         final double[] values = internal.getData();
         final int used = internal.getUsed();
         for (int i = 0; i < used; i++)
@@ -297,10 +291,7 @@ public class SparseVector
     {
         final no.uib.cipr.matrix.sparse.SparseVector internal = this.getInternalVector();
         
-// TODO: Switch this to get the raw internal indices. Requires new release of MTJ.
-// -- jbasilico (2015-06-05)
-//        final int[] indices = internal.getRawIndex();
-        final int[] indices = internal.getIndex();
+        final int[] indices = internal.getRawIndex();
         final double[] values = internal.getData();
         final int used = internal.getUsed();
         for (int i = 0; i < used; i++)
