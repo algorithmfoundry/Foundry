@@ -15,6 +15,8 @@ package gov.sandia.cognition.statistics.distribution;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.collection.AbstractMutableDoubleMap;
+import gov.sandia.cognition.collection.ScalarMap;
 import gov.sandia.cognition.learning.algorithm.AbstractBatchAndIncrementalLearner;
 import gov.sandia.cognition.math.MutableDouble;
 import gov.sandia.cognition.statistics.CumulativeDistributionFunction;
@@ -104,7 +106,7 @@ public class ScalarDataDistribution
     public double getMeanAsDouble()
     {
         double sum = 0.0;
-        for (Entry<Double> entry : this.entrySet())
+        for (ScalarMap.Entry<Double> entry : this.entrySet())
         {
             final double weight = entry.getValue();
             final double value = entry.getKey().doubleValue();
@@ -176,7 +178,7 @@ public class ScalarDataDistribution
         double weightSum = 0.0;
         double m2 = 0.0;
 
-        for (Entry<Double> entry : this.entrySet())
+        for (ScalarMap.Entry<Double> entry : this.entrySet())
         {
             final double x = entry.getKey();
             double weight = entry.getValue();
@@ -352,7 +354,7 @@ public class ScalarDataDistribution
         {
             final double x0 = input;
             double sum = 0.0;
-            for (Entry<Double> entry : this.entrySet())
+            for (ScalarMap.Entry<Double> entry : this.entrySet())
             {
                 final double x = entry.getKey();
                 if (x <= x0)

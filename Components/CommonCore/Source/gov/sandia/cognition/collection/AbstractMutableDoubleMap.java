@@ -12,7 +12,6 @@
  */
 package gov.sandia.cognition.collection;
 
-import gov.sandia.cognition.collection.ScalarMap.Entry;
 import gov.sandia.cognition.math.MutableDouble;
 import gov.sandia.cognition.math.matrix.InfiniteVector;
 import java.util.AbstractSet;
@@ -21,8 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
-
-
 
 /**
  * A partial implementation of a ScalarMap with a MutableDouble value
@@ -174,7 +171,7 @@ public class AbstractMutableDoubleMap<KeyType>
     }
 
     @Override
-    public SimpleEntrySet<KeyType> entrySet()
+    public Set<Entry<KeyType>> entrySet()
     {
         return new SimpleEntrySet<KeyType>( this.map );
     }
@@ -204,7 +201,7 @@ public class AbstractMutableDoubleMap<KeyType>
      *      The type of the key in the map.
      */
     protected static class SimpleEntrySet<KeyType>
-        extends AbstractSet<SimpleEntry<KeyType>>
+        extends AbstractSet<Entry<KeyType>>
     {
 
         /**
@@ -224,7 +221,7 @@ public class AbstractMutableDoubleMap<KeyType>
         }
 
         @Override
-        public Iterator<AbstractMutableDoubleMap.SimpleEntry<KeyType>> iterator()
+        public Iterator<Entry<KeyType>> iterator()
         {
             return new SimpleIterator<KeyType>( map.entrySet().iterator() );
         }
@@ -243,7 +240,7 @@ public class AbstractMutableDoubleMap<KeyType>
      *      The type of the key in the map.
      */
     protected static class SimpleIterator<KeyType>
-        implements Iterator<AbstractMutableDoubleMap.SimpleEntry<KeyType>>
+        implements Iterator<Entry<KeyType>>
     {
 
         /**
@@ -269,7 +266,7 @@ public class AbstractMutableDoubleMap<KeyType>
         }
 
         @Override
-        public AbstractMutableDoubleMap.SimpleEntry<KeyType> next()
+        public Entry<KeyType> next()
         {
             Map.Entry<KeyType,MutableDouble> entry = this.delegate.next();
             return new AbstractMutableDoubleMap.SimpleEntry<KeyType>(
@@ -284,6 +281,17 @@ public class AbstractMutableDoubleMap<KeyType>
 
     }
 
+    /**
+     * Interface for entries.
+     * 
+     * @param <KeyType>
+     *      The type of the key in the map.
+     */
+    public interface Entry<KeyType>
+        extends ScalarMap.Entry<KeyType>, InfiniteVector.Entry<KeyType>
+    {
+        
+    }
 
     /**
      * Entry for the AbstractScalarMap
@@ -291,8 +299,7 @@ public class AbstractMutableDoubleMap<KeyType>
      *      The type of the key in the map.
      */
     protected static class SimpleEntry<KeyType>
-        implements ScalarMap.Entry<KeyType>,
-        InfiniteVector.Entry<KeyType>
+        implements Entry<KeyType>
     {
 
         /**
