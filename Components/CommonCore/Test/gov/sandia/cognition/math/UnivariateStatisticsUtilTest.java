@@ -295,12 +295,22 @@ public class UnivariateStatisticsUtilTest
     {
         System.out.println( "computePercentile" );
         Collection<Double> data1 = Arrays.asList( 4.0, 2.0, 1.0, -1.0, 5.0 );
-        assertEquals( -0.6, UnivariateStatisticsUtil.computePercentile(data1,0.2), EPS );
+        assertEquals(-0.2, UnivariateStatisticsUtil.computePercentile(data1, 0.1), EPS);
+        assertEquals(0.6, UnivariateStatisticsUtil.computePercentile(data1, 0.2), EPS);
+        assertEquals(1.2, UnivariateStatisticsUtil.computePercentile(data1, 0.3), EPS);
+        assertEquals(1.6, UnivariateStatisticsUtil.computePercentile(data1, 0.4), EPS);
+        assertEquals(2.0, UnivariateStatisticsUtil.computePercentile(data1, 0.5));
+        assertEquals(2.8, UnivariateStatisticsUtil.computePercentile(data1, 0.6), EPS);
+        assertEquals(3.6, UnivariateStatisticsUtil.computePercentile(data1, 0.7), EPS);
+        assertEquals(4.2, UnivariateStatisticsUtil.computePercentile(data1, 0.8), EPS);
+        assertEquals(4.6, UnivariateStatisticsUtil.computePercentile(data1, 0.9), EPS);
+        
+        assertEquals(-1.0, UnivariateStatisticsUtil.computePercentile(data1, 0.0));
+        assertEquals(5.0, UnivariateStatisticsUtil.computePercentile(data1, 1.0));
+        
         assertEquals( UnivariateStatisticsUtil.computePercentile(data1, 0.5),
             UnivariateStatisticsUtil.computeMedian(data1) );
 
-        assertEquals( 5.0, UnivariateStatisticsUtil.computePercentile(data1, 1.0) );
-        assertEquals( -1.0, UnivariateStatisticsUtil.computePercentile(data1, 0.0) );
 
         try
         {
@@ -330,12 +340,21 @@ public class UnivariateStatisticsUtilTest
         System.out.println("getPercentileFromSorted");
         List<Double> data1 = Arrays.asList(4.0, 2.0, 1.0, -1.0, 5.0);
         Collections.sort(data1);
-        assertEquals(-0.6, UnivariateStatisticsUtil.getPercentileFromSorted(data1, 0.2), EPS);
+        assertEquals(-0.2, UnivariateStatisticsUtil.getPercentileFromSorted(data1, 0.1), EPS);
+        assertEquals(0.6, UnivariateStatisticsUtil.getPercentileFromSorted(data1, 0.2), EPS);
+        assertEquals(1.2, UnivariateStatisticsUtil.getPercentileFromSorted(data1, 0.3), EPS);
+        assertEquals(1.6, UnivariateStatisticsUtil.getPercentileFromSorted(data1, 0.4), EPS);
+        assertEquals(2.0, UnivariateStatisticsUtil.getPercentileFromSorted(data1, 0.5));
+        assertEquals(2.8, UnivariateStatisticsUtil.getPercentileFromSorted(data1, 0.6), EPS);
+        assertEquals(3.6, UnivariateStatisticsUtil.getPercentileFromSorted(data1, 0.7), EPS);
+        assertEquals(4.2, UnivariateStatisticsUtil.getPercentileFromSorted(data1, 0.8), EPS);
+        assertEquals(4.6, UnivariateStatisticsUtil.getPercentileFromSorted(data1, 0.9), EPS);
+        
+        assertEquals(-1.0, UnivariateStatisticsUtil.getPercentileFromSorted(data1, 0.0));
+        assertEquals(5.0, UnivariateStatisticsUtil.getPercentileFromSorted(data1, 1.0));
+        
         assertEquals(UnivariateStatisticsUtil.computeMedian(data1), UnivariateStatisticsUtil.getPercentileFromSorted(data1, 0.5));
 
-        assertEquals(5.0, UnivariateStatisticsUtil.getPercentileFromSorted(data1, 1.0));
-        assertEquals(-1.0,
-            UnivariateStatisticsUtil.getPercentileFromSorted(data1, 0.0));
 
         double[] badValues = {-1.0, -0.1, 1.1, 10.0 };
         for (double badValue : badValues)
@@ -363,7 +382,7 @@ public class UnivariateStatisticsUtilTest
         List<Double> data1 = Arrays.asList(4.0, 2.0, 1.0, -1.0, 5.0);
         
         double[] result = UnivariateStatisticsUtil.computePercentiles(data1, 0.2, 0.5, 1.0, 0.0);
-        assertEquals(-0.6, result[0], EPS);
+        assertEquals(0.6, result[0], EPS);
         assertEquals(UnivariateStatisticsUtil.computeMedian(data1),result[1], EPS);
         assertEquals(5.0, result[2]);
         assertEquals(-1.0, result[3]);

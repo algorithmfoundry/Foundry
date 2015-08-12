@@ -420,7 +420,7 @@ public class UnivariateStatisticsUtil
         
         int num = sortedData.size();
         double numPct = (num-1) * percentile;
-        double remainder = Math.abs(Math.IEEEremainder(numPct, 1.0));
+        double remainder = numPct % 1.0;
 
         int lowerIndex = (int) Math.floor(numPct);
         double lower = sortedData.get(lowerIndex).doubleValue();
