@@ -17,6 +17,7 @@ package gov.sandia.cognition.math;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.collection.NumberComparator;
+import gov.sandia.cognition.util.ArgumentChecker;
 import gov.sandia.cognition.util.DefaultPair;
 import gov.sandia.cognition.util.Pair;
 import gov.sandia.cognition.util.WeightedValue;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Some static methods for computing generally useful univariate statistics.
@@ -388,14 +390,35 @@ public class UnivariateStatisticsUtil
      * Requested percentile from the data.
      */
     public static double computePercentile(
-        Collection<? extends Number> data,
-        double percentile )
+        final Collection<? extends Number> data,
+        final double percentile)
+    {
+        final ArrayList<Number> sortedData = new ArrayList<>(data);
+        Collections.sort(sortedData, NumberComparator.INSTANCE);
+        return getPercentileFromSorted(sortedData, percentile);
+    }
+    
+    /**
+     * Computes the percentile value of the given pre-sorted data in increasing
+     * order.  For example, if data has 101 values and "percentile" is 0.27, 
+     * then the return value would be the ascending-sorted value in the 26th 
+     * zero-based index.
+     * 
+     * @param sortedData 
+     *      The data sorted in increasing order from which to get the 
+     *      percentile. Must have at least one element.
+     * @param percentile 
+     *      The percentile to choose. Must be between 0 and 1, inclusive.
+     * @return 
+     *      The requested percentile from the data.
+     */
+    public static double getPercentileFromSorted(
+        final List<? extends Number> sortedData,
+        final double percentile)
     {
         ProbabilityUtil.assertIsProbability(percentile);
-
-        ArrayList<Number> sortedData = new ArrayList<Number>( data );
-        Collections.sort( sortedData, new NumberComparator() );
-        int num = data.size();
+        
+        int num = sortedData.size();
         double numPct = (num-1) * percentile;
         double remainder = Math.abs(Math.IEEEremainder(numPct, 1.0));
 
@@ -410,7 +433,41 @@ public class UnivariateStatisticsUtil
         double upper = sortedData.get(upperIndex).doubleValue();
 
         return lower * (1.0-remainder) + upper*remainder;
-
+    }
+    
+    /**
+     * Computes the given percentiles of the given data. For example, if data 
+     * has 101 values and "percentile" is 0.27, then the return value would be 
+     * the ascending-sorted value in the 26th zero-based index.
+     *
+     * @param data 
+     *      The data sorted from which to compute the percentiles. 
+     *      Must have at least one element.
+     * @param percentiles
+     *      The percentiles to compute. All must be between 0 and 1, inclusive.
+     * @return 
+     *      The an array of equal length to the given percentiles that contains
+     *      the requested percentiles from the data.
+     */
+    public static double[] computePercentiles(
+        final Collection<? extends Number> data,
+        final double... percentiles)
+    {
+        ArgumentChecker.assertIsNotNull("percentiles", percentiles);
+        
+        // Sort the data once.
+        final ArrayList<Number> sortedData = new ArrayList<>(data);
+        Collections.sort(sortedData, NumberComparator.INSTANCE);
+        
+        // Now get all the percentiles.
+        final int percentileCount = percentiles.length;
+        final double[] result = new double[percentileCount];
+        for (int i = 0; i < percentileCount; i++)
+        {
+            result[i] = getPercentileFromSorted(sortedData, percentiles[i]);
+        }
+        
+        return result;
     }
 
     /**

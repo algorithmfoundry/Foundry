@@ -20,6 +20,7 @@ import gov.sandia.cognition.util.Pair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -320,6 +321,69 @@ public class UnivariateStatisticsUtilTest
         catch (Exception e)
         {
             System.out.println( "Good: " + e );
+        }
+
+    }
+    
+    public void testGetPercentileFromSorted()
+    {
+        System.out.println("getPercentileFromSorted");
+        List<Double> data1 = Arrays.asList(4.0, 2.0, 1.0, -1.0, 5.0);
+        Collections.sort(data1);
+        assertEquals(-0.6, UnivariateStatisticsUtil.getPercentileFromSorted(data1, 0.2), EPS);
+        assertEquals(UnivariateStatisticsUtil.computeMedian(data1), UnivariateStatisticsUtil.getPercentileFromSorted(data1, 0.5));
+
+        assertEquals(5.0, UnivariateStatisticsUtil.getPercentileFromSorted(data1, 1.0));
+        assertEquals(-1.0,
+            UnivariateStatisticsUtil.getPercentileFromSorted(data1, 0.0));
+
+        double[] badValues = {-1.0, -0.1, 1.1, 10.0 };
+        for (double badValue : badValues)
+        {
+            boolean exceptionThrown = false;
+            try
+            {
+                UnivariateStatisticsUtil.getPercentileFromSorted(data1, badValue);
+            }
+            catch (Exception e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                assertTrue(exceptionThrown);
+            }
+        }
+
+    }
+    
+    public void testComputePercentiles()
+    {
+        System.out.println("getPercentileFromSorted");
+        List<Double> data1 = Arrays.asList(4.0, 2.0, 1.0, -1.0, 5.0);
+        
+        double[] result = UnivariateStatisticsUtil.computePercentiles(data1, 0.2, 0.5, 1.0, 0.0);
+        assertEquals(-0.6, result[0], EPS);
+        assertEquals(UnivariateStatisticsUtil.computeMedian(data1),result[1], EPS);
+        assertEquals(5.0, result[2]);
+        assertEquals(-1.0, result[3]);
+
+        double[] badValues = {-1.0, -0.1, 1.1, 10.0 };
+        for (double badValue : badValues)
+        {
+            boolean exceptionThrown = false;
+            try
+            {
+                UnivariateStatisticsUtil.computePercentiles(data1, badValue);
+            }
+            catch (Exception e)
+            {
+                exceptionThrown = true;
+            }
+            finally
+            {
+                assertTrue(exceptionThrown);
+            }
         }
 
     }
