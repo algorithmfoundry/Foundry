@@ -139,11 +139,20 @@ public class OptimizedKMeansClusterer<DataType>
         {
             // Get the i-th cluster.
             DataType clusterI = this.getClusterCentroid(i);
+            if (clusterI == null)
+            {
+                // Handle null clusters.
+                clusterDistances[i][i] = 0.0;
+                for (int j = i + 1; j < this.getNumClusters(); j++)
+                {
+                    clusterDistances[i][j] = Double.POSITIVE_INFINITY;
+                }
+                continue;
+            }
 
             // We only compute the distance once since it must be symmetric.
             // We hit the diagonal first so we do not assign to it twice.
-            clusterDistances[i][i] =
-                this.metric.evaluate(clusterI, clusterI);
+            clusterDistances[i][i] = this.metric.evaluate(clusterI, clusterI);
 
             // Now do the off-diagonal component of the distances.
             for (int j = i + 1; j < this.getNumClusters(); j++)
@@ -152,7 +161,8 @@ public class OptimizedKMeansClusterer<DataType>
                 DataType clusterJ = this.getClusterCentroid(j);
 
                 // Compute the distance between the two clusters.
-                double distance = this.metric.evaluate(clusterI, clusterJ);
+                double distance = clusterJ == null ? Double.POSITIVE_INFINITY
+                    : this.metric.evaluate(clusterI, clusterJ);
 
                 // Save the cluster distance.
                 clusterDistances[i][j] = distance;
@@ -320,7 +330,8 @@ public class OptimizedKMeansClusterer<DataType>
             DataType newCentroid = this.getClusterCentroid(j);
 
             // Compute the change in the centroid.
-            double meanChange = this.metric.evaluate(oldCentroid, newCentroid);
+            double meanChange = newCentroid == null ? 0.0
+                : this.metric.evaluate(oldCentroid, newCentroid);
             clusterDeltas[j] = meanChange;
 
             // Update the lower bounds for each element.
