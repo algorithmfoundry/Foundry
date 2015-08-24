@@ -27,7 +27,6 @@ import gov.sandia.cognition.statistics.UnivariateProbabilityDensityFunction;
 import gov.sandia.cognition.statistics.SmoothCumulativeDistributionFunction;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.Pair;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
@@ -484,8 +483,9 @@ public class UniformDistribution
     }
 
     /**
-     * Maximum Likelihood Estimator of a log-normal distribution.
+     * Maximum Likelihood Estimator of a uniform distribution.
      */
+// TODO: This reference is for a discrete distribution sampled without replacement.
     @PublicationReference(
         author="Wikipedia",
         title="German tank problem",
