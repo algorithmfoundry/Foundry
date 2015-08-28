@@ -153,6 +153,17 @@ public abstract class MatrixFactory<MatrixType extends Matrix>
     
     /**
      * Creates a Matrix with ones (1) on the diagonal, and zeros (0) elsewhere
+     * @param numRowsAndColumns number of rows and columns in the Matrix
+     * @return Identity Matrix with ones on the diagonal and zeros elsewhere
+     */
+    public MatrixType createIdentity(
+        int numRowsAndColumns )
+    {
+        return this.createIdentity( numRowsAndColumns, numRowsAndColumns );
+    }
+    
+    /**
+     * Creates a Matrix with ones (1) on the diagonal, and zeros (0) elsewhere
      * @param numRows number of rows in the Matrix
      * @param numColumns number of columns in the Matrix
      * @return Identity Matrix with ones on the diagonal and zeros elsewhere

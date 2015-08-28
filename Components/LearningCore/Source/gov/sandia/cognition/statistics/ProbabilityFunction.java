@@ -38,6 +38,7 @@ public interface ProbabilityFunction<DataType>
      * function itself, and when evaluating the product of many independent
      * or exchangeable samples.
      * @param input
+     * The input to be evaluated
      * @return
      * Natural logarithm of the distribution function.
      */

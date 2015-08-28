@@ -2,7 +2,7 @@
  * File:                ClosedFormComputableDiscreteDistribution.java
  * Authors:             Kevin R. Dixon
  * Company:             Sandia National Laboratories
- * Project:             Questa/Chama
+ * Project:             Cognitive Foundry
  * 
  * Copyright May 19, 2010, Sandia Corporation.
  * Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive

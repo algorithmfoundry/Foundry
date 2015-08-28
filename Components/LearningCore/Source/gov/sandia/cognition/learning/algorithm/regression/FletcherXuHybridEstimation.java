@@ -128,7 +128,7 @@ public class FletcherXuHybridEstimation
     
     /**
      * Creates a new instance of FletcherXuHybridEstimation
-     * @param lineMinimizer
+     * @param lineMinimizer The minimizer
      */
     public FletcherXuHybridEstimation(
         LineMinimizer<?> lineMinimizer )

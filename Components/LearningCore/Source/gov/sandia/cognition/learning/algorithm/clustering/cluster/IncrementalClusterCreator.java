@@ -12,6 +12,8 @@
 
 package gov.sandia.cognition.learning.algorithm.clustering.cluster;
 
+import gov.sandia.cognition.util.CloneableSerializable;
+
 /**
  * An interface for a {@code ClusterCreator} that can incrementally add and
  * remove members from a cluster.
@@ -24,7 +26,7 @@ package gov.sandia.cognition.learning.algorithm.clustering.cluster;
  * @since   3.1.1
  */
 public interface IncrementalClusterCreator<ClusterType extends Cluster<DataType>, DataType>
-    extends ClusterCreator<ClusterType, DataType>
+    extends ClusterCreator<ClusterType, DataType>, CloneableSerializable
 {
     
     /**

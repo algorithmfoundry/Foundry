@@ -75,7 +75,7 @@ public abstract class NumericalDifferentiatorTestHarness<InputType,OutputType,De
     {
         System.out.println( "setInternalFunction" );
         NumericalDifferentiator<InputType,OutputType,DerivativeType> instance = this.createInstance();
-        Evaluator<InputType, OutputType> internalFunction = instance.getInternalFunction();
+        Evaluator<? super InputType, OutputType> internalFunction = instance.getInternalFunction();
         assertNotNull( internalFunction );
         instance.setInternalFunction( null );
         assertNull( instance.getInternalFunction() );

@@ -135,8 +135,8 @@ public class KernelWeightedRobustRegression<InputType, OutputType>
      * Kernel function that provides the weighting for the estimate error,
      * generally the Kernel should weight accurate estimates higher than
      * inaccurate estimates.
-     * @param maxIterations 
-     * @param tolerance 
+     * @param maxIterations The maximum number of iterations
+     * @param tolerance The maximum tolerance
      * Tolerance before stopping the algorithm
      */
     public KernelWeightedRobustRegression(

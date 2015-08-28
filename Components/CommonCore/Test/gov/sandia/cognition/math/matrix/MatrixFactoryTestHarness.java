@@ -247,6 +247,13 @@ public abstract class MatrixFactoryTestHarness
         assertNotSame( matrix, ident );
         assertEquals( M, ident.getNumRows() );
         assertEquals( N, ident.getNumColumns() );
+
+        Matrix isq = instance.createIdentity( N );
+        Matrix ir1 = instance.createIdentity( N, N );
+        assertEquals( isq, ir1 );
+        isq = instance.createIdentity(M);
+        ir1 = instance.createIdentity(M,M);
+        assertEquals( isq, ir1 );
         for( int i = 0; i < M; i++ )
         {
             for( int j = 0; j < N; j++ )
