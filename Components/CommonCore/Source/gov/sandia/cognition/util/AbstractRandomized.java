@@ -73,18 +73,20 @@ public abstract class AbstractRandomized
     }
 
     @Override
-    public CloneableSerializable clone()
+    public AbstractRandomized clone()
     {
         final AbstractRandomized result = (AbstractRandomized) super.clone();
-        result.random = ObjectUtil.deepCopy(this.random);
+        result.setRandom( ObjectUtil.deepCopy(this.getRandom()) );
         return result;
     }
 
+    @Override
     public Random getRandom()
     {
         return this.random;
     }
 
+    @Override
     public void setRandom(
         final Random random)
     {

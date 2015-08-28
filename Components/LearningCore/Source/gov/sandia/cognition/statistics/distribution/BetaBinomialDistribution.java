@@ -469,7 +469,7 @@ public class BetaBinomialDistribution
     }
 
     /**
-     * Estimates the parameters of a Beta distribution using the matching
+     * Estimates the parameters of a Beta-binomial distribution using the matching
      * of moments, not maximum likelihood.
      */
     @PublicationReference(

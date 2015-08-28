@@ -716,6 +716,7 @@ public class AdaptiveRejectionSampling
         /**
          * Creates a new instance of LineSegment
          * @param line
+         * The line
          * @param left
          * Left (minimum) x-axis value
          * @param right
