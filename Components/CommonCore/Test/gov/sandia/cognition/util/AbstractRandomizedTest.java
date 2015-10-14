@@ -85,7 +85,7 @@ public class AbstractRandomizedTest
         System.out.println("clone");
         AbstractRandomized instance = this.createInstance();
         
-        AbstractRandomized clone = (AbstractRandomized) instance.clone();
+        AbstractRandomized clone = instance.clone();
         assertNotNull( clone );
         assertNotSame( instance, clone );
         assertNotSame( instance.getRandom(), clone.getRandom() );
