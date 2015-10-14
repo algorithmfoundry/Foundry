@@ -484,6 +484,8 @@ public class PartitionalClusterer
      *
      * @param   cluster
      *      The cluster to evaluate the optimization criterion on.
+     * @return 
+     * Optimization criterion
      */
     private double evaluateCriterion(
         final ClusterType cluster)
