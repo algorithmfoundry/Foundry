@@ -17,6 +17,7 @@ package gov.sandia.cognition.text.topic;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import static gov.sandia.cognition.math.ProbabilityUtil.*;
+import gov.sandia.cognition.math.matrix.optimized.DenseVector;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -138,7 +139,85 @@ public class LatentDirichletAllocationVectorGibbsSamplerTest
         }
     }
 
-        /**
+    /**
+     * A test that first shows a bug in the code as it was, and then makes sure the issue doesn't come back.
+     */
+    @Test
+    public void testVectorWithDoubles()
+    {
+        double[] d1 = {0, 0.4, 1.1, 1.5, 2.0 };
+        double[] d2 = {1.2, 1.5, 2.3, 0, 1.2 };
+        double[] d3 = {0, 2.5, 3.3, 1.0, 1.2 };
+        
+        final ArrayList<Vector> data = new ArrayList<Vector>();
+        data.add(new DenseVector(d1));
+        data.add(new DenseVector(d2));
+        data.add(new DenseVector(d3));
+        LatentDirichletAllocationVectorGibbsSampler lda = new LatentDirichletAllocationVectorGibbsSampler();
+        // This used to throw an exception, but doesn't anymore
+        // Refer to issue MachineLearning/FoundryLearning#9 for details
+        lda.learn(data);
+    }
+
+    /**
+     * Test of learn method, of class LatentDirichletAllocationVectorGibbsSampler.
+     */
+    @Test
+    public void testDoubleReuse()
+        throws Exception
+    {
+        final VectorFactory<?> factory = VectorFactory.getSparseDefault();
+        final ArrayList<Vector> data = new ArrayList<Vector>();
+        
+        data.add(factory.copyValues(0, 0, 4, 2, 5, 6, 0, 3, 0));
+        data.add(factory.copyValues(0, 0, 0, 8, 0, 3, 0, 0, 0));
+        data.add(factory.copyValues(4, 0, 6, 0, 0, 0, 3, 5, 0));
+        data.add(factory.copyValues(1, 0, 0, 3, 2, 0, 3, 8, 0));
+        data.add(factory.copyValues(3, 0, 5, 3, 0, 5, 6, 0, 0));
+        data.add(factory.copyValues(0, 0, 0, 1, 3, 3, 3, 2, 0));
+        
+        int termCount = 9;
+        
+        int topicCount = 3;
+        
+        Random randDoubleReuse = new DoubleReuseRandom(1000);
+        
+        LatentDirichletAllocationVectorGibbsSampler instance =
+            new LatentDirichletAllocationVectorGibbsSampler(
+                topicCount, 2.0, 0.5, 50, 20, 10, randDoubleReuse);
+        assertNull(instance.learn(null));
+        assertNull(instance.learn(new ArrayList<Vector>()));
+
+        LatentDirichletAllocationVectorGibbsSampler.Result result =
+            instance.learn(data);
+
+        assertEquals(topicCount, result.getTopicCount());
+        assertEquals(topicCount, result.topicTermProbabilities.length);
+        assertEquals(data.size(), result.getDocumentCount());
+        assertEquals(data.size(), result.documentTopicProbabilities.length);
+        assertEquals(termCount, result.getTermCount());
+
+        for (int i = 0; i < topicCount; i++)
+        {
+            assertEquals(termCount, result.topicTermProbabilities[i].length);
+            for (int j = 0; j < termCount; j++)
+            {
+                assertIsProbability(result.topicTermProbabilities[i][j]);
+            }
+        }
+
+        for (int i = 0; i < data.size(); i++)
+        {
+            assertEquals(topicCount, result.documentTopicProbabilities[i].length);
+            for (int j = 0; j < topicCount; j++)
+            {
+                assertIsProbability(result.documentTopicProbabilities[i][j]);
+            }
+        }
+    }
+
+    
+    /**
      * Test of learn method, of class LatentDirichletAllocationVectorGibbsSampler.
      */
     @Test
