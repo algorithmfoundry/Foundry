@@ -20,7 +20,6 @@ import gov.sandia.cognition.math.MutableDouble;
 import gov.sandia.cognition.util.ArgumentChecker;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 
@@ -439,28 +438,6 @@ public class DefaultInfiniteVector<KeyType>
     }
 
     @Override
-    public void compact()
-    {
-        // We can't use entrySet to remove null/zero elements because it throws
-        // a ConcurrentModificationException
-        // We can't use the keySet either because that throws an Exception,
-        // so we need to clone it first
-        LinkedList<KeyType> removeKeys = new LinkedList<KeyType>();
-        for (Map.Entry<KeyType, MutableDouble> entry : this.map.entrySet())
-        {
-            final MutableDouble value = entry.getValue();
-            if( value.value == 0.0 )
-            {
-                removeKeys.add( entry.getKey() );
-            }
-        }
-        for( KeyType key : removeKeys )
-        {
-            this.map.remove(key);
-        }
-    }
-
-    @Override
     public void forEachEntry(
         final KeyValueConsumer<? super KeyType> consumer)
     {
@@ -470,7 +447,7 @@ public class DefaultInfiniteVector<KeyType>
             consumer.consume(entry.getKey(), entry.getValue().getValue());
         }
     }
-    
+
     @Override
     public void forEachNonZero(
         final KeyValueConsumer<? super KeyType> consumer)
@@ -485,7 +462,7 @@ public class DefaultInfiniteVector<KeyType>
             }
         }
     }
-    
+
     @Override
     public String toString()
     {
