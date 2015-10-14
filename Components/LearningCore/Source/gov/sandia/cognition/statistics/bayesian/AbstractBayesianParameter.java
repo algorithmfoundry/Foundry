@@ -58,7 +58,7 @@ public abstract class AbstractBayesianParameter<ParameterType,ConditionalType ex
      * Creates a new instance of AbstractBayesianParameter
      * @param conditionalDistribution
      * Distribution from which to pull the parameters.
-     * @param name
+     * @param name The parameter's name
      * @param parameterPrior
      * Distribution of values that the parameter is assumed to take.
      */

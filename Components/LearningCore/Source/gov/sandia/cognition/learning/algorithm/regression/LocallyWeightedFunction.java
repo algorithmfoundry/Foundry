@@ -364,7 +364,7 @@ public class LocallyWeightedFunction<InputType, OutputType>
 
         /**
          * Setter for learner
-         * @param learner
+         * @param learner The learner to use
          */
         public void setLearner(
             SupervisedBatchLearner<InputType,OutputType,?> learner )
