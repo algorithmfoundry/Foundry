@@ -1,6 +1,7 @@
 package gov.sandia.cognition.statistics;
 
-import gov.sandia.cognition.math.matrix.optimized.DenseVector;
+import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.math.matrix.VectorFactory;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -11,18 +12,20 @@ import static org.junit.Assert.*;
  */
 public class ChiSquaredSimilarityTest
 {
+    VectorFactory vectorFactory = VectorFactory.getDenseDefault();
     double[] value1 = {1,0,0,1,0,0,0,1,0,0};
-    DenseVector vector1 = new DenseVector(value1);
+
+    Vector vector1 = vectorFactory.copyArray(value1);
     double[] value2 = {0,1,0,0,1,0,0,0,1,0};
-    DenseVector vector2 = new DenseVector(value2);
+    Vector vector2 = vectorFactory.copyArray(value2);
     double[] value3 = {1,1,1,1,1,1,1,1,1,1};
-    DenseVector vector3 = new DenseVector(value3);
+    Vector vector3 = vectorFactory.copyArray(value3);
     double[] value4 = {0,0};
-    DenseVector vector4 = new DenseVector(value4);
+    Vector vector4 = vectorFactory.copyArray(value4);
     double[] value5 = {0,-1,0,0,1,0,0,0,-1,0};
-    DenseVector vector5 = new DenseVector(value2);
+    Vector vector5 = vectorFactory.copyArray(value2);
     double[] value6 = {0,0,0,0,0,0,0,0,0,0};
-    DenseVector vector6 = new DenseVector(value6);
+    Vector vector6 = vectorFactory.copyArray(value6);
     
     ChiSquaredSimilarity v12 = new ChiSquaredSimilarity(vector1, vector2);
     ChiSquaredSimilarity v11 = new ChiSquaredSimilarity(vector1, vector1);

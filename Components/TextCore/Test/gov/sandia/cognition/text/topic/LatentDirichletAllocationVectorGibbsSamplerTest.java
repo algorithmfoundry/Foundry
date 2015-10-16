@@ -17,7 +17,6 @@ package gov.sandia.cognition.text.topic;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import static gov.sandia.cognition.math.ProbabilityUtil.*;
-import gov.sandia.cognition.math.matrix.optimized.DenseVector;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -150,9 +149,9 @@ public class LatentDirichletAllocationVectorGibbsSamplerTest
         double[] d3 = {0, 2.5, 3.3, 1.0, 1.2 };
         
         final ArrayList<Vector> data = new ArrayList<Vector>();
-        data.add(new DenseVector(d1));
-        data.add(new DenseVector(d2));
-        data.add(new DenseVector(d3));
+        data.add(VectorFactory.getDenseDefault().copyArray(d1));
+        data.add(VectorFactory.getDenseDefault().copyArray(d2));
+        data.add(VectorFactory.getDenseDefault().copyArray(d3));
         LatentDirichletAllocationVectorGibbsSampler lda = new LatentDirichletAllocationVectorGibbsSampler();
         // This used to throw an exception, but doesn't anymore
         // Refer to issue MachineLearning/FoundryLearning#9 for details
