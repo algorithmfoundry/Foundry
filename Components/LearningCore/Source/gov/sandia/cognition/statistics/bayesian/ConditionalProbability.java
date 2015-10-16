@@ -23,6 +23,7 @@ import java.util.Collection;
 /**
  * A class for finding the conditional probability of two elements, or one element and a collection of other elements.
  * @author trbroun
+ * @since  3.4.2
  * @param <DataType>  The data type of the elements.
  */
 @PublicationReference(

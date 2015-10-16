@@ -17,7 +17,7 @@
  * Provides hash function implementations.
  *
  * @author  Kevin Dixon
- * @since   3.1
+ * @since  3.4.2
  */
 @gov.sandia.cognition.annotation.Documentation
 package gov.sandia.cognition.hash;

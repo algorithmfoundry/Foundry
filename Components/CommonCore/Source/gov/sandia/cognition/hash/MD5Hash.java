@@ -66,6 +66,7 @@ type. */
  * 25-30 times slower than the optimized C version.  Do not use MD5.
  *
  * @author Kevin R. Dixon
+ * @since  3.4.2
  */
 @PublicationReferences(
     references={

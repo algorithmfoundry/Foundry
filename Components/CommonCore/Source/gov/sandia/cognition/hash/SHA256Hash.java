@@ -21,7 +21,7 @@ import java.util.Arrays;
 /**
  * The SHA-2, 256-bit (32 byte) hash function.
  * @author Kevin R. Dixon
- * @since 3.1
+ * @since  3.4.2
  */
 @PublicationReference(
     author="Wikipedia",

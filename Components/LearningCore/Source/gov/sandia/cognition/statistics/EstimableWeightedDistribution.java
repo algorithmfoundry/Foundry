@@ -22,7 +22,7 @@ package gov.sandia.cognition.statistics;
  * @param <DistributionType>
  * Type of distribution returned from the DistributionWeightedEstimator.
  * @author Kevin R. Dixon
- * @since 3.1
+ * @since  3.4.2
  */
 public interface EstimableWeightedDistribution<ObservationType,DistributionType extends EstimableWeightedDistribution<ObservationType,? extends DistributionType>>
     extends EstimableDistribution<ObservationType,DistributionType>

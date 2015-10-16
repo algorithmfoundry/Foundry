@@ -20,7 +20,7 @@ import gov.sandia.cognition.util.ObjectUtil;
  * This hash function is similar to the one Java uses, but it has very bad
  * properties and should only be used for benchmarking.
  * @author Kevin R. Dixon
- * @since 3.1
+ * @since  3.4.2
  */
 public class Prime32Hash
     extends AbstractHashFunction

@@ -19,7 +19,7 @@ import gov.sandia.cognition.annotation.PublicationType;
 /**
  * Static class with helper functions for hash codes
  * @author Kevin R. Dixon
- * @since 3.1
+ * @since  3.4.2
  */
 public class HashFunctionUtil 
 {

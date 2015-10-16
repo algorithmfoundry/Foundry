@@ -23,7 +23,7 @@ import gov.sandia.cognition.learning.algorithm.SupervisedBatchLearner;
  * A supervised learning algorithm that attempts to interpolate/extrapolate
  * inputs given a training set of input/output pairs.
  * @author Kevin R. Dixon
- * @since 3.3.3
+ * @since  3.4.2
  * @param   <InputType> The type of input data in the input-output pair that
  *      the learner can learn from. The {@code Evaluator} learned from the
  *      algorithm also takes this as the input parameter.

@@ -20,7 +20,7 @@ import gov.sandia.cognition.util.CloneableSerializable;
  * A hash function maps an arbitrarily large input and maps it onto a
  * finite-length output.
  * @author Kevin R. Dixon
- * @since 3.1
+ * @since  3.4.2
  */
 public interface HashFunction
     extends CloneableSerializable,

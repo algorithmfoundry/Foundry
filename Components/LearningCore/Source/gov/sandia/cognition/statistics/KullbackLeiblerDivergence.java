@@ -22,6 +22,7 @@ import java.util.Set;
 /**
  * A class used for measuring how similar two distributions are using Kullback--Leibler Divergence.
  * @author trbroun
+ * @since  3.4.2
  * @param <DomainType>  The type for the domain of the two distributions which this class is comparing.
  */
 @PublicationReference(

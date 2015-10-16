@@ -25,7 +25,7 @@ import gov.sandia.cognition.evaluator.Evaluator;
  * independent input variable (simple regression) or multiple input variables
  * (multiple regression) onto a single dependent (output) variable.
  * @author Kevin R. Dixon
- * @since 3.3.3
+ * @since  3.4.2
  * @param   <InputType> The type of input data in the input-output pair that
  *      the learner can learn from. The {@code Evaluator} learned from the
  *      algorithm also takes this as the input parameter.

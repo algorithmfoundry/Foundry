@@ -29,6 +29,7 @@ import gov.sandia.cognition.statistics.distribution.ChiSquareDistribution;
  * so the choice of which vector is the categorized vector and which one is the
  * testing vector is somewhat arbitrary.
  * @author trbroun
+ * @since  3.4.2
  */
 @PublicationReference(
     author="Yao-Tsung Chen, Meng Chang Chen",

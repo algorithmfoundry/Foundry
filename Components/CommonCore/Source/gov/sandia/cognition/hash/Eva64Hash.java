@@ -21,7 +21,7 @@ import gov.sandia.cognition.util.ObjectUtil;
  * This implements the 64-bit "evahash" due to Robert Jenkins.  This is a Java
  * port of Jenkins's C implementation.
  * @author Kevin R. Dixon
- * @since 3.1
+ * @since  3.4.2
  */
 @PublicationReference(
     author="Robert J. Jenkins, Jr.",

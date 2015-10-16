@@ -21,7 +21,7 @@ import gov.sandia.cognition.util.ObjectUtil;
 /**
  * Implementation of the 32-bit (4-byte) Fowler-Noll-Vo (FNV-1a) hash function.
  * @author Kevin R. Dixon
- * @since 3.1
+ * @since  3.4.2
  */
 @PublicationReferences(
     references={

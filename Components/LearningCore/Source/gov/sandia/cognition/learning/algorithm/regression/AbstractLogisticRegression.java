@@ -28,7 +28,7 @@ import gov.sandia.cognition.util.ObjectUtil;
  * @param <FunctionType>
  * TYpe of Evaluator that maps the InputType to the OutputType
  * @author Kevin R. Dixon
- * @since 3.3.3
+ * @since  3.4.2
  */
 public abstract class AbstractLogisticRegression<InputType,OutputType,FunctionType extends Evaluator<? super InputType,OutputType>>
     extends AbstractAnytimeSupervisedBatchLearner<InputType,OutputType,FunctionType>

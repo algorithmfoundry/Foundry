@@ -67,6 +67,7 @@ import java.util.Arrays;
  * weaknesses on the order of 2^51.  This implementation is based on the
  * implementation due to Sam Ruby, Paul Johnson, and John Wilson.
  * @author krdixon
+ * @since  3.4.2
  */
 @PublicationReferences(
     references={

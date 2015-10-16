@@ -25,7 +25,7 @@ import java.util.Map;
  * @param <KeyType>
  * Type of key in the Map
  * @author Kevin R. Dixon
- * @since 3.3.1
+ * @since  3.4.2
  */
 public class AbstractLogNumberMap<KeyType>
     extends AbstractScalarMap<KeyType,LogNumber>

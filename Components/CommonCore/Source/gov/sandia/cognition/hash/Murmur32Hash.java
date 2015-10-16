@@ -33,7 +33,7 @@ import gov.sandia.cognition.util.ObjectUtil;
  * function.  This implementation is based on Derek Young's port of the
  * original MurmurHash2 hash function of Austin Appleby.
  * @author Kevin R. Dixon
- * @since 3.1
+ * @since  3.4.2
  */
 @PublicationReferences(
     references={

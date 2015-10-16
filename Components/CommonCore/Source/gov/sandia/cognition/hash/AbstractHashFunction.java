@@ -19,7 +19,7 @@ import gov.sandia.cognition.util.AbstractCloneableSerializable;
 /**
  * Partial implementation of HashFunction
  * @author Kevin R. Dixon
- * @since 3.1
+ * @since  3.4.2
  */
 public abstract class AbstractHashFunction
     extends AbstractCloneableSerializable

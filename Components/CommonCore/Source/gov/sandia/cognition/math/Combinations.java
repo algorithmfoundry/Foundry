@@ -29,7 +29,7 @@ import java.util.LinkedList;
  * For example, there are 3 ways to choose 2 objects from a set of 3:
  * (1,2), (1,3), (2,3).
  * @author Kevin R. Dixon
- * @since 3.3.3
+ * @since  3.4.2
  */
 public class Combinations 
     extends AbstractSet<Vector>

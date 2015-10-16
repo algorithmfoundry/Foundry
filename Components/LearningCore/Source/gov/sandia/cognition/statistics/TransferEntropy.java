@@ -35,7 +35,7 @@ import java.util.List;
  * This generates more intuitive results (the above example has a transfer entropy value of 0
  * in this implementation), and is easier to code.
  * @author trbroun
- 
+ * @since  3.4.2
  */
 @PublicationReference(
     author="Thomas Schreiber",
