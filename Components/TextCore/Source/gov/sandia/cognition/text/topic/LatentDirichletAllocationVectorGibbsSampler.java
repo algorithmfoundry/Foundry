@@ -143,7 +143,7 @@ public class LatentDirichletAllocationVectorGibbsSampler
 
     /** We create this array to be used as a workspace to avoid having to
      * recreate it inside the sampling function. */
-    double[] topicCumulativeProportions = new double[this.topicCount];
+    protected transient double[] topicCumulativeProportions;
 
     /** The number of model parameter samples that have been made. */
     protected transient int sampleCount;
@@ -376,32 +376,11 @@ public class LatentDirichletAllocationVectorGibbsSampler
                 "Didn't iterate to the end of the documentTerms array.  docTermIndex is "
                 + docTermIndex + " instead of " + this.documentTerms.length);
         }
-
-        // compute sizes of datastructures (ignoring non-arrays).
-        // note, the Result class keeps track of its own size
-        //this.documentTopicCount = new int[this.documentCount][this.topicCount];
-        long dataStructuresSize = this.documentCount * this.topicCount * 4;
-        //this.documentTopicSum = new int[this.documentCount];
-        dataStructuresSize += this.documentCount * 4;
-        //this.topicTermCount = new int[this.topicCount][this.termCount];
-        dataStructuresSize += this.topicCount * this.termCount * 4;
-        //this.topicTermSum = new int[this.topicCount];
-        dataStructuresSize += this.topicCount * 4;
-        //this.numberOfUniqueTermsInEachDocument = new int[this.documentCount];
-        dataStructuresSize += this.documentCount * 4;
-        //this.topicCumulativeProportions = new double[this.topicCount];        
-        dataStructuresSize += this.topicCount * 8;
-        //this.occurrenceTopicAssignments = new int[totalOccurrences];
-        dataStructuresSize += totalOccurrences * 4;
-        //this.documentTerms = new int[terms.size()];
-        dataStructuresSize += this.documentTerms.length * 4;
-        //this.documentTermCounts = new int[termCounts.size()];
-        dataStructuresSize += this.documentTermCounts.length * 4;
-
+        
         // Initialize the result        
         this.result = new LatentDirichletAllocationVectorGibbsSampler.Result(
             this.topicCount, this.documentCount, this.termCount,
-            (int) totalOccurrences, dataStructuresSize);
+            (int) totalOccurrences);
 
         // TODO: Compute the likelihood of the parameter set to track
         // convergence.
@@ -802,9 +781,6 @@ public class LatentDirichletAllocationVectorGibbsSampler
          *  algorithm is done and they are turned into an average. */
         protected double[][] documentTopicProbabilities;
 
-        /** The size of the data structures in the LDA class */
-        protected long dataStructuresSize;
-
         /** The total number for term occurrences */
         protected int totalOccurrences;
 
@@ -817,13 +793,14 @@ public class LatentDirichletAllocationVectorGibbsSampler
          *      The number of documents.
          * @param   termCount
          *      The number of terms.
+         * @param   totalOccurrences
+         *      The number of term occurrences.
          */
         public Result(
             final int topicCount,
             final int documentCount,
             final int termCount,
-            final int totalOccurrences,
-            final long ldaDatastructuresSize)
+            final int totalOccurrences)
         {
             super();
 
@@ -832,12 +809,6 @@ public class LatentDirichletAllocationVectorGibbsSampler
                 new double[documentCount][topicCount];
 
             this.totalOccurrences = totalOccurrences;
-            this.dataStructuresSize = ldaDatastructuresSize;
-
-            // add the bytes used by the Result class
-            this.dataStructuresSize += topicCount * termCount * 8;
-            this.dataStructuresSize += documentCount * topicCount * 8;
-
         }
 
         /**
@@ -871,18 +842,6 @@ public class LatentDirichletAllocationVectorGibbsSampler
         public int getTermCount()
         {
             return this.topicTermProbabilities[0].length;
-        }
-        
-        /**
-         * Gets the size, in bytes, of the data structures used in the LDA 
-         * LDA computation
-         *
-         * @return
-         *      The number of bytes.
-         */
-        public long getDataStructuresSize()
-        {
-            return this.dataStructuresSize;
         }
 
         /**
