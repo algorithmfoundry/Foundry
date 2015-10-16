@@ -23,8 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-
-
 /**
  * An implementation of an {@code InfiniteVector} backed by a
  * {@code LinkedHashMap}.
@@ -445,16 +443,16 @@ public class DefaultInfiniteVector<KeyType>
         // a ConcurrentModificationException
         // We can't use the keySet either because that throws an Exception,
         // so we need to clone it first
-        LinkedList<KeyType> removeKeys = new LinkedList<KeyType>();
-        for (Map.Entry<KeyType, MutableDouble> entry : this.map.entrySet())
+        final LinkedList<KeyType> removeKeys = new LinkedList<KeyType>();
+        for (final Map.Entry<KeyType, MutableDouble> entry : this.map.entrySet())
         {
             final MutableDouble value = entry.getValue();
-            if( value.value == 0.0 )
+            if (value.value == 0.0)
             {
-                removeKeys.add( entry.getKey() );
+                removeKeys.add(entry.getKey());
             }
         }
-        for( KeyType key : removeKeys )
+        for (final KeyType key : removeKeys)
         {
             this.map.remove(key);
         }
@@ -470,7 +468,7 @@ public class DefaultInfiniteVector<KeyType>
             consumer.consume(entry.getKey(), entry.getValue().getValue());
         }
     }
-    
+
     @Override
     public void forEachNonZero(
         final KeyValueConsumer<? super KeyType> consumer)
@@ -485,7 +483,7 @@ public class DefaultInfiniteVector<KeyType>
             }
         }
     }
-    
+
     @Override
     public String toString()
     {

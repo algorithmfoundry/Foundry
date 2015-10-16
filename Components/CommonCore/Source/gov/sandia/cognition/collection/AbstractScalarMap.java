@@ -14,8 +14,7 @@
 package gov.sandia.cognition.collection;
 
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
-import gov.sandia.cognition.util.CloneableSerializable;
-import java.util.AbstractMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -24,27 +23,49 @@ import java.util.Set;
  * Partial implementation of ScalarMap
  * 
  * @param <KeyType>
- *      The type of the key in the map.
+ *      The type of the key in the Map.
+ * @param <NumberType> 
+ *      the type of Number in the Map.
  * @author  Justin Basilico
  * @since   3.2.1
  */
-public abstract class AbstractScalarMap<KeyType>
+public abstract class AbstractScalarMap<KeyType,NumberType extends Number>
     extends AbstractCloneableSerializable
     implements ScalarMap<KeyType>
 {
 
     /**
-     * Default Constructor
+     * Map backing that performs the storage.
      */
-    public AbstractScalarMap()
+    protected Map<KeyType,NumberType> map;    
+    
+    /** 
+     * Creates a new instance of AbstractScalarMap 
+     * @param   map
+     *      The backing map that the data is stored in.
+     */
+    public AbstractScalarMap(
+        final Map<KeyType,NumberType> map )
     {
         super();
+        this.map = map;
     }
     
     @Override
-    public Map<KeyType, ? extends Number> asMap()
+    public AbstractScalarMap<KeyType,NumberType> clone()
     {
-        return new MapWrapper();
+        @SuppressWarnings("unchecked")
+        AbstractScalarMap<KeyType,NumberType> clone =
+            (AbstractScalarMap<KeyType,NumberType>) super.clone();
+        clone.map = new LinkedHashMap<KeyType, NumberType>( this.size() );
+        clone.setAll(this);
+        return clone;
+    }    
+    
+    @Override
+    public Map<KeyType,NumberType> asMap()
+    {
+        return this.map;
     }
 
     @Override
@@ -58,6 +79,16 @@ public abstract class AbstractScalarMap<KeyType>
         }
     }
 
+    @Override
+    public void setAll(
+        final ScalarMap<? extends KeyType> other)
+    {
+        for (Entry<? extends KeyType> entry : other.entrySet())
+        {
+            this.set(entry.getKey(), entry.getValue());
+        }
+    }
+    
     @Override
     public double increment(
         final KeyType key)
@@ -167,7 +198,7 @@ public abstract class AbstractScalarMap<KeyType>
     @Override
     public boolean isEmpty()
     {
-        return this.size() == 0;
+        return this.map.isEmpty();
     }
 
     @Override
@@ -260,113 +291,29 @@ public abstract class AbstractScalarMap<KeyType>
         return minKeys;
     }
 
-    /**
-     * Wrapper when using the asMap method
-     */
-    @SuppressWarnings("unchecked")
-    protected class MapWrapper
-        extends AbstractMap<KeyType, Double>
-        implements CloneableSerializable
+    @Override
+    public void clear()
     {
-        /**
-         * Default constructor
-         */
-        protected MapWrapper()
-        {
-            super();
-        }
+        this.map.clear();
+    }
 
-        @Override
-        public MapWrapper clone()
-        {
-            try
-            {
-                return (MapWrapper) super.clone();
-            }
-            catch (CloneNotSupportedException e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
+    @Override
+    public Set<KeyType> keySet()
+    {
+        return this.map.keySet();
+    }
 
-        @Override
-        public int size()
-        {
-            return AbstractScalarMap.this.size();
-        }
+    @Override
+    public boolean containsKey(
+        final KeyType key)
+    {
+        return this.map.containsKey(key);
+    }
 
-        @Override
-        public boolean isEmpty()
-        {
-            return AbstractScalarMap.this.isEmpty();
-        }
-
-        @Override
-        public boolean containsKey(
-            final Object key)
-        {
-            return AbstractScalarMap.this.containsKey((KeyType) key);
-        }
-
-        @Override
-        public Double get(
-            final Object key)
-        {
-            return AbstractScalarMap.this.get((KeyType) key);
-        }
-
-        @Override
-        public Double put(
-            final KeyType key,
-            final Double value)
-        {
-            if (value == null)
-            {
-                AbstractScalarMap.this.set(key, 0.0);
-            }
-            else
-            {
-                AbstractScalarMap.this.set(key, value);
-            }
-            return value;
-        }
-
-        @Override
-        public Double remove(
-            final Object key)
-        {
-            final double oldValue = AbstractScalarMap.this.get((KeyType) key);
-            AbstractScalarMap.this.set((KeyType) key, 0.0);
-            return oldValue;
-        }
-
-        @Override
-        public void clear()
-        {
-            AbstractScalarMap.this.clear();
-        }
-
-        @Override
-        public Set<KeyType> keySet()
-        {
-            return AbstractScalarMap.this.keySet();
-        }
-
-        @Override
-        public Set<Map.Entry<KeyType, Double>> entrySet()
-        {
-            final LinkedHashSet<Map.Entry<KeyType, Double>> result =
-                new LinkedHashSet<Map.Entry<KeyType, Double>>(this.size());
-
-            for (ScalarMap.Entry<KeyType> entry
-                : AbstractScalarMap.this.entrySet())
-            {
-                result.add(new AbstractMap.SimpleImmutableEntry<KeyType, Double>(
-                    entry.getKey(), entry.getValue()));
-            }
-            return result;
-        }
-
+    @Override
+    public int size()
+    {
+        return this.map.size();
     }
 
 }

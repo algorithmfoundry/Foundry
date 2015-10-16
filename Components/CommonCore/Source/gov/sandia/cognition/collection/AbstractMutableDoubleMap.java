@@ -16,10 +16,11 @@ import gov.sandia.cognition.math.MutableDouble;
 import gov.sandia.cognition.math.matrix.InfiniteVector;
 import java.util.AbstractSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+
+
 
 /**
  * A partial implementation of a ScalarMap with a MutableDouble value
@@ -29,13 +30,8 @@ import java.util.Set;
  * @since 3.2.1
  */
 public class AbstractMutableDoubleMap<KeyType>
-    extends AbstractScalarMap<KeyType>
+    extends AbstractScalarMap<KeyType,MutableDouble>
 {
-
-    /**
-     * Map backing that performs the storage.
-     */
-    protected Map<KeyType, MutableDouble> map;
 
     /** 
      * Creates a new instance of AbstractMutableDoubleMap 
@@ -45,22 +41,14 @@ public class AbstractMutableDoubleMap<KeyType>
     public AbstractMutableDoubleMap(
         final Map<KeyType, MutableDouble> map )
     {
-        super();
-        this.map = map;
+        super( map );
     }
 
 
     @Override
     public AbstractMutableDoubleMap<KeyType> clone()
     {
-        @SuppressWarnings("unchecked")
-        AbstractMutableDoubleMap<KeyType> clone =
-            (AbstractMutableDoubleMap<KeyType>) super.clone();
-        // NOTE: there is the potential for a problem if this.map isn't a
-        // LinkedHashMap!
-        clone.map = new LinkedHashMap<KeyType, MutableDouble>( this.size() );
-        clone.incrementAll(this);
-        return clone;
+        return (AbstractMutableDoubleMap<KeyType>) super.clone();
     }
 
     @Override
@@ -163,36 +151,10 @@ public class AbstractMutableDoubleMap<KeyType>
         return newValue;
     }
 
-
-    @Override
-    public void clear()
-    {
-        this.map.clear();
-    }
-
     @Override
     public Set<Entry<KeyType>> entrySet()
     {
         return new SimpleEntrySet<KeyType>( this.map );
-    }
-
-    @Override
-    public Set<KeyType> keySet()
-    {
-        return this.map.keySet();
-    }
-
-    @Override
-    public boolean containsKey(
-        final KeyType key)
-    {
-        return this.map.containsKey(key);
-    }
-
-    @Override
-    public int size()
-    {
-        return this.map.size();
     }
 
     /**

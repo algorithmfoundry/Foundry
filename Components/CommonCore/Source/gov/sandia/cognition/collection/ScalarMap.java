@@ -76,6 +76,15 @@ public interface ScalarMap<KeyType>
         final double value);
 
     /**
+     * Sets all the given keys to the given value.
+     *
+     * @param   other
+     *      The other map.
+     */
+    public void setAll(
+        final ScalarMap<? extends KeyType> other );
+    
+    /**
      * Increments the value associated with the given key by 1.0.
      *
      * @param   key

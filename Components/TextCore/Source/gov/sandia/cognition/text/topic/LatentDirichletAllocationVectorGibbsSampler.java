@@ -1,6 +1,6 @@
 /*
  * File:                LatentDirichletAllocationVectorGibbsSampler.java
- * Authors:             Justin Basilico
+ * Authors:             Justin Basilico, Sean Crosby
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
  * 
@@ -22,6 +22,7 @@ import gov.sandia.cognition.learning.algorithm.AbstractAnytimeBatchLearner;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.statistics.DiscreteSamplingUtil;
 import gov.sandia.cognition.math.matrix.VectorEntry;
+import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.util.AbstractCloneableSerializable;
 import gov.sandia.cognition.util.ArgumentChecker;
@@ -36,9 +37,9 @@ import java.util.Random;
  * for term occurrences in documents. Thus, each document is a mixture of
  * different topics. This implementation uses a Gibbs sampling version of
  * Markov Chain Monte Carlo algorithm to estimate the parameters of the model.
- * 
- * @author  Justin Basilico
- * @since   3.1
+ *
+ * @author Justin Basilico, Sean Crosby
+ * @since 3.1
  */
 @PublicationReferences(
     references={
@@ -130,6 +131,20 @@ public class LatentDirichletAllocationVectorGibbsSampler
     /** The assignments of term occurrences to topics. */
     protected transient int[] occurrenceTopicAssignments;
 
+    /** the number of unique terms in each document. */
+    protected transient int[] documentTermPairsCounts;
+
+    /** For each unique term (unique per document) which term id it maps to. */
+    protected transient int[] documentTerms;
+
+    /** For each unique term (unique per document), the number of times that term
+     * occurs in the document. */
+    protected transient int[] documentTermCounts;
+
+    /** We create this array to be used as a workspace to avoid having to
+     * recreate it inside the sampling function. */
+    protected transient double[] topicCumulativeProportions;
+
     /** The number of model parameter samples that have been made. */
     protected transient int sampleCount;
 
@@ -193,6 +208,23 @@ public class LatentDirichletAllocationVectorGibbsSampler
         this.setRandom(random);
     }
 
+    /**
+     * Performs the 1 norm on the values in v as if each were an integer.
+     * 
+     * @param v
+     * @return 
+     */
+    private static int intNorm1(Vector v)
+    {
+        int ret = 0;
+        for (int i = 0; i < v.getDimensionality(); ++i)
+        {
+            ret += Math.floor(v.getElement(i));
+        }
+        
+        return ret;
+    }
+    
     @Override
     protected boolean initializeAlgorithm()
     {
@@ -211,6 +243,8 @@ public class LatentDirichletAllocationVectorGibbsSampler
         this.documentTopicSum = new int[this.documentCount];
         this.topicTermCount = new int[this.topicCount][this.termCount];
         this.topicTermSum = new int[this.topicCount];
+        this.topicCumulativeProportions = new double[this.topicCount];
+
         //TODO: This appears to be a bug in the allocation.  topicTermSum is used as an array of size 'topic' but
         //  was allocated as an array of size 'term'.  If the number of terms is smaller than the number of topics
         //  this would result in a outofbounds exception; otherwise, we're just allocating more space than was needed. 
@@ -218,28 +252,99 @@ public class LatentDirichletAllocationVectorGibbsSampler
 
         // Initialize the model parameter arrays.
         this.sampleCount = 0;
-        this.result = new Result(
-            this.topicCount, this.documentCount, this.termCount);
 
-        // Count up the total number of word occurrences in the data.
-        int totalOccurrences = 0;
+        // determine the required sizes of the vectors
+        long totalOccurrences = 0;
+        int documentTermPairsCount = 0;
         for (Vectorizable m : this.data)
         {
-            totalOccurrences += (int) m.convertToVector().norm1();
+            Vector vector = m.convertToVector();
+
+            int documentOccurrences;
+            documentOccurrences = intNorm1(m.convertToVector());
+            totalOccurrences += documentOccurrences;
+
+            for (VectorEntry v : vector)
+            {
+                final int count = (int) v.getValue();
+                if (count > 0)
+                {
+                    documentTermPairsCount++;
+                }
+            }
         }
-        this.occurrenceTopicAssignments = new int[totalOccurrences];
 
-        // Initialize all the counts by randomly assigning words to topics.
+        // Make sure all the occurrences will fit in a single array
+        if (totalOccurrences > Integer.MAX_VALUE)
+        {
+            throw new RuntimeException(
+                "The number of occurrences cannot exceed the maximum number of slots in an array (Integer.MAX_VALUE)");
+        }
+
+        this.occurrenceTopicAssignments = new int[(int) totalOccurrences];
+
+        // Initialize the three arrays that replace the vector data
+        this.documentTermPairsCounts = new int[this.documentCount];
+        this.documentTerms = new int[documentTermPairsCount];
+        this.documentTermCounts = new int[documentTermPairsCount];
+
+        // load the vector data into the rows
         int document = 0;
-        int occurrence = 0;
+        int documentTermPairsIndex = 0;
         for (Vectorizable m : this.data)
         {
-            for (VectorEntry v : m.convertToVector())
+            int termsInDocument = 0;
+            Vector vector = m.convertToVector();
+            for (VectorEntry v : vector)
             {
                 final int term = v.getIndex();
                 final int count = (int) v.getValue();
+                if (count > 0)
+                {
+                    this.documentTerms[documentTermPairsIndex] = term;
+                    this.documentTermCounts[documentTermPairsIndex] = count;
 
-                for (int i = 1; i <= count; i++)
+                    // increment after putting the data in the arrays
+                    termsInDocument++;
+                    documentTermPairsIndex++;
+                }
+
+            }
+            this.documentTermPairsCounts[document] =
+                termsInDocument;
+            document++;
+        }
+
+        if (documentTermPairsIndex != documentTermPairsCount)
+        {
+            throw new RuntimeException(
+                "The two loops didn't count the same number of terms ("
+                + documentTermPairsCount + " != " + documentTermPairsIndex + ")");
+        }
+
+        int docTermIndex = 0; // current term for the current document
+        int occurrence = 0;  // the current occurrence
+        int term; // the current term id for the current term in this document
+        int count; // the current number of occurrences for the current term in this document
+
+        // The purpose of this nested loop is to visit each occurrence of each 
+        // term.  numberOfUniqueTermsInEachDocument and documentTermCounts 
+        // combined contain the total number of occurrences in the dataset
+        for (document = 0; document < this.documentTermPairsCounts.length;
+            document++)
+        {
+            // get the number of terms (not term occurrences) in this document
+            int docUniqueTerms = this.documentTermPairsCounts[document];
+            // iterate through each term in this document
+            for (int docUniqueTerm = 0; docUniqueTerm < docUniqueTerms;
+                docUniqueTerm++)
+            {
+                // get the term id and count
+                term = this.documentTerms[docTermIndex];
+                count = this.documentTermCounts[docTermIndex];
+
+                // for each occurrence of the current term
+                for (int i = 0; i < count; i++)
                 {
                     // Pick a random topic for each word (occurrence).
                     final int topic = this.random.nextInt(this.topicCount);
@@ -250,11 +355,32 @@ public class LatentDirichletAllocationVectorGibbsSampler
                     this.topicTermCount[topic][term] += 1;
                     this.topicTermSum[topic] += 1;
                     this.occurrenceTopicAssignments[occurrence] = topic;
+
                     occurrence++;
                 }
+                docTermIndex++;
             }
-            document++;
         }
+
+        // Check to make sure we visited all the occurrences
+        if (occurrence != this.occurrenceTopicAssignments.length)
+        {
+            throw new RuntimeException(
+                "Didn't iterate to the end of the occurrenceTopicAssignments array.  occurrence is "
+                + occurrence + " instead of "
+                + this.occurrenceTopicAssignments.length);
+        }
+        if (docTermIndex != this.documentTerms.length)
+        {
+            throw new RuntimeException(
+                "Didn't iterate to the end of the documentTerms array.  docTermIndex is "
+                + docTermIndex + " instead of " + this.documentTerms.length);
+        }
+        
+        // Initialize the result        
+        this.result = new LatentDirichletAllocationVectorGibbsSampler.Result(
+            this.topicCount, this.documentCount, this.termCount,
+            (int) totalOccurrences);
 
         // TODO: Compute the likelihood of the parameter set to track
         // convergence.
@@ -265,20 +391,32 @@ public class LatentDirichletAllocationVectorGibbsSampler
     @Override
     protected boolean step()
     {
-        // We create this array to be used as a workspace to avoid having to
-        // recreate it inside the sampling function.
-        final double[] topicCumulativeProportions = new double[this.topicCount];
-        int document = 0;
-        int occurrence = 0;
-        for (Vectorizable m : this.data)
-        {
-            for (VectorEntry v : m.convertToVector())
-            {
-                final int term = v.getIndex();
-                final int count = (int) v.getValue();
+        int docTermIndex = 0; // current term for the current document
+        int occurrence = 0;  // the current occurrence
+        int term; // the current term id for the current term in this document
+        int count; // the current number of occurrences for the current term in this document
 
-                for (int i = 1; i <= count; i++)
+        // The purpose of this nested loop is to visit each occurrence of each 
+        // term.  numberOfUniqueTermsInEachDocument and documentTermCounts 
+        // combined contain the total number of occurrences in the dataset
+        for (int document = 0; document
+            < documentTermPairsCounts.length;
+            document++)
+        {
+            // get the number of terms (not term occurrences) in this document
+            int docUniqueTerms = documentTermPairsCounts[document];
+            // iterate through each term in this document
+            for (int docUniqueTerm = 0; docUniqueTerm < docUniqueTerms;
+                docUniqueTerm++)
+            {
+                // get the term id and count
+                term = this.documentTerms[docTermIndex];
+                count = this.documentTermCounts[docTermIndex];
+
+                // for each occurrence of the current term
+                for (int i = 0; i < count; i++)
                 {
+
                     // Get the old topic assignment.
                     final int oldTopic =
                         this.occurrenceTopicAssignments[occurrence];
@@ -299,15 +437,32 @@ public class LatentDirichletAllocationVectorGibbsSampler
                     this.documentTopicSum[document] += 1;
                     this.topicTermCount[newTopic][term] += 1;
                     this.topicTermSum[newTopic] += 1;
+
                     occurrence++;
                 }
+                docTermIndex++;
             }
-            document++;
         }
 
+        // Check to make sure we visited all the occurrences
+        if (occurrence != this.occurrenceTopicAssignments.length)
+        {
+            throw new RuntimeException(
+                "Didn't iterate to the end of the occurrenceTopicAssignments array.  occurrence is "
+                + occurrence + " instead of "
+                + this.occurrenceTopicAssignments.length);
+        }
+        if (docTermIndex != this.documentTerms.length)
+        {
+            throw new RuntimeException(
+                "Didn't iterate to the end of the documentTerms array.  docTermIndex is "
+                + docTermIndex + " instead of " + this.documentTerms.length);
+        }
+
+        // Determine whether or not to sample
         if (this.iteration >= this.burnInIterations
             && (this.iteration - this.burnInIterations)
-                % this.iterationsPerSample == 0)
+            % this.iterationsPerSample == 0)
         {
             this.readParameters();
         }
@@ -405,7 +560,7 @@ public class LatentDirichletAllocationVectorGibbsSampler
             for (int term = 0; term < this.termCount; term++)
             {
                 this.result.topicTermProbabilities[topic][term] +=
-                      (this.topicTermCount[topic][term] + this.beta)
+                    (this.topicTermCount[topic][term] + this.beta)
                     / (this.topicTermSum[topic] + termCountTimesBeta);
             }
         }
@@ -417,13 +572,14 @@ public class LatentDirichletAllocationVectorGibbsSampler
             for (int topic = 0; topic < this.topicCount; topic++)
             {
                 this.result.documentTopicProbabilities[document][topic] +=
-                      (this.documentTopicCount[document][topic] + this.alpha)
+                    (this.documentTopicCount[document][topic] + this.alpha)
                     / (this.documentTopicSum[document] + topicCountTimesAlpha);
             }
         }
 
     }
 
+    @Override
     public Result getResult()
     {
         return this.result;
@@ -570,12 +726,14 @@ public class LatentDirichletAllocationVectorGibbsSampler
             iterationsPerSample);
         this.iterationsPerSample = iterationsPerSample;
     }
-    
+
+    @Override
     public Random getRandom()
     {
         return this.random;
     }
 
+    @Override
     public void setRandom(
         final Random random)
     {
@@ -623,6 +781,9 @@ public class LatentDirichletAllocationVectorGibbsSampler
          *  algorithm is done and they are turned into an average. */
         protected double[][] documentTopicProbabilities;
 
+        /** The total number for term occurrences */
+        protected int totalOccurrences;
+
         /**
          * Creates a new {@code Result}.
          *
@@ -632,17 +793,22 @@ public class LatentDirichletAllocationVectorGibbsSampler
          *      The number of documents.
          * @param   termCount
          *      The number of terms.
+         * @param   totalOccurrences
+         *      The number of term occurrences.
          */
         public Result(
             final int topicCount,
             final int documentCount,
-            final int termCount)
+            final int termCount,
+            final int totalOccurrences)
         {
             super();
 
             this.topicTermProbabilities = new double[topicCount][termCount];
             this.documentTopicProbabilities =
                 new double[documentCount][topicCount];
+
+            this.totalOccurrences = totalOccurrences;
         }
 
         /**
@@ -676,6 +842,17 @@ public class LatentDirichletAllocationVectorGibbsSampler
         public int getTermCount()
         {
             return this.topicTermProbabilities[0].length;
+        }
+
+        /**
+         * Gets the total number of term occurrences
+         *
+         * @return
+         *      The number of occurrences.
+         */
+        public int getTotalOccurrences()
+        {
+            return this.totalOccurrences;
         }
 
         /**

@@ -55,7 +55,7 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
     /**
      * Internal function to numerically differencing.
      */
-    private Evaluator<InputType,OutputType> internalFunction;
+    private Evaluator<? super InputType,OutputType> internalFunction;
     
     /**
      * Creates a new instance of NumericalDifferentiator
@@ -65,7 +65,7 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
      * Value for x-value differencing, must be greater than 0.0
      */
     public NumericalDifferentiator(
-        Evaluator<InputType,OutputType> internalFunction,
+        Evaluator<? super InputType,OutputType> internalFunction,
         double delta )
     {
         this.setInternalFunction( internalFunction );
@@ -87,7 +87,7 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
      * @return
      * Internal function to numerically differencing.
      */
-    public Evaluator<InputType,OutputType> getInternalFunction()
+    public Evaluator<? super InputType,OutputType> getInternalFunction()
     {
         return this.internalFunction;
     }
@@ -98,7 +98,7 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
      * Internal function to numerically differencing.
      */
     public void setInternalFunction(
-        Evaluator<InputType,OutputType> internalFunction )
+        Evaluator<? super InputType,OutputType> internalFunction )
     {
         this.internalFunction = internalFunction;
     }
@@ -156,7 +156,7 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
          * Internal function to numerically differencing.
          */
         public DoubleJacobian(
-            Evaluator<Double,Double> internalFunction )
+            Evaluator<? super Double,Double> internalFunction )
         {
             this( internalFunction, DEFAULT_DELTA );
         }
@@ -169,7 +169,7 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
          * Value for x-value differencing
          */
         public DoubleJacobian(
-            Evaluator<Double,Double> internalFunction,
+            Evaluator<? super Double,Double> internalFunction,
             double delta )
         {
             super( internalFunction, delta );
@@ -186,7 +186,7 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
          */
         public static Double differentiate(
             double input,
-            Evaluator<Double,Double> f )
+            Evaluator<? super Double,Double> f )
         {
             return DoubleJacobian.differentiate( input, f, DEFAULT_DELTA );
         }
@@ -204,7 +204,7 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
          */
         public static Double differentiate(
             double input,
-            Evaluator<Double,Double> f,
+            Evaluator<? super Double,Double> f,
             double h )
         {
             double forig = f.evaluate( input );
@@ -225,7 +225,7 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
      * Numerical differentiator based on a Vector Jacobian.
      */
     public static class VectorJacobian
-        extends NumericalDifferentiator<Vector,Double,Vector> 
+        extends NumericalDifferentiator<Vector,Double,Vector>
     {
         
         /**
@@ -242,7 +242,7 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
          * Internal function to numerically differencing.
          */
         public VectorJacobian(
-            Evaluator<Vector,Double> internalFunction )
+            Evaluator<? super Vector,Double> internalFunction )
         {
             this( internalFunction, DEFAULT_DELTA );
         }
@@ -255,7 +255,7 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
          * Value for x-value differencing
          */
         public VectorJacobian(
-            Evaluator<Vector,Double> internalFunction,
+            Evaluator<? super Vector,Double> internalFunction,
             double delta )
         {
             super( internalFunction, delta );
@@ -271,8 +271,8 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
          * Approximated Jacobian, of the same dimension as input
          */
         public static Vector differentiate(
-            Vector input,
-            Evaluator<Vector,Double> f )
+            Vectorizable input,
+            Evaluator<? super Vector,Double> f )
         {
             return VectorJacobian.differentiate( input, f, DEFAULT_DELTA );
         }
@@ -289,22 +289,23 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
          * Approximated Jacobian, of the same dimension as input
          */
         public static Vector differentiate(
-            Vector input,
-            Evaluator<Vector,Double> f,
-            double h )
+            final Vectorizable input,
+            final Evaluator<? super Vector,Double> f,
+            final double h )
         {
-            double forig = f.evaluate( input );
-            Vector inputPlusDeltai = input.clone();
+            final Vector x = input.convertToVector();
+            final double forig = f.evaluate( x );
+            final Vector inputPlusDeltai = x.clone();
             
-            int M = input.getDimensionality();
+            int M = x.getDimensionality();
             Vector J = VectorFactory.getDefault().createVector( M );
             for( int i = 0; i < M; i++ )
             {
-                double inputi = input.getElement( i );
-                inputPlusDeltai.setElement( i, inputi+h );
-                double fi = f.evaluate( inputPlusDeltai );
-                double di = (fi - forig) / h;
-                inputPlusDeltai.setElement( i, inputi );
+                final double xi = x.getElement( i );
+                inputPlusDeltai.setElement( i, xi+h );
+                final double fi = f.evaluate( inputPlusDeltai );
+                final double di = (fi - forig) / h;
+                inputPlusDeltai.setElement( i, xi );
                 
                 J.setElement( i, di );
             }
@@ -326,7 +327,7 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
      * Numerical differentiator based on a Matrix Jacobian.
      */
     public static class MatrixJacobian
-        extends NumericalDifferentiator<Vector,Vector,Matrix> 
+        extends NumericalDifferentiator<Vector,Vector,Matrix>
     {
         
         /**
@@ -334,7 +335,7 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
          */
         public MatrixJacobian()
         {
-            this( (Evaluator<Vector,Vector>) null );
+            this( (Evaluator<? super Vector,Vector>) null );
         }
         
         /**
@@ -343,7 +344,7 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
          * Internal function to numerically differencing.
          */
         public MatrixJacobian(
-            Evaluator<Vector,Vector> internalFunction )
+            Evaluator<? super Vector,Vector> internalFunction )
         {
             this( internalFunction, DEFAULT_DELTA );
         }
@@ -356,7 +357,7 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
          * Value for x-value differencing
          */
         public MatrixJacobian(
-            Evaluator<Vector,Vector> internalFunction,
+            Evaluator<? super Vector,Vector> internalFunction,
             double delta )
         {
             super( internalFunction, delta );
@@ -373,7 +374,7 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
          */
         public static Matrix differentiate(
             Vector input,
-            Evaluator<Vector,Vector> f )
+            Evaluator<? super Vector,Vector> f )
         {
             return MatrixJacobian.differentiate( input, f, DEFAULT_DELTA );
         }
@@ -390,29 +391,30 @@ public abstract class NumericalDifferentiator<InputType,OutputType,DerivativeTyp
          * Approximated Jacobian, of the same dimension as input
          */
         public static Matrix differentiate(
-            Vector input,
-            Evaluator<Vector,Vector> f,
-            double h )
+            final Vectorizable input,
+            final Evaluator<? super Vector,Vector> f,
+            final double h )
         {
-            Vector forig = f.evaluate( input );
-            Vector inputPlusDeltaj = input.clone();
+            final Vector x = input.convertToVector();
+            final Vector forig = f.evaluate( x );
+            final Vector inputPlusDeltaj = x.clone();
             
-            int M = forig.getDimensionality();
-            int N = input.getDimensionality();
-            Matrix J = MatrixFactory.getDefault().createMatrix( M, N );
+            final int M = forig.getDimensionality();
+            final int N = x.getDimensionality();
+            final Matrix J = MatrixFactory.getDefault().createMatrix( M, N );
             double Jij;
-            double inputj;
+            double xj;
             for( int j = 0; j < N; j++ )
             {
-                inputj = input.getElement(j);
-                inputPlusDeltaj.setElement( j, inputj+h );
+                xj = x.getElement(j);
+                inputPlusDeltaj.setElement( j, xj+h );
                 Vector fj = f.evaluate( inputPlusDeltaj );
                 for( int i = 0; i < M; i++ )
                 {
                     Jij = (fj.getElement(i) - forig.getElement(i)) / h;
                     J.setElement( i, j, Jij);
                 }
-                inputPlusDeltaj.setElement( j, inputj );
+                inputPlusDeltaj.setElement( j, xj );
             }
             
             return J;
