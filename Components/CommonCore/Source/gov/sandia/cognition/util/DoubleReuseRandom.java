@@ -12,7 +12,7 @@
  * 
  */
 
-package gov.sandia.cognition.text.topic;
+package gov.sandia.cognition.util;
 
 import java.util.Random;
 
@@ -37,7 +37,7 @@ import java.util.Random;
  *    in the range of numbers)
  * 
  * @author  Sean Crosby
- * @since   2.1
+ * @since   3.4.2
  */
 public class DoubleReuseRandom extends Random
 {

@@ -12,8 +12,9 @@
  * 
  */
 
-package gov.sandia.cognition.text.topic;
+package gov.sandia.cognition.util;
 
+import gov.sandia.cognition.util.DoubleReuseRandom;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

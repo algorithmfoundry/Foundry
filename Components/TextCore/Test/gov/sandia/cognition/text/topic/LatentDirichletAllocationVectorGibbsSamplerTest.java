@@ -17,6 +17,7 @@ package gov.sandia.cognition.text.topic;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import static gov.sandia.cognition.math.ProbabilityUtil.*;
+import gov.sandia.cognition.util.DoubleReuseRandom;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.FileReader;
