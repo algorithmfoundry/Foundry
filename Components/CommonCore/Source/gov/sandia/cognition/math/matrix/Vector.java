@@ -360,6 +360,15 @@ public interface Vector
      *      false.
      */
     public boolean isSparse();
+    
+    /**
+     * Gets the number of active entries in the vector. Must be between zero 
+     * and the dimensionality.
+     * 
+     * @return 
+     *      The number of active entries in the vector.
+     */
+    public int getEntryCount();
 
     /**
      * Converts this vector to a new array of doubles, in the same order as they

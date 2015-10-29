@@ -93,6 +93,12 @@ public class SparseVector
             }
         }
     }
+
+    @Override
+    public int getEntryCount()
+    {
+        return this.getInternalVector().getUsed();
+    }
     
     /**
      * Gets the number of elements used inside the sparse vector, equals the
@@ -100,6 +106,7 @@ public class SparseVector
      *
      * @return The number of nonzero elements in the SparseVector.
      */
+    @Deprecated
     public int getNumElementsUsed()
     {
         return this.getInternalVector().getUsed();

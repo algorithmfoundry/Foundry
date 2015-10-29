@@ -14,6 +14,7 @@
 
 package gov.sandia.cognition.math.matrix;
 
+import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.math.AbstractUnivariateScalarFunction;
 import gov.sandia.cognition.math.MutableInteger;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
@@ -1260,6 +1261,20 @@ abstract public class VectorTestHarness
      * Test of isSparse method.
      */
     public abstract void testIsSparse();
+    
+    /**
+     * Test of getEntryCount of Vector.
+     */
+    public void testGetEntryCount()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            Vector v1 = this.createRandom();
+            assertTrue(v1.getEntryCount() >= 0);
+            assertTrue(v1.getEntryCount() <= v1.getDimensionality());
+            assertEquals(CollectionUtil.size(v1), v1.getEntryCount());
+        }
+    }
 
     /**
      * Test of toString

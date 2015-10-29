@@ -374,6 +374,13 @@ public class DenseVector
     {
         return false;
     }
+
+    @Override
+    public int getEntryCount()
+    {
+        // Dense, so the entry count is the dimensionality.
+        return this.getDimensionality();
+    }
     
     /**
      * Writes a DenseVector out to a serialized stream (usually file)

@@ -194,6 +194,19 @@ public class SparseRowMatrix
         this.getInternalMatrix().compact();
     }
 
+    @Override
+    public int getEntryCount()
+    {
+        final FlexCompRowMatrix m = this.getInternalMatrix();
+        final int rowCount = this.getNumRows();
+        int result = 0;
+        for (int i = 0; i < rowCount; i++)
+        {
+            result += m.getRow(i).getUsed();
+        }
+        return result;
+    }
+
     /**
      * Custom deserialization is needed.
      *

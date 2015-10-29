@@ -198,6 +198,19 @@ public class SparseColumnMatrix
         this.getInternalMatrix().compact();
     }
 
+    @Override
+    public int getEntryCount()
+    {
+        final FlexCompColMatrix m = this.getInternalMatrix();
+        final int columnCount = this.getNumColumns();
+        int result = 0;
+        for (int i = 0; i < columnCount; i++)
+        {
+            result += m.getColumn(i).getUsed();
+        }
+        return result;
+    }
+    
     /**
      * Custom deserialization is needed.
      *

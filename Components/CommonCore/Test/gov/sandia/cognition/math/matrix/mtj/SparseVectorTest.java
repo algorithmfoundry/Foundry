@@ -62,6 +62,7 @@ public class SparseVectorTest extends VectorTestHarness
     /**
      * Test of getNumNonZeroElements method, of class gov.sandia.isrc.math.matrix.mtj.SparseVector.
      */
+    @SuppressWarnings("deprecation")
     public void testGetNumNonZeroElements()
     {
         System.out.println("getNumNonZeroElements");

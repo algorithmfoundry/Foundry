@@ -412,6 +412,12 @@ public class DiagonalMatrixMTJ
         return true;
     }
 
+    @Override
+    public int getEntryCount()
+    {
+        return this.getInternalMatrix().getData().length;
+    }
+    
     public Vector getColumn(
         int columnIndex )
     {
