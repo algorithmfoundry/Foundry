@@ -211,10 +211,11 @@ public class LatentDirichletAllocationVectorGibbsSampler
     /**
      * Performs the 1 norm on the values in v as if each were an integer.
      * 
-     * @param v
-     * @return 
+     * @param v The vector to take the norm 1 as an integer.
+     * @return The norm 1 as an integer.
      */
-    private static int intNorm1(Vector v)
+    private static int intNorm1(
+        final Vector v)
     {
         int ret = 0;
         for (int i = 0; i < v.getDimensionality(); ++i)

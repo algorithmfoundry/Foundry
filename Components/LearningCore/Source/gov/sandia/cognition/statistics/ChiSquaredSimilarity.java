@@ -71,7 +71,7 @@ public class ChiSquaredSimilarity
     
     /**
      * Basic getter for the categorized vector.
-     * @return 
+     * @return The categorized vector.
      */
     public Vector getCategorizedVector() {
         return categorizedVector;
@@ -79,7 +79,7 @@ public class ChiSquaredSimilarity
     
     /**
      * Basic getter for the testing vector.
-     * @return 
+     * @return The test vector.
      */
     public Vector getTestVector() {
         return testingVector;

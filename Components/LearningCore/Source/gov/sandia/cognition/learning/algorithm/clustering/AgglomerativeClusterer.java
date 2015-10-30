@@ -633,8 +633,9 @@ public class AgglomerativeClusterer
     }
 
     /**
+     * Gets the maximum distance.
      * 
-     * @return
+     * @return The maximum distance.
      * @deprecated Use getMaxDistance
      */
     @Deprecated
