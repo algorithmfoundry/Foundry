@@ -106,6 +106,15 @@ public class DenseVectorFactoryMTJ
         return new Vector3(x, y, z);
     }
 
+    @Override
+    public DenseVector createVectorCapacity(
+        final int dimensionality,
+        final int initialCapacity)
+    {
+        // Capacity is ignored for dense vectors.
+        return this.createVector(dimensionality);
+    }
+
     /**
      * Creates a new wrapper for a dense MTJ vector.
      *
