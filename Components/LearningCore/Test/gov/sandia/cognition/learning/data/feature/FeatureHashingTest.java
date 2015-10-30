@@ -46,7 +46,7 @@ public class FeatureHashingTest
     public void testContructors()
     {
         int outputDimensionality = FeatureHashing.DEFAULT_OUTPUT_DIMENSIONALITY;
-        SparseVectorFactory<?> vectorFactory = VectorFactory.getSparseDefault();
+        VectorFactory<?> vectorFactory = VectorFactory.getSparseDefault();
         FeatureHashing instance = new FeatureHashing();
         assertEquals(outputDimensionality, instance.getOutputDimensionality());
         assertNotNull(instance.getHashFunction());
@@ -93,7 +93,7 @@ public class FeatureHashingTest
         int d2 = 10;
         FeatureHashing instance = new FeatureHashing(d2);
         
-        SparseVectorFactory<?> vf = VectorFactory.getSparseDefault();
+        VectorFactory<?> vf = VectorFactory.getSparseDefault();
         List<Vector> inputs = new ArrayList<>(n);
         List<Vector> outputs = new ArrayList<>(n);
         for (int i = 0; i < n; i++)
@@ -205,7 +205,7 @@ public class FeatureHashingTest
     @Test
     public void testSetVectorFactory()
     {
-        SparseVectorFactory<?> vectorFactory = VectorFactory.getSparseDefault();
+        VectorFactory<?> vectorFactory = VectorFactory.getSparseDefault();
         FeatureHashing instance = new FeatureHashing();
         assertSame(vectorFactory, instance.getVectorFactory());
         

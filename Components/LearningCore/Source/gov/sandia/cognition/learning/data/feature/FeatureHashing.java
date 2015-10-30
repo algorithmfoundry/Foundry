@@ -13,7 +13,6 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.hash.HashFunction;
 import gov.sandia.cognition.hash.HashFunctionUtil;
 import gov.sandia.cognition.hash.Murmur32Hash;
-import gov.sandia.cognition.math.matrix.SparseVectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
 import gov.sandia.cognition.math.matrix.VectorFactory;
@@ -43,7 +42,8 @@ import gov.sandia.cognition.util.ArgumentChecker;
     url="http://arxiv.org/pdf/0902.2206.pdf")
 public class FeatureHashing
     extends AbstractCloneableSerializable
-    implements VectorFunction, VectorOutputEvaluator<Vector, Vector>, VectorFactoryContainer
+    implements VectorFunction, VectorOutputEvaluator<Vector, Vector>, 
+        VectorFactoryContainer
 {
 
     /** The default output dimensionality is {@value}. */
@@ -56,7 +56,7 @@ public class FeatureHashing
     protected HashFunction hashFunction;
     
     /** Vector factory to use. */
-    protected SparseVectorFactory<?> vectorFactory;
+    protected VectorFactory<?> vectorFactory;
     
     /**
      * Creates a new {@link FeatureHashing}.
@@ -92,7 +92,7 @@ public class FeatureHashing
     public FeatureHashing(
         final int outputDimensionality,
         final HashFunction hashFunction,
-        final SparseVectorFactory<?> vectorFactory)
+        final VectorFactory<?> vectorFactory)
     {
         super();
         
@@ -196,7 +196,7 @@ public class FeatureHashing
     }
 
     @Override
-    public SparseVectorFactory<?> getVectorFactory()
+    public VectorFactory<?> getVectorFactory()
     {
         return vectorFactory;
     }
@@ -208,7 +208,7 @@ public class FeatureHashing
      *      The vector factory.
      */
     public void setVectorFactory(
-        final SparseVectorFactory<?> vectorFactory)
+        final VectorFactory<?> vectorFactory)
     {
         this.vectorFactory = vectorFactory;
     }
