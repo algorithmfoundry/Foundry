@@ -24,32 +24,32 @@ Example Maven dependencies:
   <dependency>
     <groupId>gov.sandia.foundry</groupId>
     <artifactId>gov-sandia-cognition-common-core</artifactId>
-    <version>3.4.1</version>
+    <version>3.4.2</version>
   </dependency>
   <dependency>
     <groupId>gov.sandia.foundry</groupId>
     <artifactId>gov-sandia-cognition-common-data</artifactId>
-    <version>3.4.1</version>
+    <version>3.4.2</version>
   </dependency>
   <dependency>
     <groupId>gov.sandia.foundry</groupId>
     <artifactId>gov-sandia-cognition-learning-core</artifactId>
-    <version>3.4.1</version>
+    <version>3.4.2</version>
   </dependency>
   <dependency>
     <groupId>gov.sandia.foundry</groupId>
     <artifactId>gov-sandia-cognition-text-core</artifactId>
-    <version>3.4.1</version>
+    <version>3.4.2</version>
   </dependency>
   <dependency>
     <groupId>gov.sandia.foundry</groupId>
     <artifactId>gov-sandia-cognition-framework-core</artifactId>
-    <version>3.4.1</version>
+    <version>3.4.2</version>
   </dependency>
   <dependency>
     <groupId>gov.sandia.foundry</groupId>
     <artifactId>gov-sandia-cognition-framework-learning</artifactId>
-    <version>3.4.1</version>
+    <version>3.4.2</version>
   </dependency>
 </dependencies>
 ```
@@ -57,12 +57,12 @@ Example Maven dependencies:
 Example Ivy dependencies
 ```xml
 <dependencies>
-    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-common-core"        rev="3.4.1"/>
-    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-common-data"        rev="3.4.1"/>
-    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-learning-core"      rev="3.4.1"/>
-    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-text-core"          rev="3.4.1"/>
-    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-framework-core"     rev="3.4.1"/>
-    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-framework-learning" rev="3.4.1"/>
+    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-common-core"        rev="3.4.2"/>
+    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-common-data"        rev="3.4.2"/>
+    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-learning-core"      rev="3.4.2"/>
+    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-text-core"          rev="3.4.2"/>
+    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-framework-core"     rev="3.4.2"/>
+    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-framework-learning" rev="3.4.2"/>
 </dependencies>
 ```
 
