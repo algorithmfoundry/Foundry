@@ -648,6 +648,7 @@ public class SparseMatrix
         // decompressed rows.
         int rowNum = 0;
         SparseVector row = new SparseVector(other.row(rowNum));
+        row.scaleEquals(scaleFactor);
         for (int i = 0; i < vals.length; ++i)
         {
             while (i >= firstIdxsForRows[rowNum + 1])
