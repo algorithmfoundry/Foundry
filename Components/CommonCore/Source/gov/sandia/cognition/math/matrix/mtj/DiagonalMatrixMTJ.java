@@ -100,11 +100,7 @@ public class DiagonalMatrixMTJ
     public AbstractMTJMatrix times(
         AbstractMTJMatrix matrix )
     {
-        if( !this.checkMultiplicationDimensions( matrix ) )
-        {
-            throw new IllegalArgumentException(
-                "Number of columns of this != number of rows of matrix" );
-        }
+        this.assertMultiplicationDimensions(matrix);
         
         final int M = this.getNumRows();
         final int N = matrix.getNumColumns();
