@@ -594,7 +594,7 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    void scaledPlusEquals(SparseMatrix other,
+    public void scaledPlusEquals(SparseMatrix other,
         double scaleFactor)
     {
         this.assertSameDimensions(other);
@@ -632,7 +632,7 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    void scaledPlusEquals(DenseMatrix other,
+    public void scaledPlusEquals(DenseMatrix other,
         double scaleFactor)
     {
         this.assertSameDimensions(other);
@@ -688,7 +688,7 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    void scaledPlusEquals(DiagonalMatrix other,
+    public void scaledPlusEquals(DiagonalMatrix other,
         double scaleFactor)
     {
         this.assertSameDimensions(other);
@@ -722,7 +722,7 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final void plusEquals(SparseMatrix other)
+    public final void plusEquals(SparseMatrix other)
     {
         this.assertSameDimensions(other);
         if (!isCompressed())
@@ -758,7 +758,7 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final void plusEquals(DenseMatrix other)
+    public final void plusEquals(DenseMatrix other)
     {
         this.assertSameDimensions(other);
         
@@ -917,7 +917,7 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final void plusEquals(DiagonalMatrix other)
+    public final void plusEquals(DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
         if (!isCompressed())
@@ -950,7 +950,7 @@ public class SparseMatrix
      * NOTE: Upon completion this and other are in the compressed Yale format.
      */
     @Override
-    final void minusEquals(SparseMatrix other)
+    public final void minusEquals(SparseMatrix other)
     {
         this.assertSameDimensions(other);
         if (!isCompressed())
@@ -987,7 +987,7 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final void minusEquals(DenseMatrix other)
+    public final void minusEquals(DenseMatrix other)
     {
         this.assertSameDimensions(other);
         
@@ -1040,7 +1040,7 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final void minusEquals(DiagonalMatrix other)
+    public final void minusEquals(DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
         
@@ -1074,7 +1074,7 @@ public class SparseMatrix
      * NOTE: Upon completion this and other are in the compressed Yale format.
      */
     @Override
-    final void dotTimesEquals(SparseMatrix other)
+    public final void dotTimesEquals(SparseMatrix other)
     {
         this.assertSameDimensions(other);
         
@@ -1149,7 +1149,7 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final void dotTimesEquals(DenseMatrix other)
+    public final void dotTimesEquals(DenseMatrix other)
     {
         this.assertSameDimensions(other);
         if (!isCompressed())
@@ -1176,7 +1176,7 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final void dotTimesEquals(DiagonalMatrix other)
+    public final void dotTimesEquals(DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
         if (!isCompressed())
@@ -1230,7 +1230,7 @@ public class SparseMatrix
      * NOTE: Upon completion this and other are in the compressed Yale format.
      */
     @Override
-    final Matrix times(SparseMatrix other)
+    public final Matrix times(SparseMatrix other)
     {
         this.assertMultiplicationDimensions(other);
         if (!isCompressed())
@@ -1274,7 +1274,7 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final Matrix times(DenseMatrix other)
+    public final Matrix times(DenseMatrix other)
     {
         this.assertMultiplicationDimensions(other);
         if (!isCompressed())
@@ -1306,7 +1306,7 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final Matrix times(DiagonalMatrix other)
+    public final Matrix times(DiagonalMatrix other)
     {
         this.assertMultiplicationDimensions(other);
         if (!isCompressed())
@@ -1337,7 +1337,7 @@ public class SparseMatrix
      * @return The sparse matrix (compressed Yale format) resulting from
      * multiplying other * this.
      */
-    final Matrix preTimes(DiagonalMatrix other)
+    public final Matrix preTimes(DiagonalMatrix other)
     {
         other.assertMultiplicationDimensions(this);
         if (!isCompressed())
@@ -1370,7 +1370,7 @@ public class SparseMatrix
      */
     @Override
     // Not final because this method is overridden by the Parallel implementation
-    Vector times(SparseVector vector)
+    public Vector times(SparseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumColumns());
         if (!isCompressed())
@@ -1428,7 +1428,7 @@ public class SparseMatrix
      */
     @Override
     // Not final because this method is overridden by the Parallel implementation
-    Vector times(DenseVector vector)
+    public Vector times(DenseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumColumns());
         if (!isCompressed())
@@ -2376,7 +2376,7 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final Vector preTimes(SparseVector vector)
+    public final Vector preTimes(SparseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumRows());
         if (!isCompressed())
@@ -2405,7 +2405,7 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final Vector preTimes(DenseVector vector)
+    public final Vector preTimes(DenseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumRows());
         if (!isCompressed())

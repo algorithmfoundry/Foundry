@@ -375,7 +375,7 @@ public class SparseVector
      * memory inefficient.
      */
     @Override
-    void scaledPlusEquals(DenseVector other,
+    public void scaledPlusEquals(DenseVector other,
         double scaleFactor)
     {
         plusEqualsScaled(other, scaleFactor);
@@ -386,7 +386,7 @@ public class SparseVector
      * BaseVector#scaledPlusEquals(gov.sandia.cognition.math.matrix.optimized.SparseVector, double)
      */
     @Override
-    void scaledPlusEquals(SparseVector other,
+    public void scaledPlusEquals(SparseVector other,
         double scaleFactor)
     {
         plusEqualsScaled(other, scaleFactor);
@@ -401,7 +401,7 @@ public class SparseVector
      * memory inefficient.
      */
     @Override
-    final void plusEquals(DenseVector other)
+    public final void plusEquals(DenseVector other)
     {
         plusEqualsScaled(other, 1);
     }
@@ -411,7 +411,7 @@ public class SparseVector
      * BaseVector#plusEquals(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      */
     @Override
-    final void plusEquals(SparseVector other)
+    public final void plusEquals(SparseVector other)
     {
         plusEqualsScaled(other, 1);
     }
@@ -425,7 +425,7 @@ public class SparseVector
      * memory inefficient.
      */
     @Override
-    final void minusEquals(DenseVector other)
+    public final void minusEquals(DenseVector other)
     {
         plusEqualsScaled(other, -1);
     }
@@ -435,7 +435,7 @@ public class SparseVector
      * BaseVector#plusEquals(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      */
     @Override
-    final void minusEquals(SparseVector other)
+    public final void minusEquals(SparseVector other)
     {
         plusEqualsScaled(other, -1);
     }
@@ -445,7 +445,7 @@ public class SparseVector
      * BaseVector#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DenseVector)
      */
     @Override
-    final void dotTimesEquals(DenseVector other)
+    public final void dotTimesEquals(DenseVector other)
     {
         this.assertSameDimensionality(other);
         compress();
@@ -460,7 +460,7 @@ public class SparseVector
      * BaseVector#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      */
     @Override
-    final void dotTimesEquals(SparseVector other)
+    public final void dotTimesEquals(SparseVector other)
     {
         this.assertSameDimensionality(other);
         compress();
@@ -494,7 +494,7 @@ public class SparseVector
      * BaseVector#euclideanDistanceSquared(gov.sandia.cognition.math.matrix.optimized.DenseVector)
      */
     @Override
-    final double euclideanDistanceSquared(DenseVector other)
+    public final double euclideanDistanceSquared(DenseVector other)
     {
         this.assertSameDimensionality(other);
         compress();
@@ -519,7 +519,7 @@ public class SparseVector
      * BaseVector#euclideanDistanceSquared(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      */
     @Override
-    final double euclideanDistanceSquared(SparseVector other)
+    public final double euclideanDistanceSquared(SparseVector other)
     {
         this.assertSameDimensionality(other);
         compress();
@@ -568,7 +568,7 @@ public class SparseVector
      * BaseVector#outerProduct(gov.sandia.cognition.math.matrix.optimized.DenseVector)
      */
     @Override
-    final Matrix outerProduct(DenseVector other)
+    public final Matrix outerProduct(DenseVector other)
     {
         compress();
         int numRows = getDimensionality();
@@ -603,7 +603,7 @@ public class SparseVector
      * BaseVector#outerProduct(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      */
     @Override
-    final Matrix outerProduct(SparseVector other)
+    public final Matrix outerProduct(SparseVector other)
     {
         compress();
         other.compress();
@@ -634,7 +634,7 @@ public class SparseVector
      * BaseVector#stack(gov.sandia.cognition.math.matrix.optimized.DenseVector)
      */
     @Override
-    final Vector stack(DenseVector other)
+    public final Vector stack(DenseVector other)
     {
         compress();
         Vector ret;
@@ -678,7 +678,7 @@ public class SparseVector
      * BaseVector#stack(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      */
     @Override
-    final Vector stack(SparseVector other)
+    public final Vector stack(SparseVector other)
     {
         compress();
         other.compress();
@@ -709,7 +709,7 @@ public class SparseVector
      * BaseVector#dotProduct(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      */
     @Override
-    final double dotProduct(SparseVector other)
+    public final double dotProduct(SparseVector other)
     {
         this.assertSameDimensionality(other);
         compress();
@@ -741,7 +741,7 @@ public class SparseVector
      * BaseVector#dotProduct(gov.sandia.cognition.math.matrix.optimized.DenseVector)
      */
     @Override
-    final double dotProduct(DenseVector other)
+    public final double dotProduct(DenseVector other)
     {
         this.assertSameDimensionality(other);
         compress();

@@ -64,7 +64,7 @@ abstract class BaseVector
      *
      * @param other A dense vector to add to this
      */
-    abstract void plusEquals(DenseVector other);
+    public abstract void plusEquals(DenseVector other);
 
     /**
      * Type-specific version of plusEquals for combining whatever type this is
@@ -72,7 +72,7 @@ abstract class BaseVector
      *
      * @param other A sparse vector to add to this
      */
-    abstract void plusEquals(SparseVector other);
+    public abstract void plusEquals(SparseVector other);
 
     /**
      * @see Vector#scaledPlusEquals(gov.sandia.cognition.math.Vector)
@@ -106,7 +106,7 @@ abstract class BaseVector
      * @param other A dense vector to add to this
      * @param scaleFactor The scalar to multiply other by
      */
-    abstract void scaledPlusEquals(DenseVector other,
+    public abstract void scaledPlusEquals(DenseVector other,
         double scaleFactor);
 
     /**
@@ -116,7 +116,7 @@ abstract class BaseVector
      * @param other A sparse vector to add to this
      * @param scaleFactor The scalar to multiply other by
      */
-    abstract void scaledPlusEquals(SparseVector other,
+    public abstract void scaledPlusEquals(SparseVector other,
         double scaleFactor);
 
     /**
@@ -149,7 +149,7 @@ abstract class BaseVector
      *
      * @param other A dense vector to subtract from this
      */
-    abstract void minusEquals(DenseVector other);
+    public abstract void minusEquals(DenseVector other);
 
     /**
      * Type-specific version of minusEquals for combining whatever type this is
@@ -157,7 +157,7 @@ abstract class BaseVector
      *
      * @param other A sparse vector to subtract from this
      */
-    abstract void minusEquals(SparseVector other);
+    public abstract void minusEquals(SparseVector other);
 
     /**
      * @see Vector#dotTimesEquals(gov.sandia.cognition.math.Vector)
@@ -189,7 +189,7 @@ abstract class BaseVector
      *
      * @param other A dense vector to dot with this
      */
-    abstract void dotTimesEquals(DenseVector other);
+    public abstract void dotTimesEquals(DenseVector other);
 
     /**
      * Type-specific version of dotTimesEquals for combining whatever type this
@@ -197,7 +197,7 @@ abstract class BaseVector
      *
      * @param other A sparse vector to dot with this
      */
-    abstract void dotTimesEquals(SparseVector other);
+    public abstract void dotTimesEquals(SparseVector other);
 
     /**
      * @see Vector#euclideanDistance(gov.sandia.cognition.math.matrix.Vector)
@@ -230,7 +230,7 @@ abstract class BaseVector
      * @param other A dense vector to calculate the distance from this
      * @return the Euclidean distance (L2 norm) between the two vectors
      */
-    abstract double euclideanDistanceSquared(DenseVector other);
+    public abstract double euclideanDistanceSquared(DenseVector other);
 
     /**
      * Type-specific version of euclideanDistanceSquared for combining whatever
@@ -239,7 +239,7 @@ abstract class BaseVector
      * @param other A sparse vector to calculate the distance from this
      * @return the Euclidean distance (L2 norm) between the two vectors
      */
-    abstract double euclideanDistanceSquared(SparseVector other);
+    public abstract double euclideanDistanceSquared(SparseVector other);
 
     /**
      * @see Vector#outerProduct(gov.sandia.cognition.math.matrix.Vector)
@@ -270,7 +270,7 @@ abstract class BaseVector
      * @param other A dense vector to "outer product" with this
      * @return the outer product (this.transpose().times(other))
      */
-    abstract Matrix outerProduct(DenseVector other);
+    public abstract Matrix outerProduct(DenseVector other);
 
     /**
      * Type-specific version of outerProduct for combining whatever type this is
@@ -279,7 +279,7 @@ abstract class BaseVector
      * @param other A sparse vector to "outer product" with this
      * @return the outer product (this.transpose().times(other))
      */
-    abstract Matrix outerProduct(SparseVector other);
+    public abstract Matrix outerProduct(SparseVector other);
 
     /**
      * @see Vector#times(gov.sandia.cognition.math.matrix.Matrix)
@@ -328,7 +328,7 @@ abstract class BaseVector
      * @param other A dense vector to stack below this
      * @return the vector resulting from stacking this above other
      */
-    abstract Vector stack(DenseVector other);
+    public abstract Vector stack(DenseVector other);
 
     /**
      * Type-specific version of stack for combining whatever type this is with
@@ -337,7 +337,7 @@ abstract class BaseVector
      * @param other A sparse vector to stack below this
      * @return the vector resulting from stacking this above other
      */
-    abstract Vector stack(SparseVector other);
+    public abstract Vector stack(SparseVector other);
 
     /**
      * @see Vector#dotProduct(gov.sandia.cognition.math.matrix.Vector)
@@ -370,7 +370,7 @@ abstract class BaseVector
      * @param other A sparse vector to dot with this
      * @return the dot product of this with other
      */
-    abstract double dotProduct(SparseVector other);
+    public abstract double dotProduct(SparseVector other);
 
     /**
      * Type-specific version dotProduct for combining whatever type this is with
@@ -379,6 +379,6 @@ abstract class BaseVector
      * @param other A dense vector to dot with this
      * @return the dot product of this with other
      */
-    abstract double dotProduct(DenseVector other);
+    public abstract double dotProduct(DenseVector other);
 
 }

@@ -11,9 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.github.fommil.netlib.BLAS;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
-import gov.sandia.cognition.util.ObjectUtil;
 import org.netlib.util.intW;
-//import org.netlib.util.intW;
 
 /**
  * A dense matrix implementation. Wherever possible, computation is pushed into
@@ -387,7 +385,7 @@ public class DenseMatrix
     }
 
     @Override
-    void scaledPlusEquals(SparseMatrix other, double scaleFactor)
+    public void scaledPlusEquals(SparseMatrix other, double scaleFactor)
     {
         this.assertSameDimensions(other);
         if (!other.isCompressed())
@@ -410,7 +408,7 @@ public class DenseMatrix
     }
 
     @Override
-    void scaledPlusEquals(DenseMatrix other, double scaleFactor)
+    public void scaledPlusEquals(DenseMatrix other, double scaleFactor)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
@@ -423,7 +421,7 @@ public class DenseMatrix
     }
 
     @Override
-    void scaledPlusEquals(DiagonalMatrix other, double scaleFactor)
+    public void scaledPlusEquals(DiagonalMatrix other, double scaleFactor)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
@@ -437,7 +435,7 @@ public class DenseMatrix
      * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      */
     @Override
-    final void plusEquals(SparseMatrix other)
+    public final void plusEquals(SparseMatrix other)
     {
         this.assertSameDimensions(other);
         if (!other.isCompressed())
@@ -464,7 +462,7 @@ public class DenseMatrix
      * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      */
     @Override
-    final void plusEquals(DenseMatrix other)
+    public final void plusEquals(DenseMatrix other)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
@@ -481,7 +479,7 @@ public class DenseMatrix
      * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      */
     @Override
-    final void plusEquals(DiagonalMatrix other)
+    public final void plusEquals(DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
@@ -495,7 +493,7 @@ public class DenseMatrix
      * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      */
     @Override
-    final void minusEquals(SparseMatrix other)
+    public final void minusEquals(SparseMatrix other)
     {
         this.assertSameDimensions(other);
         if (!other.isCompressed())
@@ -522,7 +520,7 @@ public class DenseMatrix
      * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      */
     @Override
-    final void minusEquals(DenseMatrix other)
+    public final void minusEquals(DenseMatrix other)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
@@ -539,7 +537,7 @@ public class DenseMatrix
      * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      */
     @Override
-    final void minusEquals(DiagonalMatrix other)
+    public final void minusEquals(DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
@@ -556,7 +554,7 @@ public class DenseMatrix
      * sparse matrix in a dense representation.
      */
     @Override
-    final void dotTimesEquals(SparseMatrix other)
+    public final void dotTimesEquals(SparseMatrix other)
     {
         this.assertSameDimensions(other);
         if (!other.isCompressed())
@@ -592,7 +590,7 @@ public class DenseMatrix
      * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      */
     @Override
-    final void dotTimesEquals(DenseMatrix other)
+    public final void dotTimesEquals(DenseMatrix other)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
@@ -612,7 +610,7 @@ public class DenseMatrix
      * a diagonal matrix in a dense representation.
      */
     @Override
-    final void dotTimesEquals(DiagonalMatrix other)
+    public final void dotTimesEquals(DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
@@ -636,7 +634,7 @@ public class DenseMatrix
      * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      */
     @Override
-    final Matrix times(SparseMatrix other)
+    public final Matrix times(SparseMatrix other)
     {
         this.assertMultiplicationDimensions(other);
         if (!other.isCompressed())
@@ -657,7 +655,7 @@ public class DenseMatrix
      * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      */
     @Override
-    final Matrix times(DenseMatrix other)
+    public final Matrix times(DenseMatrix other)
     {
         this.assertMultiplicationDimensions(other);
         // TODO: Make sure this BLAS is truly faster than slow version
@@ -682,7 +680,7 @@ public class DenseMatrix
      * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      */
     @Override
-    final Matrix times(DiagonalMatrix other)
+    public final Matrix times(DiagonalMatrix other)
     {
         this.assertMultiplicationDimensions(other);
         DenseMatrix ret = new DenseMatrix(getNumRows(), getNumColumns(), true);
@@ -718,7 +716,7 @@ public class DenseMatrix
      * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      */
     @Override
-    final Vector times(SparseVector vector)
+    public final Vector times(SparseVector vector)
     {
         // It's the same for sparse and dense vectors (the difference is handled
         // in the vector's dotProduct code
@@ -730,7 +728,7 @@ public class DenseMatrix
      * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseVector)
      */
     @Override
-    final Vector times(DenseVector vector)
+    public final Vector times(DenseVector vector)
     {
         // It's the same for sparse and dense vectors (the difference is handled
         // in the vector's dotProduct code
@@ -741,7 +739,7 @@ public class DenseMatrix
      * @see BaseMatrix#scaleEquals(double)
      */
     @Override
-    final public void scaleEquals(double scaleFactor)
+    public final void scaleEquals(double scaleFactor)
     {
         for (int i = 0; i < getNumRows(); ++i)
         {
@@ -1683,7 +1681,7 @@ public class DenseMatrix
      * BaseMatrix#preTimes(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      */
     @Override
-    final Vector preTimes(SparseVector vector)
+    public final Vector preTimes(SparseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumRows());
         DenseVector ret = new DenseVector(getNumColumns(), true);
@@ -1708,7 +1706,7 @@ public class DenseMatrix
      * BaseMatrix#preTimes(gov.sandia.cognition.math.matrix.optimized.DenseVector)
      */
     @Override
-    final Vector preTimes(DenseVector vector)
+    public final Vector preTimes(DenseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumRows());
         DenseVector ret = new DenseVector(getNumColumns(), true);

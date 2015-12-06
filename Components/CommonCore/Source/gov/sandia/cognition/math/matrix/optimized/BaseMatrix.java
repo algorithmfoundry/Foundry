@@ -201,7 +201,7 @@ abstract class BaseMatrix
      *
      * @param other A sparse matrix to add to this
      */
-    abstract void plusEquals(SparseMatrix other);
+    public abstract void plusEquals(SparseMatrix other);
 
     /**
      * Type-specific version of plusEquals for combining whatever type this is
@@ -209,7 +209,7 @@ abstract class BaseMatrix
      *
      * @param other A dense matrix to add to this
      */
-    abstract void plusEquals(DenseMatrix other);
+    public abstract void plusEquals(DenseMatrix other);
 
     /**
      * Type-specific version of plusEquals for combining whatever type this is
@@ -217,7 +217,7 @@ abstract class BaseMatrix
      *
      * @param other A diagonal matrix to add to this
      */
-    abstract void plusEquals(DiagonalMatrix other);
+    public abstract void plusEquals(DiagonalMatrix other);
 
     /**
      * @see Matrix#scaledPlusEquals(double, gov.sandia.cognition.math.Ring)
@@ -258,7 +258,7 @@ abstract class BaseMatrix
      * @param other A sparse matrix to add to this
      * @param scaleFactor The amount to scale other by
      */
-    abstract void scaledPlusEquals(SparseMatrix other,
+    public abstract void scaledPlusEquals(SparseMatrix other,
         double scaleFactor);
 
     /**
@@ -268,7 +268,7 @@ abstract class BaseMatrix
      * @param other A dense matrix to add to this
      * @param scaleFactor The amount to scale other by
      */
-    abstract void scaledPlusEquals(DenseMatrix other,
+    public abstract void scaledPlusEquals(DenseMatrix other,
         double scaleFactor);
 
     /**
@@ -278,7 +278,7 @@ abstract class BaseMatrix
      * @param other A diagonal matrix to add to this
      * @param scaleFactor The amount to scale other by
      */
-    abstract void scaledPlusEquals(DiagonalMatrix other,
+    public abstract void scaledPlusEquals(DiagonalMatrix other,
         double scaleFactor);
 
     /**
@@ -318,7 +318,7 @@ abstract class BaseMatrix
      *
      * @param other A sparse matrix to subtract from this
      */
-    abstract void minusEquals(SparseMatrix other);
+    public abstract void minusEquals(SparseMatrix other);
 
     /**
      * Type-specific version of minusEquals for combining whatever type this is
@@ -326,7 +326,7 @@ abstract class BaseMatrix
      *
      * @param other A dense matrix to subtract from this
      */
-    abstract void minusEquals(DenseMatrix other);
+    public abstract void minusEquals(DenseMatrix other);
 
     /**
      * Type-specific version of minusEquals for combining whatever type this is
@@ -334,7 +334,7 @@ abstract class BaseMatrix
      *
      * @param other A diagonal matrix to subtract from this
      */
-    abstract void minusEquals(DiagonalMatrix other);
+    public abstract void minusEquals(DiagonalMatrix other);
 
     /**
      * @see AbstractMatrix#dotTimesEquals(gov.sandia.cognition.math.Ring)
@@ -373,7 +373,7 @@ abstract class BaseMatrix
      *
      * @param other A sparse matrix to dot with this
      */
-    abstract void dotTimesEquals(SparseMatrix other);
+    public abstract void dotTimesEquals(SparseMatrix other);
 
     /**
      * Type-specific version of dotTimesEquals for combining whatever type this
@@ -381,7 +381,7 @@ abstract class BaseMatrix
      *
      * @param other A dense matrix to dot with this
      */
-    abstract void dotTimesEquals(DenseMatrix other);
+    public abstract void dotTimesEquals(DenseMatrix other);
 
     /**
      * Type-specific version of dotTimesEquals for combining whatever type this
@@ -389,7 +389,7 @@ abstract class BaseMatrix
      *
      * @param other A diagonal matrix to dot with this
      */
-    abstract void dotTimesEquals(DiagonalMatrix other);
+    public abstract void dotTimesEquals(DiagonalMatrix other);
 
     /**
      * @see AbstractMatrix#times(gov.sandia.cognition.math.Ring)
@@ -428,7 +428,7 @@ abstract class BaseMatrix
      *
      * @param other A sparse matrix to multiply with this
      */
-    abstract Matrix times(SparseMatrix other);
+    public abstract Matrix times(SparseMatrix other);
 
     /**
      * Type-specific version of times for combining whatever type this is with
@@ -436,7 +436,7 @@ abstract class BaseMatrix
      *
      * @param other A dense matrix to multiply with this
      */
-    abstract Matrix times(DenseMatrix other);
+    public abstract Matrix times(DenseMatrix other);
 
     /**
      * Type-specific version of times for combining whatever type this is with
@@ -444,7 +444,7 @@ abstract class BaseMatrix
      *
      * @param other A diagonal matrix to multiply with this
      */
-    abstract Matrix times(DiagonalMatrix other);
+    public abstract Matrix times(DiagonalMatrix other);
 
     /**
      * @see AbstractMatrix#times(gov.sandia.cognition.math.Vector)
@@ -479,7 +479,7 @@ abstract class BaseMatrix
      *
      * @param vector A sparse vector to multiply with this
      */
-    abstract Vector times(SparseVector vector);
+    public abstract Vector times(SparseVector vector);
 
     /**
      * Type-specific version of times for combining whatever type this is with
@@ -487,7 +487,7 @@ abstract class BaseMatrix
      *
      * @param vector A dense vector to multiply with this
      */
-    abstract Vector times(DenseVector vector);
+    public abstract Vector times(DenseVector vector);
 
     /**
      * Package-private method that puts the vector * matrix code in the matrix
@@ -501,7 +501,7 @@ abstract class BaseMatrix
      * @throws TypeConstraintException if the input vector's type doesn't match
      * an implementation within this package.
      */
-    final Vector preTimes(Vector vector)
+    public final Vector preTimes(Vector vector)
     {
         if (vector instanceof DenseVector)
         {
@@ -513,6 +513,7 @@ abstract class BaseMatrix
         }
         else
         {
+// TODO: Remove the need for this. Maybe promote it to the abstract class.
             throw new TypeConstraintException("Input Vector class "
                 + vector.getClass() + " not supported");
         }
@@ -524,7 +525,7 @@ abstract class BaseMatrix
      *
      * @param vector A sparse vector to multiply with this
      */
-    abstract Vector preTimes(SparseVector vector);
+    public abstract Vector preTimes(SparseVector vector);
 
     /**
      * Type-specific version of pre-times for combining whatever type this is
@@ -532,7 +533,7 @@ abstract class BaseMatrix
      *
      * @param vector A dense vector to multiply with this
      */
-    abstract Vector preTimes(DenseVector vector);
+    public abstract Vector preTimes(DenseVector vector);
 
     /**
      * Helper method checks that the input submatrix range is acceptable for

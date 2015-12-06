@@ -128,7 +128,7 @@ public class DiagonalMatrix
      * elements as that would make this a non-diagonal matrix
      */
     @Override
-    void scaledPlusEquals(SparseMatrix other,
+    public void scaledPlusEquals(SparseMatrix other,
         double scaleFactor)
     {
         this.assertSameDimensions(other);
@@ -167,7 +167,7 @@ public class DiagonalMatrix
      * elements as that would make this a non-diagonal matrix
      */
     @Override
-    void scaledPlusEquals(DenseMatrix other,
+    public void scaledPlusEquals(DenseMatrix other,
         double scaleFactor)
     {
         this.assertSameDimensions(other);
@@ -197,7 +197,7 @@ public class DiagonalMatrix
      * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      */
     @Override
-    void scaledPlusEquals(DiagonalMatrix other,
+    public void scaledPlusEquals(DiagonalMatrix other,
         double scaleFactor)
     {
         this.assertSameDimensions(other);
@@ -214,7 +214,7 @@ public class DiagonalMatrix
      * elements as that would make this a non-diagonal matrix
      */
     @Override
-    final void plusEquals(SparseMatrix other)
+    public final void plusEquals(SparseMatrix other)
     {
         this.assertSameDimensions(other);
         
@@ -252,7 +252,7 @@ public class DiagonalMatrix
      * elements as that would make this a non-diagonal matrix
      */
     @Override
-    final void plusEquals(DenseMatrix other)
+    public final void plusEquals(DenseMatrix other)
     {
         this.assertSameDimensions(other);
         
@@ -281,7 +281,7 @@ public class DiagonalMatrix
      * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      */
     @Override
-    final void plusEquals(DiagonalMatrix other)
+    public final void plusEquals(DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < diag.length; ++i)
@@ -297,7 +297,7 @@ public class DiagonalMatrix
      * elements as that would make this a non-diagonal matrix
      */
     @Override
-    final void minusEquals(SparseMatrix other)
+    public final void minusEquals(SparseMatrix other)
     {
         this.assertSameDimensions(other);
         
@@ -335,7 +335,7 @@ public class DiagonalMatrix
      * elements as that would make this a non-diagonal matrix
      */
     @Override
-    final void minusEquals(DenseMatrix other)
+    public final void minusEquals(DenseMatrix other)
     {
         this.assertSameDimensions(other);
         
@@ -364,7 +364,7 @@ public class DiagonalMatrix
      * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      */
     @Override
-    final void minusEquals(DiagonalMatrix other)
+    public final void minusEquals(DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < diag.length; ++i)
@@ -378,7 +378,7 @@ public class DiagonalMatrix
      * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      */
     @Override
-    final void dotTimesEquals(SparseMatrix other)
+    public final void dotTimesEquals(SparseMatrix other)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < diag.length; ++i)
@@ -392,7 +392,7 @@ public class DiagonalMatrix
      * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      */
     @Override
-    final void dotTimesEquals(DenseMatrix other)
+    public final void dotTimesEquals(DenseMatrix other)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < diag.length; ++i)
@@ -406,7 +406,7 @@ public class DiagonalMatrix
      * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      */
     @Override
-    final void dotTimesEquals(DiagonalMatrix other)
+    public final void dotTimesEquals(DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < diag.length; ++i)
@@ -420,7 +420,7 @@ public class DiagonalMatrix
      * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      */
     @Override
-    final Matrix times(SparseMatrix other)
+    public final Matrix times(SparseMatrix other)
     {
         return other.preTimes(this);
     }
@@ -430,7 +430,7 @@ public class DiagonalMatrix
      * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      */
     @Override
-    final Matrix times(DenseMatrix other)
+    public final Matrix times(DenseMatrix other)
     {
         this.assertMultiplicationDimensions(other);
         DenseMatrix ret = new DenseMatrix(diag.length, other.getNumColumns(),
@@ -448,7 +448,7 @@ public class DiagonalMatrix
      * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      */
     @Override
-    final Matrix times(DiagonalMatrix other)
+    public final Matrix times(DiagonalMatrix other)
     {
         this.assertMultiplicationDimensions(other);
         DiagonalMatrix ret = new DiagonalMatrix(this);
@@ -465,7 +465,7 @@ public class DiagonalMatrix
      * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      */
     @Override
-    final Vector times(SparseVector vector)
+    public final Vector times(SparseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumColumns());
         SparseVector ret = new SparseVector(diag.length);
@@ -484,7 +484,7 @@ public class DiagonalMatrix
      * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseVector)
      */
     @Override
-    final Vector times(DenseVector vector)
+    public final Vector times(DenseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumColumns());
         DenseVector ret = new DenseVector(diag.length, true);
@@ -966,7 +966,7 @@ public class DiagonalMatrix
      * BaseMatrix#preTimes(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      */
     @Override
-    final Vector preTimes(SparseVector vector)
+    public final Vector preTimes(SparseVector vector)
     {
         // Only true for diagonal (and symmetric) matrices: pre-mult vector is the same as post-mult
         // vector
@@ -978,7 +978,7 @@ public class DiagonalMatrix
      * BaseMatrix#preTimes(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      */
     @Override
-    final Vector preTimes(DenseVector vector)
+    public final Vector preTimes(DenseVector vector)
     {
         // Only true for diagonal (and symmetric) matrices: pre-mult vector is the same as post-mult
         // vector

@@ -176,7 +176,7 @@ public class ParallelSparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    Vector times(SparseVector vector)
+    public Vector times(SparseVector vector)
     {
         if (!isCompressed())
         {
@@ -270,7 +270,7 @@ public class ParallelSparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    Vector times(DenseVector vector)
+    public Vector times(DenseVector vector)
     {
         if (!isCompressed())
         {
