@@ -113,14 +113,14 @@ public class DenseMatrix
 
     /**
      * Package private optimized constructor that does not set any values for
-     * the rows. If the package private _setRow (or equivalent) is not called
+     * the rows. If the package private setRowInternal (or equivalent) is not called
      * for all rows, this sets up for weird null pointer exceptions later. Also,
      * please note that the numCols parameter isn't used here and you can pass
-     * in rows with a different number of columns, but that would be _such_ bad
+     * in rows with a different number of columns, but that would be -such- bad
      * form.
      *
      * This is an optimized constructor for within package only. Don't call this
-     * unless you are _super_ careful.
+     * unless you are -super- careful.
      *
      * @param numRows The number of rows for this
      * @param numCols The number of columns for this
@@ -249,12 +249,12 @@ public class DenseMatrix
      * @return A new DenseMatrix with the specified size and elements stored in
      * d (column major order)
      */
-    static DenseMatrix fromBlas(double d[],
+    static DenseMatrix createFromBlas(double d[],
         int numRows,
         int numCols)
     {
         DenseMatrix ret = new DenseMatrix(numRows, numCols);
-        ret._fromBlas(d, numRows, numCols);
+        ret.fromBlas(d, numRows, numCols);
 
         return ret;
     }
@@ -270,7 +270,7 @@ public class DenseMatrix
      * this's dimensions (that's why this is a private method -- it should only
      * be called by people who know what they're doing).
      */
-    private void _fromBlas(double d[],
+    private void fromBlas(double d[],
         int numRows,
         int numCols)
     {
@@ -387,8 +387,9 @@ public class DenseMatrix
     }
 
     @Override
-    void _scaledPlusEquals(SparseMatrix other, double scaleFactor)
+    void scaledPlusEquals(SparseMatrix other, double scaleFactor)
     {
+        this.assertSameDimensions(other);
         if (!other.isCompressed())
         {
             other.compress();
@@ -409,8 +410,9 @@ public class DenseMatrix
     }
 
     @Override
-    void _scaledPlusEquals(DenseMatrix other, double scaleFactor)
+    void scaledPlusEquals(DenseMatrix other, double scaleFactor)
     {
+        this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
         {
             for (int j = 0; j < getNumColumns(); ++j)
@@ -421,8 +423,9 @@ public class DenseMatrix
     }
 
     @Override
-    void _scaledPlusEquals(DiagonalMatrix other, double scaleFactor)
+    void scaledPlusEquals(DiagonalMatrix other, double scaleFactor)
     {
+        this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
         {
             rows[i].elements()[i] += other.getElement(i, i) * scaleFactor;
@@ -431,11 +434,12 @@ public class DenseMatrix
 
     /**
      * @see
-     * BaseMatrix#_plusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      */
     @Override
-    final void _plusEquals(SparseMatrix other)
+    final void plusEquals(SparseMatrix other)
     {
+        this.assertSameDimensions(other);
         if (!other.isCompressed())
         {
             other.compress();
@@ -457,11 +461,12 @@ public class DenseMatrix
 
     /**
      * @see
-     * BaseMatrix#_plusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      */
     @Override
-    final void _plusEquals(DenseMatrix other)
+    final void plusEquals(DenseMatrix other)
     {
+        this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
         {
             for (int j = 0; j < getNumColumns(); ++j)
@@ -473,11 +478,12 @@ public class DenseMatrix
 
     /**
      * @see
-     * BaseMatrix#_plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      */
     @Override
-    final void _plusEquals(DiagonalMatrix other)
+    final void plusEquals(DiagonalMatrix other)
     {
+        this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
         {
             rows[i].elements()[i] += other.getElement(i, i);
@@ -486,11 +492,12 @@ public class DenseMatrix
 
     /**
      * @see
-     * BaseMatrix#_minusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      */
     @Override
-    final void _minusEquals(SparseMatrix other)
+    final void minusEquals(SparseMatrix other)
     {
+        this.assertSameDimensions(other);
         if (!other.isCompressed())
         {
             other.compress();
@@ -512,11 +519,12 @@ public class DenseMatrix
 
     /**
      * @see
-     * BaseMatrix#_minusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      */
     @Override
-    final void _minusEquals(DenseMatrix other)
+    final void minusEquals(DenseMatrix other)
     {
+        this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
         {
             for (int j = 0; j < getNumColumns(); ++j)
@@ -528,11 +536,12 @@ public class DenseMatrix
 
     /**
      * @see
-     * BaseMatrix#_minusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      */
     @Override
-    final void _minusEquals(DiagonalMatrix other)
+    final void minusEquals(DiagonalMatrix other)
     {
+        this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
         {
             rows[i].elements()[i] -= other.getElement(i, i);
@@ -541,14 +550,15 @@ public class DenseMatrix
 
     /**
      * @see
-     * BaseMatrix#_dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      *
      * NOTE: Calling this method is a bad idea because you end up storing a
      * sparse matrix in a dense representation.
      */
     @Override
-    final void _dotTimesEquals(SparseMatrix other)
+    final void dotTimesEquals(SparseMatrix other)
     {
+        this.assertSameDimensions(other);
         if (!other.isCompressed())
         {
             other.compress();
@@ -579,11 +589,12 @@ public class DenseMatrix
 
     /**
      * @see
-     * BaseMatrix#_dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      */
     @Override
-    final void _dotTimesEquals(DenseMatrix other)
+    final void dotTimesEquals(DenseMatrix other)
     {
+        this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
         {
             for (int j = 0; j < getNumColumns(); ++j)
@@ -595,14 +606,15 @@ public class DenseMatrix
 
     /**
      * @see
-     * BaseMatrix#_dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      *
      * NOTE: Calling this method is a really bad idea because you end up storing
      * a diagonal matrix in a dense representation.
      */
     @Override
-    final void _dotTimesEquals(DiagonalMatrix other)
+    final void dotTimesEquals(DiagonalMatrix other)
     {
+        this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
         {
             for (int j = 0; j < getNumColumns(); ++j)
@@ -621,11 +633,12 @@ public class DenseMatrix
 
     /**
      * @see
-     * BaseMatrix#_times(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      */
     @Override
-    final Matrix _times(SparseMatrix other)
+    final Matrix times(SparseMatrix other)
     {
+        this.assertMultiplicationDimensions(other);
         if (!other.isCompressed())
         {
             other.compress();
@@ -634,18 +647,19 @@ public class DenseMatrix
             true);
         for (int i = 0; i < getNumRows(); ++i)
         {
-            ret.setRow(i, (DenseVector) other._preTimes(rows[i]));
+            ret.setRow(i, (DenseVector) other.preTimes(rows[i]));
         }
         return ret;
     }
 
     /**
      * @see
-     * BaseMatrix#_times(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      */
     @Override
-    final Matrix _times(DenseMatrix other)
+    final Matrix times(DenseMatrix other)
     {
+        this.assertMultiplicationDimensions(other);
         // TODO: Make sure this BLAS is truly faster than slow version
         if (canUseBlasForMult(getNumRows(), getNumColumns(), other.getNumRows(),
             other.getNumColumns()))
@@ -655,7 +669,7 @@ public class DenseMatrix
                 other.getNumColumns(), getNumColumns(), 1.0, this.toBlas(),
                 getNumRows(), other.toBlas(), other.getNumRows(), 0.0, output,
                 getNumRows());
-            return fromBlas(output, getNumRows(), other.getNumColumns());
+            return createFromBlas(output, getNumRows(), other.getNumColumns());
         }
         else
         {
@@ -665,15 +679,16 @@ public class DenseMatrix
 
     /**
      * @see
-     * BaseMatrix#_times(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      */
     @Override
-    final Matrix _times(DiagonalMatrix other)
+    final Matrix times(DiagonalMatrix other)
     {
+        this.assertMultiplicationDimensions(other);
         DenseMatrix ret = new DenseMatrix(getNumRows(), getNumColumns(), true);
         for (int i = 0; i < getNumRows(); ++i)
         {
-            ret.setRow(i, (DenseVector) other._preTimes(rows[i]));
+            ret.setRow(i, (DenseVector) other.preTimes(rows[i]));
         }
 
         return ret;
@@ -686,8 +701,9 @@ public class DenseMatrix
      * @param vector The vector to multiply
      * @return The vector resulting from multiplying this * vector
      */
-    private Vector __times(Vector vector)
+    private Vector timesInternal(Vector vector)
     {
+        vector.assertDimensionalityEquals(this.getNumColumns());
         DenseVector ret = new DenseVector(getNumRows(), true);
         for (int i = 0; i < getNumRows(); ++i)
         {
@@ -699,30 +715,30 @@ public class DenseMatrix
 
     /**
      * @see
-     * BaseMatrix#_times(gov.sandia.cognition.math.matrix.optimized.SparseVector)
+     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      */
     @Override
-    final Vector _times(SparseVector vector)
+    final Vector times(SparseVector vector)
     {
         // It's the same for sparse and dense vectors (the difference is handled
         // in the vector's dotProduct code
-        return __times(vector);
+        return timesInternal(vector);
     }
 
     /**
      * @see
-     * BaseMatrix#_times(gov.sandia.cognition.math.matrix.optimized.DenseVector)
+     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseVector)
      */
     @Override
-    final Vector _times(DenseVector vector)
+    final Vector times(DenseVector vector)
     {
         // It's the same for sparse and dense vectors (the difference is handled
         // in the vector's dotProduct code
-        return __times(vector);
+        return timesInternal(vector);
     }
 
     /**
-     * @see BaseMatrix#_scaleEquals(double)
+     * @see BaseMatrix#scaleEquals(double)
      */
     @Override
     final public void scaleEquals(double scaleFactor)
@@ -800,7 +816,7 @@ public class DenseMatrix
     /**
      * @see BaseMatrix#getSubMatrix(int, int, int, int)
      *
-     * NOTE: This is _inclusive_ on both end points.
+     * NOTE: This is inclusive on both end points.
      */
     @Override
     final public Matrix getSubMatrix(int minRow,
@@ -1150,8 +1166,8 @@ public class DenseMatrix
         }
 
         // Pull out the values
-        ((DenseMatrix) ret.U)._fromBlas(u, ldu, ucol);
-        ((DenseMatrix) ret.V)._fromBlas(vt, ldvt, n);
+        ((DenseMatrix) ret.U).fromBlas(u, ldu, ucol);
+        ((DenseMatrix) ret.V).fromBlas(vt, ldvt, n);
         ret.V = ret.V.transpose();
         for (int i = 0; i < mindim; ++i)
         {
@@ -1446,20 +1462,20 @@ public class DenseMatrix
     }
 
     /**
-     * Solves Rx = Qtrans_b requiring that R be upper triangular and square.
+     * Solves Rx = QtransB requiring that R be upper triangular and square.
      * Solves by back-subsititution from the bottom-most corner of the
      * upper-triangular matrix.
      *
      * @param R The upper triangular right-side matrix
-     * @param Qtrans_b The Q-transformed right-side vector
-     * @return The x from Rx = Qtrans_b.
+     * @param QtransB The Q-transformed right-side vector
+     * @return The x from Rx = Qtrans * b.
      * @throws IllegalArgumentException if R is not square or if R is not
      * upper-triangular (has values below the diagonal).
      * @throws UnsupportedOperationException if any diagonal element of R is
      * zero (as it does not span the space).
      */
     private static Vector upperTriangularSolve(Matrix R,
-        Vector Qtrans_b)
+        Vector QtransB)
     {
         // This should be tested in the solve methods, this is here just to
         // make sure no one else calls this w/o checking
@@ -1495,7 +1511,7 @@ public class DenseMatrix
         for (int i = R.getNumColumns() - 1; i >= 0; --i)
         {
             // Start w/ the value in B
-            double v = Qtrans_b.getElement(i);
+            double v = QtransB.getElement(i);
 
             // Back substitute all solved parts in
             for (int j = i + 1; j < R.getNumColumns(); ++j)
@@ -1631,12 +1647,7 @@ public class DenseMatrix
     @Override
     final public void convertFromVector(Vector v)
     {
-        if (v.getDimensionality() != (getNumRows() * getNumColumns()))
-        {
-            throw new IllegalArgumentException("Dimensions do not match: "
-                + v.getDimensionality() + " != " + getNumRows() + " * "
-                + getNumColumns());
-        }
+        v.assertDimensionalityEquals(this.getNumRows() * this.getNumColumns());
 
         for (int i = 0; i < getNumRows(); ++i)
         {
@@ -1669,11 +1680,12 @@ public class DenseMatrix
 
     /**
      * @see
-     * BaseMatrix#_preTimes(gov.sandia.cognition.math.matrix.optimized.SparseVector)
+     * BaseMatrix#preTimes(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      */
     @Override
-    final Vector _preTimes(SparseVector vector)
+    final Vector preTimes(SparseVector vector)
     {
+        vector.assertDimensionalityEquals(this.getNumRows());
         DenseVector ret = new DenseVector(getNumColumns(), true);
         vector.compress();
         int[] locs = vector.getLocs();
@@ -1693,11 +1705,12 @@ public class DenseMatrix
 
     /**
      * @see
-     * BaseMatrix#_preTimes(gov.sandia.cognition.math.matrix.optimized.DenseVector)
+     * BaseMatrix#preTimes(gov.sandia.cognition.math.matrix.optimized.DenseVector)
      */
     @Override
-    final Vector _preTimes(DenseVector vector)
+    final Vector preTimes(DenseVector vector)
     {
+        vector.assertDimensionalityEquals(this.getNumRows());
         DenseVector ret = new DenseVector(getNumColumns(), true);
         for (int i = 0; i < getNumColumns(); ++i)
         {

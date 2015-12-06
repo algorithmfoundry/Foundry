@@ -3804,7 +3804,7 @@ public class MatrixCorrectnessTest
             m1.convertFromVector(v1);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3812,7 +3812,7 @@ public class MatrixCorrectnessTest
             m1.convertFromVector(v2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3820,7 +3820,7 @@ public class MatrixCorrectnessTest
             diag1.convertFromVector(v1);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3828,7 +3828,7 @@ public class MatrixCorrectnessTest
             diag1.convertFromVector(v2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3844,7 +3844,7 @@ public class MatrixCorrectnessTest
             s1.convertFromVector(v1);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3852,7 +3852,7 @@ public class MatrixCorrectnessTest
             s1.convertFromVector(v2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
 
@@ -3864,7 +3864,7 @@ public class MatrixCorrectnessTest
             m1.dotTimes(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3872,7 +3872,7 @@ public class MatrixCorrectnessTest
             m1.dotTimes(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3880,7 +3880,7 @@ public class MatrixCorrectnessTest
             m1.dotTimes(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3888,7 +3888,7 @@ public class MatrixCorrectnessTest
             diag1.dotTimes(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3896,7 +3896,7 @@ public class MatrixCorrectnessTest
             diag1.dotTimes(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3904,7 +3904,7 @@ public class MatrixCorrectnessTest
             diag1.dotTimes(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3912,7 +3912,7 @@ public class MatrixCorrectnessTest
             s1.dotTimes(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3920,7 +3920,7 @@ public class MatrixCorrectnessTest
             s1.dotTimes(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3928,7 +3928,7 @@ public class MatrixCorrectnessTest
             s1.dotTimes(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
 
@@ -3938,7 +3938,7 @@ public class MatrixCorrectnessTest
             m1.dotTimesEquals(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3946,7 +3946,7 @@ public class MatrixCorrectnessTest
             m1.dotTimesEquals(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3954,7 +3954,7 @@ public class MatrixCorrectnessTest
             m1.dotTimesEquals(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3962,7 +3962,7 @@ public class MatrixCorrectnessTest
             diag1.dotTimesEquals(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3970,7 +3970,7 @@ public class MatrixCorrectnessTest
             diag1.dotTimesEquals(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3978,7 +3978,7 @@ public class MatrixCorrectnessTest
             diag1.dotTimesEquals(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3986,7 +3986,7 @@ public class MatrixCorrectnessTest
             s1.dotTimesEquals(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -3994,7 +3994,7 @@ public class MatrixCorrectnessTest
             s1.dotTimesEquals(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4002,7 +4002,7 @@ public class MatrixCorrectnessTest
             s1.dotTimesEquals(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
 
@@ -4516,7 +4516,7 @@ public class MatrixCorrectnessTest
             m1.minus(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4524,7 +4524,7 @@ public class MatrixCorrectnessTest
             m1.minus(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4532,7 +4532,7 @@ public class MatrixCorrectnessTest
             m1.minus(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4540,7 +4540,7 @@ public class MatrixCorrectnessTest
             diag1.minus(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4548,7 +4548,7 @@ public class MatrixCorrectnessTest
             diag1.minus(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4556,7 +4556,7 @@ public class MatrixCorrectnessTest
             diag1.minus(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4564,7 +4564,7 @@ public class MatrixCorrectnessTest
             s1.minus(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4572,7 +4572,7 @@ public class MatrixCorrectnessTest
             s1.minus(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4580,7 +4580,7 @@ public class MatrixCorrectnessTest
             s1.minus(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
 
@@ -4590,7 +4590,7 @@ public class MatrixCorrectnessTest
             m1.minusEquals(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4598,7 +4598,7 @@ public class MatrixCorrectnessTest
             m1.minusEquals(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4606,7 +4606,7 @@ public class MatrixCorrectnessTest
             m1.minusEquals(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4614,7 +4614,7 @@ public class MatrixCorrectnessTest
             diag1.minusEquals(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4622,7 +4622,7 @@ public class MatrixCorrectnessTest
             diag1.minusEquals(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4630,7 +4630,7 @@ public class MatrixCorrectnessTest
             diag1.minusEquals(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4638,7 +4638,7 @@ public class MatrixCorrectnessTest
             s1.minusEquals(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4646,7 +4646,7 @@ public class MatrixCorrectnessTest
             s1.minusEquals(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4654,7 +4654,7 @@ public class MatrixCorrectnessTest
             s1.minusEquals(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
 
@@ -4670,7 +4670,7 @@ public class MatrixCorrectnessTest
             m1.plus(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4678,7 +4678,7 @@ public class MatrixCorrectnessTest
             m1.plus(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4686,7 +4686,7 @@ public class MatrixCorrectnessTest
             m1.plus(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4694,7 +4694,7 @@ public class MatrixCorrectnessTest
             diag1.plus(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4702,7 +4702,7 @@ public class MatrixCorrectnessTest
             diag1.plus(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4710,7 +4710,7 @@ public class MatrixCorrectnessTest
             diag1.plus(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4718,7 +4718,7 @@ public class MatrixCorrectnessTest
             s1.plus(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4726,7 +4726,7 @@ public class MatrixCorrectnessTest
             s1.plus(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4734,7 +4734,7 @@ public class MatrixCorrectnessTest
             s1.plus(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
 
@@ -4744,7 +4744,7 @@ public class MatrixCorrectnessTest
             m1.plusEquals(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4752,7 +4752,7 @@ public class MatrixCorrectnessTest
             m1.plusEquals(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4760,7 +4760,7 @@ public class MatrixCorrectnessTest
             m1.plusEquals(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4768,7 +4768,7 @@ public class MatrixCorrectnessTest
             diag1.plusEquals(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4776,7 +4776,7 @@ public class MatrixCorrectnessTest
             diag1.plusEquals(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4784,7 +4784,7 @@ public class MatrixCorrectnessTest
             diag1.plusEquals(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4792,7 +4792,7 @@ public class MatrixCorrectnessTest
             s1.plusEquals(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4800,7 +4800,7 @@ public class MatrixCorrectnessTest
             s1.plusEquals(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -4808,7 +4808,7 @@ public class MatrixCorrectnessTest
             s1.plusEquals(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
 
@@ -5495,7 +5495,7 @@ public class MatrixCorrectnessTest
             m1.times(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5503,7 +5503,7 @@ public class MatrixCorrectnessTest
             m1.times(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5511,7 +5511,7 @@ public class MatrixCorrectnessTest
             m1.times(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5519,7 +5519,7 @@ public class MatrixCorrectnessTest
             diag1.times(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5527,7 +5527,7 @@ public class MatrixCorrectnessTest
             diag1.times(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5535,7 +5535,7 @@ public class MatrixCorrectnessTest
             diag1.times(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5543,7 +5543,7 @@ public class MatrixCorrectnessTest
             s1.times(m2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5551,7 +5551,7 @@ public class MatrixCorrectnessTest
             s1.times(diag2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5559,7 +5559,7 @@ public class MatrixCorrectnessTest
             s1.times(s2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
 
@@ -5569,7 +5569,7 @@ public class MatrixCorrectnessTest
             m1.times(v1);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5577,7 +5577,7 @@ public class MatrixCorrectnessTest
             m1.times(v2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5585,7 +5585,7 @@ public class MatrixCorrectnessTest
             diag1.times(v1);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5593,7 +5593,7 @@ public class MatrixCorrectnessTest
             diag1.times(v2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5601,7 +5601,7 @@ public class MatrixCorrectnessTest
             s1.times(v1);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5609,7 +5609,7 @@ public class MatrixCorrectnessTest
             s1.times(v2);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         // Pre-mult with vectors of all types but the wrong sizes
@@ -5618,7 +5618,7 @@ public class MatrixCorrectnessTest
             v1.times(m1);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5626,7 +5626,7 @@ public class MatrixCorrectnessTest
             v2.times(m1);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5634,7 +5634,7 @@ public class MatrixCorrectnessTest
             v1.times(diag1);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5642,7 +5642,7 @@ public class MatrixCorrectnessTest
             v2.times(diag1);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5650,7 +5650,7 @@ public class MatrixCorrectnessTest
             v1.times(s1);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
         try
@@ -5658,7 +5658,7 @@ public class MatrixCorrectnessTest
             v2.times(s1);
             assertFalse(true);
         }
-        catch (IllegalArgumentException e)
+        catch (DimensionalityMismatchException e)
         {
         }
 

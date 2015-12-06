@@ -633,10 +633,7 @@ public class VectorInteroperabilityTest
                 for (MatrixFactory<?> g : MatrixInteroperabilityTest.getFactories())
                 {
                     Matrix m = g.copyMatrix(m1);
-System.out.println(a1.getClass() + "->" + m.getClass());
-System.out.println("" + m1.getNumRows() + "x" + m1.getNumColumns() + " -> " + m.getNumRows() + "x" + m.getNumColumns());
                     Vector actual = a1.clone().times(m);
-System.out.println("" + expected.getDimensionality() + "->" + actual.getDimensionality());
                     assertEquals(expected, actual, epsilon);
                 }
             }

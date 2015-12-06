@@ -2,9 +2,11 @@
 package gov.sandia.cognition.math.matrix.optimized;
 
 import gov.sandia.cognition.math.matrix.AbstractMatrix;
+import gov.sandia.cognition.math.matrix.DimensionalityMismatchException;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixEntry;
 import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.util.ArgumentChecker;
 import java.text.NumberFormat;
 import java.util.Iterator;
 import javax.xml.bind.TypeConstraintException;
@@ -26,7 +28,7 @@ abstract class BaseMatrix
      *
      * This implementation tests the input for the correct size and calls the
      * optimized-by-type method.
-     * @throws IllegalArgumentException if the input matrix's size doesn't match
+     * @throws DimensionalityMismatchException if the input matrix's size doesn't match
      * this's size.
      * @throws TypeConstraintException if the input matrix's type doesn't match
      * an implementation within this package.
@@ -34,15 +36,6 @@ abstract class BaseMatrix
     @Override
     final public Matrix plus(Matrix m)
     {
-        if ((m.getNumRows() != getNumRows()) || (m.getNumColumns()
-            != getNumColumns()))
-        {
-            throw new IllegalArgumentException("Input matrix's size ("
-                + m.getNumRows() + ", " + m.getNumColumns()
-                + ") doesn't match self (" + getNumRows() + ", "
-                + getNumColumns() + ")");
-        }
-
         Matrix ret;
         if (this instanceof DenseMatrix)
         {
@@ -82,7 +75,7 @@ abstract class BaseMatrix
      *
      * This implementation tests the input for the correct size and calls the
      * optimized-by-type method.
-     * @throws IllegalArgumentException if the input matrix's size doesn't match
+     * @throws DimensionalityMismatchException if the input matrix's size doesn't match
      * this's size.
      * @throws TypeConstraintException if the input matrix's type doesn't match
      * an implementation within this package.
@@ -90,15 +83,6 @@ abstract class BaseMatrix
     @Override
     final public Matrix minus(Matrix m)
     {
-        if ((m.getNumRows() != getNumRows()) || (m.getNumColumns()
-            != getNumColumns()))
-        {
-            throw new IllegalArgumentException("Input matrix's size ("
-                + m.getNumRows() + ", " + m.getNumColumns()
-                + ") doesn't match self (" + getNumRows() + ", "
-                + getNumColumns() + ")");
-        }
-
         Matrix ret;
         if (this instanceof DenseMatrix)
         {
@@ -138,7 +122,7 @@ abstract class BaseMatrix
      *
      * This implementation tests the input for the correct size and calls the
      * optimized-by-type method.
-     * @throws IllegalArgumentException if the input matrix's size doesn't match
+     * @throws DimensionalityMismatchException if the input matrix's size doesn't match
      * this's size.
      * @throws TypeConstraintException if the input matrix's type doesn't match
      * an implementation within this package.
@@ -146,15 +130,6 @@ abstract class BaseMatrix
     @Override
     final public Matrix dotTimes(Matrix m)
     {
-        if ((m.getNumRows() != getNumRows()) || (m.getNumColumns()
-            != getNumColumns()))
-        {
-            throw new IllegalArgumentException("Input matrix's size ("
-                + m.getNumRows() + ", " + m.getNumColumns()
-                + ") doesn't match self (" + getNumRows() + ", "
-                + getNumColumns() + ")");
-        }
-
         Matrix ret;
         if (this instanceof DiagonalMatrix)
         {
@@ -194,7 +169,7 @@ abstract class BaseMatrix
      *
      * This implementation tests the input for the correct size and calls the
      * optimized-by-type method.
-     * @throws IllegalArgumentException if the input matrix's size doesn't match
+     * @throws DimensionalityMismatchException if the input matrix's size doesn't match
      * this's size.
      * @throws TypeConstraintException if the input matrix's type doesn't match
      * an implementation within this package.
@@ -202,26 +177,17 @@ abstract class BaseMatrix
     @Override
     final public void plusEquals(Matrix other)
     {
-        if ((other.getNumRows() != getNumRows()) || (other.getNumColumns()
-            != getNumColumns()))
-        {
-            throw new IllegalArgumentException("Input matrix's size ("
-                + other.getNumRows() + ", " + other.getNumColumns()
-                + ") doesn't match self (" + getNumRows() + ", "
-                + getNumColumns() + ")");
-        }
-
         if (other instanceof DiagonalMatrix)
         {
-            _plusEquals((DiagonalMatrix) other);
+            plusEquals((DiagonalMatrix) other);
         }
         else if (other instanceof DenseMatrix)
         {
-            _plusEquals((DenseMatrix) other);
+            this.plusEquals((DenseMatrix) other);
         }
         else if (other instanceof SparseMatrix)
         {
-            _plusEquals((SparseMatrix) other);
+            this.plusEquals((SparseMatrix) other);
         }
         else
         {
@@ -235,7 +201,7 @@ abstract class BaseMatrix
      *
      * @param other A sparse matrix to add to this
      */
-    abstract void _plusEquals(SparseMatrix other);
+    abstract void plusEquals(SparseMatrix other);
 
     /**
      * Type-specific version of plusEquals for combining whatever type this is
@@ -243,7 +209,7 @@ abstract class BaseMatrix
      *
      * @param other A dense matrix to add to this
      */
-    abstract void _plusEquals(DenseMatrix other);
+    abstract void plusEquals(DenseMatrix other);
 
     /**
      * Type-specific version of plusEquals for combining whatever type this is
@@ -251,14 +217,14 @@ abstract class BaseMatrix
      *
      * @param other A diagonal matrix to add to this
      */
-    abstract void _plusEquals(DiagonalMatrix other);
+    abstract void plusEquals(DiagonalMatrix other);
 
     /**
      * @see Matrix#scaledPlusEquals(double, gov.sandia.cognition.math.Ring)
      *
      * This implementation tests the input for the correct size and calls the
      * optimized-by-type method.
-     * @throws IllegalArgumentException if the input matrix's size doesn't match
+     * @throws DimensionalityMismatchException if the input matrix's size doesn't match
      * this's size.
      * @throws TypeConstraintException if the input matrix's type doesn't match
      * an implementation within this package.
@@ -267,26 +233,17 @@ abstract class BaseMatrix
     final public void scaledPlusEquals(double scaleFactor,
         Matrix other)
     {
-        if ((other.getNumRows() != getNumRows()) || (other.getNumColumns()
-            != getNumColumns()))
-        {
-            throw new IllegalArgumentException("Input matrix's size ("
-                + other.getNumRows() + ", " + other.getNumColumns()
-                + ") doesn't match self (" + getNumRows() + ", "
-                + getNumColumns() + ")");
-        }
-
         if (other instanceof DiagonalMatrix)
         {
-            _scaledPlusEquals((DiagonalMatrix) other, scaleFactor);
+            scaledPlusEquals((DiagonalMatrix) other, scaleFactor);
         }
         else if (other instanceof DenseMatrix)
         {
-            _scaledPlusEquals((DenseMatrix) other, scaleFactor);
+            this.scaledPlusEquals((DenseMatrix) other, scaleFactor);
         }
         else if (other instanceof SparseMatrix)
         {
-            _scaledPlusEquals((SparseMatrix) other, scaleFactor);
+            this.scaledPlusEquals((SparseMatrix) other, scaleFactor);
         }
         else
         {
@@ -301,7 +258,7 @@ abstract class BaseMatrix
      * @param other A sparse matrix to add to this
      * @param scaleFactor The amount to scale other by
      */
-    abstract void _scaledPlusEquals(SparseMatrix other,
+    abstract void scaledPlusEquals(SparseMatrix other,
         double scaleFactor);
 
     /**
@@ -311,7 +268,7 @@ abstract class BaseMatrix
      * @param other A dense matrix to add to this
      * @param scaleFactor The amount to scale other by
      */
-    abstract void _scaledPlusEquals(DenseMatrix other,
+    abstract void scaledPlusEquals(DenseMatrix other,
         double scaleFactor);
 
     /**
@@ -321,7 +278,7 @@ abstract class BaseMatrix
      * @param other A diagonal matrix to add to this
      * @param scaleFactor The amount to scale other by
      */
-    abstract void _scaledPlusEquals(DiagonalMatrix other,
+    abstract void scaledPlusEquals(DiagonalMatrix other,
         double scaleFactor);
 
     /**
@@ -329,7 +286,7 @@ abstract class BaseMatrix
      *
      * This implementation tests the input for the correct size and calls the
      * optimized-by-type method.
-     * @throws IllegalArgumentException if the input matrix's size doesn't match
+     * @throws DimensionalityMismatchException if the input matrix's size doesn't match
      * this's size.
      * @throws TypeConstraintException if the input matrix's type doesn't match
      * an implementation within this package.
@@ -337,26 +294,17 @@ abstract class BaseMatrix
     @Override
     final public void minusEquals(Matrix other)
     {
-        if ((other.getNumRows() != getNumRows()) || (other.getNumColumns()
-            != getNumColumns()))
-        {
-            throw new IllegalArgumentException("Input matrix's size ("
-                + other.getNumRows() + ", " + other.getNumColumns()
-                + ") doesn't match self (" + getNumRows() + ", "
-                + getNumColumns() + ")");
-        }
-
         if (other instanceof DiagonalMatrix)
         {
-            _minusEquals((DiagonalMatrix) other);
+            minusEquals((DiagonalMatrix) other);
         }
         else if (other instanceof DenseMatrix)
         {
-            _minusEquals((DenseMatrix) other);
+            this.minusEquals((DenseMatrix) other);
         }
         else if (other instanceof SparseMatrix)
         {
-            _minusEquals((SparseMatrix) other);
+            this.minusEquals((SparseMatrix) other);
         }
         else
         {
@@ -370,7 +318,7 @@ abstract class BaseMatrix
      *
      * @param other A sparse matrix to subtract from this
      */
-    abstract void _minusEquals(SparseMatrix other);
+    abstract void minusEquals(SparseMatrix other);
 
     /**
      * Type-specific version of minusEquals for combining whatever type this is
@@ -378,7 +326,7 @@ abstract class BaseMatrix
      *
      * @param other A dense matrix to subtract from this
      */
-    abstract void _minusEquals(DenseMatrix other);
+    abstract void minusEquals(DenseMatrix other);
 
     /**
      * Type-specific version of minusEquals for combining whatever type this is
@@ -386,14 +334,14 @@ abstract class BaseMatrix
      *
      * @param other A diagonal matrix to subtract from this
      */
-    abstract void _minusEquals(DiagonalMatrix other);
+    abstract void minusEquals(DiagonalMatrix other);
 
     /**
      * @see AbstractMatrix#dotTimesEquals(gov.sandia.cognition.math.Ring)
      *
      * This implementation tests the input for the correct size and calls the
      * optimized-by-type method.
-     * @throws IllegalArgumentException if the input matrix's size doesn't match
+     * @throws DimensionalityMismatchException if the input matrix's size doesn't match
      * this's size.
      * @throws TypeConstraintException if the input matrix's type doesn't match
      * an implementation within this package.
@@ -401,26 +349,17 @@ abstract class BaseMatrix
     @Override
     final public void dotTimesEquals(Matrix other)
     {
-        if ((other.getNumRows() != getNumRows()) || (other.getNumColumns()
-            != getNumColumns()))
-        {
-            throw new IllegalArgumentException("Input matrix's size ("
-                + other.getNumRows() + ", " + other.getNumColumns()
-                + ") doesn't match self (" + getNumRows() + ", "
-                + getNumColumns() + ")");
-        }
-
         if (other instanceof DiagonalMatrix)
         {
-            _dotTimesEquals((DiagonalMatrix) other);
+            dotTimesEquals((DiagonalMatrix) other);
         }
         else if (other instanceof DenseMatrix)
         {
-            _dotTimesEquals((DenseMatrix) other);
+            this.dotTimesEquals((DenseMatrix) other);
         }
         else if (other instanceof SparseMatrix)
         {
-            _dotTimesEquals((SparseMatrix) other);
+            this.dotTimesEquals((SparseMatrix) other);
         }
         else
         {
@@ -434,7 +373,7 @@ abstract class BaseMatrix
      *
      * @param other A sparse matrix to dot with this
      */
-    abstract void _dotTimesEquals(SparseMatrix other);
+    abstract void dotTimesEquals(SparseMatrix other);
 
     /**
      * Type-specific version of dotTimesEquals for combining whatever type this
@@ -442,7 +381,7 @@ abstract class BaseMatrix
      *
      * @param other A dense matrix to dot with this
      */
-    abstract void _dotTimesEquals(DenseMatrix other);
+    abstract void dotTimesEquals(DenseMatrix other);
 
     /**
      * Type-specific version of dotTimesEquals for combining whatever type this
@@ -450,14 +389,14 @@ abstract class BaseMatrix
      *
      * @param other A diagonal matrix to dot with this
      */
-    abstract void _dotTimesEquals(DiagonalMatrix other);
+    abstract void dotTimesEquals(DiagonalMatrix other);
 
     /**
      * @see AbstractMatrix#times(gov.sandia.cognition.math.Ring)
      *
      * This implementation tests the input for the correct size and calls the
      * optimized-by-type method.
-     * @throws IllegalArgumentException if the input matrix's numRows doesn't
+     * @throws DimensionalityMismatchException if the input matrix's numRows doesn't
      * match this's numColumns.
      * @throws TypeConstraintException if the input matrix's type doesn't match
      * an implementation within this package.
@@ -465,24 +404,17 @@ abstract class BaseMatrix
     @Override
     final public Matrix times(Matrix matrix)
     {
-        if (matrix.getNumRows() != getNumColumns())
-        {
-            throw new IllegalArgumentException("Input matrix's size ("
-                + matrix.getNumRows() + ", " + matrix.getNumColumns()
-                + ") doesn't match self for multiplication (" + getNumRows()
-                + ", " + getNumColumns() + ")");
-        }
         if (matrix instanceof DiagonalMatrix)
         {
-            return _times((DiagonalMatrix) matrix);
+            return this.times((DiagonalMatrix) matrix);
         }
         else if (matrix instanceof DenseMatrix)
         {
-            return _times((DenseMatrix) matrix);
+            return this.times((DenseMatrix) matrix);
         }
         else if (matrix instanceof SparseMatrix)
         {
-            return _times((SparseMatrix) matrix);
+            return this.times((SparseMatrix) matrix);
         }
         else
         {
@@ -496,7 +428,7 @@ abstract class BaseMatrix
      *
      * @param other A sparse matrix to multiply with this
      */
-    abstract Matrix _times(SparseMatrix other);
+    abstract Matrix times(SparseMatrix other);
 
     /**
      * Type-specific version of times for combining whatever type this is with
@@ -504,7 +436,7 @@ abstract class BaseMatrix
      *
      * @param other A dense matrix to multiply with this
      */
-    abstract Matrix _times(DenseMatrix other);
+    abstract Matrix times(DenseMatrix other);
 
     /**
      * Type-specific version of times for combining whatever type this is with
@@ -512,14 +444,14 @@ abstract class BaseMatrix
      *
      * @param other A diagonal matrix to multiply with this
      */
-    abstract Matrix _times(DiagonalMatrix other);
+    abstract Matrix times(DiagonalMatrix other);
 
     /**
      * @see AbstractMatrix#times(gov.sandia.cognition.math.Vector)
      *
      * This implementation tests the input for the correct size and calls the
      * optimized-by-type method.
-     * @throws IllegalArgumentException if the input vectors's dimensions
+     * @throws DimensionalityMismatchException if the input vectors's dimensions
      * doesn't match this's numCols.
      * @throws TypeConstraintException if the input vector's type doesn't match
      * an implementation within this package.
@@ -527,20 +459,13 @@ abstract class BaseMatrix
     @Override
     final public Vector times(Vector vector)
     {
-        if (vector.getDimensionality() != getNumColumns())
-        {
-            throw new IllegalArgumentException("Input vector's size ("
-                + vector.getDimensionality() + ") doesn't match mine for mult ("
-                + getNumRows() + ", " + getNumColumns() + ")");
-        }
-
         if (vector instanceof DenseVector)
         {
-            return _times((DenseVector) vector);
+            return times((DenseVector) vector);
         }
         else if (vector instanceof SparseVector)
         {
-            return _times((SparseVector) vector);
+            return this.times((SparseVector) vector);
         }
         else
         {
@@ -554,7 +479,7 @@ abstract class BaseMatrix
      *
      * @param vector A sparse vector to multiply with this
      */
-    abstract Vector _times(SparseVector vector);
+    abstract Vector times(SparseVector vector);
 
     /**
      * Type-specific version of times for combining whatever type this is with
@@ -562,7 +487,7 @@ abstract class BaseMatrix
      *
      * @param vector A dense vector to multiply with this
      */
-    abstract Vector _times(DenseVector vector);
+    abstract Vector times(DenseVector vector);
 
     /**
      * Package-private method that puts the vector * matrix code in the matrix
@@ -571,27 +496,20 @@ abstract class BaseMatrix
      *
      * @param vector The vector to pre-multiply this by
      * @return The resulting vector from input * this
-     * @throws IllegalArgumentException if the input vectors's dimensions
+     * @throws DimensionalityMismatchException if the input vectors's dimensions
      * doesn't match this's numRows.
      * @throws TypeConstraintException if the input vector's type doesn't match
      * an implementation within this package.
      */
     final Vector preTimes(Vector vector)
     {
-        if (vector.getDimensionality() != getNumRows())
-        {
-            throw new IllegalArgumentException("Input vector's size ("
-                + vector.getDimensionality() + ") doesn't match mine for "
-                + "pre-mult (" + getNumRows() + ", " + getNumColumns() + ")");
-        }
-
         if (vector instanceof DenseVector)
         {
-            return _preTimes((DenseVector) vector);
+            return preTimes((DenseVector) vector);
         }
         else if (vector instanceof SparseVector)
         {
-            return _preTimes((SparseVector) vector);
+            return this.preTimes((SparseVector) vector);
         }
         else
         {
@@ -606,7 +524,7 @@ abstract class BaseMatrix
      *
      * @param vector A sparse vector to multiply with this
      */
-    abstract Vector _preTimes(SparseVector vector);
+    abstract Vector preTimes(SparseVector vector);
 
     /**
      * Type-specific version of pre-times for combining whatever type this is
@@ -614,7 +532,7 @@ abstract class BaseMatrix
      *
      * @param vector A dense vector to multiply with this
      */
-    abstract Vector _preTimes(DenseVector vector);
+    abstract Vector preTimes(DenseVector vector);
 
     /**
      * Helper method checks that the input submatrix range is acceptable for
@@ -711,11 +629,7 @@ abstract class BaseMatrix
      */
     final protected void testEffZero(double effectiveZero)
     {
-        if (effectiveZero < 0)
-        {
-            throw new IllegalArgumentException("Effective zero must not be "
-                + "negative.");
-        }
+        ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
     }
 
     /**

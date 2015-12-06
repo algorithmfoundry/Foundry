@@ -171,12 +171,12 @@ public class ParallelSparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_times(gov.sandia.cognition.math.matrix.optimized.SparseVector)
+     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    Vector _times(SparseVector vector)
+    Vector times(SparseVector vector)
     {
         if (!isCompressed())
         {
@@ -265,12 +265,12 @@ public class ParallelSparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_times(gov.sandia.cognition.math.matrix.optimized.DenseVector)
+     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseVector)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    Vector _times(DenseVector vector)
+    Vector times(DenseVector vector)
     {
         if (!isCompressed())
         {

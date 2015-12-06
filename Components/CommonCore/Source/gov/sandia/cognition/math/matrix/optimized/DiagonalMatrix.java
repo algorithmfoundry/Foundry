@@ -123,14 +123,16 @@ public class DiagonalMatrix
 
     /**
      * @see
-     * BaseMatrix#_scaledPlusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * BaseMatrix#scaledPlusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      * @throws IllegalArgumentException if the input has any non-zero off-axis
      * elements as that would make this a non-diagonal matrix
      */
     @Override
-    void _scaledPlusEquals(SparseMatrix other,
+    void scaledPlusEquals(SparseMatrix other,
         double scaleFactor)
     {
+        this.assertSameDimensions(other);
+        
         // I have to run through all values in the input to make sure all off-
         // diagonal elements are 0 (as well as subtracting along the diagonal)
         if (!other.isCompressed())
@@ -160,14 +162,16 @@ public class DiagonalMatrix
 
     /**
      * @see
-     * BaseMatrix#_scaledPlusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * BaseMatrix#scaledPlusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      * @throws IllegalArgumentException if the input has any non-zero off-axis
      * elements as that would make this a non-diagonal matrix
      */
     @Override
-    void _scaledPlusEquals(DenseMatrix other,
+    void scaledPlusEquals(DenseMatrix other,
         double scaleFactor)
     {
+        this.assertSameDimensions(other);
+        
         // I have to run through all values in the input to make sure all off-
         // diagonal are 0 (as well as summing along the diagonal)
         for (int i = 0; i < diag.length; ++i)
@@ -190,12 +194,13 @@ public class DiagonalMatrix
 
     /**
      * @see
-     * BaseMatrix#_plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      */
     @Override
-    void _scaledPlusEquals(DiagonalMatrix other,
+    void scaledPlusEquals(DiagonalMatrix other,
         double scaleFactor)
     {
+        this.assertSameDimensions(other);
         for (int i = 0; i < diag.length; ++i)
         {
             diag[i] += other.diag[i] * scaleFactor;
@@ -204,13 +209,15 @@ public class DiagonalMatrix
 
     /**
      * @see
-     * BaseMatrix#_plusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      * @throws IllegalArgumentException if the input has any non-zero off-axis
      * elements as that would make this a non-diagonal matrix
      */
     @Override
-    final void _plusEquals(SparseMatrix other)
+    final void plusEquals(SparseMatrix other)
     {
+        this.assertSameDimensions(other);
+        
         // I have to run through all values in the input to make sure all off-
         // diagonal elements are 0 (as well as subtracting along the diagonal)
         if (!other.isCompressed())
@@ -240,13 +247,15 @@ public class DiagonalMatrix
 
     /**
      * @see
-     * BaseMatrix#_plusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      * @throws IllegalArgumentException if the input has any non-zero off-axis
      * elements as that would make this a non-diagonal matrix
      */
     @Override
-    final void _plusEquals(DenseMatrix other)
+    final void plusEquals(DenseMatrix other)
     {
+        this.assertSameDimensions(other);
+        
         // I have to run through all values in the input to make sure all off-
         // diagonal are 0 (as well as summing along the diagonal)
         for (int i = 0; i < diag.length; ++i)
@@ -269,11 +278,12 @@ public class DiagonalMatrix
 
     /**
      * @see
-     * BaseMatrix#_plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      */
     @Override
-    final void _plusEquals(DiagonalMatrix other)
+    final void plusEquals(DiagonalMatrix other)
     {
+        this.assertSameDimensions(other);
         for (int i = 0; i < diag.length; ++i)
         {
             diag[i] += other.diag[i];
@@ -282,13 +292,15 @@ public class DiagonalMatrix
 
     /**
      * @see
-     * BaseMatrix#_minusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      * @throws IllegalArgumentException if the input has any non-zero off-axis
      * elements as that would make this a non-diagonal matrix
      */
     @Override
-    final void _minusEquals(SparseMatrix other)
+    final void minusEquals(SparseMatrix other)
     {
+        this.assertSameDimensions(other);
+        
         // I have to run through all values in the input to make sure all off-
         // diagonal elements are 0 (as well as subtracting along the diagonal)
         if (!other.isCompressed())
@@ -318,13 +330,15 @@ public class DiagonalMatrix
 
     /**
      * @see
-     * BaseMatrix#_minusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      * @throws IllegalArgumentException if the input has any non-zero off-axis
      * elements as that would make this a non-diagonal matrix
      */
     @Override
-    final void _minusEquals(DenseMatrix other)
+    final void minusEquals(DenseMatrix other)
     {
+        this.assertSameDimensions(other);
+        
         // I have to run through all values in the input to make sure all off-
         // diagonal are 0 (as well as subtracting along the diagonal)
         for (int i = 0; i < diag.length; ++i)
@@ -347,11 +361,12 @@ public class DiagonalMatrix
 
     /**
      * @see
-     * BaseMatrix#_minusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      */
     @Override
-    final void _minusEquals(DiagonalMatrix other)
+    final void minusEquals(DiagonalMatrix other)
     {
+        this.assertSameDimensions(other);
         for (int i = 0; i < diag.length; ++i)
         {
             diag[i] -= other.diag[i];
@@ -360,11 +375,12 @@ public class DiagonalMatrix
 
     /**
      * @see
-     * BaseMatrix#_dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      */
     @Override
-    final void _dotTimesEquals(SparseMatrix other)
+    final void dotTimesEquals(SparseMatrix other)
     {
+        this.assertSameDimensions(other);
         for (int i = 0; i < diag.length; ++i)
         {
             diag[i] *= other.getElement(i, i);
@@ -373,11 +389,12 @@ public class DiagonalMatrix
 
     /**
      * @see
-     * BaseMatrix#_dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      */
     @Override
-    final void _dotTimesEquals(DenseMatrix other)
+    final void dotTimesEquals(DenseMatrix other)
     {
+        this.assertSameDimensions(other);
         for (int i = 0; i < diag.length; ++i)
         {
             diag[i] *= other.row(i).elements()[i];
@@ -386,11 +403,12 @@ public class DiagonalMatrix
 
     /**
      * @see
-     * BaseMatrix#_dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      */
     @Override
-    final void _dotTimesEquals(DiagonalMatrix other)
+    final void dotTimesEquals(DiagonalMatrix other)
     {
+        this.assertSameDimensions(other);
         for (int i = 0; i < diag.length; ++i)
         {
             diag[i] *= other.diag[i];
@@ -399,21 +417,22 @@ public class DiagonalMatrix
 
     /**
      * @see
-     * BaseMatrix#_times(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      */
     @Override
-    final Matrix _times(SparseMatrix other)
+    final Matrix times(SparseMatrix other)
     {
-        return other._preTimes(this);
+        return other.preTimes(this);
     }
 
     /**
      * @see
-     * BaseMatrix#_times(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      */
     @Override
-    final Matrix _times(DenseMatrix other)
+    final Matrix times(DenseMatrix other)
     {
+        this.assertMultiplicationDimensions(other);
         DenseMatrix ret = new DenseMatrix(diag.length, other.getNumColumns(),
             true);
         for (int i = 0; i < diag.length; ++i)
@@ -426,11 +445,12 @@ public class DiagonalMatrix
 
     /**
      * @see
-     * BaseMatrix#_times(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      */
     @Override
-    final Matrix _times(DiagonalMatrix other)
+    final Matrix times(DiagonalMatrix other)
     {
+        this.assertMultiplicationDimensions(other);
         DiagonalMatrix ret = new DiagonalMatrix(this);
         for (int i = 0; i < diag.length; ++i)
         {
@@ -442,11 +462,12 @@ public class DiagonalMatrix
 
     /**
      * @see
-     * BaseMatrix#_times(gov.sandia.cognition.math.matrix.optimized.SparseVector)
+     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      */
     @Override
-    final Vector _times(SparseVector vector)
+    final Vector times(SparseVector vector)
     {
+        vector.assertDimensionalityEquals(this.getNumColumns());
         SparseVector ret = new SparseVector(diag.length);
         vector.compress();
         int[] locs = vector.getLocs();
@@ -460,11 +481,12 @@ public class DiagonalMatrix
 
     /**
      * @see
-     * BaseMatrix#_times(gov.sandia.cognition.math.matrix.optimized.DenseVector)
+     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseVector)
      */
     @Override
-    final Vector _times(DenseVector vector)
+    final Vector times(DenseVector vector)
     {
+        vector.assertDimensionalityEquals(this.getNumColumns());
         DenseVector ret = new DenseVector(diag.length, true);
         for (int i = 0; i < diag.length; ++i)
         {
@@ -507,7 +529,7 @@ public class DiagonalMatrix
     /**
      * Helper that makes sure the input row index and column index are within
      * the bounds of matrix. This does not ensure the inputs are on the diagonal
-     * as there are valid reasons to _get_ elements off the main diagonal.
+     * as there are valid reasons to get elements off the main diagonal.
      *
      * @param rowIndex The row index
      * @param columnIndex The column index
@@ -903,12 +925,7 @@ public class DiagonalMatrix
     @Override
     final public void convertFromVector(Vector parameters)
     {
-        if (parameters.getDimensionality() != (getNumRows() * getNumColumns()))
-        {
-            throw new IllegalArgumentException("Dimensions do not match: "
-                + parameters.getDimensionality() + " != " + getNumRows() + " * "
-                + getNumColumns());
-        }
+        parameters.assertDimensionalityEquals(this.getNumRows() * getNumColumns());
 
         for (int i = 0; i < getNumRows(); ++i)
         {
@@ -946,26 +963,26 @@ public class DiagonalMatrix
 
     /**
      * @see
-     * BaseMatrix#_preTimes(gov.sandia.cognition.math.matrix.optimized.SparseVector)
+     * BaseMatrix#preTimes(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      */
     @Override
-    final Vector _preTimes(SparseVector vector)
+    final Vector preTimes(SparseVector vector)
     {
         // Only true for diagonal (and symmetric) matrices: pre-mult vector is the same as post-mult
         // vector
-        return _times(vector);
+        return times(vector);
     }
 
     /**
      * @see
-     * BaseMatrix#_preTimes(gov.sandia.cognition.math.matrix.optimized.SparseVector)
+     * BaseMatrix#preTimes(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      */
     @Override
-    final Vector _preTimes(DenseVector vector)
+    final Vector preTimes(DenseVector vector)
     {
         // Only true for diagonal (and symmetric) matrices: pre-mult vector is the same as post-mult
         // vector
-        return _times(vector);
+        return times(vector);
     }
 
     @Override

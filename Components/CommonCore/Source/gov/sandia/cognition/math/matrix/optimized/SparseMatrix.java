@@ -589,14 +589,15 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_scaledPlusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * BaseMatrix#scaledPlusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    void _scaledPlusEquals(SparseMatrix other,
+    void scaledPlusEquals(SparseMatrix other,
         double scaleFactor)
     {
+        this.assertSameDimensions(other);
         if (!isCompressed())
         {
             compress();
@@ -626,14 +627,16 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_scaledPlusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * BaseMatrix#scaledPlusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    void _scaledPlusEquals(DenseMatrix other,
+    void scaledPlusEquals(DenseMatrix other,
         double scaleFactor)
     {
+        this.assertSameDimensions(other);
+        
         // Such a bad idea!  This will store dense values in a sparse matrix
         // Take care of the null case -- keeps from an out-of-bounds exception below
         if (getNumRows() == 0)
@@ -680,14 +683,15 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    void _scaledPlusEquals(DiagonalMatrix other,
+    void scaledPlusEquals(DiagonalMatrix other,
         double scaleFactor)
     {
+        this.assertSameDimensions(other);
         if (!isCompressed())
         {
             compress();
@@ -713,13 +717,14 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_plusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final void _plusEquals(SparseMatrix other)
+    final void plusEquals(SparseMatrix other)
     {
+        this.assertSameDimensions(other);
         if (!isCompressed())
         {
             compress();
@@ -748,13 +753,15 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_plusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final void _plusEquals(DenseMatrix other)
+    final void plusEquals(DenseMatrix other)
     {
+        this.assertSameDimensions(other);
+        
         // Such a bad idea!  This will store dense values in a sparse matrix
         // Take care of the null case -- keeps from an out-of-bounds exception below
         if (getNumRows() == 0)
@@ -905,13 +912,14 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final void _plusEquals(DiagonalMatrix other)
+    final void plusEquals(DiagonalMatrix other)
     {
+        this.assertSameDimensions(other);
         if (!isCompressed())
         {
             compress();
@@ -937,13 +945,14 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_minusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      *
      * NOTE: Upon completion this and other are in the compressed Yale format.
      */
     @Override
-    final void _minusEquals(SparseMatrix other)
+    final void minusEquals(SparseMatrix other)
     {
+        this.assertSameDimensions(other);
         if (!isCompressed())
         {
             compress();
@@ -973,13 +982,15 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_minusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final void _minusEquals(DenseMatrix other)
+    final void minusEquals(DenseMatrix other)
     {
+        this.assertSameDimensions(other);
+        
         // Such a bad idea!  This will store dense values in a sparse matrix
         // Take care of the null case -- keeps from an out-of-bounds exception below
         if (getNumRows() == 0)
@@ -1024,13 +1035,15 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_minusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final void _minusEquals(DiagonalMatrix other)
+    final void minusEquals(DiagonalMatrix other)
     {
+        this.assertSameDimensions(other);
+        
         if (!isCompressed())
         {
             compress();
@@ -1056,13 +1069,15 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      *
      * NOTE: Upon completion this and other are in the compressed Yale format.
      */
     @Override
-    final void _dotTimesEquals(SparseMatrix other)
+    final void dotTimesEquals(SparseMatrix other)
     {
+        this.assertSameDimensions(other);
+        
         if (!isCompressed())
         {
             compress();
@@ -1129,13 +1144,14 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final void _dotTimesEquals(DenseMatrix other)
+    final void dotTimesEquals(DenseMatrix other)
     {
+        this.assertSameDimensions(other);
         if (!isCompressed())
         {
             compress();
@@ -1155,13 +1171,14 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final void _dotTimesEquals(DiagonalMatrix other)
+    final void dotTimesEquals(DiagonalMatrix other)
     {
+        this.assertSameDimensions(other);
         if (!isCompressed())
         {
             compress();
@@ -1205,7 +1222,7 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_times(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
      *
      * This returns either a dense or a sparse matrix depending on the
      * sparseness of the resulting multiplication
@@ -1213,8 +1230,9 @@ public class SparseMatrix
      * NOTE: Upon completion this and other are in the compressed Yale format.
      */
     @Override
-    final Matrix _times(SparseMatrix other)
+    final Matrix times(SparseMatrix other)
     {
+        this.assertMultiplicationDimensions(other);
         if (!isCompressed())
         {
             compress();
@@ -1251,13 +1269,14 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_times(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final Matrix _times(DenseMatrix other)
+    final Matrix times(DenseMatrix other)
     {
+        this.assertMultiplicationDimensions(other);
         if (!isCompressed())
         {
             compress();
@@ -1282,13 +1301,14 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_times(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final Matrix _times(DiagonalMatrix other)
+    final Matrix times(DiagonalMatrix other)
     {
+        this.assertMultiplicationDimensions(other);
         if (!isCompressed())
         {
             compress();
@@ -1317,8 +1337,9 @@ public class SparseMatrix
      * @return The sparse matrix (compressed Yale format) resulting from
      * multiplying other * this.
      */
-    final Matrix _preTimes(DiagonalMatrix other)
+    final Matrix preTimes(DiagonalMatrix other)
     {
+        other.assertMultiplicationDimensions(this);
         if (!isCompressed())
         {
             compress();
@@ -1343,14 +1364,15 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_times(gov.sandia.cognition.math.matrix.optimized.SparseVector)
+     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
     // Not final because this method is overridden by the Parallel implementation
-    Vector _times(SparseVector vector)
+    Vector times(SparseVector vector)
     {
+        vector.assertDimensionalityEquals(this.getNumColumns());
         if (!isCompressed())
         {
             compress();
@@ -1400,14 +1422,15 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_times(gov.sandia.cognition.math.matrix.optimized.DenseVector)
+     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseVector)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
     // Not final because this method is overridden by the Parallel implementation
-    Vector _times(DenseVector vector)
+    Vector times(DenseVector vector)
     {
+        vector.assertDimensionalityEquals(this.getNumColumns());
         if (!isCompressed())
         {
             compress();
@@ -2029,12 +2052,7 @@ public class SparseMatrix
     @Override
     final public void convertFromVector(Vector parameters)
     {
-        if (parameters.getDimensionality() != (numRows * numCols))
-        {
-            throw new IllegalArgumentException("Dimensions do not match: "
-                + parameters.getDimensionality() + " != " + numRows + " * "
-                + numCols);
-        }
+        parameters.assertDimensionalityEquals(numRows * numCols);
 
         // Count how many non-zero elements there will be at the end
         int nnz = 0;
@@ -2117,25 +2135,25 @@ public class SparseMatrix
         /**
          * The row index for this value
          */
-        private int rowIdx;
+        private int rowIndex;
 
         /**
          * The index for the column and value in the compressed data
          */
-        private int col_valIdx;
+        private int columnValueIndex;
 
         /**
          * Initializes this instance with the necessary values
          *
-         * @param rowIdx The row index for this value
-         * @param col_valIdx The index for the column and value in the
+         * @param rowIndex The row index for this value
+         * @param columnValueIndex The index for the column and value in the
          * compressed data
          */
-        public ReadOnlySparseMatrixEntry(int rowIdx,
-            int col_valIdx)
+        public ReadOnlySparseMatrixEntry(int rowIndex,
+            int columnValueIndex)
         {
-            this.rowIdx = rowIdx;
-            this.col_valIdx = col_valIdx;
+            this.rowIndex = rowIndex;
+            this.columnValueIndex = columnValueIndex;
         }
 
         /**
@@ -2146,7 +2164,7 @@ public class SparseMatrix
         @Override
         public int getRowIndex()
         {
-            return rowIdx;
+            return rowIndex;
         }
 
         /**
@@ -2167,7 +2185,7 @@ public class SparseMatrix
         @Override
         public double getValue()
         {
-            return vals[col_valIdx];
+            return vals[columnValueIndex];
         }
 
         /**
@@ -2188,7 +2206,7 @@ public class SparseMatrix
         @Override
         public int getColumnIndex()
         {
-            return colIdxs[col_valIdx];
+            return colIdxs[columnValueIndex];
         }
 
         /**
@@ -2219,16 +2237,16 @@ public class SparseMatrix
         /**
          * The column and value index for the next value
          */
-        private int col_valIdx;
+        private int columnValueIndex;
 
         /**
          * Initializes a new iterator starting at the first value in the matrix
          */
         public NonZeroEntryIterator()
         {
-            rowIdx = col_valIdx = 0;
+            rowIdx = columnValueIndex = 0;
             // If there are no-entry rows, we need to skip past them
-            while (col_valIdx >= firstIdxsForRows[rowIdx + 1])
+            while (columnValueIndex >= firstIdxsForRows[rowIdx + 1])
             {
                 ++rowIdx;
                 if (rowIdx >= numRows) {
@@ -2254,9 +2272,9 @@ public class SparseMatrix
                     + getNumRows());
             }
             rowIdx = startRow;
-            col_valIdx = firstIdxsForRows[rowIdx];
+            columnValueIndex = firstIdxsForRows[rowIdx];
             // If there are no-entry rows, we need to skip past them
-            while (col_valIdx >= firstIdxsForRows[rowIdx + 1])
+            while (columnValueIndex >= firstIdxsForRows[rowIdx + 1])
             {
                 ++rowIdx;
                 if (rowIdx >= numRows) {
@@ -2273,7 +2291,7 @@ public class SparseMatrix
         @Override
         public boolean hasNext()
         {
-            return col_valIdx < vals.length;
+            return columnValueIndex < vals.length;
         }
 
         /**
@@ -2286,10 +2304,10 @@ public class SparseMatrix
         public MatrixEntry next()
         {
             ReadOnlySparseMatrixEntry ret
-                = new ReadOnlySparseMatrixEntry(rowIdx, col_valIdx);
-            col_valIdx++;
+                = new ReadOnlySparseMatrixEntry(rowIdx, columnValueIndex);
+            columnValueIndex++;
             // If there are no-entry rows, we need to skip past them
-            while (col_valIdx >= firstIdxsForRows[rowIdx + 1])
+            while (columnValueIndex >= firstIdxsForRows[rowIdx + 1])
             {
                 ++rowIdx;
                 if (rowIdx >= numRows) {
@@ -2353,13 +2371,14 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_preTimes(gov.sandia.cognition.math.matrix.optimized.SparseVector)
+     * BaseMatrix#preTimes(gov.sandia.cognition.math.matrix.optimized.SparseVector)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final Vector _preTimes(SparseVector vector)
+    final Vector preTimes(SparseVector vector)
     {
+        vector.assertDimensionalityEquals(this.getNumRows());
         if (!isCompressed())
         {
             compress();
@@ -2381,13 +2400,14 @@ public class SparseMatrix
 
     /**
      * @see
-     * BaseMatrix#_preTimes(gov.sandia.cognition.math.matrix.optimized.DenseVector)
+     * BaseMatrix#preTimes(gov.sandia.cognition.math.matrix.optimized.DenseVector)
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    final Vector _preTimes(DenseVector vector)
+    final Vector preTimes(DenseVector vector)
     {
+        vector.assertDimensionalityEquals(this.getNumRows());
         if (!isCompressed())
         {
             compress();
@@ -2417,7 +2437,7 @@ public class SparseMatrix
      * @param i The row index
      * @param v The vector that to put in the new row
      */
-    final void _setRow(int i,
+    final void setRowInternal(int i,
         SparseVector v)
     {
         if (isCompressed())
