@@ -168,7 +168,7 @@ public abstract class AbstractMatrix
     public void assertSameDimensions(
         Matrix other )
     {
-        if (this.checkSameDimensions( other ) == false)
+        if (!this.checkSameDimensions(other))
         {
             throw new DimensionalityMismatchException(
                 "Matrices must have same dimensions: " +
@@ -179,9 +179,23 @@ public abstract class AbstractMatrix
 
     @Override
     public boolean checkMultiplicationDimensions(
-        Matrix postMultiplicationMatrix )
+        final Matrix postMultiplicationMatrix)
     {
         return this.getNumColumns() == postMultiplicationMatrix.getNumRows();
+    }
+    
+    @Override
+    public void assertMultiplicationDimensions(
+        final Matrix postMultiplicationMatrix)
+    {
+        if (!this.checkMultiplicationDimensions(postMultiplicationMatrix))
+        {
+            throw new DimensionalityMismatchException(
+                "Matrices must have same internal dimensions: " +
+                + this.getNumRows() + "x" + this.getNumColumns() + " != " +
+                + postMultiplicationMatrix.getNumRows() + "x" 
+                + postMultiplicationMatrix.getNumColumns());
+        }
     }
 
     @Override

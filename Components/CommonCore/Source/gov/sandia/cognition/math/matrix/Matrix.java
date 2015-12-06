@@ -226,6 +226,16 @@ public interface Matrix
      */
     public boolean checkMultiplicationDimensions(
         Matrix postMultiplicationMatrix );
+    
+    /**
+     * Checks to see if the dimensions are appropriate for:
+     * <code>this.times(postMultiplicationMatrix)</code>.
+     *
+     * @param postMultiplicationMatrix
+     *          Matrix by which this is to be multiplied.
+     */
+    public void assertMultiplicationDimensions(
+        final Matrix postMultiplicationMatrix);
 
     /**
      * Matrix multiplication of <code>this</code> and <code>matrix</code>,
