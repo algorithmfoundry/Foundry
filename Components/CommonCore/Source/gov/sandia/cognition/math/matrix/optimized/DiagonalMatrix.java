@@ -5,6 +5,7 @@ import gov.sandia.cognition.math.ComplexNumber;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.util.ArgumentChecker;
 import java.util.Arrays;
 
 /**
@@ -654,7 +655,7 @@ public class DiagonalMatrix
     @Override
     final public boolean isSymmetric(double effectiveZero)
     {
-        testEffZero(effectiveZero);
+        ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
         return true;
     }
 
@@ -695,7 +696,7 @@ public class DiagonalMatrix
     @Override
     final public Matrix pseudoInverse(double effectiveZero)
     {
-        testEffZero(effectiveZero);
+        ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
         DiagonalMatrix ret = new DiagonalMatrix(diag.length, true);
         for (int i = 0; i < diag.length; ++i)
         {
@@ -757,7 +758,7 @@ public class DiagonalMatrix
     @Override
     final public int rank(double effectiveZero)
     {
-        testEffZero(effectiveZero);
+        ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
         int rank = 0;
         for (int i = 0; i < diag.length; ++i)
         {

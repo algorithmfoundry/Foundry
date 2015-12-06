@@ -8,6 +8,7 @@ import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixEntry;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.util.ArgumentChecker;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -1644,7 +1645,7 @@ public class SparseMatrix
     @Override
     final public boolean isSymmetric(double effectiveZero)
     {
-        testEffZero(effectiveZero);
+        ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
         if (numRows != numCols)
         {
             return false;
@@ -1705,7 +1706,7 @@ public class SparseMatrix
     @Override
     final public boolean isZero(double effectiveZero)
     {
-        testEffZero(effectiveZero);
+        ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
         if (!isCompressed())
         {
             compress();

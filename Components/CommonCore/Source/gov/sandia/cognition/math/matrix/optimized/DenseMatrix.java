@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.github.fommil.netlib.BLAS;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
+import gov.sandia.cognition.util.ArgumentChecker;
 import org.netlib.util.intW;
 
 /**
@@ -844,7 +845,7 @@ public class DenseMatrix
     @Override
     final public boolean isSymmetric(double effectiveZero)
     {
-        testEffZero(effectiveZero);
+        ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
         // If it's not square, it's not symmetric
         if (getNumRows() != getNumColumns())
         {
@@ -915,7 +916,7 @@ public class DenseMatrix
     @Override
     final public Matrix pseudoInverse(double effectiveZero)
     {
-        testEffZero(effectiveZero);
+        ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
         SVD svd = svdDecompose();
         int min = Math.min(getNumRows(), getNumColumns());
         for (int i = 0; i < min; ++i)
@@ -1013,7 +1014,7 @@ public class DenseMatrix
     @Override
     final public int rank(double effectiveZero)
     {
-        testEffZero(effectiveZero);
+        ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
         QR qr = qrDecompose();
         int min = Math.min(getNumRows(), getNumColumns());
         int ret = 0;

@@ -621,19 +621,6 @@ abstract class BaseMatrix
     }
 
     /**
-     * Makes sure the input effectiveZero is non-negative. Because a negative
-     * effective zero is such a bummer.
-     *
-     * @param effectiveZero The effectiveZero parameter (for pseudoInverse,
-     * rank, etc.)
-     * @throws IllegalArgumentException if effectiveZero is negative
-     */
-    final protected void testEffZero(double effectiveZero)
-    {
-        ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
-    }
-
-    /**
      * @see AbstractMatrix#iterator()
      */
     @Override
