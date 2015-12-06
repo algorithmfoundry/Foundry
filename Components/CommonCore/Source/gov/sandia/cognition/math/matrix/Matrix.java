@@ -50,6 +50,7 @@ public interface Matrix
     extends java.lang.Iterable<MatrixEntry>, Ring<Matrix>, Vectorizable
 {
 
+    @Override
     public Matrix clone();
 
     /**
@@ -551,6 +552,7 @@ public interface Matrix
      *
      * @param parameters column-stacked version of this
      */
+    @Override
     public void convertFromVector(
         Vector parameters );
 
@@ -560,6 +562,7 @@ public interface Matrix
      *
      * @return column-stacked Vector representing this
      */
+    @Override
     public Vector convertToVector();
 
     /**
@@ -583,6 +586,7 @@ public interface Matrix
      */
     public List<Double> valuesAsList();
 
+    @Override
     public String toString();
 
     /**
@@ -593,5 +597,13 @@ public interface Matrix
      */
     public String toString(
         final NumberFormat format);
+    
+    /**
+     * Gets a matrix factory, typically one associated with this type of matrix.
+     * 
+     * @return 
+     *      A matrix factory.
+     */
+    public MatrixFactory<?> getMatrixFactory();
 
 }

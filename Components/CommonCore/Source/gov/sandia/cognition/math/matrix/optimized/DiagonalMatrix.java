@@ -3,6 +3,7 @@ package gov.sandia.cognition.math.matrix.optimized;
 
 import gov.sandia.cognition.math.ComplexNumber;
 import gov.sandia.cognition.math.matrix.Matrix;
+import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import java.util.Arrays;
 
@@ -973,4 +974,10 @@ public class DiagonalMatrix
         return true;
     }
 
+    @Override
+    public MatrixFactory<?> getMatrixFactory()
+    {
+        return DiagonalMatrixFactoryOptimized.INSTANCE;
+    }
+    
 }

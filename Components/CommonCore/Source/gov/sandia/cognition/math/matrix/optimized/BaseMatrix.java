@@ -71,8 +71,8 @@ abstract class BaseMatrix
         }
         else
         {
-            throw new TypeConstraintException("Input Matrix class "
-                + m.getClass() + " not supported");
+            ret = this.clone();
+            ret.plusEquals(m);
         }
         return ret;
     }
@@ -127,8 +127,8 @@ abstract class BaseMatrix
         }
         else
         {
-            throw new TypeConstraintException("Input Matrix class "
-                + m.getClass() + " not supported");
+            ret = this.clone();
+            ret.minusEquals(m);
         }
         return ret;
     }
@@ -183,8 +183,8 @@ abstract class BaseMatrix
         }
         else
         {
-            throw new TypeConstraintException("Input Matrix class "
-                + m.getClass() + " not supported");
+            ret = this.clone();
+            ret.dotTimesEquals(m);
         }
         return ret;
     }
@@ -225,8 +225,7 @@ abstract class BaseMatrix
         }
         else
         {
-            throw new TypeConstraintException("Input Matrix class "
-                + other.getClass() + " not supported");
+            super.plusEquals(other);
         }
     }
 
@@ -291,8 +290,7 @@ abstract class BaseMatrix
         }
         else
         {
-            throw new TypeConstraintException("Input Matrix class "
-                + other.getClass() + " not supported");
+            super.scaledPlusEquals(scaleFactor, other);
         }
     }
 
@@ -362,8 +360,7 @@ abstract class BaseMatrix
         }
         else
         {
-            throw new TypeConstraintException("Input Matrix class "
-                + other.getClass() + " not supported");
+            super.minusEquals(other);
         }
     }
 
@@ -427,8 +424,7 @@ abstract class BaseMatrix
         }
         else
         {
-            throw new TypeConstraintException("Input Matrix class "
-                + other.getClass() + " not supported");
+            super.dotTimesEquals(other);
         }
     }
 
@@ -490,8 +486,7 @@ abstract class BaseMatrix
         }
         else
         {
-            throw new TypeConstraintException("Input Matrix class "
-                + matrix.getClass() + " not supported");
+            return super.times(matrix);
         }
     }
 
@@ -549,8 +544,7 @@ abstract class BaseMatrix
         }
         else
         {
-            throw new TypeConstraintException("Input Vector class "
-                + vector.getClass() + " not supported");
+            return super.times(vector);
         }
     }
 

@@ -14,6 +14,9 @@ public class DenseMatrixFactoryOptimized
     extends MatrixFactory<DenseMatrix>
 {
 
+    /** An instance of this class. */
+    public static final DenseMatrixFactoryOptimized INSTANCE = new DenseMatrixFactoryOptimized();
+    
     /**
      * Creates a deep copy of m into a DenseMatrix and returns it
      *

@@ -16,7 +16,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.DecimalFormat;
 import java.util.Iterator;
-import javax.xml.bind.TypeConstraintException;
 
 import org.junit.Test;
 
@@ -3910,14 +3909,6 @@ public class MatrixCorrectnessTest
         }
         try
         {
-            m1.getSubMatrix(0, 1, 0, 1).dotTimes(mtjm);
-            assertFalse(true);
-        }
-        catch (TypeConstraintException e)
-        {
-        }
-        try
-        {
             s1.dotTimes(m2);
             assertFalse(true);
         }
@@ -3988,14 +3979,6 @@ public class MatrixCorrectnessTest
             assertFalse(true);
         }
         catch (IllegalArgumentException e)
-        {
-        }
-        try
-        {
-            diag2.dotTimesEquals(mtjm);
-            assertFalse(true);
-        }
-        catch (TypeConstraintException e)
         {
         }
         try
@@ -4578,14 +4561,6 @@ public class MatrixCorrectnessTest
         }
         try
         {
-            diag2.minus(mtjm);
-            assertFalse(true);
-        }
-        catch (TypeConstraintException e)
-        {
-        }
-        try
-        {
             s1.minus(m2);
             assertFalse(true);
         }
@@ -4656,14 +4631,6 @@ public class MatrixCorrectnessTest
             assertFalse(true);
         }
         catch (IllegalArgumentException e)
-        {
-        }
-        try
-        {
-            diag2.minusEquals(mtjm);
-            assertFalse(true);
-        }
-        catch (TypeConstraintException e)
         {
         }
         try
@@ -4748,14 +4715,6 @@ public class MatrixCorrectnessTest
         }
         try
         {
-            diag2.plus(mtjm);
-            assertFalse(true);
-        }
-        catch (TypeConstraintException e)
-        {
-        }
-        try
-        {
             s1.plus(m2);
             assertFalse(true);
         }
@@ -4826,14 +4785,6 @@ public class MatrixCorrectnessTest
             assertFalse(true);
         }
         catch (IllegalArgumentException e)
-        {
-        }
-        try
-        {
-            diag2.plusEquals(mtjm);
-            assertFalse(true);
-        }
-        catch (TypeConstraintException e)
         {
         }
         try
@@ -5589,14 +5540,6 @@ public class MatrixCorrectnessTest
         }
         try
         {
-            diag2.times(mtjm);
-            assertFalse(true);
-        }
-        catch (TypeConstraintException e)
-        {
-        }
-        try
-        {
             s1.times(m2);
             assertFalse(true);
         }
@@ -5655,14 +5598,6 @@ public class MatrixCorrectnessTest
         }
         try
         {
-            diag2.times(mtjv);
-            assertFalse(true);
-        }
-        catch (TypeConstraintException e)
-        {
-        }
-        try
-        {
             s1.times(v1);
             assertFalse(true);
         }
@@ -5708,22 +5643,6 @@ public class MatrixCorrectnessTest
             assertFalse(true);
         }
         catch (IllegalArgumentException e)
-        {
-        }
-        try
-        {
-            v2.subVector(0, 1).times(mtjm);
-            assertTrue(false);
-        }
-        catch (TypeConstraintException e)
-        {
-        }
-        try
-        {
-            diag2.preTimes(mtjv);
-            assertFalse(true);
-        }
-        catch (TypeConstraintException e)
         {
         }
         try

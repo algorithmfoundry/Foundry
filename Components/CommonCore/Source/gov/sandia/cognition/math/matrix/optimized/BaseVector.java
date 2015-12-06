@@ -5,7 +5,6 @@ import gov.sandia.cognition.math.matrix.AbstractVector;
 import gov.sandia.cognition.math.matrix.DimensionalityMismatchException;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
-import javax.xml.bind.TypeConstraintException;
 
 /**
  * This package-private class implements the basic math methods, ensures size
@@ -55,8 +54,7 @@ abstract class BaseVector
         }
         else
         {
-            throw new TypeConstraintException("Input Vector class "
-                + other.getClass() + " not supported");
+            super.plusEquals(other);
         }
     }
 
@@ -97,8 +95,7 @@ abstract class BaseVector
         }
         else
         {
-            throw new TypeConstraintException("Input Vector class "
-                + other.getClass() + " not supported");
+            super.scaledPlusEquals(scaleFactor, other);
         }
     }
 
@@ -142,8 +139,7 @@ abstract class BaseVector
         }
         else
         {
-            throw new TypeConstraintException("Input Vector class "
-                + other.getClass() + " not supported");
+            super.minusEquals(other);
         }
     }
 
@@ -183,8 +179,7 @@ abstract class BaseVector
         }
         else
         {
-            throw new TypeConstraintException("Input Vector class "
-                + other.getClass() + " not supported");
+            super.dotTimesEquals(other);
         }
     }
 
@@ -224,8 +219,7 @@ abstract class BaseVector
         }
         else
         {
-            throw new TypeConstraintException("Input Vector class "
-                + other.getClass() + " not supported");
+            return super.euclideanDistanceSquared(other);
         }
     }
 
@@ -265,8 +259,7 @@ abstract class BaseVector
         }
         else
         {
-            throw new TypeConstraintException("Input Vector class "
-                + other.getClass() + " not supported");
+            return super.outerProduct(other);
         }
     }
 
@@ -302,8 +295,7 @@ abstract class BaseVector
         }
         else
         {
-            throw new TypeConstraintException("Input Matrix class "
-                + matrix.getClass() + " not supported");
+            return super.times(matrix);
         }
     }
 
@@ -325,8 +317,7 @@ abstract class BaseVector
         }
         else
         {
-            throw new TypeConstraintException("Input Vector class "
-                + other.getClass() + " not supported");
+            return super.stack(other);
         }
     }
 
@@ -368,8 +359,7 @@ abstract class BaseVector
         }
         else
         {
-            throw new TypeConstraintException("Input Vector class "
-                + other.getClass() + " not supported");
+            return super.dotProduct(other);
         }
     }
 

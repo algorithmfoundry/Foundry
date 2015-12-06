@@ -19,6 +19,7 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.ComplexNumber;
 import gov.sandia.cognition.math.matrix.DiagonalMatrix;
 import gov.sandia.cognition.math.matrix.Matrix;
+import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -571,6 +572,12 @@ public class DiagonalMatrixMTJ
         double[] diag = (double[]) in.readObject();
         this.setInternalMatrix( new no.uib.cipr.matrix.BandMatrix( diag.length, 0, 0 ) );
         System.arraycopy(diag, 0, this.getDiagonal(), 0, diag.length);
+    }
+    
+    @Override
+    public MatrixFactory<?> getMatrixFactory()
+    {
+        return SparseMatrixFactoryMTJ.INSTANCE;
     }
 
 }

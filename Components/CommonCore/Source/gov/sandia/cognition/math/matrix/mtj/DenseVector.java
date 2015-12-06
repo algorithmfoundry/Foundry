@@ -20,6 +20,7 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
+import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.VectorReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -289,9 +290,9 @@ public class DenseVector
         int M2 = other.getDimensionality();
         
         DenseVector stacked = new DenseVector( M1 + M2 );
-        for( VectorEntry e : this )
+        for( int i = 0; i < M1; i++ )
         {
-            stacked.setElement( e.getIndex(), e.getValue() );
+            stacked.setElement(i, this.array[i]);
         }
         for( VectorEntry e : other )
         {
@@ -373,6 +374,12 @@ public class DenseVector
     public boolean isSparse()
     {
         return false;
+    }
+
+    @Override
+    public VectorFactory<?> getVectorFactory()
+    {
+        return DenseVectorFactoryMTJ.INSTANCE;
     }
     
     /**

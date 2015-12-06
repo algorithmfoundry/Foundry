@@ -12,6 +12,9 @@ import gov.sandia.cognition.math.matrix.MatrixFactory;
 public class SparseMatrixFactoryOptimized
     extends MatrixFactory<SparseMatrix>
 {
+    
+    /** An instance of this class. */
+    public static SparseMatrixFactoryOptimized INSTANCE = new SparseMatrixFactoryOptimized();
 
     /**
      * @see MatrixFactory#copyMatrix(gov.sandia.cognition.math.matrix.Matrix)

@@ -10,6 +10,8 @@ import gov.sandia.cognition.math.matrix.Vector;
 import java.util.ArrayList;
 import java.util.List;
 import com.github.fommil.netlib.BLAS;
+import gov.sandia.cognition.math.matrix.MatrixFactory;
+import gov.sandia.cognition.util.ObjectUtil;
 import org.netlib.util.intW;
 //import org.netlib.util.intW;
 
@@ -373,7 +375,15 @@ public class DenseMatrix
     @Override
     final public Matrix clone()
     {
-        return new DenseMatrix(this);
+        final int rowCount = this.getNumRows();
+        DenseMatrix result = new DenseMatrix(rowCount,
+            this.getNumColumns(), true);
+        result.rows = new DenseVector[rowCount];
+        for (int i = 0; i < rowCount; i++)
+        {
+            result.rows[i] = this.rows[i].clone();
+        }
+        return result;
     }
 
     @Override
@@ -1028,15 +1038,6 @@ public class DenseMatrix
     final public double normFrobenius()
     {
         return Math.sqrt(normFrobeniusSquared());
-    }
-
-    /**
-     * @see BaseMatrix#isSquare()
-     */
-    @Override
-    final public boolean isSquare()
-    {
-        return getNumRows() == getNumColumns();
     }
 
     /**
@@ -1767,6 +1768,12 @@ public class DenseMatrix
     {
         return ((double) numNonZero()) / ((double) (getNumRows()
             * getNumColumns()));
+    }
+
+    @Override
+    public MatrixFactory<?> getMatrixFactory()
+    {
+        return DenseMatrixFactoryOptimized.INSTANCE;
     }
 
 }

@@ -4,7 +4,11 @@ package gov.sandia.cognition.math.matrix.optimized;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
-import java.util.*;
+import gov.sandia.cognition.math.matrix.VectorFactory;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Our sparse vector implementation. Rather straightforward: stores all non-zero
@@ -970,6 +974,12 @@ public class SparseVector
     public boolean isSparse()
     {
         return true;
+    }
+
+    @Override
+    public VectorFactory<?> getVectorFactory()
+    {
+        return SparseVectorFactoryOptimized.INSTANCE;
     }
 
 }

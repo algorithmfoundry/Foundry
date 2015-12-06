@@ -15,6 +15,7 @@
 package gov.sandia.cognition.math.matrix.mtj;
 
 import gov.sandia.cognition.annotation.CodeReview;
+import gov.sandia.cognition.math.matrix.SparseVectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
 import java.io.IOException;
@@ -337,7 +338,13 @@ public class SparseVector
         out.writeObject( dimensionality );
         out.writeObject( index );
         out.writeObject( data );
-    }    
+    }
+    
+    @Override
+    public SparseVectorFactory<?> getVectorFactory()
+    {
+        return SparseVectorFactoryMTJ.INSTANCE;
+    }
     
     /**
      * This method provides custom deserialization for the class since the MTJ

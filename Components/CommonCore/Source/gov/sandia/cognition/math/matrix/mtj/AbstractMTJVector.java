@@ -33,7 +33,6 @@ import java.util.Iterator;
  *
  * @author Kevin R. Dixon
  * @since  1.0
- *
  */
 @CodeReview(
     reviewer="Jonathan McClain",
@@ -84,6 +83,7 @@ public abstract class AbstractMTJVector
         return clone;
     }
 
+    @Override
     public int getDimensionality()
     {
         return this.internalVector.size();
@@ -104,12 +104,14 @@ public abstract class AbstractMTJVector
         this.internalVector.set(index, value);
     }
     
+    @Override
     public double getElement(
         int index)
     {
         return this.internalVector.get( index );
     }
 
+    @Override
     public void setElement(
         int index,
         double value)
@@ -125,10 +127,18 @@ public abstract class AbstractMTJVector
         this.internalVector.add(index, value);
     }
 
+    @Override
     public Vector times(
-        Matrix matrix )
+        final Matrix matrix)
     {
-        return this.times( (AbstractMTJMatrix) matrix );
+        if (matrix instanceof AbstractMTJMatrix)
+        {
+            return this.times((AbstractMTJMatrix) matrix);
+        }
+        else
+        {
+            return super.times(matrix);
+        }
     }
     
     /**
@@ -177,16 +187,25 @@ public abstract class AbstractMTJVector
             no.uib.cipr.matrix.Vector.Norm.Two );
     }
     
+    @Override
     public double norm2Squared()
     {
         double norm = this.norm2();
         return norm*norm;
     }
 
+    @Override
     public void plusEquals(
         final Vector other)
     {
-        this.plusEquals( (AbstractMTJVector) other );
+        if (other instanceof AbstractMTJVector)
+        {
+            this.plusEquals((AbstractMTJVector) other);
+        }
+        else
+        {
+            super.plusEquals(other);
+        }
     }
     
     /**
@@ -202,10 +221,18 @@ public abstract class AbstractMTJVector
         this.internalVector.add( other.internalVector );
     }
     
+    @Override
     public void minusEquals(
         final Vector other)
     {
-        this.minusEquals( (AbstractMTJVector) other );
+        if (other instanceof AbstractMTJVector)
+        {
+            this.minusEquals((AbstractMTJVector) other);
+        }
+        else
+        {
+            super.minusEquals(other);
+        }
     }
     
     /**
@@ -221,10 +248,18 @@ public abstract class AbstractMTJVector
         this.internalVector.add( -1.0, other.internalVector );
     }
 
+    @Override
     public double dotProduct(
         final Vector other)
     {
-        return this.dotProduct( (AbstractMTJVector) other );
+        if (other instanceof AbstractMTJVector)
+        {
+            return this.dotProduct((AbstractMTJVector) other);
+        }
+        else
+        {
+            return super.dotProduct(other);
+        }
     }
 
     /**
@@ -243,17 +278,20 @@ public abstract class AbstractMTJVector
         return this.internalVector.dot( other.internalVector );
     }
     
+    @Override
     public void dotTimesEquals(
         final Vector other)
     {
-        for( VectorEntry entry : this )
+        for (final VectorEntry entry : this)
         {
             entry.setValue( 
                 entry.getValue() * other.getElement(entry.getIndex()) );
         }
     }
 
-    public void scaleEquals(double scaleFactor)
+    @Override
+    public void scaleEquals(
+        final double scaleFactor)
     {
         this.internalVector.scale( scaleFactor );   
     }
@@ -263,7 +301,14 @@ public abstract class AbstractMTJVector
         final double scaleFactor,
         final Vector other)
     {
-        this.scaledPlusEquals(scaleFactor, (AbstractMTJVector) other);
+        if (other instanceof AbstractMTJVector)
+        {
+            this.scaledPlusEquals(scaleFactor, (AbstractMTJVector) other);
+        }
+        else
+        {
+            super.scaledPlusEquals(scaleFactor, other);
+        }
     }
 
     /**
@@ -296,6 +341,7 @@ public abstract class AbstractMTJVector
         this.scaledPlusEquals(-scaleFactor, other);
     }
     
+    @Override
     public Iterator<VectorEntry> iterator()
     {
         return new AbstractMTJVectorIterator();
@@ -307,10 +353,18 @@ public abstract class AbstractMTJVector
         this.internalVector.zero();
     }
 
-    public AbstractMTJMatrix outerProduct(
+    @Override
+    public Matrix outerProduct(
         final Vector other)
     {
-        return this.outerProduct( (AbstractMTJVector) other );
+        if (other instanceof AbstractMTJVector)
+        {
+            return this.outerProduct((AbstractMTJVector) other);
+        }
+        else
+        {
+            return super.outerProduct(other);
+        }
     }
 
     /**

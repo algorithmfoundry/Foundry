@@ -10,7 +10,6 @@ import gov.sandia.cognition.testutil.AssertUtil;
 import gov.sandia.cognition.testutil.MatrixUtil;
 import java.text.NumberFormat;
 import java.util.Iterator;
-import javax.xml.bind.TypeConstraintException;
 import static org.junit.Assert.*;
 
 /**
@@ -1255,15 +1254,6 @@ public class VectorTest
         catch (DimensionalityMismatchException e)
         {
         }
-        try
-        {
-            v1.subVector(0, 3).dotProduct(mtjv);
-            assertFalse(true);
-        }
-        catch (TypeConstraintException e)
-        {
-        }
-
         // v1.dotTimes(v3);
         try
         {
@@ -1300,15 +1290,6 @@ public class VectorTest
         catch (DimensionalityMismatchException e)
         {
         }
-        try
-        {
-            v1.subVector(0, 3).dotTimes(mtjv);
-            assertFalse(true);
-        }
-        catch (TypeConstraintException e)
-        {
-        }
-
         // v1.dotTimesEquals(v3);
         try
         {
@@ -1343,14 +1324,6 @@ public class VectorTest
             assertFalse(true);
         }
         catch (DimensionalityMismatchException e)
-        {
-        }
-        try
-        {
-            v1.subVector(0, 3).dotTimesEquals(mtjv);
-            assertFalse(true);
-        }
-        catch (TypeConstraintException e)
         {
         }
 
@@ -1431,14 +1404,6 @@ public class VectorTest
             assertFalse(true);
         }
         catch (DimensionalityMismatchException e)
-        {
-        }
-        try
-        {
-            v1.subVector(0, 3).euclideanDistanceSquared(mtjv);
-            assertFalse(true);
-        }
-        catch (TypeConstraintException e)
         {
         }
 
@@ -1587,15 +1552,6 @@ public class VectorTest
         catch (DimensionalityMismatchException e)
         {
         }
-        try
-        {
-            v1.subVector(0, 3).minusEquals(mtjv);
-            assertFalse(true);
-        }
-        catch (TypeConstraintException e)
-        {
-        }
-
         // v1.negative();
         // No exceptions thrown
 
@@ -1618,14 +1574,6 @@ public class VectorTest
         // No exceptions thrown
 
         // v1.outerProduct(v3);
-        try
-        {
-            v1.subVector(0, 3).outerProduct(mtjv);
-            assertFalse(true);
-        }
-        catch (TypeConstraintException e)
-        {
-        }
 
         // v1.plus(v3);
         try
@@ -1700,14 +1648,6 @@ public class VectorTest
         catch (DimensionalityMismatchException e)
         {
         }
-        try
-        {
-            v1.subVector(0, 3).plusEquals(mtjv);
-            assertFalse(true);
-        }
-        catch (TypeConstraintException e)
-        {
-        }
 
         // v1.scale(scaleFactor);
         // No exceptions thrown
@@ -1749,16 +1689,6 @@ public class VectorTest
             assertFalse(true);
         }
         catch (ArrayIndexOutOfBoundsException e)
-        {
-        }
-
-        // v1.stack(v2);
-        try
-        {
-            v1.subVector(0, 3).stack(mtjv);
-            assertFalse(true);
-        }
-        catch (TypeConstraintException e)
         {
         }
 

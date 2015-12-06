@@ -13,6 +13,9 @@ public class DenseVectorFactoryOptimized
     extends VectorFactory<DenseVector>
 {
 
+    /** An instance of this class. */
+    public static DenseVectorFactoryOptimized INSTANCE = new DenseVectorFactoryOptimized();
+    
     /**
      * @see VectorFactory#copyVector(gov.sandia.cognition.math.matrix.Vector)
      */
@@ -68,6 +71,12 @@ public class DenseVectorFactoryOptimized
         return new DenseVector3D(x, y, z);
     }
 
+    @Override
+    public MatrixFactory<?> getAssociatedMatrixFactory()
+    {
+        return DenseMatrixFactoryOptimized.INSTANCE;
+    }
+    
     /**
      * Package-private implementation for all of the createVector1D methods
      * required by the VectorFactory interface.

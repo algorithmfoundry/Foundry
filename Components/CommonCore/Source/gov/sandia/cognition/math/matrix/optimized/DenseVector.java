@@ -1,9 +1,11 @@
 
 package gov.sandia.cognition.math.matrix.optimized;
 
+import gov.sandia.cognition.collection.ArrayUtil;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
+import gov.sandia.cognition.math.matrix.VectorFactory;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -111,8 +113,10 @@ public class DenseVector
      * @see Vector#clone()
      */
     @Override
-    final public Vector clone()
+    final public DenseVector clone()
     {
+        final DenseVector result = (DenseVector) super.clone();
+        result.vec = ArrayUtil.copy(this.vec);
         return new DenseVector(this);
     }
 
@@ -571,6 +575,12 @@ public class DenseVector
     public boolean isSparse()
     {
         return false;
+    }
+
+    @Override
+    public VectorFactory<?> getVectorFactory()
+    {
+        return DenseVectorFactoryOptimized.INSTANCE;
     }
 
 }

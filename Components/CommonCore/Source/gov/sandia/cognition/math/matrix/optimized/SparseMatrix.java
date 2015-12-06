@@ -6,6 +6,7 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.ComplexNumber;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixEntry;
+import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -2425,6 +2426,12 @@ public class SparseMatrix
         }
 
         rows[i] = v;
+    }
+
+    @Override
+    public MatrixFactory<?> getMatrixFactory()
+    {
+        return SparseMatrixFactoryOptimized.INSTANCE;
     }
 
     /**

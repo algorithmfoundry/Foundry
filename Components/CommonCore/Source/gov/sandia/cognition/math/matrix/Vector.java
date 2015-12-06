@@ -405,6 +405,14 @@ public interface Vector
     public String toString(
         final NumberFormat format,
         final String delimiter);
+    
+    /**
+     * Gets a vector factory associated with this kind of vector.
+     * 
+     * @return
+     *      The associated factory.
+     */
+    public VectorFactory<?> getVectorFactory();
 
     /**
      * Defines the functionality for a consumer of vector entries, which are an

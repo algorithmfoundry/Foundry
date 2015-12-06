@@ -11,6 +11,7 @@ import gov.sandia.cognition.math.matrix.*;
 public class SparseVectorFactoryOptimized
     extends VectorFactory<SparseVector>
 {
+    public static SparseVectorFactoryOptimized INSTANCE = new SparseVectorFactoryOptimized();
 
     /**
      * @see VectorFactory#copyVector(gov.sandia.cognition.math.matrix.Vector)
@@ -84,6 +85,12 @@ public class SparseVectorFactoryOptimized
         double z)
     {
         return new DenseVectorFactoryOptimized.DenseVector3D(x, y, z);
+    }
+
+    @Override
+    public MatrixFactory<?> getAssociatedMatrixFactory()
+    {
+        return SparseMatrixFactoryOptimized.INSTANCE;
     }
 
 }

@@ -298,10 +298,18 @@ public abstract class AbstractMTJMatrix
 
     }
 
+    @Override
     public void plusEquals(
-        final Matrix matrix)
+        final Matrix other)
     {
-        this.plusEquals((AbstractMTJMatrix) matrix);
+        if (other instanceof AbstractMTJMatrix)
+        {
+            this.plusEquals((AbstractMTJMatrix) other);
+        }
+        else
+        {
+            super.plusEquals(other);
+        }
     }
 
     /**
@@ -319,10 +327,18 @@ public abstract class AbstractMTJMatrix
         this.internalMatrix.add(matrix.internalMatrix);
     }
 
+    @Override
     public void minusEquals(
-        final Matrix matrix)
+        final Matrix other)
     {
-        this.minusEquals((AbstractMTJMatrix) matrix);
+        if (other instanceof AbstractMTJMatrix)
+        {
+            this.minusEquals((AbstractMTJMatrix) other);
+        }
+        else
+        {
+            super.minusEquals(other);
+        }
     }
 
     /**
@@ -342,10 +358,18 @@ public abstract class AbstractMTJMatrix
             matrix.internalMatrix);
     }
 
-    public AbstractMTJMatrix times(
+    @Override
+    public Matrix times(
         final Matrix matrix)
     {
-        return this.times((AbstractMTJMatrix) matrix);
+        if (matrix instanceof AbstractMTJMatrix)
+        {
+            return this.times((AbstractMTJMatrix) matrix);
+        }
+        else
+        {
+            return super.times(matrix);
+        }
     }
 
     /**
@@ -361,10 +385,18 @@ public abstract class AbstractMTJMatrix
     public abstract AbstractMTJMatrix times(
         final AbstractMTJMatrix matrix);
 
+    @Override
     public void dotTimesEquals(
-        final Matrix matrix)
+        final Matrix other)
     {
-        this.dotTimesEquals((AbstractMTJMatrix) matrix);
+        if (other instanceof AbstractMTJMatrix)
+        {
+            this.dotTimesEquals((AbstractMTJMatrix) other);
+        }
+        else
+        {
+            super.dotTimesEquals(other);
+        }
     }
 
     /**
@@ -408,7 +440,14 @@ public abstract class AbstractMTJMatrix
         final double scaleFactor,
         final Matrix other)
     {
-        this.scaledPlusEquals(scaleFactor, (AbstractMTJMatrix) other);
+        if (other instanceof AbstractMTJMatrix)
+        {
+            this.scaledPlusEquals(scaleFactor, (AbstractMTJMatrix) other);
+        }
+        else
+        {
+            super.scaledPlusEquals(scaleFactor, other);
+        }
     }
 
     /**
@@ -451,10 +490,18 @@ public abstract class AbstractMTJMatrix
         return this.getNumRows() == this.getNumColumns();
     }
 
-    public AbstractMTJVector times(
+    @Override
+    public Vector times(
         final Vector vector)
     {
-        return this.times((AbstractMTJVector) vector);
+        if (vector instanceof AbstractMTJVector)
+        {
+            return this.times((AbstractMTJVector) vector);
+        }
+        else
+        {
+            return super.times(vector);
+        }
     }
 
     /**
@@ -694,7 +741,7 @@ public abstract class AbstractMTJMatrix
             throw new DimensionalityMismatchException(
                 this.getNumRows(), this.getNumColumns());
         }
-
+// TODO: Make this support sparse better.
         double difference;
 
         // Loop over each row, but start the column one to the right of the
@@ -796,7 +843,7 @@ public abstract class AbstractMTJMatrix
             throw new DimensionalityMismatchException(
                 "Submatrix is incorrect size.");
         }
-
+// TODO: Make this support sparse better.
         for (int i = minRow; i <= maxRow; i++)
         {
             for (int j = minColumn; j <= maxColumn; j++)
@@ -875,7 +922,7 @@ public abstract class AbstractMTJMatrix
     public void convertFromVector(
         Vector parameters)
     {
-
+// TODO: Make this support sparse better.
         int M = this.getNumRows();
         int N = this.getNumColumns();
 
@@ -897,9 +944,9 @@ public abstract class AbstractMTJMatrix
 
     }
 
-    public DenseVector convertToVector()
+    public Vector convertToVector()
     {
-
+// TODO: Make this support sparse better.
         int M = this.getNumRows();
         int N = this.getNumColumns();
 

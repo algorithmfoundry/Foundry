@@ -13,6 +13,9 @@ public class DiagonalMatrixFactoryOptimized
     extends MatrixFactory<DiagonalMatrix>
 {
 
+    /** An instance of this class. */
+    public static DiagonalMatrixFactoryOptimized INSTANCE = new DiagonalMatrixFactoryOptimized();
+    
     /**
      * @see MatrixFactory#copyMatrix(gov.sandia.cognition.math.matrix.Matrix)
      * @throws IllegalArgumentException if the input matrix isn't square
