@@ -383,21 +383,24 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#clone()
+     * {@inheritDoc}
      *
      * NOTE: This does not affect this's format. The cloned matrix is in the
      * same format as this.
+     * @return {@inheritDoc}
      */
     @Override
     public Matrix clone()
     {
+// TODO: Fix this clone method.
         return new SparseMatrix(this);
     }
 
     /**
-     * @see Matrix#isSparse()
+     * {@inheritDoc}
      *
      * NOTE: This does not affect this's format.
+     * @return {@inheritDoc}
      */
     @Override
     public boolean isSparse()
@@ -589,8 +592,7 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#scaledPlusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
@@ -627,8 +629,7 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#scaledPlusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
@@ -683,8 +684,7 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
@@ -717,8 +717,7 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
@@ -753,8 +752,7 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
@@ -912,8 +910,7 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
@@ -945,8 +942,7 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this and other are in the compressed Yale format.
      */
@@ -982,8 +978,7 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
@@ -1035,8 +1030,7 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
@@ -1069,8 +1063,7 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this and other are in the compressed Yale format.
      */
@@ -1144,8 +1137,7 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
@@ -1171,8 +1163,7 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
@@ -1222,13 +1213,13 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * {@inheritDoc}
      *
      * This returns either a dense or a sparse matrix depending on the
      * sparseness of the resulting multiplication
      *
      * NOTE: Upon completion this and other are in the compressed Yale format.
+     * @return {@inheritDoc}
      */
     @Override
     public final Matrix times(SparseMatrix other)
@@ -1269,10 +1260,10 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
+     * @return {@inheritDoc}
      */
     @Override
     public final Matrix times(DenseMatrix other)
@@ -1301,10 +1292,10 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
+     * @return {@inheritDoc}
      */
     @Override
     public final Matrix times(DiagonalMatrix other)
@@ -1364,10 +1355,10 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseVector)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
+     * @return {@inheritDoc}
      */
     @Override
     // Not final because this method is overridden by the Parallel implementation
@@ -1422,10 +1413,11 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseVector)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
+     * 
+     * @return {@inheritDoc}
      */
     @Override
     // Not final because this method is overridden by the Parallel implementation
@@ -1452,9 +1444,10 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#scaleEquals(double)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
+     * @param scaleFactor {@inheritDoc}
      */
     @Override
     final public void scaleEquals(double scaleFactor)
@@ -1470,9 +1463,10 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#getNumRows()
+     * {@inheritDoc}
      *
-     * No change to compressed Yale or sparse row format
+     * No change to compressed Yale or sparse row format.
+     * @return {@inheritDoc}
      */
     @Override
     final public int getNumRows()
@@ -1481,9 +1475,10 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#getNumColumns()
+     * {@inheritDoc}
      *
-     * No change to compressed Yale or sparse row format
+     * No change to compressed Yale or sparse row format.
+     * @return {@inheritDoc}
      */
     @Override
     final public int getNumColumns()
@@ -1492,9 +1487,12 @@ public class SparseMatrix
     }
 
     /**
-     * @see Matrix#get(int, int)
+     * {@inheritDoc}
      *
-     * No change to compressed Yale or sparse row format
+     * No change to compressed Yale or sparse row format.
+     * @param rowIndex {@inheritDoc}
+     * @param columnIndex {@inheritDoc}
+     * @return {@inheritDoc}
      */
     @Override
     public double get(int rowIndex,
@@ -1504,9 +1502,12 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#getElement(int, int)
+     * {@inheritDoc}
      *
-     * No change to compressed Yale or sparse row format
+     * No change to compressed Yale or sparse row format.
+     * @param rowIndex {@inheritDoc}
+     * @param columnIndex {@inheritDoc}
+     * @return {@inheritDoc}
      */
     @Override
     final public double getElement(int rowIndex,
@@ -1542,10 +1543,13 @@ public class SparseMatrix
     }
 
     /**
-     * @see Matrix#set(int, int, double)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      *
+     * @param rowIndex {@inheritDoc}
+     * @param columnIndex {@inheritDoc}
+     * @param value {@inheritDoc}
      * @throws ArrayIndexOutOfBoundsException if the indices are out of bounds
      */
     @Override
@@ -1557,10 +1561,13 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#setElement(int, int, double)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      *
+     * @param rowIndex {@inheritDoc}
+     * @param columnIndex {@inheritDoc}
+     * @param value {@inheritDoc}
      * @throws ArrayIndexOutOfBoundsException if the indices are out of bounds
      */
     @Override
@@ -1576,11 +1583,16 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#getSubMatrix(int, int, int, int)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion, this is in compressed Yale format. Return value is
      * also in compressed Yale format.
      *
+     * @param minRow {@inheritDoc}
+     * @param maxRow {@inheritDoc}
+     * @param minColumn {@inheritDoc}
+     * @param maxColumn {@inheritDoc}
+     * @return {@inheritDoc}
      * @throws ArrayIndexOutOfBoundsException if the input indices are outside
      * the acceptable bounds
      */
@@ -1636,10 +1648,12 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#isSymmetric()
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      *
+     * @param effectiveZero  {@inheritDoc}
+     * @return {@inheritDoc}
      * @throws IllegalArgumentException if effectiveZero less than zero.
      */
     @Override
@@ -1674,9 +1688,11 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#isZero()
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
+     * 
+     * @return {@inheritDoc}
      */
     @Override
     final public boolean isZero()
@@ -1697,10 +1713,12 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#isZero(double)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      *
+     * @param effectiveZero  {@inheritDoc}
+     * @return {@inheritDoc}
      * @throws IllegalArgumentException if effectiveZero less than zero.
      */
     @Override
@@ -1724,10 +1742,12 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#transpose()
+     * {@inheritDoc}
      *
      * NOTE: Upon completion, this is in compressed Yale format. Returned sparse
      * matrix is in sparse vector format.
+     * 
+     * @return {@inheritDoc}
      */
     @Override
     final public Matrix transpose()
@@ -1752,7 +1772,7 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#inverse()
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      *
@@ -1760,6 +1780,8 @@ public class SparseMatrix
      * calling its inverse method -- inverting a sparse matrix is likely to
      * generate a dense matrix anyway. We would recommend using an iterative
      * solver (like Conjugate Gradient).
+     * 
+     * @return {@inheritDoc}
      */
     @Override
     final public Matrix inverse()
@@ -1774,7 +1796,7 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#pseudoInverse()
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      *
@@ -1782,6 +1804,9 @@ public class SparseMatrix
      * calling its pseudoInverse method -- inverting a sparse matrix is likely
      * to generate a dense matrix anyway. We would recommend using an iterative
      * solver (like Conjugate Gradient).
+     * 
+     * @param effectiveZero  {@inheritDoc}
+     * @return {@inheritDoc}
      */
     @Override
     final public Matrix pseudoInverse(double effectiveZero)
@@ -1796,13 +1821,15 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#pseudoInverse()
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      *
      * This is implemented by creating a new dense matrix version of this and
      * calling its logDeterminant method -- It requires factoring the matrix
      * which is going to be memory intense anyway.
+     * 
+     * @return {@inheritDoc}
      */
     @Override
     final public ComplexNumber logDeterminant()
@@ -1816,13 +1843,16 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#rank(double)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      *
      * This is implemented by creating a new dense matrix version of this and
      * calling its rank method -- It requires factoring the matrix which is
      * going to memory intense anyway.
+     * 
+     * @param effectiveZero  {@inheritDoc}
+     * @return {@inheritDoc}
      */
     @Override
     final public int rank(double effectiveZero)
@@ -1837,9 +1867,11 @@ public class SparseMatrix
     }
 
     /**
-     * @see Matrix#normFrobeniusSquared()
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
+     * 
+     * @return {@inheritDoc}
      */
     @Override
     public double normFrobeniusSquared()
@@ -1857,9 +1889,11 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#normFrobenius()
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
+     * 
+     * @return {@inheritDoc}
      */
     @Override
     final public double normFrobenius()
@@ -1868,9 +1902,11 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#isSquare()
+     * {@inheritDoc}
      *
      * NOTE: No change to the internal format of this.
+     * 
+     * @return {@inheritDoc}
      */
     @Override
     final public boolean isSquare()
@@ -1879,13 +1915,16 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#solve(gov.sandia.cognition.math.matrix.Matrix)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      *
      * This is implemented by creating a new dense matrix version of this and
      * calling its solve method -- It requires factoring the matrix which is
      * going to memory intense anyway. We recommend an iterative solver instead.
+     * 
+     * @param B {@inheritDoc}
+     * @return {@inheritDoc}
      */
     @Override
     final public Matrix solve(Matrix B)
@@ -1901,13 +1940,16 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#solve(gov.sandia.cognition.math.matrix.Vector)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      *
      * This is implemented by creating a new dense matrix version of this and
      * calling its solve method -- It requires factoring the matrix which is
      * going to memory intense anyway. We recommend an iterative solver instead.
+     * 
+     * @param b {@inheritDoc}
+     * @return {@inheritDoc}
      */
     @Override
     final public Vector solve(Vector b)
@@ -1923,7 +1965,7 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#identity()
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      */
@@ -1951,9 +1993,12 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#getColumn(int)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
+     * 
+     * @param columnIndex {@inheritDoc}
+     * @return {@inheritDoc}
      */
     @Override
     final public Vector getColumn(int columnIndex)
@@ -1971,9 +2016,6 @@ public class SparseMatrix
         return ret;
     }
 
-    /**
-     * @see BaseMatrix#sumOfColumns()
-     */
     @Override
     public Vector sumOfColumns()
     {
@@ -1994,9 +2036,6 @@ public class SparseMatrix
         return ret;
     }
 
-    /**
-     * @see BaseMatrix#sumOfRows()
-     */
     @Override
     public Vector sumOfRows()
     {
@@ -2017,9 +2056,12 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#getRow(int)
+     * {@inheritDoc}
      *
-     * NOTE: Internal format is unchanged after this method
+     * NOTE: Internal format is unchanged after this method.
+     * 
+     * @param rowIndex {@inheritDoc}
+     * @return {@inheritDoc}
      */
     @Override
     final public Vector getRow(int rowIndex)
@@ -2041,11 +2083,11 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#convertFromVector(gov.sandia.cognition.math.matrix.Vector)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
      *
+     * @param parameters {@inheritDoc}
      * @throws IllegalArgumentException if parameters does not have the same
      * number of elements as this's full size (including all of the zero
      * values).
@@ -2089,10 +2131,12 @@ public class SparseMatrix
     }
 
     /**
-     * @see BaseMatrix#convertToVector()
+     * {@inheritDoc}
      *
      * NOTE: This does not affect compressed Yale/sparse row representation --
      * either is handled.
+     * 
+     * @return {@inheritDoc}
      */
     @Override
     final public Vector convertToVector()
@@ -2168,9 +2212,6 @@ public class SparseMatrix
             return rowIndex;
         }
 
-        /**
-         * @throws UnsupportedOperationException
-         */
         @Override
         public void setRowIndex(int rowIndex)
         {
@@ -2189,9 +2230,6 @@ public class SparseMatrix
             return vals[columnValueIndex];
         }
 
-        /**
-         * @throws UnsupportedOperationException
-         */
         @Override
         public void setValue(double value)
         {
@@ -2210,9 +2248,6 @@ public class SparseMatrix
             return colIdxs[columnValueIndex];
         }
 
-        /**
-         * @throws UnsupportedOperationException
-         */
         @Override
         public void setColumnIndex(int columnIndex)
         {
@@ -2319,9 +2354,6 @@ public class SparseMatrix
             return ret;
         }
 
-        /**
-         * @throws UnsupportedOperationException
-         */
         @Override
         public void remove()
         {
@@ -2371,10 +2403,11 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#preTimes(gov.sandia.cognition.math.matrix.optimized.SparseVector)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
+     * 
+     * @return {@inheritDoc}
      */
     @Override
     public final Vector preTimes(SparseVector vector)
@@ -2400,10 +2433,11 @@ public class SparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#preTimes(gov.sandia.cognition.math.matrix.optimized.DenseVector)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
+     * 
+     * @return {@inheritDoc}
      */
     @Override
     public final Vector preTimes(DenseVector vector)

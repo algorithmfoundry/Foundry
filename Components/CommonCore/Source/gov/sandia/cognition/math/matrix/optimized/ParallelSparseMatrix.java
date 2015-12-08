@@ -158,22 +158,24 @@ public class ParallelSparseMatrix
     }
 
     /**
-     * @see BaseMatrix#clone()
+     * {@inheritDoc}
      *
      * NOTE: This does not affect this's format. The cloned matrix is in the
      * same format as this.
+     * @return {@inheritDoc}
      */
     @Override
     final public Matrix clone()
     {
+// TODO: Fix this clone.
         return new ParallelSparseMatrix(this);
     }
 
     /**
-     * @see
-     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseVector)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
+     * @return {@inheritDoc}
      */
     @Override
     public Vector times(SparseVector vector)
@@ -264,10 +266,10 @@ public class ParallelSparseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseVector)
+     * {@inheritDoc}
      *
      * NOTE: Upon completion this is in the compressed Yale format.
+     * @return {@inheritDoc}
      */
     @Override
     public Vector times(DenseVector vector)
@@ -321,7 +323,7 @@ public class ParallelSparseMatrix
         };
 
         // Now that the factory is created, just call "solve" handing it in
-        ParallelMatrixFunction.< ParallelSparseMatrix, DenseVector, DenseVector>solve(
+        ParallelMatrixFunction.<ParallelSparseMatrix, DenseVector, DenseVector>solve(
             this, vector, ret, numThreads * 2, numThreads, m, factory);
 
         return ret;

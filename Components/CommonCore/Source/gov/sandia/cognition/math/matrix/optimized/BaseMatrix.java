@@ -6,7 +6,6 @@ import gov.sandia.cognition.math.matrix.DimensionalityMismatchException;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixEntry;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.util.ArgumentChecker;
 import java.text.NumberFormat;
 import java.util.Iterator;
 import javax.xml.bind.TypeConstraintException;
@@ -24,15 +23,13 @@ abstract class BaseMatrix
 {
 
     /**
-     * @see AbstractMatrix#plus(gov.sandia.cognition.math.Ring)
-     *
-     * This implementation tests the input for the correct size and calls the
-     * optimized-by-type method.
-     * @throws DimensionalityMismatchException if the input matrix's size doesn't match
-     * this's size.
-     * @throws TypeConstraintException if the input matrix's type doesn't match
-     * an implementation within this package.
+     * Creates a new {@link BaseMatrix}.
      */
+    protected BaseMatrix()
+    {
+        super();
+    }
+    
     @Override
     final public Matrix plus(Matrix m)
     {
@@ -70,16 +67,6 @@ abstract class BaseMatrix
         return ret;
     }
 
-    /**
-     * @see AbstractMatrix#minus(gov.sandia.cognition.math.Ring)
-     *
-     * This implementation tests the input for the correct size and calls the
-     * optimized-by-type method.
-     * @throws DimensionalityMismatchException if the input matrix's size doesn't match
-     * this's size.
-     * @throws TypeConstraintException if the input matrix's type doesn't match
-     * an implementation within this package.
-     */
     @Override
     final public Matrix minus(Matrix m)
     {
@@ -117,16 +104,6 @@ abstract class BaseMatrix
         return ret;
     }
 
-    /**
-     * @see AbstractMatrix#dotTimes(gov.sandia.cognition.math.Ring)
-     *
-     * This implementation tests the input for the correct size and calls the
-     * optimized-by-type method.
-     * @throws DimensionalityMismatchException if the input matrix's size doesn't match
-     * this's size.
-     * @throws TypeConstraintException if the input matrix's type doesn't match
-     * an implementation within this package.
-     */
     @Override
     final public Matrix dotTimes(Matrix m)
     {
@@ -164,16 +141,6 @@ abstract class BaseMatrix
         return ret;
     }
 
-    /**
-     * @see AbstractMatrix#plusEquals(gov.sandia.cognition.math.Ring)
-     *
-     * This implementation tests the input for the correct size and calls the
-     * optimized-by-type method.
-     * @throws DimensionalityMismatchException if the input matrix's size doesn't match
-     * this's size.
-     * @throws TypeConstraintException if the input matrix's type doesn't match
-     * an implementation within this package.
-     */
     @Override
     final public void plusEquals(Matrix other)
     {
@@ -219,16 +186,6 @@ abstract class BaseMatrix
      */
     public abstract void plusEquals(DiagonalMatrix other);
 
-    /**
-     * @see Matrix#scaledPlusEquals(double, gov.sandia.cognition.math.Ring)
-     *
-     * This implementation tests the input for the correct size and calls the
-     * optimized-by-type method.
-     * @throws DimensionalityMismatchException if the input matrix's size doesn't match
-     * this's size.
-     * @throws TypeConstraintException if the input matrix's type doesn't match
-     * an implementation within this package.
-     */
     @Override
     final public void scaledPlusEquals(double scaleFactor,
         Matrix other)
@@ -281,16 +238,6 @@ abstract class BaseMatrix
     public abstract void scaledPlusEquals(DiagonalMatrix other,
         double scaleFactor);
 
-    /**
-     * @see AbstractMatrix#minusEquals(gov.sandia.cognition.math.Ring)
-     *
-     * This implementation tests the input for the correct size and calls the
-     * optimized-by-type method.
-     * @throws DimensionalityMismatchException if the input matrix's size doesn't match
-     * this's size.
-     * @throws TypeConstraintException if the input matrix's type doesn't match
-     * an implementation within this package.
-     */
     @Override
     final public void minusEquals(Matrix other)
     {
@@ -336,16 +283,6 @@ abstract class BaseMatrix
      */
     public abstract void minusEquals(DiagonalMatrix other);
 
-    /**
-     * @see AbstractMatrix#dotTimesEquals(gov.sandia.cognition.math.Ring)
-     *
-     * This implementation tests the input for the correct size and calls the
-     * optimized-by-type method.
-     * @throws DimensionalityMismatchException if the input matrix's size doesn't match
-     * this's size.
-     * @throws TypeConstraintException if the input matrix's type doesn't match
-     * an implementation within this package.
-     */
     @Override
     final public void dotTimesEquals(Matrix other)
     {
@@ -391,16 +328,6 @@ abstract class BaseMatrix
      */
     public abstract void dotTimesEquals(DiagonalMatrix other);
 
-    /**
-     * @see AbstractMatrix#times(gov.sandia.cognition.math.Ring)
-     *
-     * This implementation tests the input for the correct size and calls the
-     * optimized-by-type method.
-     * @throws DimensionalityMismatchException if the input matrix's numRows doesn't
-     * match this's numColumns.
-     * @throws TypeConstraintException if the input matrix's type doesn't match
-     * an implementation within this package.
-     */
     @Override
     final public Matrix times(Matrix matrix)
     {
@@ -446,16 +373,6 @@ abstract class BaseMatrix
      */
     public abstract Matrix times(DiagonalMatrix other);
 
-    /**
-     * @see AbstractMatrix#times(gov.sandia.cognition.math.Vector)
-     *
-     * This implementation tests the input for the correct size and calls the
-     * optimized-by-type method.
-     * @throws DimensionalityMismatchException if the input vectors's dimensions
-     * doesn't match this's numCols.
-     * @throws TypeConstraintException if the input vector's type doesn't match
-     * an implementation within this package.
-     */
     @Override
     final public Vector times(Vector vector)
     {
@@ -540,24 +457,24 @@ abstract class BaseMatrix
      * this matrix, including that the max is greater than or equal to the min.
      * Note that the input mins and maxs are inclusive.
      *
-     * @param minrow The minimum row to return (inclusive)
-     * @param maxrow The maximum row to return (inclusive)
-     * @param mincol The minimum column to return (inclusive)
-     * @param maxcol The maximum column to return (inclusive)
+     * @param minRow The minimum row to return (inclusive)
+     * @param maxRow The maximum row to return (inclusive)
+     * @param minCol The minimum column to return (inclusive)
+     * @param maxCol The maximum column to return (inclusive)
      * @throws ArrayIndexOutOfBoundsException if the input range is illegal or
      * outside the bounds of this.
      */
-    final protected void checkSubmatrixRange(int minrow,
-        int maxrow,
-        int mincol,
-        int maxcol)
+    final protected void checkSubmatrixRange(int minRow,
+        int maxRow,
+        int minCol,
+        int maxCol)
     {
-        if (maxrow < minrow || maxcol < mincol || minrow < 0 || mincol < 0
-            || maxrow
-            > getNumRows() || maxcol > getNumColumns())
+        if (maxRow < minRow || maxCol < minCol || minRow < 0 || minCol < 0
+            || maxRow
+            > getNumRows() || maxCol > getNumColumns())
         {
             throw new ArrayIndexOutOfBoundsException("Input range is invalid: ["
-                + minrow + ", " + maxrow + "], [" + mincol + ", " + maxcol + "]");
+                + minRow + ", " + maxRow + "], [" + minCol + ", " + maxCol + "]");
         }
     }
 
@@ -571,7 +488,7 @@ abstract class BaseMatrix
      */
     final protected void checkSolveDimensions(Vector b)
     {
-        if (b.getDimensionality() != getNumRows())
+        if (b.getDimensionality() != this.getNumRows())
         {
             throw new IllegalArgumentException("Input vector (length = "
                 + b.getDimensionality()
@@ -590,7 +507,7 @@ abstract class BaseMatrix
      */
     final protected void checkSolveDimensions(Matrix b)
     {
-        if (b.getNumRows() != getNumRows())
+        if (b.getNumRows() != this.getNumRows())
         {
             throw new IllegalArgumentException("Input matrix (numRows = "
                 + b.getNumRows()
@@ -599,9 +516,6 @@ abstract class BaseMatrix
         }
     }
 
-    /**
-     * @see AbstractMatrix#toString(java.text.NumberFormat)
-     */
     @Override
     final public String toString(NumberFormat format)
     {
@@ -620,9 +534,6 @@ abstract class BaseMatrix
         return sb.toString();
     }
 
-    /**
-     * @see AbstractMatrix#iterator()
-     */
     @Override
     final public Iterator<MatrixEntry> iterator()
     {

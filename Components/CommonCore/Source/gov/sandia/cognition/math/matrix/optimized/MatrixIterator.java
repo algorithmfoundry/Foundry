@@ -50,19 +50,12 @@ class MatrixIterator
         this.m = m;
     }
 
-    /**
-     * @see Iterator#hasNext()
-     */
     @Override
     final public boolean hasNext()
     {
         return (i < m.getNumRows());
     }
 
-    /**
-     * @see Iterator#next()
-     * @throws NoSuchElementException if the iterator exceeds the matrix bounds
-     */
     @Override
     final public MatrixEntry next()
     {
@@ -93,8 +86,7 @@ class MatrixIterator
     final public void remove()
     {
         throw new UnsupportedOperationException(
-            "Elements can't be removed from "
-            + "matrices.");
+            "Elements can't be removed from matrices.");
     }
 
 }

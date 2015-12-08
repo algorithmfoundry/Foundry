@@ -48,6 +48,12 @@ public class DiagonalMatrix
         diag = Arrays.copyOf(d.diag, d.diag.length);
     }
 
+    /**
+     * Creates a diagonal matrix as a copy of the given matrix. It must be
+     * a diagonal one as well.
+     * 
+     * @param m The matrix to copy.
+     */
     public DiagonalMatrix(Matrix m)
     {
         if (m.getNumRows() != m.getNumColumns())
@@ -113,9 +119,6 @@ public class DiagonalMatrix
         // NOTE: This doesn't initialize anything
     }
 
-    /**
-     * @see BaseMatrix#clone()
-     */
     @Override
     final public Matrix clone()
     {
@@ -123,8 +126,8 @@ public class DiagonalMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#scaledPlusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * {@inheritDoc}
+     * 
      * @throws IllegalArgumentException if the input has any non-zero off-axis
      * elements as that would make this a non-diagonal matrix
      */
@@ -162,8 +165,8 @@ public class DiagonalMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#scaledPlusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * {@inheritDoc}
+     * 
      * @throws IllegalArgumentException if the input has any non-zero off-axis
      * elements as that would make this a non-diagonal matrix
      */
@@ -193,10 +196,6 @@ public class DiagonalMatrix
         }
     }
 
-    /**
-     * @see
-     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
-     */
     @Override
     public void scaledPlusEquals(DiagonalMatrix other,
         double scaleFactor)
@@ -209,8 +208,7 @@ public class DiagonalMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * {@inheritDoc}
      * @throws IllegalArgumentException if the input has any non-zero off-axis
      * elements as that would make this a non-diagonal matrix
      */
@@ -247,8 +245,7 @@ public class DiagonalMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * {@inheritDoc}
      * @throws IllegalArgumentException if the input has any non-zero off-axis
      * elements as that would make this a non-diagonal matrix
      */
@@ -277,10 +274,6 @@ public class DiagonalMatrix
         }
     }
 
-    /**
-     * @see
-     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
-     */
     @Override
     public final void plusEquals(DiagonalMatrix other)
     {
@@ -292,8 +285,7 @@ public class DiagonalMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * {@inheritDoc}
      * @throws IllegalArgumentException if the input has any non-zero off-axis
      * elements as that would make this a non-diagonal matrix
      */
@@ -330,8 +322,7 @@ public class DiagonalMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
+     * {@inheritDoc}
      * @throws IllegalArgumentException if the input has any non-zero off-axis
      * elements as that would make this a non-diagonal matrix
      */
@@ -359,11 +350,7 @@ public class DiagonalMatrix
             }
         }
     }
-
-    /**
-     * @see
-     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
-     */
+    
     @Override
     public final void minusEquals(DiagonalMatrix other)
     {
@@ -374,10 +361,6 @@ public class DiagonalMatrix
         }
     }
 
-    /**
-     * @see
-     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
-     */
     @Override
     public final void dotTimesEquals(SparseMatrix other)
     {
@@ -388,10 +371,6 @@ public class DiagonalMatrix
         }
     }
 
-    /**
-     * @see
-     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
-     */
     @Override
     public final void dotTimesEquals(DenseMatrix other)
     {
@@ -402,10 +381,6 @@ public class DiagonalMatrix
         }
     }
 
-    /**
-     * @see
-     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
-     */
     @Override
     public final void dotTimesEquals(DiagonalMatrix other)
     {
@@ -416,20 +391,12 @@ public class DiagonalMatrix
         }
     }
 
-    /**
-     * @see
-     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
-     */
     @Override
     public final Matrix times(SparseMatrix other)
     {
         return other.preTimes(this);
     }
 
-    /**
-     * @see
-     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
-     */
     @Override
     public final Matrix times(DenseMatrix other)
     {
@@ -444,10 +411,6 @@ public class DiagonalMatrix
         return ret;
     }
 
-    /**
-     * @see
-     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
-     */
     @Override
     public final Matrix times(DiagonalMatrix other)
     {
@@ -461,10 +424,6 @@ public class DiagonalMatrix
         return ret;
     }
 
-    /**
-     * @see
-     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final Vector times(SparseVector vector)
     {
@@ -479,11 +438,7 @@ public class DiagonalMatrix
 
         return ret;
     }
-
-    /**
-     * @see
-     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseVector)
-     */
+    
     @Override
     public final Vector times(DenseVector vector)
     {
@@ -497,9 +452,6 @@ public class DiagonalMatrix
         return ret;
     }
 
-    /**
-     * @see BaseMatrix#scaleEquals(double)
-     */
     @Override
     final public void scaleEquals(double scaleFactor)
     {
@@ -509,18 +461,12 @@ public class DiagonalMatrix
         }
     }
 
-    /**
-     * @see BaseMatrix#getNumRows()
-     */
     @Override
     final public int getNumRows()
     {
         return diag.length;
     }
 
-    /**
-     * @see BaseMatrix#getNumColumns()
-     */
     @Override
     final public int getNumColumns()
     {
@@ -550,9 +496,6 @@ public class DiagonalMatrix
         }
     }
 
-    /**
-     * @see Matrix#get(int, int)
-     */
     @Override
     public double get(int rowIndex,
         int columnIndex)
@@ -581,9 +524,6 @@ public class DiagonalMatrix
         return 0;
     }
 
-    /**
-     * @see Matrix#set(int, int, double)
-     */
     @Override
     public void set(int rowIndex,
         int columnIndex,
@@ -621,11 +561,6 @@ public class DiagonalMatrix
         }
     }
 
-    /**
-     * @see BaseMatrix#getSubMatrix(int, int, int, int)
-     * @throws ArrayIndexOutOfBoundsException if the input indices are outside
-     * the matrix
-     */
     @Override
     final public Matrix getSubMatrix(int minRow,
         int maxRow,
@@ -649,9 +584,6 @@ public class DiagonalMatrix
         return ret;
     }
 
-    /**
-     * @see BaseMatrix#isSymmetric(double)
-     */
     @Override
     final public boolean isSymmetric(double effectiveZero)
     {
@@ -659,9 +591,6 @@ public class DiagonalMatrix
         return true;
     }
 
-    /**
-     * @see BaseMatrix#transpose()
-     */
     @Override
     final public Matrix transpose()
     {
@@ -669,9 +598,11 @@ public class DiagonalMatrix
     }
 
     /**
-     * @see BaseMatrix#inverse()
+     * {@inheritDoc}
      * @throws UnsupportedOperationException if this doesn't span the space, so
      * can't be inverted.
+     * 
+     * @return {@inheritDoc}
      */
     @Override
     final public Matrix inverse()
@@ -690,9 +621,6 @@ public class DiagonalMatrix
         return ret;
     }
 
-    /**
-     * @see BaseMatrix#pseudoInverse(double)
-     */
     @Override
     final public Matrix pseudoInverse(double effectiveZero)
     {
@@ -707,9 +635,6 @@ public class DiagonalMatrix
         return ret;
     }
 
-    /**
-     * @see BaseMatrix#logDeterminant()
-     */
     @Override
     final public ComplexNumber logDeterminant()
     {
@@ -752,9 +677,6 @@ public class DiagonalMatrix
         return new ComplexNumber(logsum, (sign < 0) ? Math.PI : 0.0);
     }
 
-    /**
-     * @see BaseMatrix#rank(double)
-     */
     @Override
     final public int rank(double effectiveZero)
     {
@@ -771,10 +693,6 @@ public class DiagonalMatrix
         return rank;
     }
 
-    /**
-     * @see Matrix#normFrobeniusSquared() 
-     * @return 
-     */
     @Override
     public double normFrobeniusSquared()
     {
@@ -786,30 +704,18 @@ public class DiagonalMatrix
         return ret;
     }
 
-    /**
-     * @see BaseMatrix#normFrobenius()
-     */
     @Override
     final public double normFrobenius()
     {
         return Math.sqrt(normFrobeniusSquared());
     }
 
-    /**
-     * @see BaseMatrix#isSquare()
-     */
     @Override
     final public boolean isSquare()
     {
         return true;
     }
 
-    /**
-     * @see BaseMatrix#solve(gov.sandia.cognition.math.matrix.Matrix)
-     * @throws IllegalArgumentException if the input's numRows doesn't match
-     * this's numRows
-     * @throws UnsupportedOperationException if this doesn't span the space
-     */
     @Override
     final public Matrix solve(Matrix B)
     {
@@ -834,12 +740,6 @@ public class DiagonalMatrix
         return ret;
     }
 
-    /**
-     * @see BaseMatrix#solve(gov.sandia.cognition.math.matrix.Vector)
-     * @throws IllegalArgumentException if the input's numRows doesn't match
-     * this's numRows
-     * @throws UnsupportedOperationException if this doesn't span the space
-     */
     @Override
     final public Vector solve(Vector b)
     {
@@ -864,9 +764,6 @@ public class DiagonalMatrix
         return ret;
     }
 
-    /**
-     * @see BaseMatrix#identity()
-     */
     @Override
     final public void identity()
     {
@@ -876,11 +773,6 @@ public class DiagonalMatrix
         }
     }
 
-    /**
-     * @see BaseMatrix#getColumn(int)
-     * @throws ArrayIndexOutOfBoundsException if the input column index is
-     * outside the matrix
-     */
     @Override
     final public Vector getColumn(int columnIndex)
     {
@@ -896,11 +788,6 @@ public class DiagonalMatrix
         return ret;
     }
 
-    /**
-     * @see BaseMatrix#getRow(int)
-     * @throws ArrayIndexOutOfBoundsException if the input row index is outside
-     * the matrix
-     */
     @Override
     final public Vector getRow(int rowIndex)
     {
@@ -917,8 +804,8 @@ public class DiagonalMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#convertFromVector(gov.sandia.cognition.math.matrix.Vector)
+     * {@inheritDoc}
+     * @param parameters {@inheritDoc}
      * @throws IllegalArgumentException if input vector doesn't have enough
      * elements to cover all elements of this or if the input vector specifies
      * non-zero values in off-diagonal elements.
@@ -948,9 +835,6 @@ public class DiagonalMatrix
         }
     }
 
-    /**
-     * @see BaseMatrix#convertToVector()
-     */
     @Override
     final public Vector convertToVector()
     {
@@ -962,10 +846,6 @@ public class DiagonalMatrix
         return ret;
     }
 
-    /**
-     * @see
-     * BaseMatrix#preTimes(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final Vector preTimes(SparseVector vector)
     {
@@ -974,10 +854,6 @@ public class DiagonalMatrix
         return times(vector);
     }
 
-    /**
-     * @see
-     * BaseMatrix#preTimes(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final Vector preTimes(DenseVector vector)
     {

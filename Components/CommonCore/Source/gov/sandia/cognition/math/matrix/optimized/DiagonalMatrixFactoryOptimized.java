@@ -17,7 +17,8 @@ public class DiagonalMatrixFactoryOptimized
     public static DiagonalMatrixFactoryOptimized INSTANCE = new DiagonalMatrixFactoryOptimized();
     
     /**
-     * @see MatrixFactory#copyMatrix(gov.sandia.cognition.math.matrix.Matrix)
+     * {@inheritDoc}
+     * @return {@inheritDoc}
      * @throws IllegalArgumentException if the input matrix isn't square
      * (because diagonal matrices must be) or if the input matrix has non-zero
      * entries on the diagonal.
@@ -29,7 +30,8 @@ public class DiagonalMatrixFactoryOptimized
     }
 
     /**
-     * @see MatrixFactory#createMatrix(int, int)
+     * {@inheritDoc}
+     * @return {@inheritDoc}
      * @throws IllegalArgumentException if the input dimensions are not square
      * (because diagonal matrices must be)
      */

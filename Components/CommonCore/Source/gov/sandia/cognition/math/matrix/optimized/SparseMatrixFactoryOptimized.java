@@ -17,10 +17,12 @@ public class SparseMatrixFactoryOptimized
     public static SparseMatrixFactoryOptimized INSTANCE = new SparseMatrixFactoryOptimized();
 
     /**
-     * @see MatrixFactory#copyMatrix(gov.sandia.cognition.math.matrix.Matrix)
+     * {@inheritDoc}
      *
      * NOTE: Returned matrix is Yale format if m is Diagonal, Dense, or Sparse
      * in Yale format. Is sparse row if m is Sparse and in sparse row format.
+     * 
+     * @return {@inheritDoc}
      */
     @Override
     final public SparseMatrix copyMatrix(Matrix m)
@@ -45,9 +47,11 @@ public class SparseMatrixFactoryOptimized
     }
 
     /**
-     * @see MatrixFactory#createMatrix(int, int)
+     * {@inheritDoc}
      *
      * NOTE: Returned matrix is sparse row format.
+     * 
+     * @return {@inheritDoc}
      */
     @Override
     final public SparseMatrix createMatrix(int numRows,

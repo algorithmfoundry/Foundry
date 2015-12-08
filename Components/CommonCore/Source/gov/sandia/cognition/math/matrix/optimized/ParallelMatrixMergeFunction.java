@@ -128,7 +128,7 @@ abstract class ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>
         int numPieces,
         int numThreads,
         int numRows,
-        ParallelMatrixMergeFunction.IParallelFunctionFactory<InputType1, InputType2, MergeType> factory)
+        ParallelMatrixMergeFunction.ParallelFunctionFactory<InputType1, InputType2, MergeType> factory)
     {
         double numRowsPer = ((double) numRows) / ((double) numPieces);
         numRowsPer = Math.max(numRowsPer, 1.0);
@@ -180,7 +180,7 @@ abstract class ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>
      * @param <InputType2> The right input's type
      * @param <MergeType> The output type
      */
-    public interface IParallelFunctionFactory<InputType1, InputType2, MergeType>
+    public interface ParallelFunctionFactory<InputType1, InputType2, MergeType>
     {
 
         /**

@@ -47,36 +47,24 @@ class OptVecEntry
         this.v = v;
     }
 
-    /**
-     * @see VectorEntry#getIndex()
-     */
     @Override
     final public int getIndex()
     {
         return index;
     }
 
-    /**
-     * @see VectorEntry#setIndex(int)
-     */
     @Override
     final public void setIndex(int index)
     {
         this.index = index;
     }
 
-    /**
-     * @see VectorEntry#getValue()
-     */
     @Override
     final public double getValue()
     {
         return v.getElement(index);
     }
 
-    /**
-     * @see VectorEntry#setValue(double)
-     */
     @Override
     final public void setValue(double value)
     {

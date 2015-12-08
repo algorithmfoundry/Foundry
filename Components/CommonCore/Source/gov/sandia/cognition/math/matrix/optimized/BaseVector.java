@@ -2,7 +2,6 @@
 package gov.sandia.cognition.math.matrix.optimized;
 
 import gov.sandia.cognition.math.matrix.AbstractVector;
-import gov.sandia.cognition.math.matrix.DimensionalityMismatchException;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
 
@@ -18,31 +17,17 @@ abstract class BaseVector
 {
 
     /**
-     * Checks the length of v and ensures it can be added to or dotted with this
-     *
-     * @param v The vector that may be added to or dotted with this
-     * @throws DimensionalityMismatchException if the input vector's length
-     * doesn't match this.
+     * Creates a new {@link BaseVector}.
      */
-    private void checkLength(Vector v)
+    protected BaseVector()
     {
-        if (v.getDimensionality() != getDimensionality())
-        {
-            throw new DimensionalityMismatchException("Input vector's length ("
-                + v.getDimensionality() + ") does not match mine ("
-                + getDimensionality() + ")");
-        }
+        super();
     }
-
-    /**
-     * @see Vector#plusEquals(gov.sandia.cognition.math.Vector)
-     * @throws TypeConstraintException if the input Vector is not of a type
-     * defined in this package.
-     */
+    
     @Override
     final public void plusEquals(Vector other)
     {
-        checkLength(other);
+        this.assertSameDimensionality(other);
 
         if (other instanceof SparseVector)
         {
@@ -74,16 +59,11 @@ abstract class BaseVector
      */
     public abstract void plusEquals(SparseVector other);
 
-    /**
-     * @see Vector#scaledPlusEquals(gov.sandia.cognition.math.Vector)
-     * @throws TypeConstraintException if the input Vector is not of a type
-     * defined in this package.
-     */
     @Override
     final public void scaledPlusEquals(double scaleFactor,
         Vector other)
     {
-        checkLength(other);
+        this.assertSameDimensionality(other);
 
         if (other instanceof SparseVector)
         {
@@ -119,15 +99,10 @@ abstract class BaseVector
     public abstract void scaledPlusEquals(SparseVector other,
         double scaleFactor);
 
-    /**
-     * @see Vector#minusEquals(gov.sandia.cognition.math.Vector)
-     * @throws TypeConstraintException if the input Vector is not of a type
-     * defined in this package.
-     */
     @Override
     final public void minusEquals(Vector other)
     {
-        checkLength(other);
+        this.assertSameDimensionality(other);
 
         if (other instanceof SparseVector)
         {
@@ -159,15 +134,10 @@ abstract class BaseVector
      */
     public abstract void minusEquals(SparseVector other);
 
-    /**
-     * @see Vector#dotTimesEquals(gov.sandia.cognition.math.Vector)
-     * @throws TypeConstraintException if the input Vector is not of a type
-     * defined in this package.
-     */
     @Override
     final public void dotTimesEquals(Vector other)
     {
-        checkLength(other);
+        this.assertSameDimensionality(other);
 
         if (other instanceof SparseVector)
         {
@@ -199,15 +169,10 @@ abstract class BaseVector
      */
     public abstract void dotTimesEquals(SparseVector other);
 
-    /**
-     * @see Vector#euclideanDistance(gov.sandia.cognition.math.matrix.Vector)
-     * @throws TypeConstraintException if the input Vector is not of a type
-     * defined in this package.
-     */
     @Override
     final public double euclideanDistanceSquared(Vector other)
     {
-        checkLength(other);
+        this.assertSameDimensionality(other);
 
         if (other instanceof SparseVector)
         {
@@ -241,11 +206,6 @@ abstract class BaseVector
      */
     public abstract double euclideanDistanceSquared(SparseVector other);
 
-    /**
-     * @see Vector#outerProduct(gov.sandia.cognition.math.matrix.Vector)
-     * @throws TypeConstraintException if the input Vector is not of a type
-     * defined in this package.
-     */
     @Override
     final public Matrix outerProduct(Vector other)
     {
@@ -281,11 +241,6 @@ abstract class BaseVector
      */
     public abstract Matrix outerProduct(SparseVector other);
 
-    /**
-     * @see Vector#times(gov.sandia.cognition.math.matrix.Matrix)
-     * @throws TypeConstraintException if the input Vector is not of a type
-     * defined in this package.
-     */
     @Override
     final public Vector times(Matrix matrix)
     {
@@ -299,11 +254,6 @@ abstract class BaseVector
         }
     }
 
-    /**
-     * @see Vector#stack(gov.sandia.cognition.math.matrix.Vector)
-     * @throws TypeConstraintException if the input Vector is not of a type
-     * defined in this package.
-     */
     @Override
     final public Vector stack(Vector other)
     {
@@ -339,15 +289,10 @@ abstract class BaseVector
      */
     public abstract Vector stack(SparseVector other);
 
-    /**
-     * @see Vector#dotProduct(gov.sandia.cognition.math.matrix.Vector)
-     * @throws TypeConstraintException if the input Vector is not of a type
-     * defined in this package.
-     */
     @Override
     final public double dotProduct(Vector other)
     {
-        checkLength(other);
+        this.assertSameDimensionality(other);
 
         if (other instanceof SparseVector)
         {

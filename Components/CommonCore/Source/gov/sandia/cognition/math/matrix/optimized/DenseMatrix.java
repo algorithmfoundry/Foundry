@@ -431,10 +431,6 @@ public class DenseMatrix
         }
     }
 
-    /**
-     * @see
-     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
-     */
     @Override
     public final void plusEquals(SparseMatrix other)
     {
@@ -458,10 +454,6 @@ public class DenseMatrix
         }
     }
 
-    /**
-     * @see
-     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
-     */
     @Override
     public final void plusEquals(DenseMatrix other)
     {
@@ -475,10 +467,6 @@ public class DenseMatrix
         }
     }
 
-    /**
-     * @see
-     * BaseMatrix#plusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
-     */
     @Override
     public final void plusEquals(DiagonalMatrix other)
     {
@@ -489,10 +477,6 @@ public class DenseMatrix
         }
     }
 
-    /**
-     * @see
-     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
-     */
     @Override
     public final void minusEquals(SparseMatrix other)
     {
@@ -516,10 +500,6 @@ public class DenseMatrix
         }
     }
 
-    /**
-     * @see
-     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
-     */
     @Override
     public final void minusEquals(DenseMatrix other)
     {
@@ -533,10 +513,6 @@ public class DenseMatrix
         }
     }
 
-    /**
-     * @see
-     * BaseMatrix#minusEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
-     */
     @Override
     public final void minusEquals(DiagonalMatrix other)
     {
@@ -548,8 +524,7 @@ public class DenseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
+     * {@inheritDoc}
      *
      * NOTE: Calling this method is a bad idea because you end up storing a
      * sparse matrix in a dense representation.
@@ -586,10 +561,6 @@ public class DenseMatrix
         }
     }
 
-    /**
-     * @see
-     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
-     */
     @Override
     public final void dotTimesEquals(DenseMatrix other)
     {
@@ -604,8 +575,7 @@ public class DenseMatrix
     }
 
     /**
-     * @see
-     * BaseMatrix#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
+     * {@inheritDoc}
      *
      * NOTE: Calling this method is a really bad idea because you end up storing
      * a diagonal matrix in a dense representation.
@@ -630,10 +600,6 @@ public class DenseMatrix
         }
     }
 
-    /**
-     * @see
-     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseMatrix)
-     */
     @Override
     public final Matrix times(SparseMatrix other)
     {
@@ -651,10 +617,6 @@ public class DenseMatrix
         return ret;
     }
 
-    /**
-     * @see
-     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseMatrix)
-     */
     @Override
     public final Matrix times(DenseMatrix other)
     {
@@ -676,10 +638,6 @@ public class DenseMatrix
         }
     }
 
-    /**
-     * @see
-     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix)
-     */
     @Override
     public final Matrix times(DiagonalMatrix other)
     {
@@ -712,10 +670,6 @@ public class DenseMatrix
         return ret;
     }
 
-    /**
-     * @see
-     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final Vector times(SparseVector vector)
     {
@@ -724,10 +678,6 @@ public class DenseMatrix
         return timesInternal(vector);
     }
 
-    /**
-     * @see
-     * BaseMatrix#times(gov.sandia.cognition.math.matrix.optimized.DenseVector)
-     */
     @Override
     public final Vector times(DenseVector vector)
     {
@@ -736,9 +686,6 @@ public class DenseMatrix
         return timesInternal(vector);
     }
 
-    /**
-     * @see BaseMatrix#scaleEquals(double)
-     */
     @Override
     public final void scaleEquals(double scaleFactor)
     {
@@ -751,18 +698,12 @@ public class DenseMatrix
         }
     }
 
-    /**
-     * @see BaseMatrix#getNumRows()
-     */
     @Override
     final public int getNumRows()
     {
         return rows.length;
     }
 
-    /**
-     * @see BaseMatrix#getNumColumns()
-     */
     @Override
     final public int getNumColumns()
     {
@@ -770,9 +711,6 @@ public class DenseMatrix
             : rows[0].getDimensionality();
     }
 
-    /**
-     * @see Matrix#get(int, int)
-     */
     @Override
     public double get(int rowIndex,
         int columnIndex)
@@ -780,9 +718,6 @@ public class DenseMatrix
         return getElement(rowIndex, columnIndex);
     }
 
-    /**
-     * @see BaseMatrix#getElement(int, int)
-     */
     @Override
     final public double getElement(int rowIndex,
         int columnIndex)
@@ -790,9 +725,6 @@ public class DenseMatrix
         return rows[rowIndex].getElement(columnIndex);
     }
 
-    /**
-     * @see Matrix#set(int, int, double)
-     */
     @Override
     public void set(int rowIndex,
         int columnIndex,
@@ -801,9 +733,6 @@ public class DenseMatrix
         setElement(rowIndex, columnIndex, value);
     }
 
-    /**
-     * @see BaseMatrix#setElement(int, int, double)
-     */
     @Override
     final public void setElement(int rowIndex,
         int columnIndex,
@@ -813,9 +742,14 @@ public class DenseMatrix
     }
 
     /**
-     * @see BaseMatrix#getSubMatrix(int, int, int, int)
+     * {@inheritDoc}
      *
      * NOTE: This is inclusive on both end points.
+     * @param minRow {@inheritDoc}
+     * @param maxRow {@inheritDoc}
+     * @param minColumn {@inheritDoc}
+     * @param maxColumn {@inheritDoc}
+     * @return {@inheritDoc}
      */
     @Override
     final public Matrix getSubMatrix(int minRow,
@@ -839,9 +773,6 @@ public class DenseMatrix
         return ret;
     }
 
-    /**
-     * @see BaseMatrix#isSymmetric(double)
-     */
     @Override
     final public boolean isSymmetric(double effectiveZero)
     {
@@ -869,9 +800,6 @@ public class DenseMatrix
         return true;
     }
 
-    /**
-     * @see BaseMatrix#transpose()
-     */
     @Override
     final public Matrix transpose()
     {
@@ -893,9 +821,6 @@ public class DenseMatrix
         return ret;
     }
 
-    /**
-     * @see BaseMatrix#inverse()
-     */
     @Override
     final public Matrix inverse()
     {
@@ -910,9 +835,6 @@ public class DenseMatrix
         return solve(I);
     }
 
-    /**
-     * @see BaseMatrix#pseudoInverse(double)
-     */
     @Override
     final public Matrix pseudoInverse(double effectiveZero)
     {
@@ -934,9 +856,6 @@ public class DenseMatrix
         return svd.V.times(svd.Sigma.transpose()).times(svd.U.transpose());
     }
 
-    /**
-     * @see BaseMatrix#logDeterminant()
-     */
     @PublicationReferences(references =
     {
         @PublicationReference(author = "Wikipedia",
@@ -1008,9 +927,6 @@ public class DenseMatrix
         return new ComplexNumber(logsum, (sign < 0) ? Math.PI : 0.0);
     }
 
-    /**
-     * @see BaseMatrix#rank(double)
-     */
     @Override
     final public int rank(double effectiveZero)
     {
@@ -1029,9 +945,6 @@ public class DenseMatrix
         return ret;
     }
 
-    /**
-     * @see Matrix#normFrobeniusSquared()
-     */
     @Override
     public double normFrobeniusSquared()
     {
@@ -1046,18 +959,12 @@ public class DenseMatrix
         return ret;
     }
 
-    /**
-     * @see BaseMatrix#normFrobenius()
-     */
     @Override
     final public double normFrobenius()
     {
         return Math.sqrt(normFrobeniusSquared());
     }
 
-    /**
-     * @see Matrix#isSparse()
-     */
     @Override
     public boolean isSparse()
     {
@@ -1525,10 +1432,6 @@ public class DenseMatrix
         return ret;
     }
 
-    /**
-     * @see BaseMatrix#solve(gov.sandia.cognition.math.matrix.Matrix)
-     * @throws IllegalStateException if this is not square
-     */
     @Override
     final public Matrix solve(Matrix B)
     {
@@ -1553,10 +1456,6 @@ public class DenseMatrix
         return X;
     }
 
-    /**
-     * @see BaseMatrix#solve(gov.sandia.cognition.math.matrix.Vector)
-     * @throws IllegalStateException if this is not square
-     */
     @Override
     final public Vector solve(Vector b)
     {
@@ -1572,9 +1471,6 @@ public class DenseMatrix
         return upperTriangularSolve(qr.R, qr.Q.transpose().times(b));
     }
 
-    /**
-     * @see BaseMatrix#identity()
-     */
     @Override
     final public void identity()
     {
@@ -1596,11 +1492,6 @@ public class DenseMatrix
         }
     }
 
-    /**
-     * @see BaseMatrix#getColumn(int)
-     * @throws ArrayIndexOutOfBoundsException if column index is negative or
-     * greater than or equal to getNumColumns
-     */
     @Override
     final public Vector getColumn(int columnIndex)
     {
@@ -1619,11 +1510,6 @@ public class DenseMatrix
         return ret;
     }
 
-    /**
-     * @see BaseMatrix#getRow(int)
-     * @throws ArrayIndexOutOfBoundsException if row index is negative or
-     * greater than or equal to getNumRows
-     */
     @Override
     final public Vector getRow(int rowIndex)
     {
@@ -1637,12 +1523,6 @@ public class DenseMatrix
         return new DenseVector(rows[rowIndex]);
     }
 
-    /**
-     * @see
-     * BaseMatrix#convertFromVector(gov.sandia.cognition.math.matrix.Vector)
-     * @throws IllegalArgumentException if the input vector doesn't match this's
-     * dimensions (numRows * numColumns)
-     */
     @Override
     final public void convertFromVector(Vector v)
     {
@@ -1657,10 +1537,7 @@ public class DenseMatrix
             }
         }
     }
-
-    /**
-     * @see BaseMatrix#convertToVector()
-     */
+    
     @Override
     final public Vector convertToVector()
     {
@@ -1677,10 +1554,6 @@ public class DenseMatrix
         return ret;
     }
 
-    /**
-     * @see
-     * BaseMatrix#preTimes(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final Vector preTimes(SparseVector vector)
     {
@@ -1702,10 +1575,6 @@ public class DenseMatrix
         return ret;
     }
 
-    /**
-     * @see
-     * BaseMatrix#preTimes(gov.sandia.cognition.math.matrix.optimized.DenseVector)
-     */
     @Override
     public final Vector preTimes(DenseVector vector)
     {

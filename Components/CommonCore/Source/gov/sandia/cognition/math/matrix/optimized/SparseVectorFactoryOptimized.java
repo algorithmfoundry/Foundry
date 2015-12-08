@@ -11,11 +11,9 @@ import gov.sandia.cognition.math.matrix.*;
 public class SparseVectorFactoryOptimized
     extends VectorFactory<SparseVector>
 {
+    /** An instance of this class. */
     public static SparseVectorFactoryOptimized INSTANCE = new SparseVectorFactoryOptimized();
 
-    /**
-     * @see VectorFactory#copyVector(gov.sandia.cognition.math.matrix.Vector)
-     */
     @Override
     final public SparseVector copyVector(Vector m)
     {
@@ -38,9 +36,6 @@ public class SparseVectorFactoryOptimized
         return ret;
     }
 
-    /**
-     * @see VectorFactory#createVector(int)
-     */
     @Override
     final public SparseVector createVector(int dim)
     {
@@ -48,10 +43,12 @@ public class SparseVectorFactoryOptimized
     }
 
     /**
-     * @see VectorFactory#createVector1D(double)
+     * {@inheritDoc}
      *
      * NOTE: This produces a dense vector because a sparse vector with one
      * element is less memory efficient.
+     * 
+     * @return {@inheritDoc}
      */
     @Override
     final public Vector1D createVector1D(double x)
@@ -60,10 +57,12 @@ public class SparseVectorFactoryOptimized
     }
 
     /**
-     * @see VectorFactory#createVector2D(double,double)
+     * {@inheritDoc}
      *
      * NOTE: This produces a dense vector because a sparse vector with one
      * element is less memory efficient than a dense vector with two elements.
+     * 
+     * @return {@inheritDoc}
      */
     @Override
     final public Vector2D createVector2D(double x,
@@ -73,11 +72,13 @@ public class SparseVectorFactoryOptimized
     }
 
     /**
-     * @see VectorFactory#createVector3D(double,double,double)
+     * {@inheritDoc}
      *
      * NOTE: This produces a dense vector because a sparse vector with two
      * elements is less memory efficient than a dense vector with three
      * elements.
+     * 
+     * @return {@inheritDoc}
      */
     @Override
     final public Vector3D createVector3D(double x,

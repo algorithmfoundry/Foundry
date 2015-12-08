@@ -35,18 +35,12 @@ public class VectorIterator
         this.curIdx = 0;
     }
 
-    /**
-     * @see Iterator#hasNext()
-     */
     @Override
     final public boolean hasNext()
     {
         return curIdx < v.getDimensionality();
     }
 
-    /**
-     * @see Iterator#next()
-     */
     @Override
     final public VectorEntry next()
     {

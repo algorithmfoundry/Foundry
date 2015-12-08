@@ -16,9 +16,6 @@ public class DenseVectorFactoryOptimized
     /** An instance of this class. */
     public static DenseVectorFactoryOptimized INSTANCE = new DenseVectorFactoryOptimized();
     
-    /**
-     * @see VectorFactory#copyVector(gov.sandia.cognition.math.matrix.Vector)
-     */
     @Override
     final public DenseVector copyVector(Vector m)
     {
@@ -32,27 +29,18 @@ public class DenseVectorFactoryOptimized
         return ret;
     }
 
-    /**
-     * @see VectorFactory#createVector(int)
-     */
     @Override
     final public DenseVector createVector(int dim)
     {
         return new DenseVector(dim);
     }
 
-    /**
-     * @see VectorFactory#createVector1D(double)
-     */
     @Override
     final public Vector1D createVector1D(double x)
     {
         return new DenseVector1D(x);
     }
 
-    /**
-     * @see VectorFactory#createVector2D(double, double)
-     */
     @Override
     final public Vector2D createVector2D(double x,
         double y)
@@ -60,9 +48,6 @@ public class DenseVectorFactoryOptimized
         return new DenseVector2D(x, y);
     }
 
-    /**
-     * @see VectorFactory#createVector3D(double, double, double)
-     */
     @Override
     final public Vector3D createVector3D(double x,
         double y,
@@ -97,18 +82,12 @@ public class DenseVectorFactoryOptimized
             elements()[0] = x;
         }
 
-        /**
-         * @see Vector1D#getX()
-         */
         @Override
         final public double getX()
         {
             return elements()[0];
         }
 
-        /**
-         * @see Vector1D#setX(double)
-         */
         @Override
         final public void setX(double x)
         {
@@ -159,45 +138,30 @@ public class DenseVectorFactoryOptimized
             elements()[1] = y;
         }
 
-        /**
-         * @see Vector2D#getX()
-         */
         @Override
         final public double getX()
         {
             return elements()[0];
         }
 
-        /**
-         * @see Vector2D#setX(double)
-         */
         @Override
         final public void setX(double x)
         {
             elements()[0] = x;
         }
 
-        /**
-         * @see Vector2D#getY()
-         */
         @Override
         final public double getY()
         {
             return elements()[1];
         }
 
-        /**
-         * @see Vector2D#setY(double)
-         */
         @Override
         final public void setY(double y)
         {
             elements()[1] = y;
         }
 
-        /**
-         * @see Vector2D#setXY(double, double)
-         */
         @Override
         final public void setXY(double x,
             double y)
@@ -206,18 +170,12 @@ public class DenseVectorFactoryOptimized
             elements()[1] = y;
         }
 
-        /**
-         * @see Vector2D#getFirst()
-         */
         @Override
         final public Double getFirst()
         {
             return elements()[0];
         }
 
-        /**
-         * @see Vector2D#getSecond()
-         */
         @Override
         final public Double getSecond()
         {
@@ -271,90 +229,60 @@ public class DenseVectorFactoryOptimized
             elements()[2] = z;
         }
 
-        /**
-         * @see Vector3D#getX()
-         */
         @Override
         final public double getX()
         {
             return elements()[0];
         }
 
-        /**
-         * @see Vector3D#setX(double)
-         */
         @Override
         final public void setX(double x)
         {
             elements()[0] = x;
         }
 
-        /**
-         * @see Vector3D#getY()
-         */
         @Override
         final public double getY()
         {
             return elements()[1];
         }
 
-        /**
-         * @see Vector3D#setY(double)
-         */
         @Override
         final public void setY(double y)
         {
             elements()[1] = y;
         }
 
-        /**
-         * @see Vector3D#getY()
-         */
         @Override
         final public double getZ()
         {
             return elements()[2];
         }
 
-        /**
-         * @see Vector3D#setZ(double)
-         */
         @Override
         final public void setZ(double z)
         {
             elements()[2] = z;
         }
 
-        /**
-         * @see Vector3D#getFirst()
-         */
         @Override
         public Double getFirst()
         {
             return elements()[0];
         }
 
-        /**
-         * @see Vector3D#getSecond()
-         */
         @Override
         final public Double getSecond()
         {
             return elements()[1];
         }
 
-        /**
-         * @see Vector3D#getThird()
-         */
         @Override
         final public Double getThird()
         {
             return elements()[2];
         }
 
-        /**
-         * @see Vector3D#setXYZ(double, double, double)
-         */
         @Override
         final public void setXYZ(double x,
             double y,

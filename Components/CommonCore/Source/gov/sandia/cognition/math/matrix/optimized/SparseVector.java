@@ -175,18 +175,12 @@ public class SparseVector
         vals = null;
     }
 
-    /**
-     * @see Vector#clone()
-     */
     @Override
     final public Vector clone()
     {
         return new SparseVector(this);
     }
 
-    /**
-     * @see Vector#plus(gov.sandia.cognition.math.Vector)
-     */
     @Override
     final public Vector plus(Vector v)
     {
@@ -198,9 +192,6 @@ public class SparseVector
         return ret;
     }
 
-    /**
-     * @see Vector#minus(gov.sandia.cognition.math.Vector)
-     */
     @Override
     final public Vector minus(Vector v)
     {
@@ -277,6 +268,7 @@ public class SparseVector
     private void plusEqualsScaled(DenseVector other,
         double scalar)
     {
+// TODO: Why is this in a separate helper function? Can't we just chain the main ones?
         this.assertSameDimensionality(other);
         compress();
 
@@ -315,6 +307,7 @@ public class SparseVector
     private void plusEqualsScaled(SparseVector other,
         double scalar)
     {
+// TODO: Why is this in a separate helper function? Can't we just chain the main ones?
         this.assertSameDimensionality(other);
         compress();
 
@@ -367,8 +360,7 @@ public class SparseVector
     }
 
     /**
-     * @see
-     * BaseVector#scaledPlusEquals(gov.sandia.cognition.math.matrix.optimized.DenseVector, double)
+     * {@inheritDoc}
      *
      * NOTE: This operation is not recommended as it is most likely to create a
      * very dense vector being stored in a sparse-vector format. This will be
@@ -381,10 +373,6 @@ public class SparseVector
         plusEqualsScaled(other, scaleFactor);
     }
 
-    /**
-     * @see
-     * BaseVector#scaledPlusEquals(gov.sandia.cognition.math.matrix.optimized.SparseVector, double)
-     */
     @Override
     public void scaledPlusEquals(SparseVector other,
         double scaleFactor)
@@ -393,8 +381,7 @@ public class SparseVector
     }
 
     /**
-     * @see
-     * BaseVector#plusEquals(gov.sandia.cognition.math.matrix.optimized.DenseVector)
+     * {@inheritDoc}
      *
      * NOTE: This operation is not recommended as it is most likely to create a
      * very dense vector being stored in a sparse-vector format. This will be
@@ -406,10 +393,6 @@ public class SparseVector
         plusEqualsScaled(other, 1);
     }
 
-    /**
-     * @see
-     * BaseVector#plusEquals(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final void plusEquals(SparseVector other)
     {
@@ -417,8 +400,7 @@ public class SparseVector
     }
 
     /**
-     * @see
-     * BaseVector#minusEquals(gov.sandia.cognition.math.matrix.optimized.DenseVector)
+     * {@inheritDoc}
      *
      * NOTE: This operation is not recommended as it is most likely to create a
      * very dense vector being stored in a sparse-vector format. This will be
@@ -430,20 +412,12 @@ public class SparseVector
         plusEqualsScaled(other, -1);
     }
 
-    /**
-     * @see
-     * BaseVector#plusEquals(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final void minusEquals(SparseVector other)
     {
         plusEqualsScaled(other, -1);
     }
 
-    /**
-     * @see
-     * BaseVector#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DenseVector)
-     */
     @Override
     public final void dotTimesEquals(DenseVector other)
     {
@@ -455,10 +429,6 @@ public class SparseVector
         }
     }
 
-    /**
-     * @see
-     * BaseVector#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final void dotTimesEquals(SparseVector other)
     {
@@ -489,10 +459,6 @@ public class SparseVector
         locs = locsAfter;
     }
 
-    /**
-     * @see
-     * BaseVector#euclideanDistanceSquared(gov.sandia.cognition.math.matrix.optimized.DenseVector)
-     */
     @Override
     public final double euclideanDistanceSquared(DenseVector other)
     {
@@ -514,10 +480,6 @@ public class SparseVector
         return dist;
     }
 
-    /**
-     * @see
-     * BaseVector#euclideanDistanceSquared(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final double euclideanDistanceSquared(SparseVector other)
     {
@@ -563,10 +525,6 @@ public class SparseVector
         return dist;
     }
 
-    /**
-     * @see
-     * BaseVector#outerProduct(gov.sandia.cognition.math.matrix.optimized.DenseVector)
-     */
     @Override
     public final Matrix outerProduct(DenseVector other)
     {
@@ -598,10 +556,6 @@ public class SparseVector
         return ret;
     }
 
-    /**
-     * @see
-     * BaseVector#outerProduct(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final Matrix outerProduct(SparseVector other)
     {
@@ -629,10 +583,6 @@ public class SparseVector
         return ret;
     }
 
-    /**
-     * @see
-     * BaseVector#stack(gov.sandia.cognition.math.matrix.optimized.DenseVector)
-     */
     @Override
     public final Vector stack(DenseVector other)
     {
@@ -673,10 +623,6 @@ public class SparseVector
         return ret;
     }
 
-    /**
-     * @see
-     * BaseVector#stack(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final Vector stack(SparseVector other)
     {
@@ -704,10 +650,6 @@ public class SparseVector
         return ret;
     }
 
-    /**
-     * @see
-     * BaseVector#dotProduct(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final double dotProduct(SparseVector other)
     {
@@ -736,10 +678,6 @@ public class SparseVector
         return ret;
     }
 
-    /**
-     * @see
-     * BaseVector#dotProduct(gov.sandia.cognition.math.matrix.optimized.DenseVector)
-     */
     @Override
     public final double dotProduct(DenseVector other)
     {
@@ -754,18 +692,12 @@ public class SparseVector
         return ret;
     }
 
-    /**
-     * @see Vector#iterator()
-     */
     @Override
     final public Iterator<VectorEntry> iterator()
     {
         return new VectorIterator(this);
     }
 
-    /**
-     * @see Vector#getDimensionality()
-     */
     @Override
     final public int getDimensionality()
     {
@@ -788,18 +720,12 @@ public class SparseVector
         }
     }
 
-    /**
-     * @see Vector#get(int)
-     */
     @Override
     public double get(int index)
     {
         return getElement(index);
     }
 
-    /**
-     * @see Vector#getElement(int)
-     */
     @Override
     final public double getElement(int index)
     {
@@ -834,9 +760,6 @@ public class SparseVector
         }
     }
 
-    /**
-     * @see Vector#set(int, double)
-     */
     @Override
     public void set(int index,
         double value)
@@ -844,9 +767,6 @@ public class SparseVector
         setElement(index, value);
     }
 
-    /**
-     * @see Vector#setElement(int, double)
-     */
     @Override
     final public void setElement(int index,
         double value)
@@ -863,9 +783,6 @@ public class SparseVector
         }
     }
 
-    /**
-     * @see Vector#subVector(int, int)
-     */
     @Override
     final public Vector subVector(int minIndex,
         int maxIndex)
@@ -944,9 +861,6 @@ public class SparseVector
         }
     }
 
-    /**
-     * @see Vector#scale(double)
-     */
     @Override
     final public Vector scale(double d)
     {
@@ -973,9 +887,6 @@ public class SparseVector
         elements.clear();
     }
 
-    /**
-     * @see Vector#isSparse()
-     */
     @Override
     public boolean isSparse()
     {

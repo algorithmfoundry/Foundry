@@ -109,9 +109,6 @@ public class DenseVector
         // Don't initialize values
     }
 
-    /**
-     * @see Vector#clone()
-     */
     @Override
     final public DenseVector clone()
     {
@@ -120,10 +117,6 @@ public class DenseVector
         return new DenseVector(this);
     }
 
-    /**
-     * @see
-     * BaseVector#plusEquals(gov.sandia.cognition.math.matrix.optimized.DenseVector)
-     */
     @Override
     public void scaledPlusEquals(DenseVector other,
         double scaleFactor)
@@ -135,10 +128,6 @@ public class DenseVector
         }
     }
 
-    /**
-     * @see
-     * BaseVector#plusEquals(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public void scaledPlusEquals(SparseVector other,
         double scaleFactor)
@@ -153,10 +142,6 @@ public class DenseVector
         }
     }
 
-    /**
-     * @see
-     * BaseVector#plusEquals(gov.sandia.cognition.math.matrix.optimized.DenseVector)
-     */
     @Override
     public final void plusEquals(DenseVector other)
     {
@@ -167,10 +152,6 @@ public class DenseVector
         }
     }
 
-    /**
-     * @see
-     * BaseVector#plusEquals(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final void plusEquals(SparseVector other)
     {
@@ -184,10 +165,6 @@ public class DenseVector
         }
     }
 
-    /**
-     * @see
-     * BaseVector#minusEquals(gov.sandia.cognition.math.matrix.optimized.DenseVector)
-     */
     @Override
     public final void minusEquals(DenseVector other)
     {
@@ -198,10 +175,6 @@ public class DenseVector
         }
     }
 
-    /**
-     * @see
-     * BaseVector#minusEquals(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final void minusEquals(SparseVector other)
     {
@@ -215,10 +188,6 @@ public class DenseVector
         }
     }
 
-    /**
-     * @see
-     * BaseVector#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.DenseVector)
-     */
     @Override
     public final void dotTimesEquals(DenseVector other)
     {
@@ -229,10 +198,6 @@ public class DenseVector
         }
     }
 
-    /**
-     * @see
-     * BaseVector#dotTimesEquals(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final void dotTimesEquals(SparseVector other)
     {
@@ -255,10 +220,6 @@ public class DenseVector
         }
     }
 
-    /**
-     * @see
-     * BaseVector#euclideanDistanceSquared(gov.sandia.cognition.math.matrix.optimized.DenseVector)
-     */
     @Override
     public final double euclideanDistanceSquared(DenseVector other)
     {
@@ -274,20 +235,12 @@ public class DenseVector
         return dist;
     }
 
-    /**
-     * @see
-     * BaseVector#euclideanDistanceSquared(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final double euclideanDistanceSquared(SparseVector other)
     {
         return other.euclideanDistanceSquared(this);
     }
 
-    /**
-     * @see
-     * BaseVector#outerProduct(gov.sandia.cognition.math.matrix.optimized.DenseVector)
-     */
     @Override
     public final Matrix outerProduct(DenseVector other)
     {
@@ -307,10 +260,6 @@ public class DenseVector
         return ret;
     }
 
-    /**
-     * @see
-     * BaseVector#outerProduct(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final Matrix outerProduct(SparseVector other)
     {
@@ -333,10 +282,6 @@ public class DenseVector
         return ret;
     }
 
-    /**
-     * @see
-     * BaseVector#stack(gov.sandia.cognition.math.matrix.optimized.DenseVector)
-     */
     @Override
     public final Vector stack(DenseVector other)
     {
@@ -353,10 +298,6 @@ public class DenseVector
         return ret;
     }
 
-    /**
-     * @see
-     * BaseVector#stack(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final Vector stack(SparseVector other)
     {
@@ -405,10 +346,6 @@ public class DenseVector
         return ret;
     }
 
-    /**
-     * @see
-     * BaseVector#dotProduct(gov.sandia.cognition.math.matrix.optimized.DenseVector)
-     */
     @Override
     public final double dotProduct(DenseVector other)
     {
@@ -422,65 +359,43 @@ public class DenseVector
         return ret;
     }
 
-    /**
-     * @see
-     * BaseVector#dotProduct(gov.sandia.cognition.math.matrix.optimized.SparseVector)
-     */
     @Override
     public final double dotProduct(SparseVector other)
     {
         return other.dotProduct(this);
     }
 
-    /**
-     * @see Vector#iterator()
-     */
     @Override
     final public Iterator<VectorEntry> iterator()
     {
         return new VectorIterator(this);
     }
 
-    /**
-     * @see Vector#getDimensionality()
-     */
     @Override
     final public int getDimensionality()
     {
         return vec.length;
     }
 
-    /**
-     * @see Vector#get(int)
-     */
     @Override
     public double get(int index)
     {
-        return getElement(index);
+        return vec[index];
     }
 
-    /**
-     * @see Vector#getElement(int)
-     */
     @Override
     final public double getElement(int index)
     {
         return vec[index];
     }
 
-    /**
-     * @see Vector#setElement(int, double)
-     */
     @Override
     public void set(int index,
         double value)
     {
-        setElement(index, value);
+        vec[index] = value;
     }
 
-    /**
-     * @see Vector#setElement(int, double)
-     */
     @Override
     final public void setElement(int index,
         double value)
@@ -498,14 +413,7 @@ public class DenseVector
     {
         return vec;
     }
-
-    /**
-     * @see Vector#subVector(int, int)
-     * @throws NegativeArraySizeException if the input bounds are in the wrong
-     * order
-     * @throws ArrayIndexOutOfBoundsException if the input subvector indices are
-     * less than 0 or greater-than-or-equal-to the dimensionality of this.
-     */
+    
     @Override
     final public Vector subVector(int minIndex,
         int maxIndex)
@@ -531,9 +439,6 @@ public class DenseVector
         return ret;
     }
 
-    /**
-     * @see Vector#scale(double)
-     */
     @Override
     final public Vector scale(double d)
     {
@@ -546,9 +451,6 @@ public class DenseVector
         return ret;
     }
 
-    /**
-     * @see Vector#dotTimes(gov.sandia.cognition.math.Vector)
-     */
     @Override
     final public Vector dotTimes(Vector v)
     {
@@ -578,9 +480,6 @@ public class DenseVector
         return nnz;
     }
 
-    /**
-     * @see Vector#isSparse()
-     */
     @Override
     public boolean isSparse()
     {
