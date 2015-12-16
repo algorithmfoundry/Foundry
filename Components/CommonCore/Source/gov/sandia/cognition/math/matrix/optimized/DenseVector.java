@@ -317,7 +317,7 @@ public class DenseVector
         Vector ret;
         int len = vec.length + other.getDimensionality();
         int nnz = numNonZero() + other.numNonZero();
-        if (nnz > Constants.SPARSE_TO_DENSE_THRESHOLD * len)
+        if (nnz > SparseVector.SPARSE_TO_DENSE_THRESHOLD * len)
         {
             ret = new DenseVector(len, true);
         }

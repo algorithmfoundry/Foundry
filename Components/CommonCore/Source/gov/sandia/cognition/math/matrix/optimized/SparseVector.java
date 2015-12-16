@@ -34,6 +34,12 @@ public class SparseVector
 {
 
     /**
+     * Sparse matrices and vectors appear to be less effective after passing
+     * this threshold
+     */
+    static final double SPARSE_TO_DENSE_THRESHOLD = 0.25;
+
+    /**
      * The vector length
      */
     final private int n;
@@ -603,7 +609,7 @@ public class SparseVector
         Vector ret;
         int len = n + other.elements().length;
         int nnz = numNonZero() + other.numNonZero();
-        if (nnz > Constants.SPARSE_TO_DENSE_THRESHOLD * len)
+        if (nnz > SPARSE_TO_DENSE_THRESHOLD * len)
         {
             ret = new DenseVector(len, true);
         }

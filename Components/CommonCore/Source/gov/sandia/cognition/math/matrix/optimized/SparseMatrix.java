@@ -1262,7 +1262,7 @@ public class SparseMatrix
             ret.setRow(i, row);
         }
 
-        if (ret.percentNonzero() < Constants.SPARSE_TO_DENSE_THRESHOLD)
+        if (ret.percentNonzero() < SparseVector.SPARSE_TO_DENSE_THRESHOLD)
         {
             return new SparseMatrix(ret);
         }
