@@ -20,7 +20,6 @@ import gov.sandia.cognition.math.matrix.MatrixEntry;
 import gov.sandia.cognition.math.matrix.Vector;
 import java.text.NumberFormat;
 import java.util.Iterator;
-import javax.xml.bind.TypeConstraintException;
 
 /**
  * This package-private class implements the basic math methods, ensures size
@@ -428,8 +427,6 @@ abstract class BaseMatrix
      * @return The resulting vector from input * this
      * @throws DimensionalityMismatchException if the input vectors's dimensions
      * doesn't match this's numRows.
-     * @throws TypeConstraintException if the input vector's type doesn't match
-     * an implementation within this package.
      */
     public final Vector preTimes(Vector vector)
     {
@@ -443,9 +440,16 @@ abstract class BaseMatrix
         }
         else
         {
-// TODO: Remove the need for this. Maybe promote it to the abstract class.
-            throw new TypeConstraintException("Input Vector class "
-                + vector.getClass() + " not supported");
+            // Fallback for compatability.
+            vector.assertDimensionalityEquals(this.getNumRows());
+            final Vector result = vector.getVectorFactory().createVector(
+                this.getNumColumns());
+            for (final MatrixEntry entry : this)
+            {
+                result.increment(entry.getColumnIndex(), 
+                    entry.getValue() * vector.get(entry.getRowIndex()));
+            }
+            return result;
         }
     }
 
