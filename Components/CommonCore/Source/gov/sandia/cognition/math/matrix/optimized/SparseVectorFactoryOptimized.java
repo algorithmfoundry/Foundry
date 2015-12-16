@@ -13,7 +13,12 @@
 
 package gov.sandia.cognition.math.matrix.optimized;
 
-import gov.sandia.cognition.math.matrix.*;
+import gov.sandia.cognition.math.matrix.MatrixFactory;
+import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.math.matrix.Vector1D;
+import gov.sandia.cognition.math.matrix.Vector2D;
+import gov.sandia.cognition.math.matrix.Vector3D;
+import gov.sandia.cognition.math.matrix.VectorFactory;
 
 /**
  * Generates Sparse Vectors with all settings initialized properly
