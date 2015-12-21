@@ -247,12 +247,30 @@ public abstract class AbstractVector
     public void transformNonZerosEquals(
         final UnivariateScalarFunction function)
     {
+        // Default implementation uses an iterator. However, specialized 
+        // sub-classes can add optimizations.
         for (final VectorEntry entry : this)
         {
             final double value = entry.getValue();
             if (value != 0.0)
             {
-                entry.setValue(function.evaluateAsDouble(value));
+                entry.setValue(function.evaluate(value));
+            }
+        }
+    }
+
+    @Override
+    public void transformNonZerosEquals(
+        final IndexValueTransform function)
+    {
+        // Default implementation uses an iterator. However, specialized 
+        // sub-classes can add optimizations.
+        for (final VectorEntry entry : this)
+        {
+            final double value = entry.getValue();
+            if (value != 0.0)
+            {
+                entry.setValue(function.transform(entry.getIndex(), value));
             }
         }
     }
