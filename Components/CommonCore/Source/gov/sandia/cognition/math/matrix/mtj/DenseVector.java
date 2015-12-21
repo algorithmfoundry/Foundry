@@ -437,6 +437,9 @@ public class DenseVector
     public VectorFactory<?> getVectorFactory()
     {
         return DenseVectorFactoryMTJ.INSTANCE;
+    }
+    
+    @Override
     public int getEntryCount()
     {
         // Dense, so the entry count is the dimensionality.
