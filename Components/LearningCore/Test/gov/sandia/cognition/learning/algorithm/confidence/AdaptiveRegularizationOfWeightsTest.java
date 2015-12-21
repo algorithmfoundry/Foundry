@@ -131,7 +131,7 @@ public class AdaptiveRegularizationOfWeightsTest
         System.out.println("testLearnSeparable");
         int d = 10;
         int trainCount = 1000;
-        int testCount = 100;
+        int testCount = 1000;
         LinearBinaryCategorizer real = new LinearBinaryCategorizer(
             VectorFactory.getDenseDefault().createUniformRandom(d, -1, +1, random), 0.0);
 
