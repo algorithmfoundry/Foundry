@@ -14,8 +14,10 @@
 
 package gov.sandia.cognition.math.matrix;
 
+import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.math.AbstractUnivariateScalarFunction;
 import gov.sandia.cognition.math.MutableInteger;
+import gov.sandia.cognition.math.UnivariateScalarFunction;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -633,7 +635,7 @@ abstract public class VectorTestHarness
     public void testTransformEquals()
     {
         Vector v1 = this.createRandom();
-        Vector v1clone = v1.clone();
+        final Vector v1clone = v1.clone();
         Vector ones = this.createRandom(v1.getDimensionality(), 1.0, 1.0);
         v1.transformEquals(new AbstractUnivariateScalarFunction()
         {
@@ -649,10 +651,26 @@ abstract public class VectorTestHarness
 
         assertEquals(v1clone.scale(0.5).plus(ones), v1);
         
+        v1 = v1clone.clone();
+        v1.transformEquals(new Vector.IndexValueTransform()
+        {
+
+            @Override
+            public double transform(
+                final int index,
+                final double value)
+            {
+                assertTrue(index >= 0 && index < v1clone.getDimensionality());
+                assertEquals(v1clone.get(index), value);
+                return 1 + value / 8.0;
+            }
+        });
+        assertEquals(v1clone.scale(0.125).plus(ones), v1);
+        
         boolean exceptionThrown = false;
         try
         {
-            v1.transformEquals(null);
+            v1.transformEquals((UnivariateScalarFunction) null);
         }
         catch (Exception e)
         {
@@ -667,7 +685,7 @@ abstract public class VectorTestHarness
     public void testTransform()
     {
         Vector v1 = this.createRandom();
-        Vector v1clone = v1.clone();
+        final Vector v1clone = v1.clone();
         Vector ones = this.createRandom(v1.getDimensionality(), 1.0, 1.0);
         Vector v2 = v1.transform(new AbstractUnivariateScalarFunction() 
         {
@@ -683,11 +701,27 @@ abstract public class VectorTestHarness
 
         assertEquals(v1clone, v1);
         assertEquals(v1clone.scale(0.25).plus(ones), v2);
+        
+        v1 = v1clone.clone();
+        v2 = v1.transform(new Vector.IndexValueTransform()
+        {
+
+            @Override
+            public double transform(
+                final int index,
+                final double value)
+            {
+                assertTrue(index >= 0 && index < v1clone.getDimensionality());
+                assertEquals(v1clone.get(index), value);
+                return 1 + value / 8.0;
+            }
+        });
+        assertEquals(v1clone.scale(0.125).plus(ones), v2);
 
         boolean exceptionThrown = false;
         try
         {
-            v1.transform(null);
+            v1.transform((UnivariateScalarFunction) null);
         }
         catch (Exception e)
         {
@@ -706,7 +740,7 @@ abstract public class VectorTestHarness
         int d = v1.getDimensionality();
         int randomIndex = RANDOM.nextInt(d);
         v1.setElement(randomIndex, 0.0);
-        Vector v1clone = v1.clone();
+        final Vector v1clone = v1.clone();
         Vector ones = this.createVector(d);
         for (int i = 0; i < d; i++)
         {
@@ -730,11 +764,28 @@ abstract public class VectorTestHarness
         
         assertEquals(v1clone.scale(0.125).plus(ones), v1);
         assertEquals(0.0, v1.getElement(randomIndex), 0.0);
+        
+        v1 = v1clone.clone();
+        v1.transformNonZerosEquals(new Vector.IndexValueTransform()
+        {
+
+            @Override
+            public double transform(
+                final int index,
+                final double value)
+            {
+                assertTrue(index >= 0 && index < v1clone.getDimensionality());
+                assertEquals(v1clone.get(index), value);
+                return 1 + value / 8.0;
+            }
+        });
+        assertEquals(v1clone.scale(0.125).plus(ones), v1);
+        assertEquals(0.0, v1.getElement(randomIndex), 0.0);
 
         boolean exceptionThrown = false;
         try
         {
-            v1.transformNonZerosEquals(null);
+            v1.transformNonZerosEquals((UnivariateScalarFunction) null);
         }
         catch (Exception e)
         {
@@ -752,7 +803,7 @@ abstract public class VectorTestHarness
         int d = v1.getDimensionality();
         int randomIndex = RANDOM.nextInt(d);
         v1.setElement(randomIndex, 0.0);
-        Vector v1clone = v1.clone();
+        final Vector v1clone = v1.clone();
         Vector ones = this.createVector(d);
         for (int i = 0; i < d; i++)
         {
@@ -776,11 +827,28 @@ abstract public class VectorTestHarness
         assertEquals(v1clone, v1);
         assertEquals(v1clone.scale(0.125).plus(ones), v2);
         assertEquals(0.0, v2.getElement(randomIndex), 0.0);
+        
+        v1 = v1clone.clone();
+        v2 = v1.transformNonZeros(new Vector.IndexValueTransform()
+        {
+
+            @Override
+            public double transform(
+                final int index,
+                final double value)
+            {
+                assertTrue(index >= 0 && index < v1clone.getDimensionality());
+                assertEquals(v1clone.get(index), value);
+                return 1 + value / 8.0;
+            }
+        });
+        assertEquals(v1clone.scale(0.125).plus(ones), v2);
+        assertEquals(0.0, v2.getElement(randomIndex), 0.0);
 
         boolean exceptionThrown = false;
         try
         {
-            v1.transformNonZeros(null);
+            v1.transformNonZeros((UnivariateScalarFunction) null);
         }
         catch (Exception e)
         {
@@ -1260,6 +1328,20 @@ abstract public class VectorTestHarness
      * Test of isSparse method.
      */
     public abstract void testIsSparse();
+    
+    /**
+     * Test of getEntryCount of Vector.
+     */
+    public void testGetEntryCount()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            Vector v1 = this.createRandom();
+            assertTrue(v1.getEntryCount() >= 0);
+            assertTrue(v1.getEntryCount() <= v1.getDimensionality());
+            assertEquals(CollectionUtil.size(v1), v1.getEntryCount());
+        }
+    }
 
     /**
      * Test of toString

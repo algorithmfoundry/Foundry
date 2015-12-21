@@ -433,6 +433,15 @@ public interface Matrix
      *      false.
      */
     public boolean isSparse();
+    
+    /**
+     * Gets the number of active entries in the matrix. Must be between 0
+     * and the number of rows times the number of columns.
+     * 
+     * @return 
+     *      The number of active entries in the matrix.
+     */
+    public int getEntryCount();
 
     /**
      * Gets the specified column from the zero-based index and returns a

@@ -359,6 +359,12 @@ public class DenseMatrix
         return false;
     }
 
+    @Override
+    public int getEntryCount()
+    {
+        return this.getNumRows() * this.getNumColumns();
+    }
+    
     /**
      * Gets the underlying double array from the MTJ matrix
      * @return double array from the underlying MTJ matrix

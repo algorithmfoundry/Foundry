@@ -44,10 +44,10 @@ public class LinearBinaryCategorizer
     public static final double DEFAULT_BIAS = 0.0;
     
     /** The weight vector. */
-    private Vector weights;
+    protected Vector weights;
     
     /** The bias term. */
-    private double bias;
+    protected double bias;
     
     /**
      * Creates a new instance of LinearBinaryCategorizer.

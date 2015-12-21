@@ -322,6 +322,7 @@ public class HashFunctionUtil
      * @param hexChar
      * Hex character, such as '0' or 'A'
      * @return
+     * The value of the hex character.
      */
     public static byte valueOf(
         char hexChar )

@@ -239,7 +239,24 @@ public abstract class VectorFactory<VectorType extends Vector>
         final double x,
         final double y,
         final double z);
-
+    
+    /**
+     * Creates a new, empty vector with the given dimensionality and expected
+     * number of nonzero elements.
+     *
+     * @param   dimensionality
+     *      The dimensionality for the vector to create.
+     * @param   initialCapacity
+     *      The expected initial number of nonzero elements of the vector to
+     *      create.
+     * @return
+     *      A new vector with the given dimensionality and capacity for at
+     *      least the given number of nonzeros.
+     */
+    public abstract VectorType createVectorCapacity(
+        final int dimensionality,
+        final int initialCapacity);
+    
     /**
      * Creates a Vector with random values for the entries, uniformly
      * distributed between "min" and "max"
@@ -356,7 +373,8 @@ public abstract class VectorFactory<VectorType extends Vector>
     {
         ArgumentChecker.assertIsNotNull("map", map);
         
-        final VectorType result = this.createVector(dimensionality);
+        final VectorType result = this.createVectorCapacity(dimensionality,
+            map.size());
         for (final Map.Entry<Integer, ? extends Number> entry : map.entrySet())
         {
             result.set(entry.getKey(), entry.getValue().doubleValue());

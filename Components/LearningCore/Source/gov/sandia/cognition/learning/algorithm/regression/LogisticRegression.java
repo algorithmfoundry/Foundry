@@ -380,6 +380,13 @@ public class LogisticRegression
         extends CompositeEvaluatorPair<Vectorizable,Double,Double>
         implements Vectorizable
     {
+        /**
+         * Creates a new {@link LogisticRegression.Function}.
+         */
+        public Function()
+        {
+            super();
+        }
         
         /**
          * Creates a new instance of Function

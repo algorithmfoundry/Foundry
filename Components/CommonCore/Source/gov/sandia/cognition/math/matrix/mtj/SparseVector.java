@@ -16,6 +16,7 @@ package gov.sandia.cognition.math.matrix.mtj;
 
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.math.matrix.SparseVectorFactory;
+import gov.sandia.cognition.math.UnivariateScalarFunction;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
 import java.io.IOException;
@@ -94,6 +95,12 @@ public class SparseVector
             }
         }
     }
+
+    @Override
+    public int getEntryCount()
+    {
+        return this.getInternalVector().getUsed();
+    }
     
     /**
      * Gets the number of elements used inside the sparse vector, equals the
@@ -101,6 +108,7 @@ public class SparseVector
      *
      * @return The number of nonzero elements in the SparseVector.
      */
+    @Deprecated
     public int getNumElementsUsed()
     {
         return this.getInternalVector().getUsed();
@@ -225,6 +233,43 @@ public class SparseVector
         }
         
         return stacked;
+    }
+    
+    @Override
+    public void transformNonZerosEquals(
+        final UnivariateScalarFunction function)
+    {
+        final no.uib.cipr.matrix.sparse.SparseVector internal = this.getInternalVector();
+        
+        final double[] values = internal.getData();
+        final int used = internal.getUsed();
+        for (int i = 0; i < used; i++)
+        {
+            final double value = values[i];
+            if (value != 0.0)
+            {
+                values[i] = function.evaluate(value);
+            }
+        }
+    }
+
+    @Override
+    public void transformNonZerosEquals(
+        final IndexValueTransform function)
+    {
+        final no.uib.cipr.matrix.sparse.SparseVector internal = this.getInternalVector();
+        
+        final int[] indices = internal.getRawIndex();
+        final double[] values = internal.getData();
+        final int used = internal.getUsed();
+        for (int i = 0; i < used; i++)
+        {
+            final double value = values[i];
+            if (value != 0.0)
+            {
+                values[i] = function.transform(indices[i], value);
+            }
+        }
     }
     
     @Override

@@ -2,6 +2,32 @@ This file contains the change log for the Cognitive Foundry.
 
 Changes since last release:
 
+Release 3.4.2 (2015-10-30):
+  * General:
+    * Upgraded MTJ to 1.0.3.
+  * Common:
+    * Added package for hash function computation including Eva, FNV-1a, MD5, Murmur2, Prime, SHA1, SHA2
+    * Added callback-based forEach implementations to Vector and InfiniteVector, which can be faster for iterating through some vector types.
+    * Optimized DenseVector by removing a layer of indirection.
+    * Added method to compute set of percentiles in UnivariateStatisticsUtil and fixed issue with percentile interpolation.
+    * Added utility class for enumerating combinations.
+    * Adjusted ScalarMap implementation hierarchy.
+    * Added method for copying a map to VectorFactory and moved createVectorCapacity up from SparseVectorFactory.
+    * Added method for creating square identity matrix to MatrixFactory.
+    * Added Random implementation that uses a cached set of values.
+  * Learning:
+    * Implemented feature hashing.
+    * Added factory for random forests.
+    * Implemented uniform distribution over integer values.
+    * Added Chi-squared similarity.
+    * Added KL divergence.
+    * Added general conditional probability distribution.
+    * Added interfaces for Regression, UnivariateRegression, and MultivariateRegression.
+    * Fixed null pointer exception that can happen in K-means with an empty cluster.
+    * Fixed name of maxClusters property on AgglomerativeClusterer (was called maxMinDistance).
+  * Text:
+    * Improvements to LDA Gibbs sampler.
+
 Release 3.4.1 (2015-05-11):
   * General:
     * Updated MTJ to version 1.0.2 and netlib-java to 1.1.2.

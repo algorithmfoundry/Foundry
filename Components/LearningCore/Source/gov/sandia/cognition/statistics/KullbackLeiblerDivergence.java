@@ -76,7 +76,7 @@ public class KullbackLeiblerDivergence<DomainType>
 
     /**
      * Computes the Kullback--Leibler Divergence.
-     * @return
+     * @return The divergence value.
      */
     public double compute()
     {

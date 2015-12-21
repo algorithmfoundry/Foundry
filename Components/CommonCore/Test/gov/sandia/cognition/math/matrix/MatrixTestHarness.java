@@ -14,12 +14,15 @@
 
 package gov.sandia.cognition.math.matrix;
 
+import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.math.RingTestHarness;
 import gov.sandia.cognition.math.ComplexNumber;
 import gov.sandia.cognition.math.matrix.mtj.Vector3;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 
 /**
  * Test suite for all implementations of Matrix
@@ -1986,7 +1989,20 @@ abstract public class MatrixTestHarness
      * Test of isSparse method.
      */
     public abstract void testIsSparse();
-
+    
+    /**
+     * Test of getEntryCount of Matrix.
+     */
+    public void testGetEntryCount()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            Matrix v1 = this.createRandom();
+            assertTrue(v1.getEntryCount() >= 0);
+            assertTrue(v1.getEntryCount() <= v1.getNumRows() * v1.getNumColumns());
+            assertEquals(CollectionUtil.size(v1), v1.getEntryCount());
+        }
+    }
     /**
      * Test of convertFromVector method, of class gov.sandia.isrc.math.matrix.Matrix.
      */
