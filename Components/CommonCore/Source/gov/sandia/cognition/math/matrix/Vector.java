@@ -238,6 +238,20 @@ public interface Vector
 
     /**
      * Applies the given function to each of the elements of this vector and
+     * returns a new vector with the result. Note that this is a dense operation
+     * where zero elements will be passed to the function.
+     *
+     * @param   function
+     *      The function from index and value to double to apply.
+     * @return
+     *      A new vector whose elements represent the result of applying the
+     *      function to corresponding element in this vector.
+     */
+    public Vector transform(
+        final IndexValueTransform function);
+
+    /**
+     * Applies the given function to each of the elements of this vector and
      * sets them to the result.
      *
      * @param   function
@@ -245,6 +259,16 @@ public interface Vector
      */
     public void transformEquals(
         final UnivariateScalarFunction function);
+
+    /**
+     * Applies the given function to each of the elements of this vector and
+     * sets them to the result.
+     *
+     * @param   function
+     *      The function from index and value to double to apply.
+     */
+    public void transformEquals(
+        final IndexValueTransform function);
 
     /**
      * Applies the given function to each of the non-zero elements of this
@@ -263,6 +287,21 @@ public interface Vector
 
     /**
      * Applies the given function to each of the non-zero elements of this
+     * vector and returns a new vector with the result.
+     *
+     * @param   function
+     *      The function from index and value to double to apply to non-zero
+     *      elements.
+     * @return
+     *      A new vector whose elements represent the result of applying the
+     *      function to the corresponding element in this vector, except for
+     *      zeros, which are exactly the same as in this vector.
+     */
+    public Vector transformNonZeros(
+        final IndexValueTransform function);
+
+    /**
+     * Applies the given function to each of the non-zero elements of this
      * vector and sets them to the result.
      *
      * @param   function
@@ -271,6 +310,17 @@ public interface Vector
      */
     public void transformNonZerosEquals(
         final UnivariateScalarFunction function);
+
+    /**
+     * Applies the given function to each of the non-zero elements of this
+     * vector and sets them to the result.
+     *
+     * @param   function
+     *      The function from index and value to double to apply to non-zero
+     *      elements.
+     */
+    public void transformNonZerosEquals(
+        final IndexValueTransform function);
 
     /**
      * Applies the given function to each element in this vector. This is a
@@ -437,5 +487,31 @@ public interface Vector
             final int index,
             final double value);
 
+    }
+    
+    /**
+     * Defines the functionality for a transform of vector entries, which are an
+     * index and a value and return the new value. Typically this interface is
+     * used in conjunction with the Vector transform method.
+     *
+     * @since   3.4.3
+     */
+    public interface IndexValueTransform
+    {
+        
+        /**
+         * Transforms one entry in the vector to a new value.
+         * 
+         * @param   index
+         *      The vector index. Cannot be negative.
+         * @param   value
+         *      The value in the vector for that index.
+         * @return 
+         *      The new value for that index.
+         */
+        public double transform(
+            final int index,
+            final double value);
+        
     }
 }

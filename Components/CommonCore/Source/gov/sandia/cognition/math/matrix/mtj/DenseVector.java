@@ -18,6 +18,7 @@ import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.CodeReviewResponse;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.math.UnivariateScalarFunction;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
 import gov.sandia.cognition.math.matrix.VectorReader;
@@ -322,6 +323,62 @@ public class DenseVector
             retvalValues[i] = values[i + minIndex];
         }
         return retval;
+    }
+    
+    @Override
+    public void transformEquals(
+        final UnivariateScalarFunction function)
+    {
+        final double[] values = this.getArray();
+        final int dimensionality = values.length;
+        for (int i = 0; i < dimensionality; i++)
+        {
+            values[i] = function.evaluate(values[i]);
+        }
+    }
+
+    @Override
+    public void transformEquals(
+        final IndexValueTransform function)
+    {
+        final double[] values = this.getArray();
+        final int dimensionality = values.length;
+        for (int i = 0; i < dimensionality; i++)
+        {
+            values[i] = function.transform(i, values[i]);
+        }
+    }
+
+    @Override
+    public void transformNonZerosEquals(
+        final UnivariateScalarFunction function)
+    {
+        final double[] values = this.getArray();
+        final int dimensionality = values.length;
+        for (int i = 0; i < dimensionality; i++)
+        {
+            final double value = values[i];
+            if (value != 0.0)
+            {
+                values[i] = function.evaluate(value);
+            }
+        }
+    }
+
+    @Override
+    public void transformNonZerosEquals(
+        final IndexValueTransform function)
+    {
+        final double[] values = this.getArray();
+        final int dimensionality = values.length;
+        for (int i = 0; i < dimensionality; i++)
+        {
+            final double value = values[i];
+            if (value != 0.0)
+            {
+                values[i] = function.transform(i, value);
+            }
+        }
     }
     
     @Override

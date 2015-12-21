@@ -15,6 +15,7 @@
 package gov.sandia.cognition.math.matrix.mtj;
 
 import gov.sandia.cognition.annotation.CodeReview;
+import gov.sandia.cognition.math.UnivariateScalarFunction;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
 import java.io.IOException;
@@ -231,6 +232,43 @@ public class SparseVector
         }
         
         return stacked;
+    }
+    
+    @Override
+    public void transformNonZerosEquals(
+        final UnivariateScalarFunction function)
+    {
+        final no.uib.cipr.matrix.sparse.SparseVector internal = this.getInternalVector();
+        
+        final double[] values = internal.getData();
+        final int used = internal.getUsed();
+        for (int i = 0; i < used; i++)
+        {
+            final double value = values[i];
+            if (value != 0.0)
+            {
+                values[i] = function.evaluate(value);
+            }
+        }
+    }
+
+    @Override
+    public void transformNonZerosEquals(
+        final IndexValueTransform function)
+    {
+        final no.uib.cipr.matrix.sparse.SparseVector internal = this.getInternalVector();
+        
+        final int[] indices = internal.getRawIndex();
+        final double[] values = internal.getData();
+        final int used = internal.getUsed();
+        for (int i = 0; i < used; i++)
+        {
+            final double value = values[i];
+            if (value != 0.0)
+            {
+                values[i] = function.transform(indices[i], value);
+            }
+        }
     }
     
     @Override
