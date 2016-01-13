@@ -16,6 +16,7 @@ package gov.sandia.cognition.statistics.method;
 
 import gov.sandia.cognition.statistics.distribution.StudentTDistribution;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Collection;
@@ -265,4 +266,21 @@ public class StudentTConfidenceTest
         }
     }
 
+    /**
+     * Test for issue 58 where the result of passing in data versus passing
+     * in the relevant mean and variance were returning different values.
+     * The underlying issue was that an extra smoothing value was being added
+     * to the variance in the first case.
+     */
+    public void testIssue58()
+    {
+        ConfidenceInterval c1 = StudentTConfidence.INSTANCE.computeConfidenceInterval(Arrays.asList(1D, 2D, 3D), 0.99);
+        ConfidenceInterval c2 = StudentTConfidence.INSTANCE.computeConfidenceInterval(2.0, 1.0, 3, 0.99);
+        assertEquals(c1.getUpperBound(), c2.getUpperBound(), 0.0);
+        assertEquals(c1.getLowerBound(), c2.getLowerBound(), 0.0);
+        
+        // This is a degenerate variance case.
+        c2 = StudentTConfidence.INSTANCE.computeConfidenceInterval(2.0, 0, 3, 0.99);
+        assertEquals(c2.getLowerBound(), c2.getUpperBound());
+    }
 }
