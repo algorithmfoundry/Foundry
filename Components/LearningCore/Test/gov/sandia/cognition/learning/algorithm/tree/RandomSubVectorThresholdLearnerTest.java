@@ -131,6 +131,41 @@ public class RandomSubVectorThresholdLearnerTest
         assertTrue(result.getIndex() <= 50);
         assertTrue(result.getIndex() % 10 == 0);
     }
+    
+    /**
+     * Test of learn method, of class RandomSubVectorThresholdLearner.
+     */
+    public void testLearnFullDimensions()
+    {
+        RandomSubVectorThresholdLearner<String> instance = new RandomSubVectorThresholdLearner<>(
+            new VectorThresholdInformationGainLearner<String>(),
+            0.9999, random);
+
+        
+        VectorFactory<?> vectorFactory = VectorFactory.getDefault();
+        ArrayList<InputOutputPair<Vector, String>> data = new ArrayList<>();
+        for (int i = 0; i < 10; i++)
+        {
+            data.add(new DefaultInputOutputPair<>(vectorFactory.createUniformRandom(
+                100, 1.0, 10.0, random), "a"));
+        }
+
+        for (int i = 0; i < 10; i++)
+        {
+            data.add(new DefaultInputOutputPair<>(vectorFactory.createUniformRandom(
+                100, 1.0, 10.0, random), "b"));
+        }
+
+        VectorElementThresholdCategorizer result = instance.learn(data);
+        assertTrue(result.getIndex() >= 0);
+        assertTrue(result.getIndex() < 100);
+        
+        // Change the dimensions to consider.
+        instance.setDimensionsToConsider(new int[] {10});
+
+        result = instance.learn(data);
+        assertTrue(result.getIndex() == 10);
+    }
 
     /**
      * Test of getSubDimensionality method, of class RandomSubVectorThresholdLearner.
