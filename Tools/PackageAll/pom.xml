@@ -85,6 +85,9 @@
                             <dependencySourceIncludes>
                                 <dependencySourceInclude>gov.sandia.foundry:gov-sandia-*</dependencySourceInclude>
                             </dependencySourceIncludes>
+                            <!-- Java 8 introduced strict checks on javadoc. Disable for now. -->
+                            <!-- TODO: Eventually clean up javadoc and remove this. -->
+                            <additionalparam>-Xdoclint:none</additionalparam>
                         </configuration>
                     </execution>
                 </executions>
