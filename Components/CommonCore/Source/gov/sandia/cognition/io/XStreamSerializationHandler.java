@@ -42,7 +42,7 @@ import java.io.Writer;
  * no extra methods for an Object (it's automagic using Reflection). Based on
  * XStream package.
  * <P><P>
- * <B>KNOWN LIMITATION<B>: The read() method will thrown an exception
+ * <B>KNOWN LIMITATION</B>: The read() method will thrown an exception
  * "java.io.IOException: com.thoughtworks.xstream.io.StreamException:
  * : input contained no data" when trying to read the SECOND object from
  * an XML InputStream/Reader.  This is because XML files must have a
