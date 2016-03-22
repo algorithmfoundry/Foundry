@@ -2,7 +2,7 @@ This file contains the change log for the Cognitive Foundry.
 
 Changes since last release:
 
-Release 3.4.3 (2016-03-25):
+Release 3.4.3 (2016-03-21):
   * General:
     * Updated to Java 1.8.
   * Common:
