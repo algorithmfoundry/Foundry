@@ -14,6 +14,7 @@
 
 package gov.sandia.cognition.math.matrix;
 
+import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import java.util.ArrayList;
 import junit.framework.TestCase;
 import java.util.Random;
@@ -311,6 +312,35 @@ public abstract class MatrixFactoryTestHarness
             fail( "I didn't find any nonzero values in your random matrix!!" );
         }
 
+    }
+    
+    
+    /**
+     * Test of createGaussianRandom method, of class MatrixFactory.
+     */
+    public void testCreateGaussianRandom()
+    {
+        Matrix m = this.createRandomMatrix();
+        MatrixFactory<?> factory = this.createFactory();
+
+        int M = m.getNumRows();
+        int N = m.getNumColumns();
+        Matrix mr = factory.createGaussianRandom(M, N, random);
+        assertNotNull(mr);
+        assertNotSame(m, mr);
+        assertEquals(M, mr.getNumRows());
+        assertEquals(N, mr.getNumColumns());
+        assertFalse(mr.equals(factory.createGaussianRandom(M, N, random)));
+
+        M = 100 * M;
+        N = 100 * N;
+        mr = factory.createGaussianRandom(M, N, random);
+        assertEquals(M, mr.getNumRows());
+        assertEquals(N, mr.getNumColumns());
+        double mean = UnivariateStatisticsUtil.computeMean(mr.convertToVector().valuesAsList());
+        double variance = UnivariateStatisticsUtil.computeVariance(mr.convertToVector().valuesAsList());
+        assertEquals(0.0, mean, 1e-2);
+        assertEquals(1.0, variance, 1e-2);
     }
 
     /**

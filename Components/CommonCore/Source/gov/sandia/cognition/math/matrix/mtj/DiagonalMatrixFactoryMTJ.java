@@ -147,6 +147,20 @@ public class DiagonalMatrixFactoryMTJ
 
     @Override
     public DiagonalMatrixMTJ createUniformRandom(
+        final int numRows,
+        final int numColumns,
+        final Random random)
+    {
+        if (numRows != numColumns)
+        {
+            throw new IllegalArgumentException("numRows != numColumns");
+        }
+        
+        return this.createUniformRandom(numRows, 0.0, 1.0, random);
+    }
+    
+    @Override
+    public DiagonalMatrixMTJ createUniformRandom(
         int numRows,
         int numColumns,
         double min,
@@ -176,8 +190,8 @@ public class DiagonalMatrixFactoryMTJ
      * @param   random
      *      The random number generator.
      * @return
-     *      Matrix with random values for the entries, uniformly distributed
-     *      between the given minimum and maximum values.
+     *      Matrix with random values for the entries on the diagonal, 
+     *      uniformly distributed between the given minimum and maximum values.
      */
     public DiagonalMatrixMTJ createUniformRandom(
         int dimensionality,
@@ -193,4 +207,41 @@ public class DiagonalMatrixFactoryMTJ
         return m;
     }
 
+    @Override
+    public DiagonalMatrixMTJ createGaussianRandom(
+        final int numRows,
+        final int numColumns,
+        final Random random)
+    {
+        if (numRows != numColumns)
+        {
+            throw new IllegalArgumentException("numRows != numColumns");
+        }
+
+        return this.createGaussianRandom(numRows, random);
+    }
+
+    /**
+     * Creates a new square Matrix of the given size with random values for the
+     * entries, Gaussian distributed with mean 0 and variance 1.
+     *
+     * @param   dimensionality
+     *      The number of rows and columns for this square matrix.
+     * @param   random
+     *      The random number generator.
+     * @return
+     *      Matrix with random values for the entries on the diagonal 
+     *      distributed according to a random Gaussian.
+     */
+    public DiagonalMatrixMTJ createGaussianRandom(
+        int dimensionality,
+        Random random)
+    {
+        DiagonalMatrixMTJ result = this.createMatrix(dimensionality);
+        for (int i = 0; i < dimensionality; i++)
+        {
+            result.setElement(i, random.nextGaussian());
+        }
+        return result;
+    }
 }

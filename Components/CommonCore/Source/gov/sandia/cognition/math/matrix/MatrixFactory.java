@@ -178,6 +178,36 @@ public abstract class MatrixFactory<MatrixType extends Matrix>
     }
     
     /**
+     * Creates a new Matrix filled with values sampled uniformly between 0 and
+     * 1.
+     * 
+     * @param   numRows
+     *      The number of rows.
+     * @param   numColumns
+     *      The number of columns.
+     * @param random
+     *      The random number generator to use.
+     * @return 
+     *      A new Matrix with the given size and values sampled from a uniform
+     *      distribution between 0 and 1.
+     */
+    public MatrixType createUniformRandom(
+        final int numRows,
+        final int numColumns,
+        final Random random)
+    {
+        final MatrixType result = this.createMatrix(numRows, numColumns);
+        for (int i = 0; i < numRows; i++)
+        {
+            for (int j = 0; j < numColumns; j++)
+            {
+                result.set(i, j, random.nextDouble());
+            }
+        }
+        return result;
+    }
+    
+    /**
      * Creates a new Matrix of the given size with random values for the
      * entries, uniformly distributed between the given minimum and maximum
      * values.
@@ -215,6 +245,36 @@ public abstract class MatrixFactory<MatrixType extends Matrix>
         }
         
         return m;
+    }
+    
+    /**
+     * Creates a new Matrix filled with values sampled from a Gaussian
+     * distribution with mean 0 and variance 1.
+     * 
+     * @param   numRows
+     *      The number of rows.
+     * @param   numColumns
+     *      The number of columns.
+     * @param random
+     *      The random number generator to use.
+     * @return 
+     *      A new Matrix with the given size and values sampled from a standard
+     *      Gaussian.
+     */
+    public MatrixType createGaussianRandom(
+        final int numRows,
+        final int numColumns,
+        final Random random)
+    {
+        final MatrixType result = this.createMatrix(numRows, numColumns);
+        for (int i = 0; i < numRows; i++)
+        {
+            for (int j = 0; j < numColumns; j++)
+            {
+                result.set(i, j, random.nextGaussian());
+            }
+        }
+        return result;
     }
 
     /**

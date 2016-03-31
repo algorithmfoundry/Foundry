@@ -14,11 +14,10 @@
 
 package gov.sandia.cognition.math.matrix;
 
-import gov.sandia.cognition.math.matrix.mtj.AbstractMTJVector;
+import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import java.util.Random;
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import static junit.framework.TestCase.assertEquals;
 
 
 /**
@@ -263,8 +262,16 @@ public abstract class VectorFactoryTestHarness
         System.out.println("createUniformRandom");
         
         int M = RANDOM.nextInt(10) + 1;
+        
         VectorFactory<?> f = this.createFactory();
-        Vector m = f.createUniformRandom( M, RANGE, 2*RANGE, RANDOM );
+        
+        Vector m = f.createUniformRandom(M, RANDOM);
+        assertEquals(M, m.getDimensionality());
+        m.forEachElement((int i, double x) -> assertTrue(x >= 0.0 && x <= 1.0));
+        assertTrue(m.sum() > 0.0);
+        assertFalse(m.equals(f.createUniformRandom(M, RANDOM)));
+        
+        m = f.createUniformRandom( M, RANGE, 2*RANGE, RANDOM );
         assertEquals( M, m.getDimensionality() );
         for( int i = 0; i < M; i++ )
         {
@@ -272,6 +279,30 @@ public abstract class VectorFactoryTestHarness
             assertTrue( value >= RANGE );
             assertTrue( value <= 2*RANGE );
         }
+       
+    }
+    
+    /**
+     * Test of createGaussianRandom method, of class VectorFactory.
+     */
+    public void testCreateGaussianRandom()
+    {
+        int d = RANDOM.nextInt(10) + 1;
+        
+        VectorFactory<?> f = this.createFactory();
+        
+        Vector m = f.createGaussianRandom(d, RANDOM);
+        assertEquals(d, m.getDimensionality());
+        assertTrue(m.norm2() > 0.0);
+        assertFalse(m.equals(f.createGaussianRandom(d, RANDOM)));
+        
+        d = 2000;
+        m = f.createGaussianRandom(d, RANDOM);
+        assertEquals(d, m.getDimensionality());
+        double mean = UnivariateStatisticsUtil.computeMean(m.valuesAsList());
+        double variance = UnivariateStatisticsUtil.computeVariance(m.valuesAsList());
+        assertEquals(0.0, mean, 1e-2);
+        assertEquals(1.0, variance, 1e-2);
     }
 
     /**

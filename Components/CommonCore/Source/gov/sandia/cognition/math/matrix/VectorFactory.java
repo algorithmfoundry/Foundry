@@ -258,6 +258,29 @@ public abstract class VectorFactory<VectorType extends Vector>
         final int initialCapacity);
     
     /**
+     * Creates a vector with random values for the entries uniformly sampled
+     * between 0 and 1.
+     * 
+     * @param   dimensionality
+     *      The number of dimensions in the vector.
+     * @param   random
+     *      The random number generator to use.
+     * @return 
+     *      A new Vector with uniform random values of the given dimension.
+     */
+    public VectorType createUniformRandom(
+        final int dimensionality,
+        final Random random)
+    {
+        final VectorType result = this.createVector(dimensionality);
+        for (int i = 0; i < dimensionality; i++)
+        {
+            result.setElement(i, random.nextDouble());
+        }
+        return result;
+    }
+    
+    /**
      * Creates a Vector with random values for the entries, uniformly
      * distributed between "min" and "max"
      *
@@ -283,6 +306,30 @@ public abstract class VectorFactory<VectorType extends Vector>
         }
         
         return v;
+    }
+    
+    /**
+     * Creates a vector with random values sampled from a Gaussian distribution
+     * with mean 0 and variance 1.
+     * 
+     * @param   dimensionality
+     *      The number of dimensions in the vector.
+     * @param   random
+     *      The random number generator to use.
+     * @return 
+     *      A new Vector of the given dimension with values sampled from a
+     *      standard Gaussian distribution.
+     */
+    public VectorType createGaussianRandom(
+        final int dimensionality,
+        final Random random)
+    {
+        final VectorType result = this.createVector(dimensionality);
+        for (int i = 0; i < dimensionality; i++)
+        {
+            result.setElement(i, random.nextGaussian());
+        }
+        return result;
     }
     
     /**
