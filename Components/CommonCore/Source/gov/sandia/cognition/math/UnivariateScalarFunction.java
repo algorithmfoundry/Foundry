@@ -39,7 +39,7 @@ public interface UnivariateScalarFunction
     extends Evaluator<Double, Double>,
         ScalarFunction<Double>
 {
-
+    
     /**
      * Produces a double output for the given double input
      * @param input 
@@ -49,5 +49,19 @@ public interface UnivariateScalarFunction
      */
     double evaluate(
         final double input);
+
+    @Override
+    default Double evaluate(
+        final Double input)
+    {
+        return this.evaluate((double) input);
+    }
+    
+    @Override
+    default double evaluateAsDouble(
+        final Double input)
+    {
+        return this.evaluate((double) input);
+    }
 
 }

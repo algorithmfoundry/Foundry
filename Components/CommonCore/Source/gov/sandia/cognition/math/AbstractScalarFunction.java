@@ -31,19 +31,4 @@ public abstract class AbstractScalarFunction<InputType>
         super();
     }
 
-    /**
-     * Returns the result of calling {@code evaluateAsDouble}.
-     *
-     * @param   input
-     *      The input value.
-     * @return
-     *      The result evaluated as a double.
-     */
-    @Override
-    public Double evaluate(
-        final InputType input)
-    {
-        return this.evaluateAsDouble(input);
-    }
-
 }

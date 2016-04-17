@@ -45,10 +45,4 @@ public abstract class AbstractDifferentiableUnivariateScalarFunction
     {
     }
 
-    public Double differentiate(
-        Double input )
-    {
-        return this.differentiate( input.doubleValue() );
-    }
-
 }

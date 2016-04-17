@@ -46,4 +46,11 @@ public interface DifferentiableUnivariateScalarFunction
     double differentiate(
         double input );
 
+    @Override
+    default Double differentiate(
+        final Double input)
+    {
+        return this.differentiate(input.doubleValue());
+    }
+    
 }
