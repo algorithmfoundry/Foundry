@@ -355,6 +355,48 @@ public class SparseVector
         return true;
     }
     
+    @Override
+    public double sum()
+    {
+        final double[] values = this.getInternalVector().getRawData();
+        double result = 0.0;
+        for (final double value : values)
+        {
+            result += value;
+        }
+        return result;
+    }
+    
+    @Override
+    public double getMinValue()
+    {
+        double min = this.getEntryCount() < this.getDimensionality() ? 0.0 :
+            Double.POSITIVE_INFINITY;
+        for (final double value : this.getInternalVector().getRawData())
+        {
+            if (value < min) 
+            {
+                min = value;
+            }
+        }
+        return min;
+    }
+    
+    @Override
+    public double getMaxValue()
+    {
+        double max = this.getEntryCount() < this.getDimensionality() ? 0.0 :
+            Double.NEGATIVE_INFINITY;
+        for (final double value : this.getInternalVector().getRawData())
+        {
+            if (value > max) 
+            {
+                max = value;
+            }
+        }
+        return max;
+    }
+    
     /**
      * This method provides custom serialization for the class since the MTJ
      * class does not implement Serializable.

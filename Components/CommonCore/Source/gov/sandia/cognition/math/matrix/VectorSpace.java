@@ -47,6 +47,24 @@ public interface VectorSpace<VectorType extends VectorSpace<VectorType,?>,EntryT
      * @since   3.0
      */
     public double sum();
+    
+    /**
+     * The maximum value associated with any key in the vector.
+     *
+     * @return
+     *      The maximum value associated with any key in the vector. 
+     *      If the vector is empty, then Double.NEGATIVE_INFINITY is returned.
+     */
+    public double getMaxValue();
+
+    /**
+     * The minimum value associated with any key in the vector.
+     *
+     * @return
+     *      The minimum value associated with any key in the vector.
+     *      If the vector is empty, then Double.POSITIVE_INFINITY is returned.
+     */
+    public double getMinValue();
 
     /**
      * 1-norm of the vector (sum of absolute values in the vector)

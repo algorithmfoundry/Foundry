@@ -122,4 +122,28 @@ public class SparseVectorTest extends VectorTestHarness
         assertTrue(this.createRandom().isSparse());
         assertTrue(this.createVector(v1.getDimensionality()).isSparse());
     }
+    
+    @Override
+    public void testGetMinValue()
+    {
+        super.testGetMinValue();
+        
+        SparseVector v = new SparseVector(10);
+        assertEquals(0.0, v.getMinValue(), 0.0);
+        
+        v.set(1, 10.0);
+        assertEquals(0.0, v.getMinValue(), 0.0);
+    }
+    
+    @Override
+    public void testGetMaxValue()
+    {
+        super.testGetMaxValue();
+        
+        SparseVector v = new SparseVector(10);
+        assertEquals(0.0, v.getMaxValue(), 0.0);
+        
+        v.set(1, -10);
+        assertEquals(0.0, v.getMaxValue(), 0.0);
+    }
 }
