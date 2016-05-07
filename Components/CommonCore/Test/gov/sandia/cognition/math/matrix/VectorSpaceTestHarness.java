@@ -15,7 +15,9 @@
 
 package gov.sandia.cognition.math.matrix;
 
+import gov.sandia.cognition.collection.ScalarMap;
 import gov.sandia.cognition.math.RingTestHarness;
+import static junit.framework.TestCase.assertEquals;
 
 /**
  * Tests for class VectorSpaceTestHarness.
@@ -104,13 +106,14 @@ public abstract class VectorSpaceTestHarness<VectorType extends VectorSpace<Vect
     {
         System.out.println("sum");
         VectorType instance = this.createRandom();
-        double result = instance.sum();
         double sum = 0.0;
         for( VectorSpace.Entry entry : instance )
         {
             sum += entry.getValue();
         }
-        assertEquals( sum, result, TOLERANCE );
+        assertEquals( sum, instance.sum(), TOLERANCE );
+        instance.scaleEquals(-2.0);
+        assertEquals(-2.0 * sum, instance.sum(), TOLERANCE);
     }
 
     /**
@@ -401,5 +404,43 @@ public abstract class VectorSpaceTestHarness<VectorType extends VectorSpace<Vect
             assertFalse( instance.isUnitVector() );
         }
     }
+    
+    /**
+     * Test of getMinValue method, of class VectorSpace.
+     */
+    public void testGetMinValue()
+    {
+        System.out.println("getMin");
+        VectorType instance = this.createRandom();
+        double min = Double.POSITIVE_INFINITY;
+        for (VectorSpace.Entry entry : instance)
+        {
+            double value = entry.getValue();
+            if (min > value)
+            {
+                min = value;
+            }
+        }
+        assertEquals(min, instance.getMinValue(), 0.0);
+    }
 
+    /**
+     * Test of getMaxValue method, of class VectorSpace.
+     */
+    public void testGetMaxValue()
+    {
+        System.out.println("getMax");
+
+        VectorType instance = this.createRandom();
+        double max = Double.NEGATIVE_INFINITY;
+        for (VectorSpace.Entry entry : instance)
+        {
+            double value = entry.getValue();
+            if (max < value)
+            {
+                max = value;
+            }
+        }
+        assertEquals(max, instance.getMaxValue(), 0.0);
+    }
 }

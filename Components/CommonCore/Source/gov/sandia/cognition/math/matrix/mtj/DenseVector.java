@@ -416,6 +416,46 @@ public class DenseVector
             }
         }
     }
+
+    @Override
+    public double sum()
+    {
+        double result = 0.0;
+        for (final double value : this.getArray())
+        {
+            result += value;
+        }
+        return result;
+    }
+    
+    @Override
+    public double getMinValue()
+    {
+        double min = Double.POSITIVE_INFINITY;
+        for (final double value : this.getArray())
+        {
+            if (value < min)
+            {
+                min = value;
+            }
+        }
+        return min;
+    }
+    
+    @Override
+    public double getMaxValue()
+    {
+        double max = Double.NEGATIVE_INFINITY;
+        for (final double value : this.getArray())
+        {
+            if (value > max)
+            {
+                max = value;
+            }
+        }
+        return max;
+    }
+    
     
     /**
      * Returns the underlying double array for this DenseVector

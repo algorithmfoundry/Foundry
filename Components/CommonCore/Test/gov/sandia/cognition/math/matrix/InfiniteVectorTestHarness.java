@@ -75,27 +75,6 @@ public abstract class InfiniteVectorTestHarness<DataType>
     }
 
     /**
-     * Test of getMax method, of class InfiniteVector.
-     */
-    public void testGetMax()
-    {
-        System.out.println("getMax");
-
-        InfiniteVector<DataType> instance = this.createRandom();
-        double result = instance.getMaxValue();
-        double max = Double.NEGATIVE_INFINITY;
-        for (ScalarMap.Entry<DataType> entry : instance.entrySet())
-        {
-            double value = entry.getValue();
-            if (max < value)
-            {
-                max = value;
-            }
-        }
-        assertEquals(max, result, TOLERANCE);
-    }
-
-    /**
      * Test of getMaxKey method, of class InfiniteVector.
      */
     public void testGetMaxKey()
@@ -135,24 +114,6 @@ public abstract class InfiniteVectorTestHarness<DataType>
             TOLERANCE);
         assertEquals(max, instance.get(CollectionUtil.getElement(result, 1)),
             TOLERANCE);
-    }
-
-    /**
-     * Test of getMin method, of class InfiniteVector.
-     */
-    public void testGetMin()
-    {
-        System.out.println("getMin");
-        InfiniteVector<DataType> instance = this.createRandom();
-        double min = instance.getMinValue();
-        DataType result = instance.getMinValueKey();
-        assertEquals(min, instance.get(result), TOLERANCE);
-
-        DataType maxkey = instance.getMaxValueKey();
-        instance.set(maxkey, min);
-        result = instance.getMinValueKey();
-        assertEquals(min, instance.get(instance.getMinValueKey()), TOLERANCE);
-        assertEquals(min, instance.get(maxkey), TOLERANCE);
     }
 
     /**

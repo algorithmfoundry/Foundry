@@ -324,43 +324,6 @@ public class DefaultInfiniteVectorTest
     }
 
     /**
-     * Test of getMaxValue method, of class ScalarMap.
-     */
-    public void testGetMaxValue()
-    {
-        System.out.println("getMaxValue");
-        ScalarMap<Integer> instance = this.createInstance();
-        double max = Double.NEGATIVE_INFINITY;
-        for( ScalarMap.Entry<Integer> key : instance.entrySet() )
-        {
-            if( max < key.getValue() )
-            {
-                max = key.getValue();
-            }
-        }
-        assertEquals( max, instance.getMaxValue() );
-    }
-
-    /**
-     * Test of getMinValue method, of class ScalarMap.
-     */
-    public void testGetMinValue()
-    {
-        System.out.println("getMinValue");
-        ScalarMap<Integer> instance = this.createInstance();
-        double min = Double.POSITIVE_INFINITY;
-        for( ScalarMap.Entry<Integer> key : instance.entrySet() )
-        {
-            if( min > key.getValue() )
-            {
-                min = key.getValue();
-            }
-        }
-        assertEquals( min, instance.getMinValue() );
-
-    }
-
-    /**
      * Test of entrySet method, of class ScalarMap.
      */
     public void testEntrySet()

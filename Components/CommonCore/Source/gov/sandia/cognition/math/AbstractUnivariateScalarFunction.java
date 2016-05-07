@@ -58,18 +58,4 @@ public abstract class AbstractUnivariateScalarFunction
         super();
     }
 
-    @Override
-    public Double evaluate(
-        final Double input)
-    {
-        return this.evaluate((double) input);
-    }
-
-    @Override
-    public double evaluateAsDouble(
-        final Double input)
-    {
-        return this.evaluate((double) input);
-    }
-
 }

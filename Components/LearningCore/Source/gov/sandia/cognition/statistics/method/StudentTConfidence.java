@@ -149,13 +149,13 @@ public class StudentTConfidence
         Collection<? extends Number> data,
         double confidence )
     {
-        UnivariateGaussian g =
-            UnivariateGaussian.MaximumLikelihoodEstimator.learn(
-            data, UnivariateGaussian.MaximumLikelihoodEstimator.DEFAULT_VARIANCE );
-        
+        final Pair<Double,Double> meanAndVariance =
+            UnivariateStatisticsUtil.computeMeanAndVariance(data);
+        final double mean = meanAndVariance.getFirst();
+        final double variance = meanAndVariance.getSecond();
 
         return computeConfidenceInterval(
-            g.getMean(), g.getVariance(), data.size(), confidence );
+            mean, variance, data.size(), confidence);
     }
 
     @Override

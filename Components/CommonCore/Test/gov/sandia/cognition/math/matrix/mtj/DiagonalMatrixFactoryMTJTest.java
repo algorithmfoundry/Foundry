@@ -14,11 +14,14 @@
 
 package gov.sandia.cognition.math.matrix.mtj;
 
+import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.MatrixFactoryTestHarness;
-import junit.framework.TestCase;
-import java.util.Random;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertNotSame;
 
 /**
  * Unit tests for DiagonalMatrixFactoryMTJTest.
@@ -120,5 +123,33 @@ public class DiagonalMatrixFactoryMTJTest
 
     }
 
+    @Override
+    public void testCreateGaussianRandom()
+    {
+        
+        Matrix m = this.createRandomMatrix();
+        MatrixFactory<?> factory = this.createFactory();
+
+        int M = m.getNumRows();
+        int N = m.getNumColumns();
+        Matrix mr = factory.createGaussianRandom(M, N, random);
+        assertNotNull(mr);
+        assertNotSame(m, mr);
+        assertEquals(M, mr.getNumRows());
+        assertEquals(N, mr.getNumColumns());
+        assertFalse(mr.equals(factory.createGaussianRandom(M, N, random)));
+
+        M = 5000;
+        N = 5000;
+        mr = factory.createGaussianRandom(M, N, random);
+        assertEquals(M, mr.getNumRows());
+        assertEquals(N, mr.getNumColumns());
+        double mean = UnivariateStatisticsUtil.computeMean(mr.convertToVector().valuesAsList());
+        double variance = UnivariateStatisticsUtil.computeVariance(mr.convertToVector().valuesAsList());
+        assertEquals(0.0, mean, 1e-2);
+        assertEquals(1.0, variance, 1e-2);
+    }
+
+    
 
 }

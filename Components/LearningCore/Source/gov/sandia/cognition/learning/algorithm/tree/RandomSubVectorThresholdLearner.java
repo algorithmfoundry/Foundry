@@ -180,26 +180,37 @@ public class RandomSubVectorThresholdLearner<OutputType>
 
         // Get the dimensionality of the subspace.
         final int subDimensionality = this.getSubDimensionality(dimensionality);
-
+        final int[] subDimensions;
         if (subDimensionality >= dimensionality)
         {
-            // No point in subsampling if the requested dimensionality is as
-            // big (or bigger) than the actual dimensionality.
-            return this.subLearner.learn(data);
-        }
-
-        // Create a partial permutation of the indices of the dimensionality.
-        final int[] subDimensions = Permutation.createPartialPermutation(
-            dimensionality, subDimensionality, this.random);
-        
-        if (this.dimensionsToConsider != null)
-        {
-            // We only use the dimensions to consider based on the array.
-            for (int i = 0; i < subDimensionality; i++)
+            if (this.dimensionsToConsider == null)
             {
-                // Replace the index with the one from the dimensions to
-                // consider.
-                subDimensions[i] = this.dimensionsToConsider[subDimensions[i]];
+                // No point in subsampling if the requested dimensionality is as
+                // big (or bigger) than the actual dimensionality.
+                return this.subLearner.learn(data);
+            }
+            else
+            {
+                // The subdimensions are just the set of dimensions to consider.
+                // Use them.
+                subDimensions = this.dimensionsToConsider;
+            }
+        }
+        else
+        {
+            // Create a partial permutation of the indices of the dimensionality.
+            subDimensions = Permutation.createPartialPermutation(
+                dimensionality, subDimensionality, this.random);
+        
+            if (this.dimensionsToConsider != null)
+            {
+                // We only use the dimensions to consider based on the array.
+                for (int i = 0; i < subDimensionality; i++)
+                {
+                    // Replace the index with the one from the dimensions to
+                    // consider.
+                    subDimensions[i] = this.dimensionsToConsider[subDimensions[i]];
+                }
             }
         }
 
@@ -214,7 +225,7 @@ public class RandomSubVectorThresholdLearner<OutputType>
 
         // Build up the dataset for the subspace.
         final ArrayList<InputOutputPair<Vector, OutputType>> subData =
-            new ArrayList<InputOutputPair<Vector, OutputType>>(data.size());
+            new ArrayList<>(data.size());
         for (InputOutputPair<? extends Vectorizable, OutputType> example
             : data)
         {
@@ -230,7 +241,7 @@ public class RandomSubVectorThresholdLearner<OutputType>
             }
 
             // Add the new example.
-            subData.add(new DefaultInputOutputPair<Vector, OutputType>(
+            subData.add(new DefaultInputOutputPair<>(
                 subVector, example.getOutput()));
         }
 

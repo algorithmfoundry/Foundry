@@ -7,7 +7,7 @@ The Cognitive Foundry is an open-source Java library for building intelligent sy
 
 The Foundry contains four primary packages: Common, Learning, Text, and Framework. Common defines many of the basic interfaces and types in the Foundry. It also includes a linear algebra package and other generally useful Java utilities. Learning contains components and algorithms for machine learning and statistics. Text contains components and algorithms for text analysis and information retrieval such as topic modeling. Framework contains a framework for building multi-level models.
 
-The Foundry requires Java 1.7 or later.
+The Foundry requires Java 1.8 or later.
 
 ## License
 
@@ -24,32 +24,32 @@ Example Maven dependencies:
   <dependency>
     <groupId>gov.sandia.foundry</groupId>
     <artifactId>gov-sandia-cognition-common-core</artifactId>
-    <version>3.4.2</version>
+    <version>3.4.3</version>
   </dependency>
   <dependency>
     <groupId>gov.sandia.foundry</groupId>
     <artifactId>gov-sandia-cognition-common-data</artifactId>
-    <version>3.4.2</version>
+    <version>3.4.3</version>
   </dependency>
   <dependency>
     <groupId>gov.sandia.foundry</groupId>
     <artifactId>gov-sandia-cognition-learning-core</artifactId>
-    <version>3.4.2</version>
+    <version>3.4.3</version>
   </dependency>
   <dependency>
     <groupId>gov.sandia.foundry</groupId>
     <artifactId>gov-sandia-cognition-text-core</artifactId>
-    <version>3.4.2</version>
+    <version>3.4.3</version>
   </dependency>
   <dependency>
     <groupId>gov.sandia.foundry</groupId>
     <artifactId>gov-sandia-cognition-framework-core</artifactId>
-    <version>3.4.2</version>
+    <version>3.4.3</version>
   </dependency>
   <dependency>
     <groupId>gov.sandia.foundry</groupId>
     <artifactId>gov-sandia-cognition-framework-learning</artifactId>
-    <version>3.4.2</version>
+    <version>3.4.3</version>
   </dependency>
 </dependencies>
 ```
@@ -57,12 +57,12 @@ Example Maven dependencies:
 Example Ivy dependencies
 ```xml
 <dependencies>
-    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-common-core"        rev="3.4.2"/>
-    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-common-data"        rev="3.4.2"/>
-    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-learning-core"      rev="3.4.2"/>
-    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-text-core"          rev="3.4.2"/>
-    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-framework-core"     rev="3.4.2"/>
-    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-framework-learning" rev="3.4.2"/>
+    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-common-core"        rev="3.4.3"/>
+    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-common-data"        rev="3.4.3"/>
+    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-learning-core"      rev="3.4.3"/>
+    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-text-core"          rev="3.4.3"/>
+    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-framework-core"     rev="3.4.3"/>
+    <dependency org="gov.sandia.foundry" name="gov-sandia-cognition-framework-learning" rev="3.4.3"/>
 </dependencies>
 ```
 

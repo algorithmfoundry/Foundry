@@ -32,5 +32,20 @@ public interface ScalarFunction<InputType>
      */
     public double evaluateAsDouble(
         final InputType input);
+    
+    /**
+     * Returns the result of calling {@code evaluateAsDouble}.
+     *
+     * @param   input
+     *      The input value.
+     * @return
+     *      The result evaluated as a double.
+     */
+    @Override
+    default Double evaluate(
+        final InputType input)
+    {
+        return this.evaluateAsDouble(input);
+    }
 
 }
