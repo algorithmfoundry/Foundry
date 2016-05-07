@@ -984,6 +984,12 @@ public class DenseMatrix
         return false;
     }
 
+    @Override
+    public int getEntryCount()
+    {
+        return this.getNumRows() * this.getNumColumns();
+    }
+
     /**
      * Simple container class for Singular Value Decomposition (SVD) results.
      * Stores three matrices U, Sigma, and V as public members. NOTE: This

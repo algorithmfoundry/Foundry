@@ -421,6 +421,17 @@ public class SparseMatrix
         return true;
     }
 
+    @Override
+    public int getEntryCount()
+    {
+        if (!this.isCompressed())
+        {
+            this.compress();
+        }
+        
+        return this.vals.length;
+     }
+
     /**
      * This enum allows the getNumNonZeroWhenCombinedWith method to count the
      * number of non-zeros depending on if an add/subtract (OR) or multiply
@@ -2376,6 +2387,13 @@ public class SparseMatrix
 
     }
 
+    @Override
+    public Iterator<MatrixEntry> iterator()
+    {
+// TODO: Make this a sparse iterator.
+        return super.iterator();
+    }
+        
     /**
      * Returns an iterator over the non-zero entries in this matrix. The
      * returned iterator is invalidated by any subsequent changes to the

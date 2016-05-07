@@ -552,7 +552,7 @@ abstract class BaseMatrix
     }
 
     @Override
-    final public Iterator<MatrixEntry> iterator()
+    public Iterator<MatrixEntry> iterator()
     {
         return new MatrixIterator(this);
     }

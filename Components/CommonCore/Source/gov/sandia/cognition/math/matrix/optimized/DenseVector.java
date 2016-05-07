@@ -505,4 +505,49 @@ public class DenseVector
         return DenseVectorFactoryOptimized.INSTANCE;
     }
 
+    @Override
+    public double sum()
+    {
+        double result = 0.0;
+        for (final double value : this.vec)
+        {
+            result += value;
+        }
+        return result;
+    }
+    
+    @Override
+    public double getMinValue()
+    {
+        double min = Double.POSITIVE_INFINITY;
+        for (final double value : this.vec)
+        {
+            if (value < min)
+            {
+                min = value;
+            }
+        }
+        return min;
+    }
+    
+    @Override
+    public double getMaxValue()
+    {
+        double max = Double.NEGATIVE_INFINITY;
+        for (final double value : this.vec)
+        {
+            if (value > max)
+            {
+                max = value;
+            }
+        }
+        return max;
+    }
+
+    @Override
+    public int getEntryCount()
+    {
+        return this.vec.length;
+    }
+
 }

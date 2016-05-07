@@ -112,4 +112,12 @@ public class SparseVectorFactoryOptimized
         return SparseMatrixFactoryOptimized.INSTANCE;
     }
 
+    @Override
+    public SparseVector createVectorCapacity(
+        final int dimensionality,
+        final int initialCapacity)
+    {
+        return new SparseVector(dimensionality);
+    }
+
 }

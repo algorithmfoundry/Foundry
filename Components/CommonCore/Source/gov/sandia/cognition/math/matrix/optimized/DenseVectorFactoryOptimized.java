@@ -79,6 +79,14 @@ public class DenseVectorFactoryOptimized
     {
         return DenseMatrixFactoryOptimized.INSTANCE;
     }
+
+    @Override
+    public DenseVector createVectorCapacity(
+        final int dimensionality,
+        final int initialCapacity)
+    {
+        return this.createVector(dimensionality);
+    }
     
     /**
      * Package-private implementation for all of the createVector1D methods

@@ -886,5 +886,11 @@ public class DiagonalMatrix
     {
         return DiagonalMatrixFactoryOptimized.INSTANCE;
     }
+
+    @Override
+    public int getEntryCount()
+    {
+        return this.diag.length;
+    }
     
 }

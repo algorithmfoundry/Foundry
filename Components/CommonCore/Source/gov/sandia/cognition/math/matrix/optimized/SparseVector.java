@@ -711,6 +711,7 @@ public class SparseVector
         return ret;
     }
 
+// TODO: This iterator should only be over the sparse entries.
     @Override
     final public Iterator<VectorEntry> iterator()
     {
@@ -916,6 +917,57 @@ public class SparseVector
     public VectorFactory<?> getVectorFactory()
     {
         return SparseVectorFactoryOptimized.INSTANCE;
+    }
+
+    @Override
+    public double sum()
+    {
+        this.compress();
+        double result = 0.0;
+        for (final double value : this.vals)
+        {
+            result += value;
+        }
+        return result;
+    }
+    
+    @Override
+    public double getMinValue()
+    {
+        this.compress();
+        double min = this.getEntryCount() < this.getDimensionality() ? 0.0 :
+            Double.POSITIVE_INFINITY;
+        for (final double value : this.vals)
+        {
+            if (value < min) 
+            {
+                min = value;
+            }
+        }
+        return min;
+    }
+    
+    @Override
+    public double getMaxValue()
+    {
+        this.compress();
+        double max = this.getEntryCount() < this.getDimensionality() ? 0.0 :
+            Double.NEGATIVE_INFINITY;
+        for (final double value : this.vals)
+        {
+            if (value > max) 
+            {
+                max = value;
+            }
+        }
+        return max;
+    }
+    
+    @Override
+    public int getEntryCount()
+    {
+        this.compress();;
+        return this.vals.length;
     }
 
 }
