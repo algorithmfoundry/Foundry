@@ -12,10 +12,10 @@ import gov.sandia.cognition.math.AbstractDifferentiableUnivariateScalarFunction;
 
 /**
  * A hard sigmoid function, which is an approximation of a logistic sigmoid
- * whose output is between 0 and 1. The function is maps values between -2.5 
+ * whose output is between 0 and 1. The function maps values between -2.5 
  * and 2.5 linearly between 0 and 1 and for values outside that range it is 
  * capped. Unlike the soft sigmoid it actually ends up producing values of 0
- * and 1 for inputs outside of that range.
+ * and 1 for inputs outside of that range, where it is saturated.
  * 
  * The functional form is: f(x) = min(1.0, max(0.0, 0.2 * x + 0.5))
  * 
