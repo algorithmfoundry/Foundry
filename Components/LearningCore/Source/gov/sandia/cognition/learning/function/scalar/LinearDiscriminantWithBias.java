@@ -95,11 +95,10 @@ public class LinearDiscriminantWithBias
     }
 
     @Override
-    public Double evaluate(
-        Vectorizable input)
+    public double evaluateAsDouble(
+        final Vectorizable input)
     {
-        final double dot = super.evaluate( input );
-        return dot + this.bias;
+        return this.bias + super.evaluateAsDouble(input);
     }
 
     @Override
