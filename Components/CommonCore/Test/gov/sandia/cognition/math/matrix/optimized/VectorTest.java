@@ -13,6 +13,10 @@
 
 package gov.sandia.cognition.math.matrix.optimized;
 
+import gov.sandia.cognition.math.matrix.custom.SparseVector;
+import gov.sandia.cognition.math.matrix.custom.SparseMatrix;
+import gov.sandia.cognition.math.matrix.custom.DenseVector;
+import gov.sandia.cognition.math.matrix.custom.DenseMatrix;
 import gov.sandia.cognition.math.matrix.DimensionalityMismatchException;
 import org.junit.Test;
 import gov.sandia.cognition.math.matrix.Matrix;

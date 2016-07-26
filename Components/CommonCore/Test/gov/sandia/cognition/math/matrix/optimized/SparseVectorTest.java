@@ -8,6 +8,7 @@
 
 package gov.sandia.cognition.math.matrix.optimized;
 
+import gov.sandia.cognition.math.matrix.custom.SparseVector;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorTestHarness;
 

@@ -1,5 +1,5 @@
 /*
- * File:                ParallelMatrixMergeFunction.java
+ * File:                ParallelMatrixFunction.java
  * Authors:             Jeremy D. Wendt
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
@@ -11,32 +11,29 @@
  * complete details.
  */
 
-package gov.sandia.cognition.math.matrix.optimized;
+package gov.sandia.cognition.math.matrix.custom;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * This package-private class simplifies parallelizing Matrix operations. It
  * uses generics for defining the two (possibly different) input types, and the
- * result of merging the parallel-solved pieces. This should be used for
- * parallel operations where the result is solved in-place on a single value.
- * For instance in dot products, the result is a single double. Thus, each
- * parallel piece solves on a different double and then merge combines those
- * doubles into a single double.
+ * output type. This should be used for parallel operations where the output can
+ * be stored separately for each row (for instance in matrix/vector multiplies,
+ * where the output is a vector with independent values for each row's output).
  *
  * @author Jeremy D. Wendt
  * @since   3.4.3
- * @param <InputType1> The type of the left operand
- * @param <InputType2> The type of the right operand
- * @param <MergeType> The type of the final result
+ * @param <InputType1> The first part of the input
+ * @param <InputType2> The second part of the input
+ * @param <OutputType> The output type
  */
-abstract class ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>
-    implements Callable<MergeType>
+abstract class ParallelMatrixFunction<InputType1, InputType2, OutputType>
+    implements Callable<Integer>
 {
 
     /**
@@ -53,24 +50,31 @@ abstract class ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>
     protected int maxRow;
 
     /**
-     * The left-part of the operation. For instance, in vector-vector dot
-     * product, this is the vector type of the left side. Each thread should
-     * only read from rows between minRow and maxRow (for caching purposes).
-     * This should not be changed at all during the operations.
+     * The left-part of the operation. For instance, in matrix-vector
+     * multiplication, this is the matrix. Each thread should only read from
+     * rows between minRow and maxRow (for caching purposes). This should not be
+     * changed at all during the operations.
      */
     protected InputType1 input1;
 
     /**
-     * The right-part of the operation. For instance, in vector-vector dot
-     * product, this is the vector type of the right side. This should not be
-     * changed at all during the operations.
+     * The right-part of the operation. For instance, in matrix-vector
+     * multiplication, this is the vector. This should not be changed at all
+     * during the operations.
      */
     protected InputType2 input2;
 
     /**
+     * The result of the operation. Each thread will only write to rows between
+     * minRow and maxRow (not inclusive). The results of the operation will
+     * alter this -- and the caller should maintain a copy.
+     */
+    protected OutputType output;
+
+    /**
      * Private because this should never be called. Ever. No matter what.
      */
-    private ParallelMatrixMergeFunction()
+    private ParallelMatrixFunction()
     {
         throw new UnsupportedOperationException(
             "Null constructor not supported.");
@@ -82,51 +86,47 @@ abstract class ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>
      *
      * @param input1 The first input
      * @param input2 The second input
+     * @param output The output -- the callee will see the results of the
+     * parallel operations in this
      * @param minRow The minimum row for this thread to operate on
      * @param maxRow The maximum row (not inclusive) for this thread to operate
      * on
      */
-    public ParallelMatrixMergeFunction(InputType1 input1,
+    public ParallelMatrixFunction(InputType1 input1,
         InputType2 input2,
+        OutputType output,
         int minRow,
         int maxRow)
     {
         this.input1 = input1;
         this.input2 = input2;
+        this.output = output;
         this.minRow = minRow;
         this.maxRow = maxRow;
     }
 
     /**
-     * This needs to be extended by operation-specific classes.
+     * This needs to be extended by operation-specific classes. NOTE: The return
+     * type will be ignored (it's just required by the Callable interface).
      *
-     * @return The solution for solving this piece of the operation -- the
-     * results will be merged in merge (not in parallel).
+     * @return Is ignored.
      * @throws Exception Part of the interface. Please don't throw exceptions
      * unless you really need to.
      */
     @Override
-    abstract public MergeType call()
+    abstract public Integer call()
         throws Exception;
 
     /**
-     * This method will only be called on one instance and won't use internal
-     * state to merge the results of all of the piece's call methods.
-     *
-     * @param pieces The results from all of the pieces
-     * @return The merged, final result
-     */
-    abstract protected MergeType merge(List<Future<MergeType>> pieces);
-
-    /**
      * This static method handles all the logic of splitting up the chunks of a
-     * matrix problem, calling the chunks in parallel, and merging the results.
+     * matrix problem and calling the chunks in parallel.
      *
      * @param <InputType1> The type for the left operand
      * @param <InputType2> The type for the right operand
-     * @param <MergeType> The type for the merged result
+     * @param <OutputType> The type for the result
      * @param input1 The left operand
      * @param input2 The right operand
+     * @param output The result -- this will change as a result of operations
      * @param numPieces The number of pieces to split the problem into -- can be
      * more than the number of threads if you think the pieces may be non-equal
      * in size.
@@ -135,18 +135,19 @@ abstract class ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>
      * numRows)
      * @param factory The factory for creating ParallelMatrixFunction instnaces
      */
-    public static <InputType1, InputType2, MergeType> MergeType solve(
+    public static <InputType1, InputType2, OutputType> void solve(
         InputType1 input1,
         InputType2 input2,
+        OutputType output,
         int numPieces,
         int numThreads,
         int numRows,
-        ParallelMatrixMergeFunction.ParallelFunctionFactory<InputType1, InputType2, MergeType> factory)
+        IParallelFunctionFactory<InputType1, InputType2, OutputType> factory)
     {
         double numRowsPer = ((double) numRows) / ((double) numPieces);
         numRowsPer = Math.max(numRowsPer, 1.0);
-        List<ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>> pieces =
-            new ArrayList<ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>>(
+        List<ParallelMatrixFunction<InputType1, InputType2, OutputType>> pieces =
+            new ArrayList<ParallelMatrixFunction<InputType1, InputType2, OutputType>>(
             numPieces);
         int minRow, maxRow;
         minRow = 0;
@@ -161,7 +162,7 @@ abstract class ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>
                 maxRow = (int) Math.round((i + 1) * numRowsPer);
             }
             maxRow = Math.min(maxRow, numRows);
-            pieces.add(factory.init(input1, input2, minRow, maxRow));
+            pieces.add(factory.init(input1, input2, output, minRow, maxRow));
             minRow = maxRow;
 
             // Break out early if there were more pieces than rows
@@ -173,16 +174,15 @@ abstract class ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>
         ExecutorService threads = Executors.newFixedThreadPool(numThreads);
         try
         {
-            List<Future<MergeType>> results = threads.<MergeType>invokeAll(
-                pieces);
-            threads.shutdown();
-
-            return pieces.get(0).merge(results);
+            threads.invokeAll(pieces);
         }
         catch (InterruptedException e)
         {
-            threads.shutdown();
             throw new RuntimeException("Threads stopped prematurely", e);
+        }
+        finally
+        {
+            threads.shutdown();
         }
     }
 
@@ -191,9 +191,9 @@ abstract class ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>
      *
      * @param <InputType1> The left input's type
      * @param <InputType2> The right input's type
-     * @param <MergeType> The output type
+     * @param <OutputType> The output's type
      */
-    public interface ParallelFunctionFactory<InputType1, InputType2, MergeType>
+    public interface IParallelFunctionFactory<InputType1, InputType2, OutputType>
     {
 
         /**
@@ -202,14 +202,17 @@ abstract class ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>
          *
          * @param input1 The left input
          * @param input2 The right input
+         * @param output The output -- this will be altered by the call method
+         * (between minRow (inclusive) and maxRow (not inclusive)).
          * @param minRow The minimum row to affect (inclusive)
          * @param maxRow The maximum row to affect (not inclusive)
          * @return A new instance of the correct parallel-aware solver with the
          * input values stored for the call method.
          */
-        ParallelMatrixMergeFunction<InputType1, InputType2, MergeType> init(
+        ParallelMatrixFunction<InputType1, InputType2, OutputType> init(
             InputType1 input1,
             InputType2 input2,
+            OutputType output,
             int minRow,
             int maxRow);
 

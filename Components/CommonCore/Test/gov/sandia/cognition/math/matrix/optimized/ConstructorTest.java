@@ -13,6 +13,16 @@
 
 package gov.sandia.cognition.math.matrix.optimized;
 
+import gov.sandia.cognition.math.matrix.custom.SparseVector;
+import gov.sandia.cognition.math.matrix.custom.DenseVectorFactoryOptimized;
+import gov.sandia.cognition.math.matrix.custom.SparseVectorFactoryOptimized;
+import gov.sandia.cognition.math.matrix.custom.DenseMatrixFactoryOptimized;
+import gov.sandia.cognition.math.matrix.custom.SparseMatrixFactoryOptimized;
+import gov.sandia.cognition.math.matrix.custom.DenseVector;
+import gov.sandia.cognition.math.matrix.custom.SparseMatrix;
+import gov.sandia.cognition.math.matrix.custom.DiagonalMatrixFactoryOptimized;
+import gov.sandia.cognition.math.matrix.custom.DiagonalMatrix;
+import gov.sandia.cognition.math.matrix.custom.DenseMatrix;
 import gov.sandia.cognition.io.XStreamSerializationHandler;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
