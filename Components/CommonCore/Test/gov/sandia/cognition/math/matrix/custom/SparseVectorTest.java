@@ -1,31 +1,31 @@
 /*
- * File:            DenseVectorTest.java
+ * File:            SparseVectorTest.java
  * Authors:         Justin Basilico
  * Project:         Cognitive Foundry
  * 
  * Copyright 2016 Cognitive Foundry. All rights reserved.
  */
 
-package gov.sandia.cognition.math.matrix.optimized;
+package gov.sandia.cognition.math.matrix.custom;
 
-import gov.sandia.cognition.math.matrix.custom.DenseVector;
+import gov.sandia.cognition.math.matrix.custom.SparseVector;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorTestHarness;
 
 /**
- * Unit tests for class {@link DenseVector}.
+ * Unit tests for class {@link SparseVector}.
  * 
  * @author  Justin Basilico
  */
-public class DenseVectorTest
+public class SparseVectorTest
     extends VectorTestHarness
 {
 
     /** 
-     * Creates a new instance of DenseVectorTest
+     * Creates a new instance of SparseVectorTest
      * @param testName Name of the test
      */
-    public DenseVectorTest(
+    public SparseVectorTest(
         String testName)
     {
         super(testName);
@@ -35,20 +35,22 @@ public class DenseVectorTest
     protected Vector createVector(
         final int numDim)
     {
-        return new DenseVector(numDim);
+        return new SparseVector(numDim);
     }
 
     @Override
     protected Vector createCopy(
         final Vector vector)
     {
-        return new DenseVector(vector.toArray());
+        final SparseVector result = new SparseVector(vector.getDimensionality());
+        vector.forEachNonZero((i, v) -> result.set(i, v));
+        return result;
     }
 
     @Override
     public void testIsSparse()
     {
-        assertFalse(this.createVector(10).isSparse());
+        assertTrue(this.createVector(10).isSparse());
     }
     
 }

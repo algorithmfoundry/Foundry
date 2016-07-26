@@ -11,7 +11,7 @@
  * complete details.
  */
 
-package gov.sandia.cognition.math.matrix.optimized;
+package gov.sandia.cognition.math.matrix.custom;
 
 import gov.sandia.cognition.math.matrix.custom.SparseVector;
 import gov.sandia.cognition.math.matrix.custom.ParallelSparseMatrix;
