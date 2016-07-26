@@ -422,6 +422,7 @@ public class DenseVector
      *
      * @return the array of elements stored herein.
      */
+// TODO: Rename this.
     final double[] elements()
     {
         return vec;
@@ -482,6 +483,7 @@ public class DenseVector
      *
      * @return The number of non-zero entries in this
      */
+// TODO: Rename this.
     final public int numNonZero()
     {
         int nnz = 0;
@@ -550,4 +552,10 @@ public class DenseVector
         return this.vec.length;
     }
 
+    @Override
+    public void zero()
+    {
+        Arrays.fill(this.vec, 0.0);
+    }
+    
 }

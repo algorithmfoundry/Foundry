@@ -17,6 +17,7 @@ import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.util.ArgumentChecker;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
@@ -69,6 +70,7 @@ public class SparseVector
      */
     public SparseVector(int n)
     {
+        ArgumentChecker.assertIsNonNegative("dimensionality", n);
         this.n = n;
         elements = new TreeMap<Integer, Double>();
         vals = null;
@@ -677,12 +679,14 @@ public class SparseVector
         other.compress();
         double ret = 0;
         int otheridx = 0;
-        for (int i = 0; i < locs.length; ++i)
+        final int thisLength = this.locs.length;
+        final int otherLength = other.locs.length;
+        for (int i = 0; i < thisLength && otheridx < otherLength; ++i)
         {
             while (other.locs[otheridx] < locs[i])
             {
                 ++otheridx;
-                if (otheridx >= other.locs.length)
+                if (otheridx >= otherLength)
                 {
                     return ret;
                 }
