@@ -23,12 +23,12 @@ import gov.sandia.cognition.math.matrix.MatrixFactory;
  * @author Jeremy D. Wendt
  * @since   3.4.3
  */
-public class DenseMatrixFactoryOptimized
+public class CustomDenseMatrixFactory
     extends MatrixFactory<DenseMatrix>
 {
 
     /** An instance of this class. */
-    public static final DenseMatrixFactoryOptimized INSTANCE = new DenseMatrixFactoryOptimized();
+    public static final CustomDenseMatrixFactory INSTANCE = new CustomDenseMatrixFactory();
     
     /**
      * Creates a deep copy of m into a DenseMatrix and returns it

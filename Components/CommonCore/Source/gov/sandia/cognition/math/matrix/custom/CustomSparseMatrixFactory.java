@@ -22,12 +22,12 @@ import gov.sandia.cognition.math.matrix.MatrixFactory;
  * @author Jeremy D. Wendt
  * @since   3.4.3
  */
-public class SparseMatrixFactoryOptimized
+public class CustomSparseMatrixFactory
     extends MatrixFactory<SparseMatrix>
 {
     
     /** An instance of this class. */
-    public static SparseMatrixFactoryOptimized INSTANCE = new SparseMatrixFactoryOptimized();
+    public static CustomSparseMatrixFactory INSTANCE = new CustomSparseMatrixFactory();
 
     /**
      * {@inheritDoc}

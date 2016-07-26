@@ -27,12 +27,12 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
  * @author Jeremy D. Wendt
  * @since   3.4.3
  */
-public class DenseVectorFactoryOptimized
+public class CustomDenseVectorFactory
     extends VectorFactory<DenseVector>
 {
 
     /** An instance of this class. */
-    public static DenseVectorFactoryOptimized INSTANCE = new DenseVectorFactoryOptimized();
+    public static CustomDenseVectorFactory INSTANCE = new CustomDenseVectorFactory();
     
     @Override
     final public DenseVector copyVector(Vector m)
@@ -77,7 +77,7 @@ public class DenseVectorFactoryOptimized
     @Override
     public MatrixFactory<?> getAssociatedMatrixFactory()
     {
-        return DenseMatrixFactoryOptimized.INSTANCE;
+        return CustomDenseMatrixFactory.INSTANCE;
     }
 
     @Override

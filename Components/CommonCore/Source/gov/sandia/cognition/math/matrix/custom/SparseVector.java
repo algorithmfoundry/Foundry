@@ -920,7 +920,7 @@ public class SparseVector
     @Override
     public VectorFactory<?> getVectorFactory()
     {
-        return SparseVectorFactoryOptimized.INSTANCE;
+        return CustomSparseVectorFactory.INSTANCE;
     }
 
     @Override

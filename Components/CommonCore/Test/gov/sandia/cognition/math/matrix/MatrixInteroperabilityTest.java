@@ -12,8 +12,8 @@ import gov.sandia.cognition.collection.CollectionUtil;
 import static gov.sandia.cognition.math.matrix.MatrixInteroperabilityTest.assertEquals;
 import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.SparseMatrixFactoryMTJ;
-import gov.sandia.cognition.math.matrix.custom.DenseMatrixFactoryOptimized;
-import gov.sandia.cognition.math.matrix.custom.SparseMatrixFactoryOptimized;
+import gov.sandia.cognition.math.matrix.custom.CustomDenseMatrixFactory;
+import gov.sandia.cognition.math.matrix.custom.CustomSparseMatrixFactory;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,8 +48,8 @@ public class MatrixInteroperabilityTest
         List<MatrixFactory<?>> factories = new LinkedList<>();
         factories.add(new DenseMatrixFactoryMTJ());
         factories.add(new SparseMatrixFactoryMTJ());
-        factories.add(new DenseMatrixFactoryOptimized());
-        factories.add(new SparseMatrixFactoryOptimized());
+        factories.add(new CustomDenseMatrixFactory());
+        factories.add(new CustomSparseMatrixFactory());
         return factories;
     }
     @Before

@@ -1673,7 +1673,7 @@ public class DenseMatrix
     @Override
     public MatrixFactory<?> getMatrixFactory()
     {
-        return DenseMatrixFactoryOptimized.INSTANCE;
+        return CustomDenseMatrixFactory.INSTANCE;
     }
 
 }

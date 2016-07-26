@@ -11,8 +11,8 @@ package gov.sandia.cognition.math.matrix;
 import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.math.matrix.mtj.DenseVectorFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.SparseVectorFactoryMTJ;
-import gov.sandia.cognition.math.matrix.custom.DenseVectorFactoryOptimized;
-import gov.sandia.cognition.math.matrix.custom.SparseVectorFactoryOptimized;
+import gov.sandia.cognition.math.matrix.custom.CustomDenseVectorFactory;
+import gov.sandia.cognition.math.matrix.custom.CustomSparseVectorFactory;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,8 +46,8 @@ public class VectorInteroperabilityTest
         List<VectorFactory<?>> factories = new LinkedList<>();
         factories.add(new DenseVectorFactoryMTJ());
         factories.add(new SparseVectorFactoryMTJ());
-        factories.add(new DenseVectorFactoryOptimized());
-        factories.add(new SparseVectorFactoryOptimized());
+        factories.add(new CustomDenseVectorFactory());
+        factories.add(new CustomSparseVectorFactory());
         // Add new factories above here.
         
         return factories;

@@ -26,11 +26,11 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
  * @author Jeremy D. Wendt
  * @since   3.4.3
  */
-public class SparseVectorFactoryOptimized
+public class CustomSparseVectorFactory
     extends VectorFactory<SparseVector>
 {
     /** An instance of this class. */
-    public static SparseVectorFactoryOptimized INSTANCE = new SparseVectorFactoryOptimized();
+    public static CustomSparseVectorFactory INSTANCE = new CustomSparseVectorFactory();
 
     @Override
     final public SparseVector copyVector(Vector m)
@@ -71,7 +71,7 @@ public class SparseVectorFactoryOptimized
     @Override
     final public Vector1D createVector1D(double x)
     {
-        return new DenseVectorFactoryOptimized.DenseVector1D(x);
+        return new CustomDenseVectorFactory.DenseVector1D(x);
     }
 
     /**
@@ -86,7 +86,7 @@ public class SparseVectorFactoryOptimized
     final public Vector2D createVector2D(double x,
         double y)
     {
-        return new DenseVectorFactoryOptimized.DenseVector2D(x, y);
+        return new CustomDenseVectorFactory.DenseVector2D(x, y);
     }
 
     /**
@@ -103,13 +103,13 @@ public class SparseVectorFactoryOptimized
         double y,
         double z)
     {
-        return new DenseVectorFactoryOptimized.DenseVector3D(x, y, z);
+        return new CustomDenseVectorFactory.DenseVector3D(x, y, z);
     }
 
     @Override
     public MatrixFactory<?> getAssociatedMatrixFactory()
     {
-        return SparseMatrixFactoryOptimized.INSTANCE;
+        return CustomSparseMatrixFactory.INSTANCE;
     }
 
     @Override

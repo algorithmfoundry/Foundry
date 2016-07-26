@@ -884,7 +884,7 @@ public class DiagonalMatrix
     @Override
     public MatrixFactory<?> getMatrixFactory()
     {
-        return DiagonalMatrixFactoryOptimized.INSTANCE;
+        return CustomDiagonalMatrixFactory.INSTANCE;
     }
 
     @Override

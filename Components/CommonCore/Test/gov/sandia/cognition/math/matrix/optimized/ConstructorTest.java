@@ -14,13 +14,13 @@
 package gov.sandia.cognition.math.matrix.optimized;
 
 import gov.sandia.cognition.math.matrix.custom.SparseVector;
-import gov.sandia.cognition.math.matrix.custom.DenseVectorFactoryOptimized;
-import gov.sandia.cognition.math.matrix.custom.SparseVectorFactoryOptimized;
-import gov.sandia.cognition.math.matrix.custom.DenseMatrixFactoryOptimized;
-import gov.sandia.cognition.math.matrix.custom.SparseMatrixFactoryOptimized;
+import gov.sandia.cognition.math.matrix.custom.CustomDenseVectorFactory;
+import gov.sandia.cognition.math.matrix.custom.CustomSparseVectorFactory;
+import gov.sandia.cognition.math.matrix.custom.CustomDenseMatrixFactory;
+import gov.sandia.cognition.math.matrix.custom.CustomSparseMatrixFactory;
 import gov.sandia.cognition.math.matrix.custom.DenseVector;
 import gov.sandia.cognition.math.matrix.custom.SparseMatrix;
-import gov.sandia.cognition.math.matrix.custom.DiagonalMatrixFactoryOptimized;
+import gov.sandia.cognition.math.matrix.custom.CustomDiagonalMatrixFactory;
 import gov.sandia.cognition.math.matrix.custom.DiagonalMatrix;
 import gov.sandia.cognition.math.matrix.custom.DenseMatrix;
 import gov.sandia.cognition.io.XStreamSerializationHandler;
@@ -162,7 +162,7 @@ public class ConstructorTest
         {
             // correct path
         }
-        DenseMatrixFactoryOptimized df = new DenseMatrixFactoryOptimized();
+        CustomDenseMatrixFactory df = new CustomDenseMatrixFactory();
         DenseMatrix dm7 = df.createMatrix(data.length, data[0].length);
         MatrixUtil.testMatrixEquals(dm7, DenseMatrix.class, data.length,
             data[0].length, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -187,7 +187,7 @@ public class ConstructorTest
         DenseMatrix dm14 = new DenseMatrix(0, 0, true);
         MatrixUtil.testMatrixEquals(dm14, DenseMatrix.class, 0, 0);
 
-        SparseMatrixFactoryOptimized sf = new SparseMatrixFactoryOptimized();
+        CustomSparseMatrixFactory sf = new CustomSparseMatrixFactory();
         SparseMatrix sm5 = sf.createMatrix(data.length, data[0].length);
         MatrixUtil.testMatrixEquals(sm5, SparseMatrix.class, data.length,
             data[0].length, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -207,8 +207,8 @@ public class ConstructorTest
         MatrixUtil.testMatrixEquals(sm9, SparseMatrix.class, 2, 4, 0, 4, 0, 0, 0,
             0, 0, 2);
 
-        DiagonalMatrixFactoryOptimized dif =
-            new DiagonalMatrixFactoryOptimized();
+        CustomDiagonalMatrixFactory dif =
+            new CustomDiagonalMatrixFactory();
         DiagonalMatrix di6 = dif.createMatrix(5, 5);
         MatrixUtil.testMatrixEquals(di6, DiagonalMatrix.class, 5, 5, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -239,26 +239,26 @@ public class ConstructorTest
     public void createVectors()
     {
         // Get the 1D, 2D, and 3D vectors out of the way
-        SparseVectorFactoryOptimized sf = new SparseVectorFactoryOptimized();
+        CustomSparseVectorFactory sf = new CustomSparseVectorFactory();
         Vector1D v1 = sf.createVector1D(0);
         MatrixUtil.testVectorEquals(v1,
-            DenseVectorFactoryOptimized.DenseVector1D.class, 1, 0);
+            CustomDenseVectorFactory.DenseVector1D.class, 1, 0);
         Vector2D v2 = sf.createVector2D(0, 1);
         MatrixUtil.testVectorEquals(v2,
-            DenseVectorFactoryOptimized.DenseVector2D.class, 2, 0, 1);
+            CustomDenseVectorFactory.DenseVector2D.class, 2, 0, 1);
         Vector3D v3 = sf.createVector3D(0, 1, 2);
         MatrixUtil.testVectorEquals(v3,
-            DenseVectorFactoryOptimized.DenseVector3D.class, 3, 0, 1, 2);
-        DenseVectorFactoryOptimized df = new DenseVectorFactoryOptimized();
+            CustomDenseVectorFactory.DenseVector3D.class, 3, 0, 1, 2);
+        CustomDenseVectorFactory df = new CustomDenseVectorFactory();
         v1 = df.createVector1D(0);
         MatrixUtil.testVectorEquals(v1,
-            DenseVectorFactoryOptimized.DenseVector1D.class, 1, 0);
+            CustomDenseVectorFactory.DenseVector1D.class, 1, 0);
         assertEquals(0, v1.getX(), 1e-12);
         v1.setX(1);
         assertEquals(1, v1.getX(), 1e-12);
         v2 = df.createVector2D(0, 1);
         MatrixUtil.testVectorEquals(v2,
-            DenseVectorFactoryOptimized.DenseVector2D.class, 2, 0, 1);
+            CustomDenseVectorFactory.DenseVector2D.class, 2, 0, 1);
         assertEquals(0, v2.getX(), 1e-12);
         v2.setX(1);
         assertEquals(1, v2.getX(), 1e-12);
@@ -270,7 +270,7 @@ public class ConstructorTest
         assertEquals(3, v2.getSecond(), 1e-12);
         v3 = df.createVector3D(0, 1, 2);
         MatrixUtil.testVectorEquals(v3,
-            DenseVectorFactoryOptimized.DenseVector3D.class, 3, 0, 1, 2);
+            CustomDenseVectorFactory.DenseVector3D.class, 3, 0, 1, 2);
         assertEquals(0, v3.getX(), 1e-12);
         v3.setX(1);
         assertEquals(1, v3.getX(), 1e-12);

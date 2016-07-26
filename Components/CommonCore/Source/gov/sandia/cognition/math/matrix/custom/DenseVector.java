@@ -504,7 +504,7 @@ public class DenseVector
     @Override
     public VectorFactory<?> getVectorFactory()
     {
-        return DenseVectorFactoryOptimized.INSTANCE;
+        return CustomDenseVectorFactory.INSTANCE;
     }
 
     @Override

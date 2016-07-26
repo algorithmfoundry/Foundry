@@ -2517,7 +2517,7 @@ public class SparseMatrix
     @Override
     public MatrixFactory<?> getMatrixFactory()
     {
-        return SparseMatrixFactoryOptimized.INSTANCE;
+        return CustomSparseMatrixFactory.INSTANCE;
     }
 
     /**

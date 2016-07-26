@@ -22,12 +22,12 @@ import gov.sandia.cognition.math.matrix.MatrixFactory;
  * @author Jeremy D. Wendt
  * @since   3.4.3
  */
-public class DiagonalMatrixFactoryOptimized
+public class CustomDiagonalMatrixFactory
     extends MatrixFactory<DiagonalMatrix>
 {
 
     /** An instance of this class. */
-    public static DiagonalMatrixFactoryOptimized INSTANCE = new DiagonalMatrixFactoryOptimized();
+    public static CustomDiagonalMatrixFactory INSTANCE = new CustomDiagonalMatrixFactory();
     
     /**
      * {@inheritDoc}
