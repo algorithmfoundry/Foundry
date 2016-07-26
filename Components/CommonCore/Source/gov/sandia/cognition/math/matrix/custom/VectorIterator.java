@@ -62,7 +62,7 @@ public class VectorIterator
             throw new NoSuchElementException("Iterator has exceeded the "
                 + "bounds of the vector");
         }
-        VectorEntry ret = new OptVecEntry(curIdx, v);
+        VectorEntry ret = new BaseVectorEntry(curIdx, v);
         ++curIdx;
 
         return ret;

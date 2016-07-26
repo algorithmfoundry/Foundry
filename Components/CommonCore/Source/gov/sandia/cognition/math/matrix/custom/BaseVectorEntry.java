@@ -22,7 +22,7 @@ import gov.sandia.cognition.math.matrix.VectorEntry;
  * @author Jeremy D. Wendt
  * @since   3.4.3
  */
-class OptVecEntry
+class BaseVectorEntry
     implements VectorEntry
 {
 
@@ -41,7 +41,7 @@ class OptVecEntry
      *
      * @throws UnsupportedOperationException because it should never be called
      */
-    private OptVecEntry()
+    private BaseVectorEntry()
     {
         throw new UnsupportedOperationException("This constructor should never "
             + "be called.");
@@ -53,7 +53,7 @@ class OptVecEntry
      * @param index The index to the vector
      * @param v The vector to index
      */
-    OptVecEntry(int index,
+    BaseVectorEntry(int index,
         BaseVector v)
     {
         this.index = index;
