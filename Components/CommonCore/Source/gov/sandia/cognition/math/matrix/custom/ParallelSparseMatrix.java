@@ -203,22 +203,12 @@ public class ParallelSparseMatrix
         }
 
         int m = getNumRows();
-        DenseVector ret = new DenseVector(m, true);
+        DenseVector ret = new DenseVector(m);
 
         // Create the factory
-        ParallelMatrixFunction.IParallelFunctionFactory<ParallelSparseMatrix, SparseVector, DenseVector> factory =
-            new ParallelMatrixFunction.IParallelFunctionFactory<ParallelSparseMatrix, SparseVector, DenseVector>()
-        {
-            @Override
-            public ParallelMatrixFunction<ParallelSparseMatrix, SparseVector, DenseVector> init(
-                ParallelSparseMatrix input1,
-                SparseVector input2,
-                DenseVector output,
-                int minRow,
-                int maxRow)
-            {
-                // The factory returns a new instance of the function
-                return new ParallelMatrixFunction<ParallelSparseMatrix, SparseVector, DenseVector>(
+        ParallelMatrixFunction.Factory<ParallelSparseMatrix, SparseVector, DenseVector> factory =
+            (ParallelSparseMatrix input1, SparseVector input2, DenseVector output, int minRow, int maxRow) ->
+                new ParallelMatrixFunction<ParallelSparseMatrix, SparseVector, DenseVector>(
                     input1, input2, output, minRow, maxRow)
                 {
                     @Override
@@ -227,20 +217,20 @@ public class ParallelSparseMatrix
                     {
                         // Here's the actual logic for multiplying
                         int idx;
-                        int[] vLocs = input2.getLocs();
-                        double[] vVals = input2.getVals();
+                        int[] vLocs = input2.getIndices();
+                        double[] vVals = input2.getValues();
                         for (int i = minRow; i < maxRow; ++i)
                         {
                             output.elements()[i] = 0;
                             idx = 0;
                             // For all non-zero elements on this row of the matrix
-                            for (int j = firstIdxsForRows[i]; j
-                                < firstIdxsForRows[i + 1]; ++j)
+                            for (int j = firstIndicesForRows[i]; j
+                                < firstIndicesForRows[i + 1]; ++j)
                             {
                                 // First advance past non-zero elements in the
                                 // vector that are before this one
                                 while ((idx < vLocs.length) && (vLocs[idx]
-                                    < colIdxs[j]))
+                                    < columnIndices[j]))
                                 {
                                     ++idx;
                                 }
@@ -253,23 +243,21 @@ public class ParallelSparseMatrix
                                 // If the vector's current location is past this
                                 // point in the row, then there's no non-zero
                                 // element at this location
-                                if (vLocs[idx] > colIdxs[j])
+                                if (vLocs[idx] > columnIndices[j])
                                 {
                                     continue;
                                 }
                                 // You only reach here if they are at the same
                                 // location
-                                output.elements()[i] += vals[j] * vVals[idx];
+                                output.elements()[i] += values[j] * vVals[idx];
                             }
                         }
 
                         return 0;
                     }
-
-                };
-            }
-
-        };
+                    
+                } // The factory returns a new instance of the function
+        ;
 
         // Now that the factory is created, just call "solve" handing it in
         ParallelMatrixFunction.< ParallelSparseMatrix, SparseVector, DenseVector>solve(
@@ -293,22 +281,12 @@ public class ParallelSparseMatrix
         }
 
         int m = getNumRows();
-        DenseVector ret = new DenseVector(m, true);
+        DenseVector ret = new DenseVector(m);
 
         // Create the factory
-        ParallelMatrixFunction.IParallelFunctionFactory<ParallelSparseMatrix, DenseVector, DenseVector> factory =
-            new ParallelMatrixFunction.IParallelFunctionFactory<ParallelSparseMatrix, DenseVector, DenseVector>()
-        {
-            @Override
-            public ParallelMatrixFunction<ParallelSparseMatrix, DenseVector, DenseVector> init(
-                ParallelSparseMatrix input1,
-                DenseVector input2,
-                DenseVector output,
-                int minRow,
-                int maxRow)
-            {
-                // The factory returns a new instance of the function
-                return new ParallelMatrixFunction<ParallelSparseMatrix, DenseVector, DenseVector>(
+        ParallelMatrixFunction.Factory<ParallelSparseMatrix, DenseVector, DenseVector> factory =
+            (ParallelSparseMatrix input1, DenseVector input2, DenseVector output, int minRow, int maxRow) ->
+                new ParallelMatrixFunction<ParallelSparseMatrix, DenseVector, DenseVector>(
                     input1, input2, output, minRow, maxRow)
                 {
                     @Override
@@ -319,21 +297,19 @@ public class ParallelSparseMatrix
                         for (int i = minRow; i < maxRow; ++i)
                         {
                             output.elements()[i] = 0;
-                            for (int j = firstIdxsForRows[i]; j
-                                < firstIdxsForRows[i + 1]; ++j)
+                            for (int j = firstIndicesForRows[i]; j
+                                < firstIndicesForRows[i + 1]; ++j)
                             {
-                                output.elements()[i] += vals[j]
-                                    * input2.elements()[colIdxs[j]];
+                                output.elements()[i] += values[j]
+                                    * input2.elements()[columnIndices[j]];
                             }
                         }
 
                         return 0;
                     }
-
-                };
-            }
-
-        };
+                    
+                } // The factory returns a new instance of the function
+        ;
 
         // Now that the factory is created, just call "solve" handing it in
         ParallelMatrixFunction.<ParallelSparseMatrix, DenseVector, DenseVector>solve(

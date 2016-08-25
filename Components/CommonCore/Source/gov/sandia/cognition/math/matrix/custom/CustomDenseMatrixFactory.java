@@ -37,7 +37,8 @@ public class CustomDenseMatrixFactory
      * @return The DenseMatrix deep copy of m.
      */
     @Override
-    final public DenseMatrix copyMatrix(Matrix m)
+    final public DenseMatrix copyMatrix(
+        Matrix m)
     {
         return new DenseMatrix(m);
     }
@@ -50,7 +51,8 @@ public class CustomDenseMatrixFactory
      * @return a new all-zero DenseMatrix of the specified dimensions
      */
     @Override
-    final public DenseMatrix createMatrix(int numRows,
+    final public DenseMatrix createMatrix(
+        int numRows,
         int numColumns)
     {
         return new DenseMatrix(numRows, numColumns);

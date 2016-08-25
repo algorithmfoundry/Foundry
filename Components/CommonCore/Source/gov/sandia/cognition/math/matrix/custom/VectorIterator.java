@@ -30,12 +30,12 @@ public class VectorIterator
     /**
      * The vector to iterate over
      */
-    private BaseVector v;
+    private BaseVector vector;
 
     /**
      * The index of the next value to return
      */
-    private int curIdx;
+    private int index;
 
     /**
      * Initialize to iterate over v
@@ -44,14 +44,14 @@ public class VectorIterator
      */
     VectorIterator(final BaseVector v)
     {
-        this.v = v;
-        this.curIdx = 0;
+        this.vector = v;
+        this.index = 0;
     }
 
     @Override
     final public boolean hasNext()
     {
-        return curIdx < v.getDimensionality();
+        return index < vector.getDimensionality();
     }
 
     @Override
@@ -62,8 +62,8 @@ public class VectorIterator
             throw new NoSuchElementException("Iterator has exceeded the "
                 + "bounds of the vector");
         }
-        VectorEntry ret = new BaseVectorEntry(curIdx, v);
-        ++curIdx;
+        VectorEntry ret = new BaseVectorEntry(index, vector);
+        ++index;
 
         return ret;
     }

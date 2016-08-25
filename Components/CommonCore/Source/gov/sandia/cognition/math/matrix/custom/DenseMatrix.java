@@ -44,18 +44,18 @@ public class DenseMatrix
      * By saving a static member, this means that only the first QR
      * decomposition of any instance uses the less-than-optimal block size.
      */
-    private static int qrOptimalBlockSize = 1024;
-
-    /**
-     * The rows of the matrix stored as dense vectors
-     */
-    private DenseVector[] rows;
+    private static int QR_OPTIMAL_BLOCK_SIZE = 1024;
 
     /**
      * This handler calls out to native BLAS if native BLAS is installed
      * properly on the computer at program start. If not, this calls jBLAS.
      */
     private static NativeBlasHandler setBlas = null;
+    
+    /**
+     * The rows of the matrix stored as dense vectors
+     */
+    private DenseVector[] rows;
 
     /**
      * Creates a zero matrix of the specified dimensions
@@ -67,7 +67,7 @@ public class DenseMatrix
         int numCols)
     {
         rows = new DenseVector[numRows];
-        initToDefaultVal(numRows, numCols, 0);
+        initialize(numRows, numCols, 0);
         initBlas();
     }
 
@@ -83,7 +83,7 @@ public class DenseMatrix
         double defaultVal)
     {
         rows = new DenseVector[numRows];
-        initToDefaultVal(numRows, numCols, defaultVal);
+        initialize(numRows, numCols, defaultVal);
         initBlas();
     }
 
@@ -139,6 +139,7 @@ public class DenseMatrix
      * @param unused An unused boolean passed just to change the interface from
      * the standard constructor
      */
+// TODO: This seems like a hack. Clean it up.
     DenseMatrix(int numRows,
         int numCols,
         boolean unused)
@@ -165,7 +166,7 @@ public class DenseMatrix
         rows = new DenseVector[numRows];
         for (int i = 0; i < numRows; ++i)
         {
-            DenseVector v = new DenseVector(numCols, true);
+            DenseVector v = new DenseVector(numCols);
             for (int j = 0; j < numCols; ++j)
             {
                 v.elements()[j] = arr[i][j];
@@ -191,7 +192,7 @@ public class DenseMatrix
         rows = new DenseVector[numRows];
         for (int i = 0; i < numRows; ++i)
         {
-            DenseVector v = new DenseVector(numCols, true);
+            DenseVector v = new DenseVector(numCols);
             for (int j = 0; j < numCols; ++j)
             {
                 v.elements()[j] = arr.get(i).get(j);
@@ -219,7 +220,8 @@ public class DenseMatrix
      * initialized to that length.
      * @param defaultVal The value to specify in each element of the matrix.
      */
-    private void initToDefaultVal(int numRows,
+    private void initialize(
+        int numRows,
         int numCols,
         double defaultVal)
     {
@@ -407,8 +409,8 @@ public class DenseMatrix
             other.compress();
         }
 
-        double[] ovals = other.getVals();
-        int[] ocolIdxs = other.getColIdxs();
+        double[] ovals = other.getValues();
+        int[] ocolIdxs = other.getColumnIndices();
         int[] ofirstRows = other.getFirstInRows();
         int rownum = 0;
         for (int i = 0; i < ovals.length; ++i)
@@ -453,8 +455,8 @@ public class DenseMatrix
             other.compress();
         }
 
-        double[] ovals = other.getVals();
-        int[] ocolIdxs = other.getColIdxs();
+        double[] ovals = other.getValues();
+        int[] ocolIdxs = other.getColumnIndices();
         int[] ofirstRows = other.getFirstInRows();
         int rownum = 0;
         for (int i = 0; i < ovals.length; ++i)
@@ -499,8 +501,8 @@ public class DenseMatrix
             other.compress();
         }
 
-        double[] ovals = other.getVals();
-        int[] ocolIdxs = other.getColIdxs();
+        double[] ovals = other.getValues();
+        int[] ocolIdxs = other.getColumnIndices();
         int[] ofirstRows = other.getFirstInRows();
         int rownum = 0;
         for (int i = 0; i < ovals.length; ++i)
@@ -557,12 +559,12 @@ public class DenseMatrix
             {
                 // If j matches the current column and we're still within the
                 // correct row in other
-                if ((idx < other.getVals().length) && (j
-                    == other.getColIdxs()[idx]) && (idx
+                if ((idx < other.getValues().length) && (j
+                    == other.getColumnIndices()[idx]) && (idx
                     < other.getFirstInRows()[i + 1]))
                 {
                     // Multiply the values and advance to the next value in other
-                    rows[i].elements()[j] *= other.getVals()[idx];
+                    rows[i].elements()[j] *= other.getValues()[idx];
                     ++idx;
                 }
                 else
@@ -674,7 +676,7 @@ public class DenseMatrix
     private Vector timesInternal(Vector vector)
     {
         vector.assertDimensionalityEquals(this.getNumColumns());
-        DenseVector ret = new DenseVector(getNumRows(), true);
+        DenseVector ret = new DenseVector(getNumRows());
         for (int i = 0; i < getNumRows(); ++i)
         {
             ret.setElement(i, vector.dotProduct(rows[i]));
@@ -775,7 +777,7 @@ public class DenseMatrix
             - minColumn + 1, true);
         for (int i = minRow; i <= maxRow; ++i)
         {
-            DenseVector row = new DenseVector(maxColumn - minColumn + 1, true);
+            DenseVector row = new DenseVector(maxColumn - minColumn + 1);
             for (int j = minColumn; j <= maxColumn; ++j)
             {
                 row.setElement(j - minColumn, rows[i].elements()[j]);
@@ -1314,7 +1316,7 @@ public class DenseMatrix
         double[] A = this.toBlas();
         int lda = m;
         double[] tau = new double[Math.min(m, n)];
-        int lwork = qrOptimalBlockSize * m;
+        int lwork = QR_OPTIMAL_BLOCK_SIZE * m;
         double[] work = new double[lwork];
         intW info = new intW(100);
 
@@ -1328,7 +1330,7 @@ public class DenseMatrix
         }
         // After calling the method, the optimal block size is in work[0] (see
         // LAPACK documentation).  This is for if QR is ever called again
-        qrOptimalBlockSize = (int) Math.round(work[0]);
+        QR_OPTIMAL_BLOCK_SIZE = (int) Math.round(work[0]);
 
         // Copy out R
         for (int i = 0; i < m; ++i)
@@ -1431,7 +1433,7 @@ public class DenseMatrix
             }
         }
 
-        DenseVector ret = new DenseVector(R.getNumColumns(), true);
+        DenseVector ret = new DenseVector(R.getNumColumns());
         // Start from the bottom of the triangle
         for (int i = R.getNumColumns() - 1; i >= 0; --i)
         {
@@ -1520,7 +1522,7 @@ public class DenseMatrix
                 + columnIndex + ") is not within this " + getNumRows() + "x"
                 + getNumColumns() + " matrix");
         }
-        DenseVector ret = new DenseVector(getNumRows(), true);
+        DenseVector ret = new DenseVector(getNumRows());
         for (int i = 0; i < getNumRows(); ++i)
         {
             ret.elements()[i] = rows[i].getElement(columnIndex);
@@ -1560,7 +1562,7 @@ public class DenseMatrix
     @Override
     final public Vector convertToVector()
     {
-        DenseVector ret = new DenseVector(getNumRows() * getNumColumns(), true);
+        DenseVector ret = new DenseVector(getNumRows() * getNumColumns());
 
         for (int i = 0; i < getNumRows(); ++i)
         {
@@ -1577,10 +1579,10 @@ public class DenseMatrix
     public final Vector preTimes(SparseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumRows());
-        DenseVector ret = new DenseVector(getNumColumns(), true);
+        DenseVector ret = new DenseVector(getNumColumns());
         vector.compress();
-        int[] locs = vector.getLocs();
-        double[] vals = vector.getVals();
+        int[] locs = vector.getIndices();
+        double[] vals = vector.getValues();
         for (int i = 0; i < getNumColumns(); ++i)
         {
             double entry = 0;
@@ -1598,7 +1600,7 @@ public class DenseMatrix
     public final Vector preTimes(DenseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumRows());
-        DenseVector ret = new DenseVector(getNumColumns(), true);
+        DenseVector ret = new DenseVector(getNumColumns());
         for (int i = 0; i < getNumColumns(); ++i)
         {
             double entry = 0;

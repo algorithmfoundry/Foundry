@@ -28,23 +28,17 @@ class BaseMatrixEntry
     implements MatrixEntry
 {
 
-    /**
-     * The matrix to represent
-     */
-    private BaseMatrix m;
+    /** The matrix to represent. */
+    private BaseMatrix matrix;
+
+    /** The row index in the matrix. */
+    private int rowIndex;
+
+    /** The column index in the matrix. */
+    private int columnIndex;
 
     /**
-     * The row idx in the matrix
-     */
-    private int i;
-
-    /**
-     * The column idx in the matrix
-     */
-    private int j;
-
-    /**
-     * Unsupported null constructor
+     * Unsupported empty constructor.
      */
     private BaseMatrixEntry()
     {
@@ -55,28 +49,24 @@ class BaseMatrixEntry
     /**
      * Initializes the values for this entry
      *
-     * @param m the matrix
-     * @param i the row index
-     * @param j the column index
+     * @param matrix the matrix
+     * @param rowIndex the row index
+     * @param columnIndex the column index
      */
-    BaseMatrixEntry(BaseMatrix m,
-        int i,
-        int j)
+    BaseMatrixEntry(
+        BaseMatrix matrix,
+        int rowIndex,
+        int columnIndex)
     {
-        this.m = m;
-        this.i = i;
-        this.j = j;
+        this.matrix = matrix;
+        this.rowIndex = rowIndex;
+        this.columnIndex = columnIndex;
     }
 
-    /**
-     * Returns the current row index
-     *
-     * @return the current row index
-     */
     @Override
     final public int getRowIndex()
     {
-        return i;
+        return rowIndex;
     }
 
     /**
@@ -87,27 +77,23 @@ class BaseMatrixEntry
      * @throws IllegalArgumentException if the input rowIndex is out of bounds
      */
     @Override
-    final public void setRowIndex(int rowIndex)
+    final public void setRowIndex(
+        int rowIndex)
     {
-        if ((rowIndex < 0) || (rowIndex >= m.getNumRows()))
+        if ((rowIndex < 0) || (rowIndex >= matrix.getNumRows()))
         {
             throw new IllegalArgumentException("Unable to set row index "
                 + "beyond bounds: " + rowIndex + " not within [0, "
-                + m.getNumRows() + ")");
+                + matrix.getNumRows() + ")");
         }
 
-        i = rowIndex;
+        this.rowIndex = rowIndex;
     }
 
-    /**
-     * Returns the current column index
-     *
-     * @return the current column index
-     */
     @Override
     final public int getColumnIndex()
     {
-        return j;
+        return columnIndex;
     }
 
     /**
@@ -121,25 +107,20 @@ class BaseMatrixEntry
     @Override
     final public void setColumnIndex(int columnIndex)
     {
-        if ((columnIndex < 0) || (columnIndex >= m.getNumColumns()))
+        if ((columnIndex < 0) || (columnIndex >= matrix.getNumColumns()))
         {
             throw new IllegalArgumentException("Unable to set row index "
                 + "beyond bounds: " + columnIndex + " not within [0, "
-                + m.getNumColumns() + ")");
+                + matrix.getNumColumns() + ")");
         }
 
-        j = columnIndex;
+        this.columnIndex = columnIndex;
     }
 
-    /**
-     * Returns the value stored at the current location in the matrix
-     *
-     * @return the value stored at the current location in the matrix
-     */
     @Override
     final public double getValue()
     {
-        return m.getElement(i, j);
+        return matrix.getElement(rowIndex, columnIndex);
     }
 
     /**
@@ -150,7 +131,7 @@ class BaseMatrixEntry
     @Override
     final public void setValue(double value)
     {
-        m.setElement(i, j, value);
+        matrix.setElement(rowIndex, columnIndex, value);
     }
 
 }

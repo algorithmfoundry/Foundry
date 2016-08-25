@@ -142,7 +142,7 @@ abstract class ParallelMatrixFunction<InputType1, InputType2, OutputType>
         int numPieces,
         int numThreads,
         int numRows,
-        IParallelFunctionFactory<InputType1, InputType2, OutputType> factory)
+        Factory<InputType1, InputType2, OutputType> factory)
     {
         double numRowsPer = ((double) numRows) / ((double) numPieces);
         numRowsPer = Math.max(numRowsPer, 1.0);
@@ -193,7 +193,7 @@ abstract class ParallelMatrixFunction<InputType1, InputType2, OutputType>
      * @param <InputType2> The right input's type
      * @param <OutputType> The output's type
      */
-    public interface IParallelFunctionFactory<InputType1, InputType2, OutputType>
+    public static interface Factory<InputType1, InputType2, OutputType>
     {
 
         /**

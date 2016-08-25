@@ -38,7 +38,8 @@ public class CustomSparseMatrixFactory
      * @return {@inheritDoc}
      */
     @Override
-    final public SparseMatrix copyMatrix(Matrix m)
+    final public SparseMatrix copyMatrix(
+        Matrix m)
     {
         if (m instanceof SparseMatrix)
         {
@@ -67,7 +68,8 @@ public class CustomSparseMatrixFactory
      * @return {@inheritDoc}
      */
     @Override
-    final public SparseMatrix createMatrix(int numRows,
+    final public SparseMatrix createMatrix(
+        int numRows,
         int numColumns)
     {
         return new SparseMatrix(numRows, numColumns);

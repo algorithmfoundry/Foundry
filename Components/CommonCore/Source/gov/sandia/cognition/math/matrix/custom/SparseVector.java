@@ -43,7 +43,7 @@ public class SparseVector
     /**
      * The vector length
      */
-    final private int n;
+    final private int dimensionality;
 
     /**
      * The index-to-value map
@@ -54,13 +54,13 @@ public class SparseVector
      * Compressed version of the data: The values. Similar to the Yale format
      * for sparse matrices.
      */
-    private double[] vals;
+    private double[] values;
 
     /**
      * Compressed version of the data: The locations. Similar to the Yale format
      * for sparse matrices.
      */
-    private int[] locs;
+    private int[] indices;
 
     /**
      * Create a new sparse vector. All values begin empty (which is interpreted
@@ -71,10 +71,10 @@ public class SparseVector
     public SparseVector(int n)
     {
         ArgumentChecker.assertIsNonNegative("dimensionality", n);
-        this.n = n;
+        this.dimensionality = n;
         elements = new TreeMap<Integer, Double>();
-        vals = null;
-        locs = null;
+        values = null;
+        indices = null;
     }
 
     /**
@@ -84,18 +84,18 @@ public class SparseVector
      */
     public SparseVector(SparseVector v)
     {
-        this.n = v.n;
+        this.dimensionality = v.dimensionality;
         if (!v.isCompressed())
         {
             elements = new TreeMap<Integer, Double>(v.elements);
-            vals = null;
-            locs = null;
+            values = null;
+            indices = null;
         }
         else
         {
             elements = new TreeMap<Integer, Double>();
-            vals = Arrays.copyOf(v.vals, v.vals.length);
-            locs = Arrays.copyOf(v.locs, v.locs.length);
+            values = Arrays.copyOf(v.values, v.values.length);
+            indices = Arrays.copyOf(v.indices, v.indices.length);
         }
     }
 
@@ -106,19 +106,19 @@ public class SparseVector
      */
     public SparseVector(DenseVector v)
     {
-        this.n = v.elements().length;
+        this.dimensionality = v.elements().length;
         int nnz = v.numNonZero();
-        vals = new double[nnz];
-        locs = new int[nnz];
+        values = new double[nnz];
+        indices = new int[nnz];
         elements = new TreeMap<Integer, Double>();
         int idx = 0;
-        for (int i = 0; i < n; ++i)
+        for (int i = 0; i < dimensionality; ++i)
         {
             double val = v.elements()[i];
             if (val != 0)
             {
-                vals[idx] = val;
-                locs[idx] = i;
+                values[idx] = val;
+                indices[idx] = i;
                 ++idx;
             }
         }
@@ -131,7 +131,7 @@ public class SparseVector
     protected SparseVector()
     {
         // NOTE: This initializes to bad values or nothing
-        n = 0;
+        dimensionality = 0;
     }
 
     /**
@@ -145,7 +145,7 @@ public class SparseVector
      */
     final public boolean isCompressed()
     {
-        return (vals != null) && (locs != null);
+        return (values != null) && (indices != null);
     }
 
     /**
@@ -162,13 +162,13 @@ public class SparseVector
         }
 
         int nnz = elements.size();
-        vals = new double[nnz];
-        locs = new int[nnz];
+        values = new double[nnz];
+        indices = new int[nnz];
         int idx = 0;
         for (Map.Entry<Integer, Double> e : elements.entrySet())
         {
-            locs[idx] = e.getKey();
-            vals[idx] = e.getValue();
+            indices[idx] = e.getKey();
+            values[idx] = e.getValue();
             ++idx;
         }
         elements.clear();
@@ -188,12 +188,12 @@ public class SparseVector
         }
 
         elements.clear();
-        for (int i = 0; i < vals.length; ++i)
+        for (int i = 0; i < values.length; ++i)
         {
-            elements.put(locs[i], vals[i]);
+            elements.put(indices[i], values[i]);
         }
-        locs = null;
-        vals = null;
+        indices = null;
+        values = null;
     }
 
     @Override
@@ -244,15 +244,15 @@ public class SparseVector
         int myidx = 0;
         int otheridx = 0;
         int nnz = 0;
-        while ((myidx < locs.length) && (otheridx < other.locs.length))
+        while ((myidx < indices.length) && (otheridx < other.indices.length))
         {
-            if (locs[myidx] == other.locs[otheridx])
+            if (indices[myidx] == other.indices[otheridx])
             {
                 ++nnz;
                 ++myidx;
                 ++otheridx;
             }
-            else if (locs[myidx] < other.locs[otheridx])
+            else if (indices[myidx] < other.indices[otheridx])
             {
                 if (op == SparseMatrix.Combiner.OR)
                 {
@@ -260,7 +260,7 @@ public class SparseVector
                 }
                 ++myidx;
             }
-            else if (other.locs[otheridx] < locs[myidx])
+            else if (other.indices[otheridx] < indices[myidx])
             {
                 if (op == SparseMatrix.Combiner.OR)
                 {
@@ -271,8 +271,8 @@ public class SparseVector
         }
         if (op == SparseMatrix.Combiner.OR)
         {
-            nnz += locs.length - myidx;
-            nnz += other.locs.length - otheridx;
+            nnz += indices.length - myidx;
+            nnz += other.indices.length - otheridx;
         }
 
         return nnz;
@@ -295,15 +295,15 @@ public class SparseVector
 
         // Just assume that this is going to be a new dense vector.
         // Use these as the "output" and local vals and locs as current vals
-        double[] valsAfter = new double[n];
-        int[] locsAfter = new int[n];
+        double[] valsAfter = new double[dimensionality];
+        int[] locsAfter = new int[dimensionality];
 
         int idx = 0;
-        for (int i = 0; i < n; ++i)
+        for (int i = 0; i < dimensionality; ++i)
         {
-            if ((idx < locs.length) && locs[idx] == i)
+            if ((idx < indices.length) && indices[idx] == i)
             {
-                valsAfter[i] = vals[idx] + other.elements()[i] * scalar;
+                valsAfter[i] = values[idx] + other.elements()[i] * scalar;
                 ++idx;
             }
             // In this case, you only need to set it to the current value
@@ -313,8 +313,8 @@ public class SparseVector
             }
             locsAfter[i] = i;
         }
-        vals = valsAfter;
-        locs = locsAfter;
+        values = valsAfter;
+        indices = locsAfter;
     }
 
     /**
@@ -339,45 +339,45 @@ public class SparseVector
         int myidx = 0;
         int otheridx = 0;
         int outidx = 0;
-        while ((myidx < vals.length) && (otheridx < other.vals.length))
+        while ((myidx < values.length) && (otheridx < other.values.length))
         {
-            if (locs[myidx] == other.locs[otheridx])
+            if (indices[myidx] == other.indices[otheridx])
             {
-                valsAfter[outidx] = vals[myidx] + other.vals[otheridx] * scalar;
-                locsAfter[outidx] = locs[myidx];
+                valsAfter[outidx] = values[myidx] + other.values[otheridx] * scalar;
+                locsAfter[outidx] = indices[myidx];
                 ++myidx;
                 ++otheridx;
             }
-            else if (locs[myidx] < other.locs[otheridx])
+            else if (indices[myidx] < other.indices[otheridx])
             {
-                valsAfter[outidx] = vals[myidx];
-                locsAfter[outidx] = locs[myidx];
+                valsAfter[outidx] = values[myidx];
+                locsAfter[outidx] = indices[myidx];
                 ++myidx;
             }
             else // if (other.locs[otheridx] < locs[myidx])
             {
-                valsAfter[outidx] = other.vals[otheridx] * scalar;
-                locsAfter[outidx] = other.locs[otheridx];
+                valsAfter[outidx] = other.values[otheridx] * scalar;
+                locsAfter[outidx] = other.indices[otheridx];
                 ++otheridx;
             }
             ++outidx;
         }
-        while (myidx < vals.length)
+        while (myidx < values.length)
         {
-            valsAfter[outidx] = vals[myidx];
-            locsAfter[outidx] = locs[myidx];
+            valsAfter[outidx] = values[myidx];
+            locsAfter[outidx] = indices[myidx];
             ++myidx;
             ++outidx;
         }
-        while (otheridx < other.vals.length)
+        while (otheridx < other.values.length)
         {
-            valsAfter[outidx] = other.vals[otheridx] * scalar;
-            locsAfter[outidx] = other.locs[otheridx];
+            valsAfter[outidx] = other.values[otheridx] * scalar;
+            locsAfter[outidx] = other.indices[otheridx];
             ++otheridx;
             ++outidx;
         }
-        vals = valsAfter;
-        locs = locsAfter;
+        values = valsAfter;
+        indices = locsAfter;
     }
 
     /**
@@ -444,9 +444,9 @@ public class SparseVector
     {
         this.assertSameDimensionality(other);
         compress();
-        for (int i = 0; i < vals.length; ++i)
+        for (int i = 0; i < values.length; ++i)
         {
-            vals[i] *= other.elements()[locs[i]];
+            values[i] *= other.elements()[indices[i]];
         }
     }
 
@@ -462,22 +462,22 @@ public class SparseVector
 
         int outidx = 0;
         int otheridx = 0;
-        for (int i = 0; i < vals.length; ++i)
+        for (int i = 0; i < values.length; ++i)
         {
-            while (other.locs[otheridx] < locs[i])
+            while (other.indices[otheridx] < indices[i])
             {
                 ++otheridx;
             }
-            if (other.locs[otheridx] == locs[i])
+            if (other.indices[otheridx] == indices[i])
             {
-                valsAfter[outidx] = vals[i] * other.vals[otheridx];
-                locsAfter[outidx] = locs[i];
+                valsAfter[outidx] = values[i] * other.values[otheridx];
+                locsAfter[outidx] = indices[i];
                 ++outidx;
                 ++otheridx;
             }
         }
-        vals = valsAfter;
-        locs = locsAfter;
+        values = valsAfter;
+        indices = locsAfter;
     }
 
     @Override
@@ -487,12 +487,12 @@ public class SparseVector
         compress();
         double dist = 0;
         int idx = 0;
-        for (int i = 0; i < n; ++i)
+        for (int i = 0; i < dimensionality; ++i)
         {
             double tmp = other.elements()[i];
-            if ((idx < locs.length) && (locs[idx] == i))
+            if ((idx < indices.length) && (indices[idx] == i))
             {
-                tmp -= vals[idx];
+                tmp -= values[idx];
                 ++idx;
             }
             dist += tmp * tmp;
@@ -510,36 +510,36 @@ public class SparseVector
         int myidx = 0;
         int otheridx = 0;
         double dist = 0;
-        while ((myidx < vals.length) && (otheridx < other.vals.length))
+        while ((myidx < values.length) && (otheridx < other.values.length))
         {
             double tmp;
-            if (locs[myidx] == other.locs[otheridx])
+            if (indices[myidx] == other.indices[otheridx])
             {
-                tmp = vals[myidx] - other.vals[otheridx];
+                tmp = values[myidx] - other.values[otheridx];
                 ++myidx;
                 ++otheridx;
             }
-            else if (locs[myidx] < other.locs[otheridx])
+            else if (indices[myidx] < other.indices[otheridx])
             {
-                tmp = vals[myidx];
+                tmp = values[myidx];
                 ++myidx;
             }
             else // if (other.locs[otheridx] < locs[myidx])
             {
-                tmp = other.vals[otheridx];
+                tmp = other.values[otheridx];
                 ++otheridx;
             }
             dist += tmp * tmp;
         }
         // Only one of the following while loops (if either) should ever occur -- not both.
-        while (myidx < vals.length)
+        while (myidx < values.length)
         {
-            dist += vals[myidx] * vals[myidx];
+            dist += values[myidx] * values[myidx];
             ++myidx;
         }
-        while (otheridx < other.vals.length)
+        while (otheridx < other.values.length)
         {
-            dist += other.vals[otheridx] * other.vals[otheridx];
+            dist += other.values[otheridx] * other.values[otheridx];
             ++otheridx;
         }
 
@@ -563,11 +563,11 @@ public class SparseVector
         for (int i = 0; i < numRows; ++i)
         {
             SparseVector row = new SparseVector(numCols);
-            if ((idx < locs.length) && (locs[idx] == i))
+            if ((idx < indices.length) && (indices[idx] == i))
             {
                 for (int j = 0; j < numCols; ++j)
                 {
-                    row.elements.put(j, vals[idx] * other.elements()[j]);
+                    row.elements.put(j, values[idx] * other.elements()[j]);
                 }
                 ++idx;
             }
@@ -590,11 +590,11 @@ public class SparseVector
         for (int i = 0; i < numRows; ++i)
         {
             SparseVector row = new SparseVector(numCols);
-            if ((idx < locs.length) && (locs[idx] == i))
+            if ((idx < indices.length) && (indices[idx] == i))
             {
-                for (int j = 0; j < other.locs.length; ++j)
+                for (int j = 0; j < other.indices.length; ++j)
                 {
-                    row.elements.put(other.locs[j], vals[idx] * other.vals[j]);
+                    row.elements.put(other.indices[j], values[idx] * other.values[j]);
                 }
                 ++idx;
             }
@@ -609,11 +609,11 @@ public class SparseVector
     {
         compress();
         Vector ret;
-        int len = n + other.elements().length;
+        int len = dimensionality + other.elements().length;
         int nnz = numNonZero() + other.numNonZero();
         if (nnz > SPARSE_TO_DENSE_THRESHOLD * len)
         {
-            ret = new DenseVector(len, true);
+            ret = new DenseVector(len);
         }
         else
         {
@@ -624,11 +624,11 @@ public class SparseVector
         // it's likely to be infrequently called, I don't want to increase code
         // complexity for a minimal gain.
         int idx = 0;
-        for (int i = 0; i < n; ++i)
+        for (int i = 0; i < dimensionality; ++i)
         {
-            if ((idx < locs.length) && (locs[idx] == i))
+            if ((idx < indices.length) && (indices[idx] == i))
             {
-                ret.setElement(i, vals[idx]);
+                ret.setElement(i, values[idx]);
                 ++idx;
             }
             else
@@ -638,7 +638,7 @@ public class SparseVector
         }
         for (int i = 0; i < other.elements().length; ++i)
         {
-            ret.setElement(n + i, other.elements()[i]);
+            ret.setElement(dimensionality + i, other.elements()[i]);
         }
 
         return ret;
@@ -649,22 +649,22 @@ public class SparseVector
     {
         compress();
         other.compress();
-        int len = n + other.n;
+        int len = dimensionality + other.dimensionality;
         int nnz = numNonZero() + other.numNonZero();
         SparseVector ret = new SparseVector(len);
-        ret.vals = new double[nnz];
-        ret.locs = new int[nnz];
+        ret.values = new double[nnz];
+        ret.indices = new int[nnz];
         int idx = 0;
-        for (int i = 0; i < locs.length; ++i)
+        for (int i = 0; i < indices.length; ++i)
         {
-            ret.vals[idx] = vals[i];
-            ret.locs[idx] = locs[i];
+            ret.values[idx] = values[i];
+            ret.indices[idx] = indices[i];
             ++idx;
         }
-        for (int i = 0; i < other.locs.length; ++i)
+        for (int i = 0; i < other.indices.length; ++i)
         {
-            ret.vals[idx] = other.vals[i];
-            ret.locs[idx] = other.locs[i] + n;
+            ret.values[idx] = other.values[i];
+            ret.indices[idx] = other.indices[i] + dimensionality;
             ++idx;
         }
 
@@ -679,11 +679,11 @@ public class SparseVector
         other.compress();
         double ret = 0;
         int otheridx = 0;
-        final int thisLength = this.locs.length;
-        final int otherLength = other.locs.length;
+        final int thisLength = this.indices.length;
+        final int otherLength = other.indices.length;
         for (int i = 0; i < thisLength && otheridx < otherLength; ++i)
         {
-            while (other.locs[otheridx] < locs[i])
+            while (other.indices[otheridx] < indices[i])
             {
                 ++otheridx;
                 if (otheridx >= otherLength)
@@ -691,9 +691,9 @@ public class SparseVector
                     return ret;
                 }
             }
-            if (other.locs[otheridx] == locs[i])
+            if (other.indices[otheridx] == indices[i])
             {
-                ret += vals[i] * other.vals[otheridx];
+                ret += values[i] * other.values[otheridx];
                 ++otheridx;
             }
         }
@@ -707,9 +707,9 @@ public class SparseVector
         this.assertSameDimensionality(other);
         compress();
         double ret = 0;
-        for (int i = 0; i < locs.length; ++i)
+        for (int i = 0; i < indices.length; ++i)
         {
-            ret += vals[i] * other.elements()[locs[i]];
+            ret += values[i] * other.elements()[indices[i]];
         }
 
         return ret;
@@ -725,7 +725,7 @@ public class SparseVector
     @Override
     final public int getDimensionality()
     {
-        return n;
+        return dimensionality;
     }
 
     /**
@@ -737,10 +737,10 @@ public class SparseVector
      */
     private void checkBounds(int i)
     {
-        if ((i < 0) || (i >= n))
+        if ((i < 0) || (i >= dimensionality))
         {
             throw new ArrayIndexOutOfBoundsException("Input index " + i
-                + " is out of bounds for vectors of length " + n);
+                + " is out of bounds for vectors of length " + dimensionality);
         }
     }
 
@@ -757,15 +757,15 @@ public class SparseVector
         if (isCompressed())
         {
             int low = 0;
-            int high = locs.length - 1;
+            int high = indices.length - 1;
             while (low <= high)
             {
                 int mid = (int) Math.round((low + high) * .5);
-                if (locs[mid] == index)
+                if (indices[mid] == index)
                 {
-                    return vals[mid];
+                    return values[mid];
                 }
-                else if (locs[mid] < index)
+                else if (indices[mid] < index)
                 {
                     low = mid + 1;
                 }
@@ -816,19 +816,19 @@ public class SparseVector
             throw new NegativeArraySizeException("Input bounds [" + minIndex
                 + ", " + maxIndex + "] goes backwards!");
         }
-        if (minIndex < 0 || minIndex > maxIndex || maxIndex > n)
+        if (minIndex < 0 || minIndex > maxIndex || maxIndex > dimensionality)
         {
             throw new ArrayIndexOutOfBoundsException("Input bounds for sub-"
                 + "vector [" + minIndex + ", " + maxIndex
-                + "] is not within supported bounds [0, " + n + ")");
+                + "] is not within supported bounds [0, " + dimensionality + ")");
         }
         compress();
         SparseVector ret = new SparseVector(maxIndex - minIndex + 1);
-        for (int i = 0; i < locs.length; ++i)
+        for (int i = 0; i < indices.length; ++i)
         {
-            if ((locs[i] >= minIndex) && (locs[i] <= maxIndex))
+            if ((indices[i] >= minIndex) && (indices[i] <= maxIndex))
             {
-                ret.elements.put(locs[i] - minIndex, vals[i]);
+                ret.elements.put(indices[i] - minIndex, values[i]);
             }
         }
 
@@ -842,9 +842,9 @@ public class SparseVector
      *
      * @return the compressed values
      */
-    final double[] getVals()
+    final double[] getValues()
     {
-        return vals;
+        return values;
     }
 
     /**
@@ -854,9 +854,9 @@ public class SparseVector
      *
      * @return the compressed locations
      */
-    final int[] getLocs()
+    final int[] getIndices()
     {
-        return locs;
+        return indices;
     }
 
     /**
@@ -870,7 +870,7 @@ public class SparseVector
         if (isCompressed())
         {
             int nnz = 0;
-            for (double v : vals)
+            for (double v : values)
             {
                 if (v != 0)
                 {
@@ -890,9 +890,9 @@ public class SparseVector
     {
         compress();
         SparseVector ret = new SparseVector(this);
-        for (int i = 0; i < ret.vals.length; ++i)
+        for (int i = 0; i < ret.values.length; ++i)
         {
-            ret.vals[i] *= d;
+            ret.values[i] *= d;
         }
 
         return ret;
@@ -905,8 +905,8 @@ public class SparseVector
     {
         if (isCompressed())
         {
-            vals = null;
-            locs = null;
+            values = null;
+            indices = null;
         }
         elements.clear();
     }
@@ -928,7 +928,7 @@ public class SparseVector
     {
         this.compress();
         double result = 0.0;
-        for (final double value : this.vals)
+        for (final double value : this.values)
         {
             result += value;
         }
@@ -941,7 +941,7 @@ public class SparseVector
         this.compress();
         double min = this.getEntryCount() < this.getDimensionality() ? 0.0 :
             Double.POSITIVE_INFINITY;
-        for (final double value : this.vals)
+        for (final double value : this.values)
         {
             if (value < min) 
             {
@@ -957,7 +957,7 @@ public class SparseVector
         this.compress();
         double max = this.getEntryCount() < this.getDimensionality() ? 0.0 :
             Double.NEGATIVE_INFINITY;
-        for (final double value : this.vals)
+        for (final double value : this.values)
         {
             if (value > max) 
             {
@@ -970,8 +970,8 @@ public class SparseVector
     @Override
     public int getEntryCount()
     {
-        this.compress();;
-        return this.vals.length;
+        this.compress();
+        return this.values.length;
     }
 
 }

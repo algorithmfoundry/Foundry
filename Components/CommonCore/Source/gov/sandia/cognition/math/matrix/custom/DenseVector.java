@@ -36,7 +36,7 @@ public class DenseVector
     /**
      * The data is stored in this vector
      */
-    private double[] vec;
+    private double[] values;
 
     /**
      * This should never be called by anything or anyone other than Java's
@@ -54,8 +54,7 @@ public class DenseVector
      */
     public DenseVector(int n)
     {
-        vec = new double[n];
-        Arrays.fill(vec, 0);
+        values = new double[n];
     }
 
     /**
@@ -68,8 +67,8 @@ public class DenseVector
     public DenseVector(int n,
         double defaultVal)
     {
-        vec = new double[n];
-        Arrays.fill(vec, defaultVal);
+        values = new double[n];
+        Arrays.fill(values, defaultVal);
     }
 
     /**
@@ -79,7 +78,7 @@ public class DenseVector
      */
     public DenseVector(final DenseVector v)
     {
-        vec = Arrays.copyOf(v.vec, v.vec.length);
+        values = Arrays.copyOf(v.values, v.values.length);
     }
 
     /**
@@ -89,7 +88,7 @@ public class DenseVector
      */
     public DenseVector(double[] arr)
     {
-        vec = Arrays.copyOf(arr, arr.length);
+        values = Arrays.copyOf(arr, arr.length);
     }
 
     /**
@@ -99,34 +98,18 @@ public class DenseVector
      */
     public DenseVector(List<Double> arr)
     {
-        vec = new double[arr.size()];
+        values = new double[arr.size()];
         for (int i = 0; i < arr.size(); ++i)
         {
-            vec[i] = arr.get(i);
+            values[i] = arr.get(i);
         }
-    }
-
-    /**
-     * Helper, package-private constructor that initializes the vector to length
-     * n, but does not set the value for any of the elements herein. NOTE: This
-     * should only be called if the values are immediately to be set.
-     *
-     * @param n The length of the vector to create
-     * @param unused An unused parameter that just differentiates this
-     * constructor from the previous that initializes all values to 0.
-     */
-    DenseVector(int n,
-        boolean unused)
-    {
-        vec = new double[n];
-        // Don't initialize values
     }
 
     @Override
     final public DenseVector clone()
     {
         final DenseVector result = (DenseVector) super.clone();
-        result.vec = ArrayUtil.copy(this.vec);
+        result.values = ArrayUtil.copy(this.values);
         return new DenseVector(this);
     }
 
@@ -135,9 +118,9 @@ public class DenseVector
         double scaleFactor)
     {
         this.assertSameDimensionality(other);
-        for (int i = 0; i < vec.length; ++i)
+        for (int i = 0; i < values.length; ++i)
         {
-            vec[i] += other.vec[i] * scaleFactor;
+            values[i] += other.values[i] * scaleFactor;
         }
     }
 
@@ -147,11 +130,11 @@ public class DenseVector
     {
         this.assertSameDimensionality(other);
         other.compress();
-        int[] locs = other.getLocs();
-        double[] vals = other.getVals();
+        int[] locs = other.getIndices();
+        double[] vals = other.getValues();
         for (int i = 0; i < locs.length; ++i)
         {
-            vec[locs[i]] += vals[i] * scaleFactor;
+            values[locs[i]] += vals[i] * scaleFactor;
         }
     }
 
@@ -159,9 +142,9 @@ public class DenseVector
     public final void plusEquals(DenseVector other)
     {
         this.assertSameDimensionality(other);
-        for (int i = 0; i < vec.length; ++i)
+        for (int i = 0; i < values.length; ++i)
         {
-            vec[i] += other.vec[i];
+            values[i] += other.values[i];
         }
     }
 
@@ -170,11 +153,11 @@ public class DenseVector
     {
         this.assertSameDimensionality(other);
         other.compress();
-        int[] locs = other.getLocs();
-        double[] vals = other.getVals();
+        int[] locs = other.getIndices();
+        double[] vals = other.getValues();
         for (int i = 0; i < locs.length; ++i)
         {
-            vec[locs[i]] += vals[i];
+            values[locs[i]] += vals[i];
         }
     }
 
@@ -182,9 +165,9 @@ public class DenseVector
     public final void minusEquals(DenseVector other)
     {
         this.assertSameDimensionality(other);
-        for (int i = 0; i < vec.length; ++i)
+        for (int i = 0; i < values.length; ++i)
         {
-            vec[i] -= other.vec[i];
+            values[i] -= other.values[i];
         }
     }
 
@@ -193,11 +176,11 @@ public class DenseVector
     {
         this.assertSameDimensionality(other);
         other.compress();
-        int[] locs = other.getLocs();
-        double[] vals = other.getVals();
+        int[] locs = other.getIndices();
+        double[] vals = other.getValues();
         for (int i = 0; i < locs.length; ++i)
         {
-            vec[locs[i]] -= vals[i];
+            values[locs[i]] -= vals[i];
         }
     }
 
@@ -205,9 +188,9 @@ public class DenseVector
     public final void dotTimesEquals(DenseVector other)
     {
         this.assertSameDimensionality(other);
-        for (int i = 0; i < vec.length; ++i)
+        for (int i = 0; i < values.length; ++i)
         {
-            vec[i] *= other.vec[i];
+            values[i] *= other.values[i];
         }
     }
 
@@ -216,19 +199,19 @@ public class DenseVector
     {
         this.assertSameDimensionality(other);
         other.compress();
-        int[] locs = other.getLocs();
-        double[] vals = other.getVals();
+        int[] locs = other.getIndices();
+        double[] vals = other.getValues();
         int idx = 0;
-        for (int i = 0; i < vec.length; ++i)
+        for (int i = 0; i < values.length; ++i)
         {
             if ((idx < locs.length) && (locs[idx] == i))
             {
-                vec[i] *= vals[idx];
+                values[i] *= vals[idx];
                 ++idx;
             }
             else
             {
-                vec[i] = 0;
+                values[i] = 0;
             }
         }
     }
@@ -239,9 +222,9 @@ public class DenseVector
         this.assertSameDimensionality(other);
         double dist = 0.0;
         double tmp;
-        for (int i = 0; i < vec.length; ++i)
+        for (int i = 0; i < values.length; ++i)
         {
-            tmp = (vec[i] - other.vec[i]);
+            tmp = (values[i] - other.values[i]);
             dist += tmp * tmp;
         }
 
@@ -262,10 +245,10 @@ public class DenseVector
         DenseMatrix ret = new DenseMatrix(numRows, numCols, true);
         for (int i = 0; i < numRows; ++i)
         {
-            DenseVector row = new DenseVector(numCols, true);
+            DenseVector row = new DenseVector(numCols);
             for (int j = 0; j < numCols; ++j)
             {
-                row.vec[j] = vec[i] * other.vec[j];
+                row.values[j] = values[i] * other.values[j];
             }
             ret.setRow(i, row);
         }
@@ -280,14 +263,14 @@ public class DenseVector
         int numCols = other.getDimensionality();
         SparseMatrix ret = new SparseMatrix(numRows, numCols, true);
         other.compress();
-        int[] locs = other.getLocs();
-        double[] vals = other.getVals();
+        int[] locs = other.getIndices();
+        double[] vals = other.getValues();
         for (int i = 0; i < numRows; ++i)
         {
             SparseVector row = new SparseVector(numCols);
             for (int j = 0; j < locs.length; ++j)
             {
-                row.setElement(locs[j], vec[i] * vals[j]);
+                row.setElement(locs[j], values[i] * vals[j]);
             }
             ret.setRowInternal(i, row);
         }
@@ -298,14 +281,14 @@ public class DenseVector
     @Override
     public final Vector stack(DenseVector other)
     {
-        DenseVector ret = new DenseVector(vec.length + other.vec.length);
-        for (int i = 0; i < vec.length; ++i)
+        DenseVector ret = new DenseVector(values.length + other.values.length);
+        for (int i = 0; i < values.length; ++i)
         {
-            ret.vec[i] = vec[i];
+            ret.values[i] = values[i];
         }
-        for (int i = 0; i < other.vec.length; ++i)
+        for (int i = 0; i < other.values.length; ++i)
         {
-            ret.vec[vec.length + i] = other.vec[i];
+            ret.values[values.length + i] = other.values[i];
         }
 
         return ret;
@@ -315,19 +298,19 @@ public class DenseVector
     public final Vector stack(SparseVector other)
     {
         Vector ret;
-        int len = vec.length + other.getDimensionality();
+        int len = values.length + other.getDimensionality();
         int nnz = numNonZero() + other.numNonZero();
         if (nnz > SparseVector.SPARSE_TO_DENSE_THRESHOLD * len)
         {
-            ret = new DenseVector(len, true);
+            ret = new DenseVector(len);
         }
         else
         {
             ret = new SparseVector(len);
         }
-        for (int i = 0; i < vec.length; ++i)
+        for (int i = 0; i < values.length; ++i)
         {
-            ret.setElement(i, vec[i]);
+            ret.setElement(i, values[i]);
         }
         // NOTE: The below could be faster (and I could get rid of all of the
         // "setElement"s if I wanted to write two versions of this method.  As
@@ -340,19 +323,19 @@ public class DenseVector
         // could call the package-private methods to get direct access to the
         // entries of the sparse or dense vector instead of calling setElement.
         other.compress();
-        int[] locs = other.getLocs();
-        double[] vals = other.getVals();
+        int[] locs = other.getIndices();
+        double[] vals = other.getValues();
         int idx = 0;
         for (int i = 0; i < other.getDimensionality(); ++i)
         {
             if ((idx < locs.length) && (locs[idx] == i))
             {
-                ret.setElement(vec.length + i, vals[idx]);
+                ret.setElement(values.length + i, vals[idx]);
                 ++idx;
             }
             else
             {
-                ret.setElement(vec.length + i, 0);
+                ret.setElement(values.length + i, 0);
             }
         }
 
@@ -364,9 +347,9 @@ public class DenseVector
     {
         this.assertSameDimensionality(other);
         double ret = 0;
-        for (int i = 0; i < vec.length; ++i)
+        for (int i = 0; i < values.length; ++i)
         {
-            ret += vec[i] * other.vec[i];
+            ret += values[i] * other.values[i];
         }
 
         return ret;
@@ -387,33 +370,33 @@ public class DenseVector
     @Override
     final public int getDimensionality()
     {
-        return vec.length;
+        return values.length;
     }
 
     @Override
     public double get(int index)
     {
-        return vec[index];
+        return values[index];
     }
 
     @Override
     final public double getElement(int index)
     {
-        return vec[index];
+        return values[index];
     }
 
     @Override
     public void set(int index,
         double value)
     {
-        vec[index] = value;
+        values[index] = value;
     }
 
     @Override
     final public void setElement(int index,
         double value)
     {
-        vec[index] = value;
+        values[index] = value;
     }
 
     /**
@@ -425,7 +408,7 @@ public class DenseVector
 // TODO: Rename this.
     final double[] elements()
     {
-        return vec;
+        return values;
     }
     
     @Override
@@ -437,17 +420,17 @@ public class DenseVector
             throw new NegativeArraySizeException("Input bounds [" + minIndex
                 + ", " + maxIndex + "] goes backwards!");
         }
-        if ((minIndex < 0) || (maxIndex >= vec.length))
+        if ((minIndex < 0) || (maxIndex >= values.length))
         {
             throw new ArrayIndexOutOfBoundsException("Input subvector from "
                 + minIndex + " to " + maxIndex + " (inclusive) exceeds the "
-                + "bounds of this vector [0, " + vec.length + ").");
+                + "bounds of this vector [0, " + values.length + ").");
         }
         int len = maxIndex - minIndex + 1;
         DenseVector ret = new DenseVector(len);
         for (int i = minIndex; i <= maxIndex; ++i)
         {
-            ret.vec[i - minIndex] = vec[i];
+            ret.values[i - minIndex] = values[i];
         }
 
         return ret;
@@ -456,10 +439,10 @@ public class DenseVector
     @Override
     final public Vector scale(double d)
     {
-        DenseVector ret = new DenseVector(vec.length, true);
-        for (int i = 0; i < vec.length; ++i)
+        DenseVector ret = new DenseVector(values.length);
+        for (int i = 0; i < values.length; ++i)
         {
-            ret.vec[i] = vec[i] * d;
+            ret.values[i] = values[i] * d;
         }
 
         return ret;
@@ -487,7 +470,7 @@ public class DenseVector
     final public int numNonZero()
     {
         int nnz = 0;
-        for (double d : vec)
+        for (double d : values)
         {
             nnz += (d == 0) ? 0 : 1;
         }
@@ -511,7 +494,7 @@ public class DenseVector
     public double sum()
     {
         double result = 0.0;
-        for (final double value : this.vec)
+        for (final double value : this.values)
         {
             result += value;
         }
@@ -522,7 +505,7 @@ public class DenseVector
     public double getMinValue()
     {
         double min = Double.POSITIVE_INFINITY;
-        for (final double value : this.vec)
+        for (final double value : this.values)
         {
             if (value < min)
             {
@@ -536,7 +519,7 @@ public class DenseVector
     public double getMaxValue()
     {
         double max = Double.NEGATIVE_INFINITY;
-        for (final double value : this.vec)
+        for (final double value : this.values)
         {
             if (value > max)
             {
@@ -549,13 +532,13 @@ public class DenseVector
     @Override
     public int getEntryCount()
     {
-        return this.vec.length;
+        return this.values.length;
     }
 
     @Override
     public void zero()
     {
-        Arrays.fill(this.vec, 0.0);
+        Arrays.fill(this.values, 0.0);
     }
     
 }

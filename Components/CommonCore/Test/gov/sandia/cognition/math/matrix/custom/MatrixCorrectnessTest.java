@@ -1214,9 +1214,9 @@ public class MatrixCorrectnessTest
             SparseVector.class, 3, 6, 2, 0);
 
         // The following are just to increase my code coverage ... sigh.
-        int[] oldcols = m1.getColIdxs();
+        int[] oldcols = m1.getColumnIndices();
         m1.decompress();
-        int[] newcols = m1.getColIdxs();
+        int[] newcols = m1.getColumnIndices();
         assertEquals(oldcols.length, newcols.length);
         for (int i = 0; i < oldcols.length; ++i)
         {
@@ -1230,9 +1230,9 @@ public class MatrixCorrectnessTest
         {
             assertEquals(oldfirs[i], newfirs[i]);
         }
-        double[] oldvals = m1.getVals();
+        double[] oldvals = m1.getValues();
         m1.decompress();
-        double[] newvals = m1.getVals();
+        double[] newvals = m1.getValues();
         assertEquals(oldvals.length, newvals.length);
         for (int i = 0; i < oldvals.length; ++i)
         {
@@ -3140,9 +3140,9 @@ public class MatrixCorrectnessTest
             SparseVector.class, 3, 6, 2, 0);
 
         // The following are just to increase my code coverage ... sigh.
-        int[] oldcols = m1.getColIdxs();
+        int[] oldcols = m1.getColumnIndices();
         m1.decompress();
-        int[] newcols = m1.getColIdxs();
+        int[] newcols = m1.getColumnIndices();
         assertEquals(oldcols.length, newcols.length);
         for (int i = 0; i < oldcols.length; ++i)
         {
@@ -3156,9 +3156,9 @@ public class MatrixCorrectnessTest
         {
             assertEquals(oldfirs[i], newfirs[i]);
         }
-        double[] oldvals = m1.getVals();
+        double[] oldvals = m1.getValues();
         m1.decompress();
-        double[] newvals = m1.getVals();
+        double[] newvals = m1.getValues();
         assertEquals(oldvals.length, newvals.length);
         for (int i = 0; i < oldvals.length; ++i)
         {

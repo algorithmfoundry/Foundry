@@ -37,7 +37,8 @@ public class CustomDiagonalMatrixFactory
      * entries on the diagonal.
      */
     @Override
-    final public DiagonalMatrix copyMatrix(Matrix m)
+    final public DiagonalMatrix copyMatrix(
+        Matrix m)
     {
         return new DiagonalMatrix(m);
     }
@@ -49,7 +50,8 @@ public class CustomDiagonalMatrixFactory
      * (because diagonal matrices must be)
      */
     @Override
-    final public DiagonalMatrix createMatrix(int numRows,
+    final public DiagonalMatrix createMatrix(
+        int numRows,
         int numColumns)
     {
         if (numRows != numColumns)

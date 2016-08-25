@@ -28,19 +28,19 @@ class MatrixIterator
 {
 
     /**
-     * Current row index
+     * The matrix to iterate over.
      */
-    private int i;
+    private BaseMatrix matrix;
+    
+    /**
+     * Current row index.
+     */
+    private int rowIndex;
 
     /**
-     * Current column index
+     * Current column index.
      */
-    private int j;
-
-    /**
-     * The matrix to iterate over
-     */
-    private BaseMatrix m;
+    private int columnIndex;
 
     /**
      * Unsupported null constructor
@@ -59,14 +59,14 @@ class MatrixIterator
     public MatrixIterator(BaseMatrix m)
     {
         // Start in the upper left corner
-        this.i = this.j = 0;
-        this.m = m;
+        this.rowIndex = this.columnIndex = 0;
+        this.matrix = m;
     }
 
     @Override
     final public boolean hasNext()
     {
-        return (i < m.getNumRows());
+        return (rowIndex < matrix.getNumRows());
     }
 
     @Override
@@ -79,14 +79,14 @@ class MatrixIterator
         }
 
         // Get the current value
-        BaseMatrixEntry ret = new BaseMatrixEntry(m, i, j);
+        BaseMatrixEntry ret = new BaseMatrixEntry(matrix, rowIndex, columnIndex);
         // Go to the next value
-        ++j;
+        ++columnIndex;
         // Roll to the next row
-        if (j >= m.getNumColumns())
+        if (columnIndex >= matrix.getNumColumns())
         {
-            j = 0;
-            ++i;
+            columnIndex = 0;
+            ++rowIndex;
         }
 
         return ret;

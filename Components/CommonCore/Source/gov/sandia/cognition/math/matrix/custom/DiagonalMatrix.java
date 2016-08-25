@@ -38,7 +38,7 @@ public class DiagonalMatrix
     /**
      * The elements down the diagonal
      */
-    private double[] diag;
+    private double[] diagonal;
 
     /**
      * Creates a square (n x n) diagonal matrix initialized to zero.
@@ -47,8 +47,8 @@ public class DiagonalMatrix
      */
     public DiagonalMatrix(int n)
     {
-        diag = new double[n];
-        Arrays.fill(diag, 0);
+        diagonal = new double[n];
+        Arrays.fill(diagonal, 0);
     }
 
     /**
@@ -58,7 +58,7 @@ public class DiagonalMatrix
      */
     public DiagonalMatrix(DiagonalMatrix d)
     {
-        diag = Arrays.copyOf(d.diag, d.diag.length);
+        diagonal = Arrays.copyOf(d.diagonal, d.diagonal.length);
     }
 
     /**
@@ -75,14 +75,14 @@ public class DiagonalMatrix
                 + "matrix into a diagonal matrix.");
         }
 
-        diag = new double[m.getNumRows()];
+        diagonal = new double[m.getNumRows()];
         for (int i = 0; i < m.getNumRows(); ++i)
         {
             for (int j = 0; j < m.getNumColumns(); ++j)
             {
                 if (i == j)
                 {
-                    diag[i] = m.getElement(i, i);
+                    diagonal[i] = m.getElement(i, i);
                 }
                 else if (m.getElement(i, j) != 0)
                 {
@@ -107,7 +107,7 @@ public class DiagonalMatrix
     DiagonalMatrix(int n,
         boolean unused)
     {
-        diag = new double[n];
+        diagonal = new double[n];
         // Don't initialize
     }
 
@@ -120,7 +120,7 @@ public class DiagonalMatrix
      */
     DiagonalMatrix(double[] diagonal)
     {
-        diag = Arrays.copyOf(diagonal, diagonal.length);
+        this.diagonal = Arrays.copyOf(diagonal, diagonal.length);
     }
 
     /**
@@ -157,23 +157,23 @@ public class DiagonalMatrix
             other.compress();
         }
         int rowNum = 0;
-        for (int i = 0; i < other.getVals().length; ++i)
+        for (int i = 0; i < other.getValues().length; ++i)
         {
             while (i >= other.getFirstInRows()[rowNum + 1])
             {
                 ++rowNum;
             }
-            if (other.getVals()[i] == 0)
+            if (other.getValues()[i] == 0)
             {
                 continue;
             }
-            if (other.getColIdxs()[i] != rowNum)
+            if (other.getColumnIndices()[i] != rowNum)
             {
                 throw new IllegalArgumentException("Unable to store the "
                     + " difference of a non-diagonal sparse matrix with a "
                     + "diagonal matrix in the diagonal matrix");
             }
-            diag[rowNum] += other.getVals()[i] * scaleFactor;
+            diagonal[rowNum] += other.getValues()[i] * scaleFactor;
         }
     }
 
@@ -191,13 +191,13 @@ public class DiagonalMatrix
         
         // I have to run through all values in the input to make sure all off-
         // diagonal are 0 (as well as summing along the diagonal)
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            for (int j = 0; j < diag.length; ++j)
+            for (int j = 0; j < diagonal.length; ++j)
             {
                 if (i == j)
                 {
-                    diag[i] += other.row(i).elements()[i] * scaleFactor;
+                    diagonal[i] += other.row(i).elements()[i] * scaleFactor;
                 }
                 else if (other.row(i).elements()[j] != 0)
                 {
@@ -214,9 +214,9 @@ public class DiagonalMatrix
         double scaleFactor)
     {
         this.assertSameDimensions(other);
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            diag[i] += other.diag[i] * scaleFactor;
+            diagonal[i] += other.diagonal[i] * scaleFactor;
         }
     }
 
@@ -237,23 +237,23 @@ public class DiagonalMatrix
             other.compress();
         }
         int rowNum = 0;
-        for (int i = 0; i < other.getVals().length; ++i)
+        for (int i = 0; i < other.getValues().length; ++i)
         {
             while (i >= other.getFirstInRows()[rowNum + 1])
             {
                 ++rowNum;
             }
-            if (other.getVals()[i] == 0)
+            if (other.getValues()[i] == 0)
             {
                 continue;
             }
-            if (other.getColIdxs()[i] != rowNum)
+            if (other.getColumnIndices()[i] != rowNum)
             {
                 throw new IllegalArgumentException("Unable to store the "
                     + " difference of a non-diagonal sparse matrix with a "
                     + "diagonal matrix in the diagonal matrix");
             }
-            diag[rowNum] += other.getVals()[i];
+            diagonal[rowNum] += other.getValues()[i];
         }
     }
 
@@ -269,13 +269,13 @@ public class DiagonalMatrix
         
         // I have to run through all values in the input to make sure all off-
         // diagonal are 0 (as well as summing along the diagonal)
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            for (int j = 0; j < diag.length; ++j)
+            for (int j = 0; j < diagonal.length; ++j)
             {
                 if (i == j)
                 {
-                    diag[i] += other.row(i).elements()[i];
+                    diagonal[i] += other.row(i).elements()[i];
                 }
                 else if (other.row(i).elements()[j] != 0)
                 {
@@ -291,9 +291,9 @@ public class DiagonalMatrix
     public final void plusEquals(DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            diag[i] += other.diag[i];
+            diagonal[i] += other.diagonal[i];
         }
     }
 
@@ -314,23 +314,23 @@ public class DiagonalMatrix
             other.compress();
         }
         int rowNum = 0;
-        for (int i = 0; i < other.getVals().length; ++i)
+        for (int i = 0; i < other.getValues().length; ++i)
         {
             while (i >= other.getFirstInRows()[rowNum + 1])
             {
                 ++rowNum;
             }
-            if (other.getVals()[i] == 0)
+            if (other.getValues()[i] == 0)
             {
                 continue;
             }
-            if (other.getColIdxs()[i] != rowNum)
+            if (other.getColumnIndices()[i] != rowNum)
             {
                 throw new IllegalArgumentException("Unable to store the "
                     + " difference of a non-diagonal sparse matrix with a "
                     + "diagonal matrix in the diagonal matrix");
             }
-            diag[rowNum] -= other.getVals()[i];
+            diagonal[rowNum] -= other.getValues()[i];
         }
     }
 
@@ -346,13 +346,13 @@ public class DiagonalMatrix
         
         // I have to run through all values in the input to make sure all off-
         // diagonal are 0 (as well as subtracting along the diagonal)
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            for (int j = 0; j < diag.length; ++j)
+            for (int j = 0; j < diagonal.length; ++j)
             {
                 if (i == j)
                 {
-                    diag[i] -= other.row(i).elements()[i];
+                    diagonal[i] -= other.row(i).elements()[i];
                 }
                 else if (other.row(i).elements()[j] != 0)
                 {
@@ -368,9 +368,9 @@ public class DiagonalMatrix
     public final void minusEquals(DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            diag[i] -= other.diag[i];
+            diagonal[i] -= other.diagonal[i];
         }
     }
 
@@ -378,9 +378,9 @@ public class DiagonalMatrix
     public final void dotTimesEquals(SparseMatrix other)
     {
         this.assertSameDimensions(other);
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            diag[i] *= other.getElement(i, i);
+            diagonal[i] *= other.getElement(i, i);
         }
     }
 
@@ -388,9 +388,9 @@ public class DiagonalMatrix
     public final void dotTimesEquals(DenseMatrix other)
     {
         this.assertSameDimensions(other);
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            diag[i] *= other.row(i).elements()[i];
+            diagonal[i] *= other.row(i).elements()[i];
         }
     }
 
@@ -398,9 +398,9 @@ public class DiagonalMatrix
     public final void dotTimesEquals(DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            diag[i] *= other.diag[i];
+            diagonal[i] *= other.diagonal[i];
         }
     }
 
@@ -414,12 +414,12 @@ public class DiagonalMatrix
     public final Matrix times(DenseMatrix other)
     {
         this.assertMultiplicationDimensions(other);
-        DenseMatrix ret = new DenseMatrix(diag.length, other.getNumColumns(),
+        DenseMatrix ret = new DenseMatrix(diagonal.length, other.getNumColumns(),
             true);
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
             DenseVector v = other.row(i);
-            ret.setRow(i, (DenseVector) v.scale(diag[i]));
+            ret.setRow(i, (DenseVector) v.scale(diagonal[i]));
         }
         return ret;
     }
@@ -429,9 +429,9 @@ public class DiagonalMatrix
     {
         this.assertMultiplicationDimensions(other);
         DiagonalMatrix ret = new DiagonalMatrix(this);
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            ret.diag[i] *= other.diag[i];
+            ret.diagonal[i] *= other.diagonal[i];
         }
 
         return ret;
@@ -441,12 +441,12 @@ public class DiagonalMatrix
     public final Vector times(SparseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumColumns());
-        SparseVector ret = new SparseVector(diag.length);
+        SparseVector ret = new SparseVector(diagonal.length);
         vector.compress();
-        int[] locs = vector.getLocs();
+        int[] locs = vector.getIndices();
         for (int i = 0; i < locs.length; ++i)
         {
-            ret.setElement(locs[i], vector.getVals()[i] * diag[locs[i]]);
+            ret.setElement(locs[i], vector.getValues()[i] * diagonal[locs[i]]);
         }
 
         return ret;
@@ -456,10 +456,10 @@ public class DiagonalMatrix
     public final Vector times(DenseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumColumns());
-        DenseVector ret = new DenseVector(diag.length, true);
-        for (int i = 0; i < diag.length; ++i)
+        DenseVector ret = new DenseVector(diagonal.length);
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            ret.setElement(i, vector.getElement(i) * diag[i]);
+            ret.setElement(i, vector.getElement(i) * diagonal[i]);
         }
 
         return ret;
@@ -468,22 +468,22 @@ public class DiagonalMatrix
     @Override
     final public void scaleEquals(double scaleFactor)
     {
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            diag[i] *= scaleFactor;
+            diagonal[i] *= scaleFactor;
         }
     }
 
     @Override
     final public int getNumRows()
     {
-        return diag.length;
+        return diagonal.length;
     }
 
     @Override
     final public int getNumColumns()
     {
-        return diag.length;
+        return diagonal.length;
     }
 
     /**
@@ -499,13 +499,13 @@ public class DiagonalMatrix
     private void checkBounds(int rowIndex,
         int columnIndex)
     {
-        if (rowIndex < 0 || columnIndex < 0 || rowIndex >= diag.length
+        if (rowIndex < 0 || columnIndex < 0 || rowIndex >= diagonal.length
             || columnIndex
-            >= diag.length)
+            >= diagonal.length)
         {
             throw new ArrayIndexOutOfBoundsException("Input index (" + rowIndex
-                + ", " + columnIndex + ") is not within this " + diag.length
-                + "x" + diag.length + " matrix");
+                + ", " + columnIndex + ") is not within this " + diagonal.length
+                + "x" + diagonal.length + " matrix");
         }
     }
 
@@ -532,7 +532,7 @@ public class DiagonalMatrix
         checkBounds(rowIndex, columnIndex);
         if (rowIndex == columnIndex)
         {
-            return diag[rowIndex];
+            return diagonal[rowIndex];
         }
         return 0;
     }
@@ -564,7 +564,7 @@ public class DiagonalMatrix
         checkBounds(rowIndex, columnIndex);
         if (rowIndex == columnIndex)
         {
-            diag[rowIndex] = value;
+            diagonal[rowIndex] = value;
         }
         else if (value != 0)
         {
@@ -620,15 +620,15 @@ public class DiagonalMatrix
     @Override
     final public Matrix inverse()
     {
-        DiagonalMatrix ret = new DiagonalMatrix(diag.length, true);
-        for (int i = 0; i < diag.length; ++i)
+        DiagonalMatrix ret = new DiagonalMatrix(diagonal.length, true);
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            if (diag[i] == 0)
+            if (diagonal[i] == 0)
             {
                 throw new UnsupportedOperationException("Can't invert matrix "
                     + "because it does not span the columns");
             }
-            ret.diag[i] = 1.0 / diag[i];
+            ret.diagonal[i] = 1.0 / diagonal[i];
         }
 
         return ret;
@@ -638,10 +638,10 @@ public class DiagonalMatrix
     final public Matrix pseudoInverse(double effectiveZero)
     {
         ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
-        DiagonalMatrix ret = new DiagonalMatrix(diag.length, true);
-        for (int i = 0; i < diag.length; ++i)
+        DiagonalMatrix ret = new DiagonalMatrix(diagonal.length, true);
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            ret.diag[i] = (Math.abs(diag[i]) > effectiveZero) ? 1.0 / diag[i]
+            ret.diagonal[i] = (Math.abs(diagonal[i]) > effectiveZero) ? 1.0 / diagonal[i]
                 : 0;
         }
 
@@ -672,9 +672,9 @@ public class DiagonalMatrix
         // PI (3.14...), so we just toggle this sign bit.
         int sign = 1;
         double logsum = 0.0;
-        for (int i = 0; i < diag.length; i++)
+        for (int i = 0; i < diagonal.length; i++)
         {
-            double eigenvalue = diag[i];
+            double eigenvalue = diagonal[i];
             if (eigenvalue < 0.0)
             {
                 sign = -sign;
@@ -695,9 +695,9 @@ public class DiagonalMatrix
     {
         ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
         int rank = 0;
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            if (Math.abs(diag[i]) > effectiveZero)
+            if (Math.abs(diagonal[i]) > effectiveZero)
             {
                 ++rank;
             }
@@ -710,9 +710,9 @@ public class DiagonalMatrix
     public double normFrobeniusSquared()
     {
         double ret = 0;
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            ret += diag[i] * diag[i];
+            ret += diagonal[i] * diagonal[i];
         }
         return ret;
     }
@@ -734,18 +734,18 @@ public class DiagonalMatrix
     {
         checkSolveDimensions(B);
         Matrix ret = B.clone();
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
             for (int j = 0; j < B.getNumColumns(); ++j)
             {
-                if (diag[i] == 0)
+                if (diagonal[i] == 0)
                 {
                     throw new UnsupportedOperationException("Can't invert "
                         + "matrix because it does not span the columns");
                 }
                 else
                 {
-                    ret.setElement(i, j, ret.getElement(i, j) / diag[i]);
+                    ret.setElement(i, j, ret.getElement(i, j) / diagonal[i]);
                 }
             }
         }
@@ -758,9 +758,9 @@ public class DiagonalMatrix
     {
         checkSolveDimensions(b);
         Vector ret = b.clone();
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            if (diag[i] == 0)
+            if (diagonal[i] == 0)
             {
                 if (ret.getElement(i) != 0)
                 {
@@ -770,7 +770,7 @@ public class DiagonalMatrix
             }
             else
             {
-                ret.setElement(i, ret.getElement(i) / diag[i]);
+                ret.setElement(i, ret.getElement(i) / diagonal[i]);
             }
         }
 
@@ -780,23 +780,23 @@ public class DiagonalMatrix
     @Override
     final public void identity()
     {
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            diag[i] = 1;
+            diagonal[i] = 1;
         }
     }
 
     @Override
     final public Vector getColumn(int columnIndex)
     {
-        if (columnIndex < 0 || columnIndex >= diag.length)
+        if (columnIndex < 0 || columnIndex >= diagonal.length)
         {
             throw new ArrayIndexOutOfBoundsException("Input column index ("
-                + columnIndex + ") is not within this " + diag.length + "x"
-                + diag.length + " matrix");
+                + columnIndex + ") is not within this " + diagonal.length + "x"
+                + diagonal.length + " matrix");
         }
-        SparseVector ret = new SparseVector(diag.length);
-        ret.setElement(columnIndex, diag[columnIndex]);
+        SparseVector ret = new SparseVector(diagonal.length);
+        ret.setElement(columnIndex, diagonal[columnIndex]);
 
         return ret;
     }
@@ -804,14 +804,14 @@ public class DiagonalMatrix
     @Override
     final public Vector getRow(int rowIndex)
     {
-        if (rowIndex < 0 || rowIndex >= diag.length)
+        if (rowIndex < 0 || rowIndex >= diagonal.length)
         {
             throw new ArrayIndexOutOfBoundsException("Input row index ("
-                + rowIndex + ") is not within this " + diag.length + "x"
-                + diag.length + " matrix");
+                + rowIndex + ") is not within this " + diagonal.length + "x"
+                + diagonal.length + " matrix");
         }
-        SparseVector ret = new SparseVector(diag.length);
-        ret.setElement(rowIndex, diag[rowIndex]);
+        SparseVector ret = new SparseVector(diagonal.length);
+        ret.setElement(rowIndex, diagonal[rowIndex]);
 
         return ret;
     }
@@ -834,7 +834,7 @@ public class DiagonalMatrix
             {
                 if (i == j)
                 {
-                    diag[i] = parameters.getElement(i * getNumColumns() + j);
+                    diagonal[i] = parameters.getElement(i * getNumColumns() + j);
                 }
                 // this checks that all off-diagonal elements are zero
                 else if (parameters.getElement(i * getNumColumns() + j) != 0)
@@ -852,9 +852,9 @@ public class DiagonalMatrix
     final public Vector convertToVector()
     {
         SparseVector ret = new SparseVector(getNumRows() * getNumColumns());
-        for (int i = 0; i < diag.length; ++i)
+        for (int i = 0; i < diagonal.length; ++i)
         {
-            ret.setElement(i * getNumColumns() + i, diag[i]);
+            ret.setElement(i * getNumColumns() + i, diagonal[i]);
         }
         return ret;
     }
@@ -890,7 +890,7 @@ public class DiagonalMatrix
     @Override
     public int getEntryCount()
     {
-        return this.diag.length;
+        return this.diagonal.length;
     }
     
 }

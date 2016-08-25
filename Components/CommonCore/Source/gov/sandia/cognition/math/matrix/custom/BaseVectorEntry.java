@@ -27,17 +27,17 @@ class BaseVectorEntry
 {
 
     /**
+     * The vector being iterated over
+     */
+    private BaseVector vector;
+    
+    /**
      * The index into the vector
      */
     private int index;
 
     /**
-     * The vector being iterated over
-     */
-    private BaseVector v;
-
-    /**
-     * Unsupported private null constructor.
+     * Unsupported private empty constructor.
      *
      * @throws UnsupportedOperationException because it should never be called
      */
@@ -57,17 +57,18 @@ class BaseVectorEntry
         BaseVector v)
     {
         this.index = index;
-        this.v = v;
+        this.vector = v;
     }
 
     @Override
     final public int getIndex()
     {
-        return index;
+        return this.index;
     }
 
     @Override
-    final public void setIndex(int index)
+    final public void setIndex(
+        final int index)
     {
         this.index = index;
     }
@@ -75,13 +76,14 @@ class BaseVectorEntry
     @Override
     final public double getValue()
     {
-        return v.getElement(index);
+        return vector.getElement(this.index);
     }
 
     @Override
-    final public void setValue(double value)
+    final public void setValue(
+        final double value)
     {
-        this.v.setElement(index, value);
+        this.vector.setElement(this.index, value);
     }
 
 }

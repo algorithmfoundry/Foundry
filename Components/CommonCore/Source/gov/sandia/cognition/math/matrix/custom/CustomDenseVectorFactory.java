@@ -35,10 +35,11 @@ public class CustomDenseVectorFactory
     public static CustomDenseVectorFactory INSTANCE = new CustomDenseVectorFactory();
     
     @Override
-    final public DenseVector copyVector(Vector m)
+    final public DenseVector copyVector(
+        Vector m)
     {
         int n = m.getDimensionality();
-        DenseVector ret = new DenseVector(n, true);
+        DenseVector ret = new DenseVector(n);
         for (int i = 0; i < n; ++i)
         {
             ret.elements()[i] = m.getElement(i);
@@ -48,26 +49,30 @@ public class CustomDenseVectorFactory
     }
 
     @Override
-    final public DenseVector createVector(int dim)
+    final public DenseVector createVector(
+        int dim)
     {
         return new DenseVector(dim);
     }
 
     @Override
-    final public Vector1D createVector1D(double x)
+    final public Vector1D createVector1D(
+        double x)
     {
         return new DenseVector1D(x);
     }
 
     @Override
-    final public Vector2D createVector2D(double x,
+    final public Vector2D createVector2D(
+        double x,
         double y)
     {
         return new DenseVector2D(x, y);
     }
 
     @Override
-    final public Vector3D createVector3D(double x,
+    final public Vector3D createVector3D(
+        double x,
         double y,
         double z)
     {
@@ -104,7 +109,7 @@ public class CustomDenseVectorFactory
          */
         DenseVector1D(double x)
         {
-            super(1, true);
+            super(1);
             elements()[0] = x;
         }
 
@@ -159,7 +164,7 @@ public class CustomDenseVectorFactory
         DenseVector2D(double x,
             double y)
         {
-            super(2, true);
+            super(2);
             elements()[0] = x;
             elements()[1] = y;
         }
@@ -249,7 +254,7 @@ public class CustomDenseVectorFactory
             double y,
             double z)
         {
-            super(3, true);
+            super(3);
             elements()[0] = x;
             elements()[1] = y;
             elements()[2] = z;

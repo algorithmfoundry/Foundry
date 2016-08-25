@@ -33,7 +33,8 @@ public class CustomSparseVectorFactory
     public static CustomSparseVectorFactory INSTANCE = new CustomSparseVectorFactory();
 
     @Override
-    final public SparseVector copyVector(Vector m)
+    final public SparseVector copyVector(
+        Vector m)
     {
         if (m instanceof DenseVector)
         {
@@ -55,7 +56,8 @@ public class CustomSparseVectorFactory
     }
 
     @Override
-    final public SparseVector createVector(int dim)
+    final public SparseVector createVector(
+        int dim)
     {
         return new SparseVector(dim);
     }
@@ -69,7 +71,8 @@ public class CustomSparseVectorFactory
      * @return {@inheritDoc}
      */
     @Override
-    final public Vector1D createVector1D(double x)
+    final public Vector1D createVector1D(
+        double x)
     {
         return new CustomDenseVectorFactory.DenseVector1D(x);
     }
@@ -83,7 +86,8 @@ public class CustomSparseVectorFactory
      * @return {@inheritDoc}
      */
     @Override
-    final public Vector2D createVector2D(double x,
+    final public Vector2D createVector2D(
+        double x,
         double y)
     {
         return new CustomDenseVectorFactory.DenseVector2D(x, y);
@@ -99,7 +103,8 @@ public class CustomSparseVectorFactory
      * @return {@inheritDoc}
      */
     @Override
-    final public Vector3D createVector3D(double x,
+    final public Vector3D createVector3D(
+        double x,
         double y,
         double z)
     {
