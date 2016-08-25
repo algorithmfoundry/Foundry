@@ -72,7 +72,7 @@ public class SparseVector
     {
         ArgumentChecker.assertIsNonNegative("dimensionality", n);
         this.dimensionality = n;
-        elements = new TreeMap<Integer, Double>();
+        elements = new TreeMap<>();
         values = null;
         indices = null;
     }
@@ -87,13 +87,13 @@ public class SparseVector
         this.dimensionality = v.dimensionality;
         if (!v.isCompressed())
         {
-            elements = new TreeMap<Integer, Double>(v.elements);
+            elements = new TreeMap<>(v.elements);
             values = null;
             indices = null;
         }
         else
         {
-            elements = new TreeMap<Integer, Double>();
+            elements = new TreeMap<>();
             values = Arrays.copyOf(v.values, v.values.length);
             indices = Arrays.copyOf(v.indices, v.indices.length);
         }
@@ -110,7 +110,7 @@ public class SparseVector
         int nnz = v.numNonZero();
         values = new double[nnz];
         indices = new int[nnz];
-        elements = new TreeMap<Integer, Double>();
+        elements = new TreeMap<>();
         int idx = 0;
         for (int i = 0; i < dimensionality; ++i)
         {

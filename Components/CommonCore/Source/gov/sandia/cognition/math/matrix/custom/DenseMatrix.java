@@ -1147,13 +1147,13 @@ public class DenseMatrix
             int n = A.getNumColumns();
             if (m <= n)
             {
-                P = new ArrayList<Integer>(m);
+                P = new ArrayList<>(m);
                 L = new DenseMatrix(m, m);
                 U = new DenseMatrix(m, n);
             }
             else
             {
-                P = new ArrayList<Integer>(n);
+                P = new ArrayList<>(n);
                 L = new DenseMatrix(m, n);
                 U = new DenseMatrix(n, n);
             }

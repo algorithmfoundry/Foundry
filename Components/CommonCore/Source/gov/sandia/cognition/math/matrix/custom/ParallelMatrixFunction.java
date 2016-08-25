@@ -147,7 +147,7 @@ abstract class ParallelMatrixFunction<InputType1, InputType2, OutputType>
         double numRowsPer = ((double) numRows) / ((double) numPieces);
         numRowsPer = Math.max(numRowsPer, 1.0);
         List<ParallelMatrixFunction<InputType1, InputType2, OutputType>> pieces =
-            new ArrayList<ParallelMatrixFunction<InputType1, InputType2, OutputType>>(
+            new ArrayList<>(
             numPieces);
         int minRow, maxRow;
         minRow = 0;

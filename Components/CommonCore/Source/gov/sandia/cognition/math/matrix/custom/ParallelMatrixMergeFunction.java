@@ -146,7 +146,7 @@ abstract class ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>
         double numRowsPer = ((double) numRows) / ((double) numPieces);
         numRowsPer = Math.max(numRowsPer, 1.0);
         List<ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>> pieces =
-            new ArrayList<ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>>(
+            new ArrayList<>(
             numPieces);
         int minRow, maxRow;
         minRow = 0;
