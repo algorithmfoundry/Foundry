@@ -780,7 +780,7 @@ public class SparseVector
         else
         {
             Double v = elements.get(index);
-            return (v == null) ? 0 : v.doubleValue();
+            return (v == null) ? 0 : v;
         }
     }
 

@@ -708,7 +708,7 @@ public class DenseMatrix
         {
             for (int j = 0; j < getNumColumns(); ++j)
             {
-                rows[i].elements()[j] = rows[i].elements()[j] * scaleFactor;
+                rows[i].elements()[j] *= scaleFactor;
             }
         }
     }
@@ -1361,7 +1361,7 @@ public class DenseMatrix
                 v.elements()[j] = blasElement(j, i, A, m, n);
             }
             // Mult to Q
-            ret.Q = (DenseMatrix) ret.Q.times(I.minus(
+            ret.Q = ret.Q.times(I.minus(
                 v.outerProduct(v).scale(tau[i])));
         }
 

@@ -143,7 +143,7 @@ abstract class ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>
         int numRows,
         ParallelMatrixMergeFunction.Factory<InputType1, InputType2, MergeType> factory)
     {
-        double numRowsPer = ((double) numRows) / ((double) numPieces);
+        double numRowsPer = numRows / ((double) numPieces);
         numRowsPer = Math.max(numRowsPer, 1.0);
         List<ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>> pieces =
             new ArrayList<>(

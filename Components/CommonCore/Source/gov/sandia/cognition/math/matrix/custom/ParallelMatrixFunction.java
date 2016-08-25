@@ -144,7 +144,7 @@ abstract class ParallelMatrixFunction<InputType1, InputType2, OutputType>
         int numRows,
         Factory<InputType1, InputType2, OutputType> factory)
     {
-        double numRowsPer = ((double) numRows) / ((double) numPieces);
+        double numRowsPer = numRows / ((double) numPieces);
         numRowsPer = Math.max(numRowsPer, 1.0);
         List<ParallelMatrixFunction<InputType1, InputType2, OutputType>> pieces =
             new ArrayList<>(
