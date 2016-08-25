@@ -13,12 +13,11 @@
 
 package gov.sandia.cognition.math.matrix.custom;
 
+import com.github.fommil.netlib.BLAS;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-
-import com.github.fommil.netlib.BLAS;
 
 /**
  * This class provides a uniform interface between working with a native-coded

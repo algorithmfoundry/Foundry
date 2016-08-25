@@ -13,17 +13,17 @@
 
 package gov.sandia.cognition.math.matrix.custom;
 
+import com.github.fommil.netlib.BLAS;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationReferences;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.ComplexNumber;
 import gov.sandia.cognition.math.matrix.Matrix;
+import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
+import gov.sandia.cognition.util.ArgumentChecker;
 import java.util.ArrayList;
 import java.util.List;
-import com.github.fommil.netlib.BLAS;
-import gov.sandia.cognition.math.matrix.MatrixFactory;
-import gov.sandia.cognition.util.ArgumentChecker;
 import org.netlib.util.intW;
 
 /**
