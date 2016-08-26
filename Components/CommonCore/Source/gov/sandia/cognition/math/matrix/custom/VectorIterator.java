@@ -62,10 +62,10 @@ public class VectorIterator
             throw new NoSuchElementException("Iterator has exceeded the "
                 + "bounds of the vector");
         }
-        VectorEntry ret = new BaseVectorEntry(index, vector);
+        VectorEntry result = new BaseVectorEntry(index, vector);
         ++index;
 
-        return ret;
+        return result;
     }
 
     /**

@@ -203,7 +203,7 @@ public class ParallelSparseMatrix
         }
 
         int m = getNumRows();
-        DenseVector ret = new DenseVector(m);
+        DenseVector result = new DenseVector(m);
 
         // Create the factory
         ParallelMatrixFunction.Factory<ParallelSparseMatrix, SparseVector, DenseVector> factory =
@@ -221,7 +221,7 @@ public class ParallelSparseMatrix
                         double[] vVals = input2.getValues();
                         for (int i = minRow; i < maxRow; ++i)
                         {
-                            output.elements()[i] = 0;
+                            output.values[i] = 0;
                             idx = 0;
                             // For all non-zero elements on this row of the matrix
                             for (int j = firstIndicesForRows[i]; j
@@ -249,7 +249,7 @@ public class ParallelSparseMatrix
                                 }
                                 // You only reach here if they are at the same
                                 // location
-                                output.elements()[i] += values[j] * vVals[idx];
+                                output.values[i] += values[j] * vVals[idx];
                             }
                         }
 
@@ -261,9 +261,9 @@ public class ParallelSparseMatrix
 
         // Now that the factory is created, just call "solve" handing it in
         ParallelMatrixFunction.< ParallelSparseMatrix, SparseVector, DenseVector>solve(
-            this, vector, ret, numThreads * 2, numThreads, m, factory);
+            this, vector, result, numThreads * 2, numThreads, m, factory);
 
-        return new SparseVector(ret);
+        return new SparseVector(result);
     }
 
     /**
@@ -281,7 +281,7 @@ public class ParallelSparseMatrix
         }
 
         int m = getNumRows();
-        DenseVector ret = new DenseVector(m);
+        DenseVector result = new DenseVector(m);
 
         // Create the factory
         ParallelMatrixFunction.Factory<ParallelSparseMatrix, DenseVector, DenseVector> factory =
@@ -296,12 +296,12 @@ public class ParallelSparseMatrix
                         // Here's the actual logic for multiplying
                         for (int i = minRow; i < maxRow; ++i)
                         {
-                            output.elements()[i] = 0;
+                            output.values[i] = 0;
                             for (int j = firstIndicesForRows[i]; j
                                 < firstIndicesForRows[i + 1]; ++j)
                             {
-                                output.elements()[i] += values[j]
-                                    * input2.elements()[columnIndices[j]];
+                                output.values[i] += values[j]
+                                    * input2.values[columnIndices[j]];
                             }
                         }
 
@@ -313,9 +313,9 @@ public class ParallelSparseMatrix
 
         // Now that the factory is created, just call "solve" handing it in
         ParallelMatrixFunction.<ParallelSparseMatrix, DenseVector, DenseVector>solve(
-            this, vector, ret, numThreads * 2, numThreads, m, factory);
+            this, vector, result, numThreads * 2, numThreads, m, factory);
 
-        return ret;
+        return result;
     }
 
 }

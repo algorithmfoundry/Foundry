@@ -23,7 +23,7 @@ import gov.sandia.cognition.math.matrix.Vector;
  * vector-type-specific (dense, sparse) version of the basic math method.
  *
  * @author Jeremy D. Wendt
- * @since   3.4.3
+ * @since 3.4.4
  */
 abstract class BaseVector
     extends AbstractVector
@@ -36,9 +36,10 @@ abstract class BaseVector
     {
         super();
     }
-    
+
     @Override
-    final public void plusEquals(Vector other)
+    final public void plusEquals(
+        final Vector other)
     {
         this.assertSameDimensionality(other);
 
@@ -62,7 +63,8 @@ abstract class BaseVector
      *
      * @param other A dense vector to add to this
      */
-    public abstract void plusEquals(DenseVector other);
+    public abstract void plusEquals(
+        final DenseVector other);
 
     /**
      * Type-specific version of plusEquals for combining whatever type this is
@@ -70,11 +72,13 @@ abstract class BaseVector
      *
      * @param other A sparse vector to add to this
      */
-    public abstract void plusEquals(SparseVector other);
+    public abstract void plusEquals(
+        final SparseVector other);
 
     @Override
-    final public void scaledPlusEquals(double scaleFactor,
-        Vector other)
+    final public void scaledPlusEquals(
+        final double scaleFactor,
+        final Vector other)
     {
         this.assertSameDimensionality(other);
 
@@ -99,8 +103,9 @@ abstract class BaseVector
      * @param other A dense vector to add to this
      * @param scaleFactor The scalar to multiply other by
      */
-    public abstract void scaledPlusEquals(DenseVector other,
-        double scaleFactor);
+    public abstract void scaledPlusEquals(
+        final DenseVector other,
+        final double scaleFactor);
 
     /**
      * Type-specific version of scaledPlusEquals for combining whatever type
@@ -109,11 +114,13 @@ abstract class BaseVector
      * @param other A sparse vector to add to this
      * @param scaleFactor The scalar to multiply other by
      */
-    public abstract void scaledPlusEquals(SparseVector other,
-        double scaleFactor);
+    public abstract void scaledPlusEquals(
+        final SparseVector other,
+        final double scaleFactor);
 
     @Override
-    final public void minusEquals(Vector other)
+    final public void minusEquals(
+        final Vector other)
     {
         this.assertSameDimensionality(other);
 
@@ -137,7 +144,8 @@ abstract class BaseVector
      *
      * @param other A dense vector to subtract from this
      */
-    public abstract void minusEquals(DenseVector other);
+    public abstract void minusEquals(
+        final DenseVector other);
 
     /**
      * Type-specific version of minusEquals for combining whatever type this is
@@ -145,10 +153,12 @@ abstract class BaseVector
      *
      * @param other A sparse vector to subtract from this
      */
-    public abstract void minusEquals(SparseVector other);
+    public abstract void minusEquals(
+        final SparseVector other);
 
     @Override
-    final public void dotTimesEquals(Vector other)
+    final public void dotTimesEquals(
+        final Vector other)
     {
         this.assertSameDimensionality(other);
 
@@ -180,10 +190,12 @@ abstract class BaseVector
      *
      * @param other A sparse vector to dot with this
      */
-    public abstract void dotTimesEquals(SparseVector other);
+    public abstract void dotTimesEquals(
+        final SparseVector other);
 
     @Override
-    final public double euclideanDistanceSquared(Vector other)
+    final public double euclideanDistanceSquared(
+        final Vector other)
     {
         this.assertSameDimensionality(other);
 
@@ -208,7 +220,8 @@ abstract class BaseVector
      * @param other A dense vector to calculate the distance from this
      * @return the Euclidean distance (L2 norm) between the two vectors
      */
-    public abstract double euclideanDistanceSquared(DenseVector other);
+    public abstract double euclideanDistanceSquared(
+        final DenseVector other);
 
     /**
      * Type-specific version of euclideanDistanceSquared for combining whatever
@@ -217,10 +230,12 @@ abstract class BaseVector
      * @param other A sparse vector to calculate the distance from this
      * @return the Euclidean distance (L2 norm) between the two vectors
      */
-    public abstract double euclideanDistanceSquared(SparseVector other);
+    public abstract double euclideanDistanceSquared(
+        final SparseVector other);
 
     @Override
-    final public Matrix outerProduct(Vector other)
+    final public Matrix outerProduct(
+        final Vector other)
     {
         if (other instanceof SparseVector)
         {
@@ -243,7 +258,8 @@ abstract class BaseVector
      * @param other A dense vector to "outer product" with this
      * @return the outer product (this.transpose().times(other))
      */
-    public abstract Matrix outerProduct(DenseVector other);
+    public abstract Matrix outerProduct(
+        final DenseVector other);
 
     /**
      * Type-specific version of outerProduct for combining whatever type this is
@@ -252,10 +268,12 @@ abstract class BaseVector
      * @param other A sparse vector to "outer product" with this
      * @return the outer product (this.transpose().times(other))
      */
-    public abstract Matrix outerProduct(SparseVector other);
+    public abstract Matrix outerProduct(
+        final SparseVector other);
 
     @Override
-    final public Vector times(Matrix matrix)
+    final public Vector times(
+        final Matrix matrix)
     {
         if (matrix instanceof BaseMatrix)
         {
@@ -268,7 +286,8 @@ abstract class BaseVector
     }
 
     @Override
-    final public Vector stack(Vector other)
+    final public Vector stack(
+        final Vector other)
     {
         if (other instanceof SparseVector)
         {
@@ -291,7 +310,8 @@ abstract class BaseVector
      * @param other A dense vector to stack below this
      * @return the vector resulting from stacking this above other
      */
-    public abstract Vector stack(DenseVector other);
+    public abstract Vector stack(
+        final DenseVector other);
 
     /**
      * Type-specific version of stack for combining whatever type this is with
@@ -300,10 +320,12 @@ abstract class BaseVector
      * @param other A sparse vector to stack below this
      * @return the vector resulting from stacking this above other
      */
-    public abstract Vector stack(SparseVector other);
+    public abstract Vector stack(
+        final SparseVector other);
 
     @Override
-    final public double dotProduct(Vector other)
+    final public double dotProduct(
+        final Vector other)
     {
         this.assertSameDimensionality(other);
 
@@ -328,7 +350,8 @@ abstract class BaseVector
      * @param other A sparse vector to dot with this
      * @return the dot product of this with other
      */
-    public abstract double dotProduct(SparseVector other);
+    public abstract double dotProduct(
+        final SparseVector other);
 
     /**
      * Type-specific version dotProduct for combining whatever type this is with
@@ -337,6 +360,7 @@ abstract class BaseVector
      * @param other A dense vector to dot with this
      * @return the dot product of this with other
      */
-    public abstract double dotProduct(DenseVector other);
+    public abstract double dotProduct(
+        final DenseVector other);
 
 }

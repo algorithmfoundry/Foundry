@@ -18,9 +18,9 @@ import gov.sandia.cognition.math.matrix.VectorEntry;
 /**
  * Package private class that implements the VectorEntry interface for vector
  * iterators.
- * 
+ *
  * @author Jeremy D. Wendt
- * @since   3.4.3
+ * @since 3.4.4
  */
 class BaseVectorEntry
     implements VectorEntry
@@ -30,7 +30,7 @@ class BaseVectorEntry
      * The vector being iterated over
      */
     private BaseVector vector;
-    
+
     /**
      * The index into the vector
      */
@@ -43,21 +43,24 @@ class BaseVectorEntry
      */
     private BaseVectorEntry()
     {
-        throw new UnsupportedOperationException("This constructor should never "
-            + "be called.");
+        throw new UnsupportedOperationException(
+            "This constructor should never be called.");
     }
 
     /**
      * Creates a new optimized vector entry.
      *
      * @param index The index to the vector
-     * @param v The vector to index
+     * @param vector The vector to index
      */
-    BaseVectorEntry(int index,
-        BaseVector v)
+    BaseVectorEntry(
+        final int index,
+        final BaseVector vector)
     {
+        super();
+        
         this.index = index;
-        this.vector = v;
+        this.vector = vector;
     }
 
     @Override

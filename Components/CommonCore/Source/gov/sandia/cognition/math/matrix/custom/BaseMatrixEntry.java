@@ -20,21 +20,27 @@ import gov.sandia.cognition.math.matrix.MatrixEntry;
  * to be a little slower in the getValue/setValue methods than to replicate the
  * logic for those operations for all matrix types herein as well as in the
  * actual matrices.
- * 
+ *
  * @author Jeremy D. Wendt
- * @since   3.4.3
+ * @since 3.4.4
  */
 class BaseMatrixEntry
     implements MatrixEntry
 {
 
-    /** The matrix to represent. */
+    /**
+     * The matrix to represent.
+     */
     private BaseMatrix matrix;
 
-    /** The row index in the matrix. */
+    /**
+     * The row index in the matrix.
+     */
     private int rowIndex;
 
-    /** The column index in the matrix. */
+    /**
+     * The column index in the matrix.
+     */
     private int columnIndex;
 
     /**
@@ -47,17 +53,19 @@ class BaseMatrixEntry
     }
 
     /**
-     * Initializes the values for this entry
+     * Initializes the values for this entry.
      *
      * @param matrix the matrix
      * @param rowIndex the row index
      * @param columnIndex the column index
      */
     BaseMatrixEntry(
-        BaseMatrix matrix,
-        int rowIndex,
-        int columnIndex)
+        final BaseMatrix matrix,
+        final int rowIndex,
+        final int columnIndex)
     {
+        super();
+        
         this.matrix = matrix;
         this.rowIndex = rowIndex;
         this.columnIndex = columnIndex;
@@ -66,7 +74,7 @@ class BaseMatrixEntry
     @Override
     final public int getRowIndex()
     {
-        return rowIndex;
+        return this.rowIndex;
     }
 
     /**
@@ -78,9 +86,9 @@ class BaseMatrixEntry
      */
     @Override
     final public void setRowIndex(
-        int rowIndex)
+        final int rowIndex)
     {
-        if ((rowIndex < 0) || (rowIndex >= matrix.getNumRows()))
+        if ((rowIndex < 0) || (rowIndex >= this.matrix.getNumRows()))
         {
             throw new IllegalArgumentException("Unable to set row index "
                 + "beyond bounds: " + rowIndex + " not within [0, "
@@ -93,7 +101,7 @@ class BaseMatrixEntry
     @Override
     final public int getColumnIndex()
     {
-        return columnIndex;
+        return this.columnIndex;
     }
 
     /**
@@ -105,7 +113,8 @@ class BaseMatrixEntry
      * bounds
      */
     @Override
-    final public void setColumnIndex(int columnIndex)
+    final public void setColumnIndex(
+        final int columnIndex)
     {
         if ((columnIndex < 0) || (columnIndex >= matrix.getNumColumns()))
         {
@@ -120,7 +129,7 @@ class BaseMatrixEntry
     @Override
     final public double getValue()
     {
-        return matrix.getElement(rowIndex, columnIndex);
+        return this.matrix.getElement(this.rowIndex, this.columnIndex);
     }
 
     /**
@@ -129,9 +138,10 @@ class BaseMatrixEntry
      * @param value the value to set
      */
     @Override
-    final public void setValue(double value)
+    final public void setValue(
+        final double value)
     {
-        matrix.setElement(rowIndex, columnIndex, value);
+        this.matrix.setElement(this.rowIndex, this.columnIndex, value);
     }
 
 }

@@ -36,7 +36,7 @@ public class DenseVector
     /**
      * The data is stored in this vector
      */
-    private double[] values;
+    double[] values;
 
     /**
      * This should never be called by anything or anyone other than Java's
@@ -242,7 +242,7 @@ public class DenseVector
     {
         int numRows = getDimensionality();
         int numCols = other.getDimensionality();
-        DenseMatrix ret = new DenseMatrix(numRows, numCols, true);
+        DenseMatrix result = new DenseMatrix(numRows, numCols, true);
         for (int i = 0; i < numRows; ++i)
         {
             DenseVector row = new DenseVector(numCols);
@@ -250,10 +250,10 @@ public class DenseVector
             {
                 row.values[j] = values[i] * other.values[j];
             }
-            ret.setRow(i, row);
+            result.setRow(i, row);
         }
 
-        return ret;
+        return result;
     }
 
     @Override
@@ -261,7 +261,7 @@ public class DenseVector
     {
         int numRows = getDimensionality();
         int numCols = other.getDimensionality();
-        SparseMatrix ret = new SparseMatrix(numRows, numCols, true);
+        SparseMatrix result = new SparseMatrix(numRows, numCols, true);
         other.compress();
         int[] locs = other.getIndices();
         double[] vals = other.getValues();
@@ -272,45 +272,45 @@ public class DenseVector
             {
                 row.setElement(locs[j], values[i] * vals[j]);
             }
-            ret.setRowInternal(i, row);
+            result.setRowInternal(i, row);
         }
 
-        return ret;
+        return result;
     }
 
     @Override
     public final Vector stack(DenseVector other)
     {
-        DenseVector ret = new DenseVector(values.length + other.values.length);
+        DenseVector result = new DenseVector(values.length + other.values.length);
         for (int i = 0; i < values.length; ++i)
         {
-            ret.values[i] = values[i];
+            result.values[i] = values[i];
         }
         for (int i = 0; i < other.values.length; ++i)
         {
-            ret.values[values.length + i] = other.values[i];
+            result.values[values.length + i] = other.values[i];
         }
 
-        return ret;
+        return result;
     }
 
     @Override
     public final Vector stack(SparseVector other)
     {
-        Vector ret;
+        Vector result;
         int len = values.length + other.getDimensionality();
         int nnz = numNonZero() + other.numNonZero();
         if (nnz > SparseVector.SPARSE_TO_DENSE_THRESHOLD * len)
         {
-            ret = new DenseVector(len);
+            result = new DenseVector(len);
         }
         else
         {
-            ret = new SparseVector(len);
+            result = new SparseVector(len);
         }
         for (int i = 0; i < values.length; ++i)
         {
-            ret.setElement(i, values[i]);
+            result.setElement(i, values[i]);
         }
         // NOTE: The below could be faster (and I could get rid of all of the
         // "setElement"s if I wanted to write two versions of this method.  As
@@ -330,29 +330,29 @@ public class DenseVector
         {
             if ((idx < locs.length) && (locs[idx] == i))
             {
-                ret.setElement(values.length + i, vals[idx]);
+                result.setElement(values.length + i, vals[idx]);
                 ++idx;
             }
             else
             {
-                ret.setElement(values.length + i, 0);
+                result.setElement(values.length + i, 0);
             }
         }
 
-        return ret;
+        return result;
     }
 
     @Override
     public final double dotProduct(DenseVector other)
     {
         this.assertSameDimensionality(other);
-        double ret = 0;
+        double result = 0;
         for (int i = 0; i < values.length; ++i)
         {
-            ret += values[i] * other.values[i];
+            result += values[i] * other.values[i];
         }
 
-        return ret;
+        return result;
     }
 
     @Override
@@ -398,17 +398,15 @@ public class DenseVector
     {
         values[index] = value;
     }
-
     /**
      * Package-private method that allows peers direct access to the elements
      * contained herein.
      *
      * @return the array of elements stored herein.
      */
-// TODO: Rename this.
-    final double[] elements()
+    final double[] getValues()
     {
-        return values;
+        return this.values;
     }
     
     @Override
@@ -427,25 +425,25 @@ public class DenseVector
                 + "bounds of this vector [0, " + values.length + ").");
         }
         int len = maxIndex - minIndex + 1;
-        DenseVector ret = new DenseVector(len);
+        DenseVector result = new DenseVector(len);
         for (int i = minIndex; i <= maxIndex; ++i)
         {
-            ret.values[i - minIndex] = values[i];
+            result.values[i - minIndex] = values[i];
         }
 
-        return ret;
+        return result;
     }
 
     @Override
     final public Vector scale(double d)
     {
-        DenseVector ret = new DenseVector(values.length);
+        DenseVector result = new DenseVector(values.length);
         for (int i = 0; i < values.length; ++i)
         {
-            ret.values[i] = values[i] * d;
+            result.values[i] = values[i] * d;
         }
 
-        return ret;
+        return result;
     }
 
     @Override
@@ -456,9 +454,9 @@ public class DenseVector
         // still dense.  The way this was originally implemented in the Foundry
         // (this.clone().dotTimesEquals(v)), if v is sparse, it returns a
         // dense vector type storing sparse data.
-        Vector ret = v.clone();
-        ret.dotTimesEquals(this);
-        return ret;
+        Vector result = v.clone();
+        result.dotTimesEquals(this);
+        return result;
     }
 
     /**

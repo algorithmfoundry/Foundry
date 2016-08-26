@@ -25,7 +25,7 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
  * public so this need not be called.
  *
  * @author Jeremy D. Wendt
- * @since   3.4.3
+ * @since   3.4.4
  */
 public class CustomDenseVectorFactory
     extends VectorFactory<DenseVector>
@@ -36,45 +36,45 @@ public class CustomDenseVectorFactory
     
     @Override
     final public DenseVector copyVector(
-        Vector m)
+        final Vector m)
     {
         int n = m.getDimensionality();
-        DenseVector ret = new DenseVector(n);
+        DenseVector result = new DenseVector(n);
         for (int i = 0; i < n; ++i)
         {
-            ret.elements()[i] = m.getElement(i);
+            result.values[i] = m.getElement(i);
         }
 
-        return ret;
+        return result;
     }
 
     @Override
     final public DenseVector createVector(
-        int dim)
+        final int dim)
     {
         return new DenseVector(dim);
     }
 
     @Override
     final public Vector1D createVector1D(
-        double x)
+        final double x)
     {
         return new DenseVector1D(x);
     }
 
     @Override
     final public Vector2D createVector2D(
-        double x,
-        double y)
+        final double x,
+        final double y)
     {
         return new DenseVector2D(x, y);
     }
 
     @Override
     final public Vector3D createVector3D(
-        double x,
-        double y,
-        double z)
+        final double x,
+        final double y,
+        final double z)
     {
         return new DenseVector3D(x, y, z);
     }
@@ -107,35 +107,39 @@ public class CustomDenseVectorFactory
          *
          * @param x The value to store
          */
-        DenseVector1D(double x)
+        DenseVector1D(
+            final double x)
         {
             super(1);
-            elements()[0] = x;
+            this.values[0] = x;
         }
 
         @Override
         final public double getX()
         {
-            return elements()[0];
+            return this.values[0];
         }
 
         @Override
-        final public void setX(double x)
+        final public void setX(
+            final double x)
         {
-            elements()[0] = x;
+            this.values[0] = x;
         }
 
         @Override
-        public double get(int index)
+        public double get(
+            final int index)
         {
-            return elements()[index];
+            return this.values[index];
         }
 
         @Override
-        public void set(int index,
-            double value)
+        public void set(
+            final int index,
+            final double value)
         {
-            elements()[index] = value;
+            this.values[index] = value;
         }
 
         @Override
@@ -161,69 +165,75 @@ public class CustomDenseVectorFactory
          * @param x The first value to store
          * @param y The second value to store
          */
-        DenseVector2D(double x,
-            double y)
+        DenseVector2D(
+            final double x,
+            final double y)
         {
             super(2);
-            elements()[0] = x;
-            elements()[1] = y;
+            values[0] = x;
+            values[1] = y;
         }
 
         @Override
         final public double getX()
         {
-            return elements()[0];
+            return values[0];
         }
 
         @Override
-        final public void setX(double x)
+        final public void setX(
+            final double x)
         {
-            elements()[0] = x;
+            values[0] = x;
         }
 
         @Override
         final public double getY()
         {
-            return elements()[1];
+            return values[1];
         }
 
         @Override
-        final public void setY(double y)
+        final public void setY(
+            final double y)
         {
-            elements()[1] = y;
+            values[1] = y;
         }
 
         @Override
-        final public void setXY(double x,
-            double y)
+        final public void setXY(
+            final double x,
+            final double y)
         {
-            elements()[0] = x;
-            elements()[1] = y;
+            values[0] = x;
+            values[1] = y;
         }
 
         @Override
         final public Double getFirst()
         {
-            return elements()[0];
+            return values[0];
         }
 
         @Override
         final public Double getSecond()
         {
-            return elements()[1];
+            return values[1];
         }
 
         @Override
-        public double get(int index)
+        public double get(
+            final int index)
         {
-            return elements()[index];
+            return values[index];
         }
 
         @Override
-        public void set(int index,
-            double value)
+        public void set(
+            final int index,
+            final double value)
         {
-            elements()[index] = value;
+            values[index] = value;
         }
 
         @Override
@@ -250,91 +260,98 @@ public class CustomDenseVectorFactory
          * @param y The second value to store
          * @param z The third value to store
          */
-        DenseVector3D(double x,
-            double y,
-            double z)
+        DenseVector3D(
+            final double x,
+            final double y,
+            final double z)
         {
             super(3);
-            elements()[0] = x;
-            elements()[1] = y;
-            elements()[2] = z;
+            values[0] = x;
+            values[1] = y;
+            values[2] = z;
         }
 
         @Override
         final public double getX()
         {
-            return elements()[0];
+            return values[0];
         }
 
         @Override
-        final public void setX(double x)
+        final public void setX(
+            final double x)
         {
-            elements()[0] = x;
+            values[0] = x;
         }
 
         @Override
         final public double getY()
         {
-            return elements()[1];
+            return values[1];
         }
 
         @Override
-        final public void setY(double y)
+        final public void setY(
+            final double y)
         {
-            elements()[1] = y;
+            values[1] = y;
         }
 
         @Override
         final public double getZ()
         {
-            return elements()[2];
+            return values[2];
         }
 
         @Override
-        final public void setZ(double z)
+        final public void setZ(
+            final double z)
         {
-            elements()[2] = z;
+            values[2] = z;
         }
 
         @Override
         public Double getFirst()
         {
-            return elements()[0];
+            return values[0];
         }
 
         @Override
         final public Double getSecond()
         {
-            return elements()[1];
+            return values[1];
         }
 
         @Override
         final public Double getThird()
         {
-            return elements()[2];
+            return values[2];
         }
 
         @Override
-        final public void setXYZ(double x,
-            double y,
-            double z)
+        final public void setXYZ(
+            final double x,
+            final double y,
+            final double z)
         {
-            elements()[0] = x;
-            elements()[1] = y;
-            elements()[2] = z;
+            values[0] = x;
+            values[1] = y;
+            values[2] = z;
         }
 
         @Override
-        public double get(int index)
+        public double get(
+            final int index)
         {
-            return elements()[index];
+            return values[index];
         }
 
         @Override
-        public void set(int index,
-            double value)
+        public void set(
+            final int index,
+            final double value)
         {
-            elements()[index] = value;
+            values[index] = value;
         }
 
         @Override

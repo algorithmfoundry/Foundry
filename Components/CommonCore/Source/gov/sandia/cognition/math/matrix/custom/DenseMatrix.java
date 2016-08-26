@@ -22,6 +22,7 @@ import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.util.ArgumentChecker;
+import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
 import java.util.List;
 import org.netlib.util.intW;
@@ -50,7 +51,7 @@ public class DenseMatrix
      * This handler calls out to native BLAS if native BLAS is installed
      * properly on the computer at program start. If not, this calls jBLAS.
      */
-    private static NativeBlasHandler setBlas = null;
+    private static NativeBlasHandler blasHandler = null;
     
     /**
      * The rows of the matrix stored as dense vectors
@@ -63,12 +64,11 @@ public class DenseMatrix
      * @param numRows The number of rows in the matrix
      * @param numCols The number of columns in the matrix
      */
-    public DenseMatrix(int numRows,
-        int numCols)
+    public DenseMatrix(
+        final int numRows,
+        final int numCols)
     {
-        rows = new DenseVector[numRows];
-        initialize(numRows, numCols, 0);
-        initBlas();
+        this(numRows, numCols, 0.0);
     }
 
     /**
@@ -78,12 +78,15 @@ public class DenseMatrix
      * @param numCols The number of columns in the matrix
      * @param defaultVal The value to set all elements to
      */
-    public DenseMatrix(int numRows,
-        int numCols,
-        double defaultVal)
+    public DenseMatrix(
+        final int numRows,
+        final int numCols,
+        final double defaultVal)
     {
-        rows = new DenseVector[numRows];
-        initialize(numRows, numCols, defaultVal);
+        super();
+        
+        this.rows = new DenseVector[numRows];
+        this.initialize(numRows, numCols, defaultVal);
         initBlas();
     }
 
@@ -93,12 +96,15 @@ public class DenseMatrix
      *
      * @param m The matrix to copy
      */
-    public DenseMatrix(DenseMatrix m)
+    public DenseMatrix(
+        final DenseMatrix m)
     {
-        rows = new DenseVector[m.getNumRows()];
+        super();
+        
+        this.rows = new DenseVector[m.getNumRows()];
         for (int i = 0; i < m.getNumRows(); ++i)
         {
-            rows[i] = new DenseVector(m.rows[i]);
+            this.rows[i] = new DenseVector(m.rows[i]);
         }
         initBlas();
     }
@@ -109,15 +115,18 @@ public class DenseMatrix
      *
      * @param m The matrix to copy.
      */
-    public DenseMatrix(Matrix m)
+    public DenseMatrix(
+        final Matrix m)
     {
-        rows = new DenseVector[m.getNumRows()];
+        super();
+        
+        this.rows = new DenseVector[m.getNumRows()];
         for (int i = 0; i < m.getNumRows(); ++i)
         {
-            rows[i] = new DenseVector(m.getNumColumns());
+            this.rows[i] = new DenseVector(m.getNumColumns());
             for (int j = 0; j < m.getNumColumns(); ++j)
             {
-                rows[i].setElement(j, m.getElement(i, j));
+                this.rows[i].setElement(j, m.getElement(i, j));
             }
         }
         initBlas();
@@ -140,11 +149,14 @@ public class DenseMatrix
      * the standard constructor
      */
 // TODO: This seems like a hack. Clean it up.
-    DenseMatrix(int numRows,
-        int numCols,
-        boolean unused)
+    DenseMatrix(
+        final int numRows,
+        final int numCols,
+        final boolean unused)
     {
-        rows = new DenseVector[numRows];
+        super();
+        
+        this.rows = new DenseVector[numRows];
         // Don't initialize the row's values
         initBlas();
     }
@@ -156,22 +168,23 @@ public class DenseMatrix
      * bad form. The length of the first row is assumed as the number of columns
      * desired.
      *
-     * @param arr The 2-d double array that specifies the dimensions and values
+     * @param values The 2-d double array that specifies the dimensions and values
      * to be stored in the new matrix.
      */
-    public DenseMatrix(double[][] arr)
+    public DenseMatrix(
+        final double[][] values)
     {
-        int numRows = arr.length;
-        int numCols = (numRows == 0) ? 0 : arr[0].length;
-        rows = new DenseVector[numRows];
+        int numRows = values.length;
+        int numCols = (numRows == 0) ? 0 : values[0].length;
+        this.rows = new DenseVector[numRows];
         for (int i = 0; i < numRows; ++i)
         {
             DenseVector v = new DenseVector(numCols);
             for (int j = 0; j < numCols; ++j)
             {
-                v.elements()[j] = arr[i][j];
+                v.values[j] = values[i][j];
             }
-            setRow(i, v);
+            this.setRow(i, v);
         }
     }
 
@@ -182,22 +195,23 @@ public class DenseMatrix
      * bad form. The length of the first row is assumed as the number of columns
      * desired.
      *
-     * @param arr The 2-d double array that specifies the dimensions and values
+     * @param values The 2-d double array that specifies the dimensions and values
      * to be stored in the matrix.
      */
-    public DenseMatrix(List<List<Double>> arr)
+    public DenseMatrix(
+        final List<List<Double>> values)
     {
-        int numRows = arr.size();
-        int numCols = (numRows == 0) ? 0 : arr.get(0).size();
-        rows = new DenseVector[numRows];
+        int numRows = values.size();
+        int numCols = (numRows == 0) ? 0 : values.get(0).size();
+        this.rows = new DenseVector[numRows];
         for (int i = 0; i < numRows; ++i)
         {
             DenseVector v = new DenseVector(numCols);
             for (int j = 0; j < numCols; ++j)
             {
-                v.elements()[j] = arr.get(i).get(j);
+                v.values[j] = values.get(i).get(j);
             }
-            setRow(i, v);
+            this.setRow(i, v);
         }
     }
 
@@ -207,6 +221,7 @@ public class DenseMatrix
      */
     protected DenseMatrix()
     {
+        super();
         // NOTE: This doesn't initialize anything
     }
 
@@ -221,13 +236,13 @@ public class DenseMatrix
      * @param defaultVal The value to specify in each element of the matrix.
      */
     private void initialize(
-        int numRows,
-        int numCols,
-        double defaultVal)
+        final int numRows,
+        final int numCols,
+        final double defaultVal)
     {
         for (int i = 0; i < numRows; ++i)
         {
-            rows[i] = new DenseVector(numCols, defaultVal);
+            this.rows[i] = new DenseVector(numCols, defaultVal);
         }
     }
 
@@ -237,18 +252,18 @@ public class DenseMatrix
      */
     private static void initBlas()
     {
-        if (setBlas != null)
+        if (blasHandler != null)
         {
             return;
         }
-        setBlas = new NativeBlasHandler();
+        blasHandler = new NativeBlasHandler();
         if (NativeBlasHandler.nativeBlasAvailable())
         {
-            setBlas.setToNativeBlas();
+            blasHandler.setToNativeBlas();
         }
         else
         {
-            setBlas.setToJBlas();
+            blasHandler.setToJBlas();
         }
     }
 
@@ -263,14 +278,15 @@ public class DenseMatrix
      * @return A new DenseMatrix with the specified size and elements stored in
      * d (column major order)
      */
-    static DenseMatrix createFromBlas(double d[],
-        int numRows,
-        int numCols)
+    static DenseMatrix createFromBlas(
+        final double d[],
+        final int numRows,
+        final int numCols)
     {
-        DenseMatrix ret = new DenseMatrix(numRows, numCols);
-        ret.fromBlas(d, numRows, numCols);
+        DenseMatrix result = new DenseMatrix(numRows, numCols);
+        result.fromBlas(d, numRows, numCols);
 
-        return ret;
+        return result;
     }
 
     /**
@@ -284,9 +300,10 @@ public class DenseMatrix
      * this's dimensions (that's why this is a private method -- it should only
      * be called by people who know what they're doing).
      */
-    private void fromBlas(double d[],
-        int numRows,
-        int numCols)
+    private void fromBlas(
+        final double d[],
+        final int numRows,
+        final int numCols)
     {
         if ((getNumRows() != numRows) || (getNumColumns() != numCols))
         {
@@ -299,7 +316,7 @@ public class DenseMatrix
         {
             for (int j = 0; j < numCols; ++j)
             {
-                rows[i].elements()[j] = blasElement(i, j, d, numRows, numCols);
+                this.rows[i].values[j] = blasElement(i, j, d, numRows, numCols);
             }
         }
     }
@@ -312,17 +329,17 @@ public class DenseMatrix
      */
     final double[] toBlas()
     {
-        double[] ret = new double[getNumRows() * getNumColumns()];
+        double[] result = new double[getNumRows() * getNumColumns()];
 
         for (int i = 0; i < getNumRows(); ++i)
         {
             for (int j = 0; j < getNumColumns(); ++j)
             {
-                ret[i + (j * getNumRows())] = rows[i].getElement(j);
+                result[i + (j * getNumRows())] = this.rows[i].getElement(j);
             }
         }
 
-        return ret;
+        return result;
     }
 
     /**
@@ -341,10 +358,11 @@ public class DenseMatrix
      * @param numCols2 The number of columns in the right matrix
      * @return True if BLAS can be used, else false.
      */
-    private static boolean canUseBlasForMult(int numRows1,
-        int numCols1,
-        int numRows2,
-        int numCols2)
+    private static boolean canUseBlasForMult(
+        final int numRows1,
+        final int numCols1,
+        final int numRows2,
+        final int numCols2)
     {
         long mat1Size = ((long) numRows1) * ((long) numCols1);
         long mat2Size = ((long) numRows2) * ((long) numCols2);
@@ -362,9 +380,10 @@ public class DenseMatrix
      * @param m The right matrix to multiply by this
      * @return The result of multiplying this times m
      */
-    private Matrix slowMult(DenseMatrix m)
+    private Matrix slowMult(
+        final DenseMatrix m)
     {
-        DenseMatrix ret = new DenseMatrix(getNumRows(), m.getNumColumns());
+        DenseMatrix result = new DenseMatrix(getNumRows(), m.getNumColumns());
         for (int i = 0; i < getNumRows(); i++)
         {
             for (int j = 0; j < m.getNumColumns(); j++)
@@ -374,11 +393,11 @@ public class DenseMatrix
                 {
                     val += getElement(i, k) * m.getElement(k, j);
                 }
-                ret.setElement(i, j, val);
+                result.setElement(i, j, val);
             }
         }
 
-        return ret;
+        return result;
     }
 
     /**
@@ -389,19 +408,15 @@ public class DenseMatrix
     @Override
     final public Matrix clone()
     {
-        final int rowCount = this.getNumRows();
-        DenseMatrix result = new DenseMatrix(rowCount,
-            this.getNumColumns(), true);
-        result.rows = new DenseVector[rowCount];
-        for (int i = 0; i < rowCount; i++)
-        {
-            result.rows[i] = this.rows[i].clone();
-        }
+        final DenseMatrix result = (DenseMatrix) super.clone();
+        result.rows = ObjectUtil.cloneSmartArrayAndElements(this.rows);
         return result;
     }
 
     @Override
-    public void scaledPlusEquals(SparseMatrix other, double scaleFactor)
+    public void scaledPlusEquals(
+        final SparseMatrix other, 
+        final double scaleFactor)
     {
         this.assertSameDimensions(other);
         if (!other.isCompressed())
@@ -419,35 +434,40 @@ public class DenseMatrix
             {
                 ++rownum;
             }
-            rows[rownum].elements()[ocolIdxs[i]] += ovals[i] * scaleFactor;
+            this.rows[rownum].values[ocolIdxs[i]] += ovals[i] * scaleFactor;
         }
     }
 
     @Override
-    public void scaledPlusEquals(DenseMatrix other, double scaleFactor)
+    public void scaledPlusEquals(
+        final DenseMatrix other, 
+        final double scaleFactor)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
         {
             for (int j = 0; j < getNumColumns(); ++j)
             {
-                rows[i].elements()[j] += other.rows[i].elements()[j] * scaleFactor;
+                this.rows[i].values[j] += other.rows[i].values[j] * scaleFactor;
             }
         }
     }
 
     @Override
-    public void scaledPlusEquals(DiagonalMatrix other, double scaleFactor)
+    public void scaledPlusEquals(
+        final DiagonalMatrix other,
+        final double scaleFactor)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
         {
-            rows[i].elements()[i] += other.getElement(i, i) * scaleFactor;
+            this.rows[i].values[i] += other.get(i, i) * scaleFactor;
         }
     }
 
     @Override
-    public final void plusEquals(SparseMatrix other)
+    public final void plusEquals(
+        final SparseMatrix other)
     {
         this.assertSameDimensions(other);
         if (!other.isCompressed())
@@ -465,35 +485,38 @@ public class DenseMatrix
             {
                 ++rownum;
             }
-            rows[rownum].elements()[ocolIdxs[i]] += ovals[i];
+            this.rows[rownum].values[ocolIdxs[i]] += ovals[i];
         }
     }
 
     @Override
-    public final void plusEquals(DenseMatrix other)
+    public final void plusEquals(
+        final DenseMatrix other)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
         {
             for (int j = 0; j < getNumColumns(); ++j)
             {
-                rows[i].elements()[j] += other.rows[i].elements()[j];
+                this.rows[i].values[j] += other.rows[i].values[j];
             }
         }
     }
 
     @Override
-    public final void plusEquals(DiagonalMatrix other)
+    public final void plusEquals(
+        final DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
         {
-            rows[i].elements()[i] += other.getElement(i, i);
+            this.rows[i].values[i] += other.get(i, i);
         }
     }
 
     @Override
-    public final void minusEquals(SparseMatrix other)
+    public final void minusEquals(
+        final SparseMatrix other)
     {
         this.assertSameDimensions(other);
         if (!other.isCompressed())
@@ -511,30 +534,32 @@ public class DenseMatrix
             {
                 ++rownum;
             }
-            rows[rownum].elements()[ocolIdxs[i]] -= ovals[i];
+            this.rows[rownum].values[ocolIdxs[i]] -= ovals[i];
         }
     }
 
     @Override
-    public final void minusEquals(DenseMatrix other)
+    public final void minusEquals(
+        final DenseMatrix other)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
         {
             for (int j = 0; j < getNumColumns(); ++j)
             {
-                rows[i].elements()[j] -= other.rows[i].elements()[j];
+                this.rows[i].values[j] -= other.rows[i].values[j];
             }
         }
     }
 
     @Override
-    public final void minusEquals(DiagonalMatrix other)
+    public final void minusEquals(
+        final DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
         {
-            rows[i].elements()[i] -= other.getElement(i, i);
+            this.rows[i].values[i] -= other.get(i, i);
         }
     }
 
@@ -545,17 +570,20 @@ public class DenseMatrix
      * sparse matrix in a dense representation.
      */
     @Override
-    public final void dotTimesEquals(SparseMatrix other)
+    public final void dotTimesEquals(
+        final SparseMatrix other)
     {
         this.assertSameDimensions(other);
         if (!other.isCompressed())
         {
             other.compress();
         }
+        final int numRows = this.getNumRows();
+        final int numColumns = this.getNumColumns();
         int idx = 0;
-        for (int i = 0; i < getNumRows(); ++i)
+        for (int i = 0; i < numRows; ++i)
         {
-            for (int j = 0; j < getNumColumns(); ++j)
+            for (int j = 0; j < numColumns; ++j)
             {
                 // If j matches the current column and we're still within the
                 // correct row in other
@@ -564,27 +592,28 @@ public class DenseMatrix
                     < other.getFirstInRows()[i + 1]))
                 {
                     // Multiply the values and advance to the next value in other
-                    rows[i].elements()[j] *= other.getValues()[idx];
+                    this.rows[i].values[j] *= other.getValues()[idx];
                     ++idx;
                 }
                 else
                 {
                     // Otherwise, there is no value in the other matrix here
-                    rows[i].elements()[j] = 0;
+                    this.rows[i].values[j] = 0;
                 }
             }
         }
     }
 
     @Override
-    public final void dotTimesEquals(DenseMatrix other)
+    public final void dotTimesEquals(
+        final DenseMatrix other)
     {
         this.assertSameDimensions(other);
         for (int i = 0; i < getNumRows(); ++i)
         {
             for (int j = 0; j < getNumColumns(); ++j)
             {
-                rows[i].elements()[j] *= other.rows[i].elements()[j];
+                this.rows[i].values[j] *= other.rows[i].values[j];
             }
         }
     }
@@ -596,40 +625,44 @@ public class DenseMatrix
      * a diagonal matrix in a dense representation.
      */
     @Override
-    public final void dotTimesEquals(DiagonalMatrix other)
+    public final void dotTimesEquals(
+        final DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
-        for (int i = 0; i < getNumRows(); ++i)
+        final int numRows = this.getNumRows();
+        final int numColumns = this.getNumColumns();
+        for (int i = 0; i < numRows; ++i)
         {
-            for (int j = 0; j < getNumColumns(); ++j)
+            for (int j = 0; j < numColumns; ++j)
             {
                 if (i == j)
                 {
-                    rows[i].elements()[i] *= other.getElement(i, i);
+                    this.rows[i].values[i] *= other.get(i, i);
                 }
                 else
                 {
-                    rows[i].elements()[j] = 0;
+                    this.rows[i].values[j] = 0;
                 }
             }
         }
     }
 
     @Override
-    public final Matrix times(SparseMatrix other)
+    public final Matrix times(
+        final SparseMatrix other)
     {
         this.assertMultiplicationDimensions(other);
         if (!other.isCompressed())
         {
             other.compress();
         }
-        DenseMatrix ret = new DenseMatrix(getNumRows(), other.getNumColumns(),
+        DenseMatrix result = new DenseMatrix(getNumRows(), other.getNumColumns(),
             true);
         for (int i = 0; i < getNumRows(); ++i)
         {
-            ret.setRow(i, (DenseVector) other.preTimes(rows[i]));
+            result.setRow(i, (DenseVector) other.preTimes(rows[i]));
         }
-        return ret;
+        return result;
     }
 
     @Override
@@ -657,13 +690,13 @@ public class DenseMatrix
     public final Matrix times(DiagonalMatrix other)
     {
         this.assertMultiplicationDimensions(other);
-        DenseMatrix ret = new DenseMatrix(getNumRows(), getNumColumns(), true);
+        DenseMatrix result = new DenseMatrix(getNumRows(), getNumColumns(), true);
         for (int i = 0; i < getNumRows(); ++i)
         {
-            ret.setRow(i, (DenseVector) other.preTimes(rows[i]));
+            result.setRow(i, (DenseVector) other.preTimes(rows[i]));
         }
 
-        return ret;
+        return result;
     }
 
     /**
@@ -676,13 +709,13 @@ public class DenseMatrix
     private Vector timesInternal(Vector vector)
     {
         vector.assertDimensionalityEquals(this.getNumColumns());
-        DenseVector ret = new DenseVector(getNumRows());
+        DenseVector result = new DenseVector(getNumRows());
         for (int i = 0; i < getNumRows(); ++i)
         {
-            ret.setElement(i, vector.dotProduct(rows[i]));
+            result.setElement(i, vector.dotProduct(rows[i]));
         }
 
-        return ret;
+        return result;
     }
 
     @Override
@@ -708,7 +741,7 @@ public class DenseMatrix
         {
             for (int j = 0; j < getNumColumns(); ++j)
             {
-                rows[i].elements()[j] *= scaleFactor;
+                this.rows[i].values[j] *= scaleFactor;
             }
         }
     }
@@ -773,19 +806,19 @@ public class DenseMatrix
         int maxColumn)
     {
         checkSubmatrixRange(minRow, maxRow, minColumn, maxColumn);
-        DenseMatrix ret = new DenseMatrix(maxRow - minRow + 1, maxColumn
+        DenseMatrix result = new DenseMatrix(maxRow - minRow + 1, maxColumn
             - minColumn + 1, true);
         for (int i = minRow; i <= maxRow; ++i)
         {
             DenseVector row = new DenseVector(maxColumn - minColumn + 1);
             for (int j = minColumn; j <= maxColumn; ++j)
             {
-                row.setElement(j - minColumn, rows[i].elements()[j]);
+                row.setElement(j - minColumn, this.rows[i].values[j]);
             }
-            ret.setRow(i - minRow, row);
+            result.setRow(i - minRow, row);
         }
 
-        return ret;
+        return result;
     }
 
     @Override
@@ -803,7 +836,7 @@ public class DenseMatrix
         {
             for (int j = i + 1; j < getNumColumns(); ++j)
             {
-                if (Math.abs(rows[i].elements()[j] - rows[j].elements()[i])
+                if (Math.abs(this.rows[i].values[j] - rows[j].values[i])
                     > effectiveZero)
                 {
                     return false;
@@ -821,7 +854,7 @@ public class DenseMatrix
         // It's the transpose of me
         int m = getNumColumns();
         int n = getNumRows();
-        DenseMatrix ret = new DenseMatrix(m, n, true);
+        DenseMatrix result = new DenseMatrix(m, n, true);
 
         for (int i = 0; i < m; ++i)
         {
@@ -830,10 +863,10 @@ public class DenseMatrix
             {
                 row.setElement(j, getElement(j, i));
             }
-            ret.setRow(i, row);
+            result.setRow(i, row);
         }
 
-        return ret;
+        return result;
     }
 
     @Override
@@ -948,30 +981,30 @@ public class DenseMatrix
         ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
         QR qr = qrDecompose();
         int min = Math.min(getNumRows(), getNumColumns());
-        int ret = 0;
+        int result = 0;
         for (int i = 0; i < min; ++i)
         {
             if (Math.abs(qr.R.getElement(i, i)) > effectiveZero)
             {
-                ++ret;
+                ++result;
             }
         }
 
-        return ret;
+        return result;
     }
 
     @Override
     public double normFrobeniusSquared()
     {
-        double ret = 0;
+        double result = 0;
         for (int i = 0; i < rows.length; ++i)
         {
-            for (int j = 0; j < rows[i].elements().length; ++j)
+            for (int j = 0; j < this.rows[i].values.length; ++j)
             {
-                ret += rows[i].elements()[j] * rows[i].elements()[j];
+                result += this.rows[i].values[j] * this.rows[i].values[j];
             }
         }
-        return ret;
+        return result;
     }
 
     @Override
@@ -1047,12 +1080,12 @@ public class DenseMatrix
      */
     final public SVD svdDecompose()
     {
-        SVD ret = new SVD(this);
+        SVD result = new SVD(this);
 
         // Initialize the results;
-        ret.U.identity();
-        ret.Sigma.zero();
-        ret.V.identity();
+        result.U.identity();
+        result.Sigma.zero();
+        result.V.identity();
 
         // Prepare for calling LAPACK
         String jobz = "A";
@@ -1060,7 +1093,7 @@ public class DenseMatrix
         int n = getNumColumns();
         if ((m == 0) || (n == 0))
         {
-            return ret;
+            return result;
         }
         double[] A = this.toBlas();
         int lda = m;
@@ -1093,15 +1126,15 @@ public class DenseMatrix
         }
 
         // Pull out the values
-        ((DenseMatrix) ret.U).fromBlas(u, ldu, ucol);
-        ((DenseMatrix) ret.V).fromBlas(vt, ldvt, n);
-        ret.V = ret.V.transpose();
+        ((DenseMatrix) result.U).fromBlas(u, ldu, ucol);
+        ((DenseMatrix) result.V).fromBlas(vt, ldvt, n);
+        result.V = result.V.transpose();
         for (int i = 0; i < mindim; ++i)
         {
-            ret.Sigma.setElement(i, i, s[i]);
+            result.Sigma.setElement(i, i, s[i]);
         }
 
-        return ret;
+        return result;
     }
 
     /**
@@ -1196,18 +1229,18 @@ public class DenseMatrix
      */
     final public LU luDecompose()
     {
-        LU ret = new LU(this);
+        LU result = new LU(this);
 
         // Initialize the results
-        ret.L.zero();
-        ret.U.zero();
+        result.L.zero();
+        result.U.zero();
 
         // Prepare for calling LAPACK
         int m = getNumRows();
         int n = getNumColumns();
         if ((m == 0) || (n == 0))
         {
-            return ret;
+            return result;
         }
         int lda = m;
         double[] A = this.toBlas();
@@ -1228,23 +1261,23 @@ public class DenseMatrix
         {
             for (int j = i; j < n; ++j)
             {
-                ret.U.setElement(i, j, blasElement(i, j, A, m, n));
+                result.U.setElement(i, j, blasElement(i, j, A, m, n));
             }
             for (int j = 0; j < Math.min(i, n); ++j)
             {
-                ret.L.setElement(i, j, blasElement(i, j, A, m, n));
+                result.L.setElement(i, j, blasElement(i, j, A, m, n));
             }
             // Only as many row swaps and diagonals as there are rows and
             // columns (whichever is smaller)
             if (i < n)
             {
-                ret.L.setElement(i, i, 1);
+                result.L.setElement(i, i, 1);
                 // Fortran is 1-based, Java is 0-based
-                ret.P.add(ipiv[i] - 1);
+                result.P.add(ipiv[i] - 1);
             }
         }
 
-        return ret;
+        return result;
     }
 
     /**
@@ -1296,22 +1329,22 @@ public class DenseMatrix
         = "http://icl.cs.utk.edu/projectsfiles/f2j/javadoc/org/netlib/lapack/Dgeqrf.html")
     final public QR qrDecompose()
     {
-        QR ret = new QR(this);
+        QR result = new QR(this);
 
         // Initialize the results
-        ret.Q.identity();
-        ret.R.zero();
+        result.Q.identity();
+        result.R.zero();
 
         // Prepare for calling LAPACK
         int m = getNumRows();
         if (m == 0)
         {
-            return ret;
+            return result;
         }
         int n = getNumColumns();
         if (n == 0)
         {
-            return ret;
+            return result;
         }
         double[] A = this.toBlas();
         int lda = m;
@@ -1337,7 +1370,7 @@ public class DenseMatrix
         {
             for (int j = i; j < n; ++j)
             {
-                ret.R.setElement(i, j, blasElement(i, j, A, m, n));
+                result.R.setElement(i, j, blasElement(i, j, A, m, n));
             }
         }
 
@@ -1353,19 +1386,19 @@ public class DenseMatrix
         {
             for (int j = 0; j < i; ++j)
             {
-                v.elements()[j] = 0;
+                v.values[j] = 0;
             }
-            v.elements()[i] = 1;
+            v.values[i] = 1;
             for (int j = i + 1; j < m; ++j)
             {
-                v.elements()[j] = blasElement(j, i, A, m, n);
+                v.values[j] = blasElement(j, i, A, m, n);
             }
             // Mult to Q
-            ret.Q = ret.Q.times(I.minus(
+            result.Q = result.Q.times(I.minus(
                 v.outerProduct(v).scale(tau[i])));
         }
 
-        return ret;
+        return result;
     }
 
     /**
@@ -1433,7 +1466,7 @@ public class DenseMatrix
             }
         }
 
-        DenseVector ret = new DenseVector(R.getNumColumns());
+        DenseVector result = new DenseVector(R.getNumColumns());
         // Start from the bottom of the triangle
         for (int i = R.getNumColumns() - 1; i >= 0; --i)
         {
@@ -1443,14 +1476,14 @@ public class DenseMatrix
             // Back substitute all solved parts in
             for (int j = i + 1; j < R.getNumColumns(); ++j)
             {
-                v -= R.getElement(i, j) * ret.elements()[j];
+                v -= R.getElement(i, j) * result.values[j];
             }
 
             // Solve with the diagonal element
-            ret.elements()[i] = (v / R.getElement(i, i));
+            result.values[i] = (v / R.getElement(i, i));
         }
 
-        return ret;
+        return result;
     }
 
     @Override
@@ -1503,11 +1536,11 @@ public class DenseMatrix
             {
                 if (i == j)
                 {
-                    rows[i].elements()[j] = 1;
+                    this.rows[i].values[j] = 1;
                 }
                 else
                 {
-                    rows[i].elements()[j] = 0;
+                    this.rows[i].values[j] = 0;
                 }
             }
         }
@@ -1522,13 +1555,13 @@ public class DenseMatrix
                 + columnIndex + ") is not within this " + getNumRows() + "x"
                 + getNumColumns() + " matrix");
         }
-        DenseVector ret = new DenseVector(getNumRows());
+        DenseVector result = new DenseVector(getNumRows());
         for (int i = 0; i < getNumRows(); ++i)
         {
-            ret.elements()[i] = rows[i].getElement(columnIndex);
+            result.values[i] = rows[i].getElement(columnIndex);
         }
 
-        return ret;
+        return result;
     }
 
     @Override
@@ -1553,7 +1586,7 @@ public class DenseMatrix
         {
             for (int j = 0; j < getNumColumns(); ++j)
             {
-                rows[i].elements()[j] = v.getElement(i + j
+                this.rows[i].values[j] = v.getElement(i + j
                     * getNumRows());
             }
         }
@@ -1562,24 +1595,24 @@ public class DenseMatrix
     @Override
     final public Vector convertToVector()
     {
-        DenseVector ret = new DenseVector(getNumRows() * getNumColumns());
+        DenseVector result = new DenseVector(getNumRows() * getNumColumns());
 
         for (int i = 0; i < getNumRows(); ++i)
         {
             for (int j = 0; j < getNumColumns(); ++j)
             {
-                ret.elements()[i + j * getNumRows()] = rows[i].elements()[j];
+                result.values[i + j * getNumRows()] = this.rows[i].values[j];
             }
         }
 
-        return ret;
+        return result;
     }
 
     @Override
     public final Vector preTimes(SparseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumRows());
-        DenseVector ret = new DenseVector(getNumColumns());
+        DenseVector result = new DenseVector(getNumColumns());
         vector.compress();
         int[] locs = vector.getIndices();
         double[] vals = vector.getValues();
@@ -1590,17 +1623,17 @@ public class DenseMatrix
             {
                 entry += vals[j] * rows[locs[j]].getElement(i);
             }
-            ret.setElement(i, entry);
+            result.setElement(i, entry);
         }
 
-        return ret;
+        return result;
     }
 
     @Override
     public final Vector preTimes(DenseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumRows());
-        DenseVector ret = new DenseVector(getNumColumns());
+        DenseVector result = new DenseVector(getNumColumns());
         for (int i = 0; i < getNumColumns(); ++i)
         {
             double entry = 0;
@@ -1608,10 +1641,10 @@ public class DenseMatrix
             {
                 entry += vector.getElement(j) * rows[j].getElement(i);
             }
-            ret.setElement(i, entry);
+            result.setElement(i, entry);
         }
 
-        return ret;
+        return result;
     }
 
     /**

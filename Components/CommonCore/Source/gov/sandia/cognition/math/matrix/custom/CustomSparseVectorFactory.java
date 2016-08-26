@@ -24,7 +24,7 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
  * Generates Sparse Vectors with all settings initialized properly
  * 
  * @author Jeremy D. Wendt
- * @since   3.4.3
+ * @since 3.4.4
  */
 public class CustomSparseVectorFactory
     extends VectorFactory<SparseVector>
@@ -34,7 +34,7 @@ public class CustomSparseVectorFactory
 
     @Override
     final public SparseVector copyVector(
-        Vector m)
+        final Vector m)
     {
         if (m instanceof DenseVector)
         {
@@ -47,17 +47,17 @@ public class CustomSparseVectorFactory
 
         // I have to handle non-package vectors
         int n = m.getDimensionality();
-        SparseVector ret = new SparseVector(n);
+        SparseVector result = new SparseVector(n);
         for (int i = 0; i < n; ++i)
         {
-            ret.setElement(i, m.getElement(i));
+            result.setElement(i, m.getElement(i));
         }
-        return ret;
+        return result;
     }
 
     @Override
     final public SparseVector createVector(
-        int dim)
+        final int dim)
     {
         return new SparseVector(dim);
     }
@@ -72,7 +72,7 @@ public class CustomSparseVectorFactory
      */
     @Override
     final public Vector1D createVector1D(
-        double x)
+        final double x)
     {
         return new CustomDenseVectorFactory.DenseVector1D(x);
     }
@@ -87,8 +87,8 @@ public class CustomSparseVectorFactory
      */
     @Override
     final public Vector2D createVector2D(
-        double x,
-        double y)
+        final double x,
+        final double y)
     {
         return new CustomDenseVectorFactory.DenseVector2D(x, y);
     }
@@ -104,9 +104,9 @@ public class CustomSparseVectorFactory
      */
     @Override
     final public Vector3D createVector3D(
-        double x,
-        double y,
-        double z)
+        final double x,
+        final double y,
+        final double z)
     {
         return new CustomDenseVectorFactory.DenseVector3D(x, y, z);
     }

@@ -28,7 +28,7 @@ import java.util.Iterator;
  * method.
  *
  * @author Jeremy D. Wendt
- * @since   3.4.3
+ * @since 3.4.4
  */
 abstract class BaseMatrix
     extends AbstractMatrix
@@ -41,120 +41,124 @@ abstract class BaseMatrix
     {
         super();
     }
-    
+
     @Override
-    final public Matrix plus(Matrix m)
+    final public Matrix plus(
+        final Matrix other)
     {
-        Matrix ret;
+        final Matrix result;
         if (this instanceof DenseMatrix)
         {
-            ret = this.clone();
-            ret.plusEquals(m);
+            result = this.clone();
+            result.plusEquals(other);
         }
-        else if (m instanceof DenseMatrix)
+        else if (other instanceof DenseMatrix)
         {
-            ret = m.clone();
-            ret.plusEquals(this);
+            result = other.clone();
+            result.plusEquals(this);
         }
         else if (this instanceof SparseMatrix)
         {
-            ret = this.clone();
-            ret.plusEquals(m);
+            result = this.clone();
+            result.plusEquals(other);
         }
-        else if (m instanceof SparseMatrix)
+        else if (other instanceof SparseMatrix)
         {
-            ret = m.clone();
-            ret.plusEquals(this);
+            result = other.clone();
+            result.plusEquals(this);
         }
-        else if (this instanceof DiagonalMatrix && m instanceof DiagonalMatrix)
+        else if (this instanceof DiagonalMatrix && other instanceof DiagonalMatrix)
         {
-            ret = this.clone();
-            ret.plusEquals(m);
+            result = this.clone();
+            result.plusEquals(other);
         }
         else
         {
-            ret = this.clone();
-            ret.plusEquals(m);
+            result = this.clone();
+            result.plusEquals(other);
         }
-        return ret;
+        return result;
     }
 
     @Override
-    final public Matrix minus(Matrix m)
+    final public Matrix minus(
+        final Matrix other)
     {
-        Matrix ret;
+        final Matrix result;
         if (this instanceof DenseMatrix)
         {
-            ret = this.clone();
-            ret.minusEquals(m);
+            result = this.clone();
+            result.minusEquals(other);
         }
-        else if (m instanceof DenseMatrix)
+        else if (other instanceof DenseMatrix)
         {
-            ret = m.negative();
-            ret.plusEquals(this);
+            result = other.negative();
+            result.plusEquals(this);
         }
         else if (this instanceof SparseMatrix)
         {
-            ret = this.clone();
-            ret.minusEquals(m);
+            result = this.clone();
+            result.minusEquals(other);
         }
-        else if (m instanceof SparseMatrix)
+        else if (other instanceof SparseMatrix)
         {
-            ret = m.negative();
-            ret.plusEquals(this);
+            result = other.negative();
+            result.plusEquals(this);
         }
-        else if (this instanceof DiagonalMatrix && m instanceof DiagonalMatrix)
+        else if (this instanceof DiagonalMatrix && other instanceof DiagonalMatrix)
         {
-            ret = this.clone();
-            ret.minusEquals(m);
+            result = this.clone();
+            result.minusEquals(other);
         }
         else
         {
-            ret = this.clone();
-            ret.minusEquals(m);
+            result = this.clone();
+            result.minusEquals(other);
         }
-        return ret;
+        return result;
     }
 
     @Override
-    final public Matrix dotTimes(Matrix m)
+    final public Matrix dotTimes(
+        final Matrix other)
     {
-        Matrix ret;
+        final Matrix result;
         if (this instanceof DiagonalMatrix)
         {
-            ret = this.clone();
-            ret.dotTimesEquals(m);
+            result = this.clone();
+            result.dotTimesEquals(other);
         }
-        else if (m instanceof DiagonalMatrix)
+        else if (other instanceof DiagonalMatrix)
         {
-            ret = m.clone();
-            ret.dotTimesEquals(this);
+            result = other.clone();
+            result.dotTimesEquals(this);
         }
         else if (this instanceof SparseMatrix)
         {
-            ret = this.clone();
-            ret.dotTimesEquals(m);
+            result = this.clone();
+            result.dotTimesEquals(other);
         }
-        else if (m instanceof SparseMatrix)
+        else if (other instanceof SparseMatrix)
         {
-            ret = m.clone();
-            ret.dotTimesEquals(this);
+            result = other.clone();
+            result.dotTimesEquals(this);
         }
-        else if (this instanceof DenseMatrix && m instanceof DenseMatrix)
+        else if (this instanceof DenseMatrix && other instanceof DenseMatrix)
         {
-            ret = this.clone();
-            ret.dotTimesEquals(m);
+            result = this.clone();
+            result.dotTimesEquals(other);
         }
         else
         {
-            ret = this.clone();
-            ret.dotTimesEquals(m);
+            result = this.clone();
+            result.dotTimesEquals(other);
         }
-        return ret;
+        return result;
     }
 
     @Override
-    final public void plusEquals(Matrix other)
+    final public void plusEquals(
+        final Matrix other)
     {
         if (other instanceof DiagonalMatrix)
         {
@@ -180,7 +184,8 @@ abstract class BaseMatrix
      *
      * @param other A sparse matrix to add to this
      */
-    public abstract void plusEquals(SparseMatrix other);
+    public abstract void plusEquals(
+        final SparseMatrix other);
 
     /**
      * Type-specific version of plusEquals for combining whatever type this is
@@ -188,7 +193,8 @@ abstract class BaseMatrix
      *
      * @param other A dense matrix to add to this
      */
-    public abstract void plusEquals(DenseMatrix other);
+    public abstract void plusEquals(
+        final DenseMatrix other);
 
     /**
      * Type-specific version of plusEquals for combining whatever type this is
@@ -196,11 +202,13 @@ abstract class BaseMatrix
      *
      * @param other A diagonal matrix to add to this
      */
-    public abstract void plusEquals(DiagonalMatrix other);
+    public abstract void plusEquals(
+        final DiagonalMatrix other);
 
     @Override
-    final public void scaledPlusEquals(double scaleFactor,
-        Matrix other)
+    final public void scaledPlusEquals(
+        final double scaleFactor,
+        final Matrix other)
     {
         if (other instanceof DiagonalMatrix)
         {
@@ -227,8 +235,9 @@ abstract class BaseMatrix
      * @param other A sparse matrix to add to this
      * @param scaleFactor The amount to scale other by
      */
-    public abstract void scaledPlusEquals(SparseMatrix other,
-        double scaleFactor);
+    public abstract void scaledPlusEquals(
+        final SparseMatrix other,
+        final double scaleFactor);
 
     /**
      * Type-specific version of scaledPlusEquals for combining whatever type
@@ -237,8 +246,9 @@ abstract class BaseMatrix
      * @param other A dense matrix to add to this
      * @param scaleFactor The amount to scale other by
      */
-    public abstract void scaledPlusEquals(DenseMatrix other,
-        double scaleFactor);
+    public abstract void scaledPlusEquals(
+        final DenseMatrix other,
+        final double scaleFactor);
 
     /**
      * Type-specific version of scaledPlusEquals for combining whatever type
@@ -247,11 +257,13 @@ abstract class BaseMatrix
      * @param other A diagonal matrix to add to this
      * @param scaleFactor The amount to scale other by
      */
-    public abstract void scaledPlusEquals(DiagonalMatrix other,
-        double scaleFactor);
+    public abstract void scaledPlusEquals(
+        final DiagonalMatrix other,
+        final double scaleFactor);
 
     @Override
-    final public void minusEquals(Matrix other)
+    final public void minusEquals(
+        final Matrix other)
     {
         if (other instanceof DiagonalMatrix)
         {
@@ -277,7 +289,8 @@ abstract class BaseMatrix
      *
      * @param other A sparse matrix to subtract from this
      */
-    public abstract void minusEquals(SparseMatrix other);
+    public abstract void minusEquals(
+        final SparseMatrix other);
 
     /**
      * Type-specific version of minusEquals for combining whatever type this is
@@ -285,7 +298,8 @@ abstract class BaseMatrix
      *
      * @param other A dense matrix to subtract from this
      */
-    public abstract void minusEquals(DenseMatrix other);
+    public abstract void minusEquals(
+        final DenseMatrix other);
 
     /**
      * Type-specific version of minusEquals for combining whatever type this is
@@ -293,10 +307,12 @@ abstract class BaseMatrix
      *
      * @param other A diagonal matrix to subtract from this
      */
-    public abstract void minusEquals(DiagonalMatrix other);
+    public abstract void minusEquals(
+        final DiagonalMatrix other);
 
     @Override
-    final public void dotTimesEquals(Matrix other)
+    final public void dotTimesEquals(
+        final Matrix other)
     {
         if (other instanceof DiagonalMatrix)
         {
@@ -322,7 +338,8 @@ abstract class BaseMatrix
      *
      * @param other A sparse matrix to dot with this
      */
-    public abstract void dotTimesEquals(SparseMatrix other);
+    public abstract void dotTimesEquals(
+        final SparseMatrix other);
 
     /**
      * Type-specific version of dotTimesEquals for combining whatever type this
@@ -330,7 +347,8 @@ abstract class BaseMatrix
      *
      * @param other A dense matrix to dot with this
      */
-    public abstract void dotTimesEquals(DenseMatrix other);
+    public abstract void dotTimesEquals(
+        final DenseMatrix other);
 
     /**
      * Type-specific version of dotTimesEquals for combining whatever type this
@@ -338,26 +356,28 @@ abstract class BaseMatrix
      *
      * @param other A diagonal matrix to dot with this
      */
-    public abstract void dotTimesEquals(DiagonalMatrix other);
+    public abstract void dotTimesEquals(
+        final DiagonalMatrix other);
 
     @Override
-    final public Matrix times(Matrix matrix)
+    final public Matrix times(
+        final Matrix other)
     {
-        if (matrix instanceof DiagonalMatrix)
+        if (other instanceof DiagonalMatrix)
         {
-            return this.times((DiagonalMatrix) matrix);
+            return this.times((DiagonalMatrix) other);
         }
-        else if (matrix instanceof DenseMatrix)
+        else if (other instanceof DenseMatrix)
         {
-            return this.times((DenseMatrix) matrix);
+            return this.times((DenseMatrix) other);
         }
-        else if (matrix instanceof SparseMatrix)
+        else if (other instanceof SparseMatrix)
         {
-            return this.times((SparseMatrix) matrix);
+            return this.times((SparseMatrix) other);
         }
         else
         {
-            return super.times(matrix);
+            return super.times(other);
         }
     }
 
@@ -367,7 +387,8 @@ abstract class BaseMatrix
      *
      * @param other A sparse matrix to multiply with this
      */
-    public abstract Matrix times(SparseMatrix other);
+    public abstract Matrix times(
+        final SparseMatrix other);
 
     /**
      * Type-specific version of times for combining whatever type this is with
@@ -375,7 +396,8 @@ abstract class BaseMatrix
      *
      * @param other A dense matrix to multiply with this
      */
-    public abstract Matrix times(DenseMatrix other);
+    public abstract Matrix times(
+        final DenseMatrix other);
 
     /**
      * Type-specific version of times for combining whatever type this is with
@@ -383,10 +405,12 @@ abstract class BaseMatrix
      *
      * @param other A diagonal matrix to multiply with this
      */
-    public abstract Matrix times(DiagonalMatrix other);
+    public abstract Matrix times(
+        final DiagonalMatrix other);
 
     @Override
-    final public Vector times(Vector vector)
+    final public Vector times(
+        final Vector vector)
     {
         if (vector instanceof DenseVector)
         {
@@ -408,7 +432,8 @@ abstract class BaseMatrix
      *
      * @param vector A sparse vector to multiply with this
      */
-    public abstract Vector times(SparseVector vector);
+    public abstract Vector times(
+        final SparseVector vector);
 
     /**
      * Type-specific version of times for combining whatever type this is with
@@ -416,7 +441,8 @@ abstract class BaseMatrix
      *
      * @param vector A dense vector to multiply with this
      */
-    public abstract Vector times(DenseVector vector);
+    public abstract Vector times(
+        final DenseVector vector);
 
     /**
      * Package-private method that puts the vector * matrix code in the matrix
@@ -428,7 +454,8 @@ abstract class BaseMatrix
      * @throws DimensionalityMismatchException if the input vectors's dimensions
      * doesn't match this's numRows.
      */
-    public final Vector preTimes(Vector vector)
+    public final Vector preTimes(
+        final Vector vector)
     {
         if (vector instanceof DenseVector)
         {
@@ -446,7 +473,7 @@ abstract class BaseMatrix
                 this.getNumColumns());
             for (final MatrixEntry entry : this)
             {
-                result.increment(entry.getColumnIndex(), 
+                result.increment(entry.getColumnIndex(),
                     entry.getValue() * vector.get(entry.getRowIndex()));
             }
             return result;
@@ -459,7 +486,8 @@ abstract class BaseMatrix
      *
      * @param vector A sparse vector to multiply with this
      */
-    public abstract Vector preTimes(SparseVector vector);
+    public abstract Vector preTimes(
+        final SparseVector vector);
 
     /**
      * Type-specific version of pre-times for combining whatever type this is
@@ -467,7 +495,8 @@ abstract class BaseMatrix
      *
      * @param vector A dense vector to multiply with this
      */
-    public abstract Vector preTimes(DenseVector vector);
+    public abstract Vector preTimes(
+        final DenseVector vector);
 
     /**
      * Helper method checks that the input submatrix range is acceptable for
@@ -481,10 +510,11 @@ abstract class BaseMatrix
      * @throws ArrayIndexOutOfBoundsException if the input range is illegal or
      * outside the bounds of this.
      */
-    final protected void checkSubmatrixRange(int minRow,
-        int maxRow,
-        int minCol,
-        int maxCol)
+    final protected void checkSubmatrixRange(
+        final int minRow,
+        final int maxRow,
+        final int minCol,
+        final int maxCol)
     {
         if (maxRow < minRow || maxCol < minCol || minRow < 0 || minCol < 0
             || maxRow
@@ -503,7 +533,8 @@ abstract class BaseMatrix
      * @throws IllegalArgumentException if the input's size doesn't match this's
      * numRows
      */
-    final protected void checkSolveDimensions(Vector b)
+    final protected void checkSolveDimensions(
+        final Vector b)
     {
         if (b.getDimensionality() != this.getNumRows())
         {
@@ -522,7 +553,8 @@ abstract class BaseMatrix
      * @throws IllegalArgumentException if the input's size doesn't match this's
      * numRows
      */
-    final protected void checkSolveDimensions(Matrix b)
+    final protected void checkSolveDimensions(
+        final Matrix b)
     {
         if (b.getNumRows() != this.getNumRows())
         {
@@ -534,7 +566,8 @@ abstract class BaseMatrix
     }
 
     @Override
-    final public String toString(NumberFormat format)
+    final public String toString(
+        final NumberFormat format)
     {
         StringBuilder sb = new StringBuilder();
         int m = getNumRows();

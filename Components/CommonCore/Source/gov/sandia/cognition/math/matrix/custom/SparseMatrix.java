@@ -310,7 +310,7 @@ public class SparseMatrix
             firstIndicesForRows[i] = idx;
             for (int j = 0; j < numCols; ++j)
             {
-                double val = d.row(i).elements()[j];
+                double val = d.row(i).values[j];
                 if (val != 0)
                 {
                     values[idx] = val;
@@ -862,13 +862,13 @@ public class SparseMatrix
      */
     private static int[] getZeroToNMinusOneArray(int n)
     {
-        int[] ret = new int[n];
+        int[] result = new int[n];
         for (int i = 0; i < n; ++i)
         {
-            ret[i] = i;
+            result[i] = i;
         }
 
-        return ret;
+        return result;
     }
 
     /**
@@ -1282,7 +1282,7 @@ public class SparseMatrix
         {
             other.compress();
         }
-        DenseMatrix ret = new DenseMatrix(getNumRows(), other.getNumColumns(),
+        DenseMatrix result = new DenseMatrix(getNumRows(), other.getNumColumns(),
             true);
         for (int i = 0; i < getNumRows(); ++i)
         {
@@ -1292,19 +1292,19 @@ public class SparseMatrix
                 for (int k = other.firstIndicesForRows[columnIndices[j]]; k
                     < other.firstIndicesForRows[columnIndices[j] + 1]; ++k)
                 {
-                    row.elements()[other.columnIndices[k]] += other.values[k] * values[j];
+                    row.values[other.columnIndices[k]] += other.values[k] * values[j];
                 }
             }
-            ret.setRow(i, row);
+            result.setRow(i, row);
         }
 
-        if (ret.percentNonzero() < SparseVector.SPARSE_TO_DENSE_THRESHOLD)
+        if (result.percentNonzero() < SparseVector.SPARSE_TO_DENSE_THRESHOLD)
         {
-            return new SparseMatrix(ret);
+            return new SparseMatrix(result);
         }
         else
         {
-            return ret;
+            return result;
         }
     }
 
@@ -1322,7 +1322,7 @@ public class SparseMatrix
         {
             compress();
         }
-        DenseMatrix ret = new DenseMatrix(getNumRows(), other.getNumColumns());
+        DenseMatrix result = new DenseMatrix(getNumRows(), other.getNumColumns());
         int curRow = 0;
         for (int i = 0; i < values.length; ++i)
         {
@@ -1332,12 +1332,12 @@ public class SparseMatrix
             }
             for (int j = 0; j < other.getNumColumns(); ++j)
             {
-                ret.row(curRow).elements()[j] += values[i]
-                    * other.row(columnIndices[i]).elements()[j];
+                result.row(curRow).values[j] += values[i]
+                    * other.row(columnIndices[i]).values[j];
             }
         }
 
-        return ret;
+        return result;
     }
 
     /**
@@ -1354,17 +1354,17 @@ public class SparseMatrix
         {
             compress();
         }
-        SparseMatrix ret = new SparseMatrix(getNumRows(), getNumColumns());
-        ret.columnIndices = Arrays.copyOf(columnIndices, columnIndices.length);
-        ret.firstIndicesForRows = Arrays.copyOf(firstIndicesForRows,
+        SparseMatrix result = new SparseMatrix(getNumRows(), getNumColumns());
+        result.columnIndices = Arrays.copyOf(columnIndices, columnIndices.length);
+        result.firstIndicesForRows = Arrays.copyOf(firstIndicesForRows,
             firstIndicesForRows.length);
-        ret.values = new double[values.length];
+        result.values = new double[values.length];
         for (int i = 0; i < values.length; ++i)
         {
-            ret.values[i] = values[i] * other.getElement(columnIndices[i], columnIndices[i]);
+            result.values[i] = values[i] * other.getElement(columnIndices[i], columnIndices[i]);
         }
 
-        return ret;
+        return result;
     }
 
     /**
@@ -1385,11 +1385,11 @@ public class SparseMatrix
         {
             compress();
         }
-        SparseMatrix ret = new SparseMatrix(getNumRows(), getNumColumns());
-        ret.columnIndices = Arrays.copyOf(columnIndices, columnIndices.length);
-        ret.firstIndicesForRows = Arrays.copyOf(firstIndicesForRows,
+        SparseMatrix result = new SparseMatrix(getNumRows(), getNumColumns());
+        result.columnIndices = Arrays.copyOf(columnIndices, columnIndices.length);
+        result.firstIndicesForRows = Arrays.copyOf(firstIndicesForRows,
             firstIndicesForRows.length);
-        ret.values = new double[values.length];
+        result.values = new double[values.length];
         int curRow = 0;
         for (int i = 0; i < values.length; ++i)
         {
@@ -1397,10 +1397,10 @@ public class SparseMatrix
             {
                 ++curRow;
             }
-            ret.values[i] = values[i] * other.getElement(curRow, curRow);
+            result.values[i] = values[i] * other.getElement(curRow, curRow);
         }
 
-        return ret;
+        return result;
     }
 
     /**
@@ -1423,14 +1423,14 @@ public class SparseMatrix
             vector.compress();
         }
 
-        DenseVector ret = new DenseVector(numRows);
+        DenseVector result = new DenseVector(numRows);
 
         int idx;
         int[] vLocs = vector.getIndices();
         double[] vVals = vector.getValues();
         for (int i = 0; i < numRows; ++i)
         {
-            ret.elements()[i] = 0;
+            result.values[i] = 0;
             idx = 0;
             // For all non-zero elements on this row of the matrix
             for (int j = firstIndicesForRows[i]; j < firstIndicesForRows[i + 1]; ++j)
@@ -1454,11 +1454,11 @@ public class SparseMatrix
                     continue;
                 }
                 // You only reach here if they are at the same location
-                ret.elements()[i] += values[j] * vVals[idx];
+                result.values[i] += values[j] * vVals[idx];
             }
         }
 
-        return new SparseVector(ret);
+        return new SparseVector(result);
     }
 
     /**
@@ -1478,18 +1478,18 @@ public class SparseMatrix
             compress();
         }
 
-        DenseVector ret = new DenseVector(numRows);
+        DenseVector result = new DenseVector(numRows);
 
         for (int i = 0; i < numRows; ++i)
         {
-            ret.elements()[i] = 0;
+            result.values[i] = 0;
             for (int j = firstIndicesForRows[i]; j < firstIndicesForRows[i + 1]; ++j)
             {
-                ret.elements()[i] += values[j] * vector.elements()[columnIndices[j]];
+                result.values[i] += values[j] * vector.values[columnIndices[j]];
             }
         }
 
-        return ret;
+        return result;
     }
 
     /**
@@ -1657,7 +1657,7 @@ public class SparseMatrix
             compress();
         }
 
-        SparseMatrix ret = new SparseMatrix(maxRow - minRow + 1, maxColumn
+        SparseMatrix result = new SparseMatrix(maxRow - minRow + 1, maxColumn
             - minColumn + 1, true);
         // First, count the number of elements in the new output
         int nnz = 0;
@@ -1671,29 +1671,29 @@ public class SparseMatrix
                 }
             }
         }
-        // Initialize the compressed Yale format in ret
-        ret.values = new double[nnz];
-        ret.columnIndices = new int[nnz];
-        ret.firstIndicesForRows = new int[ret.numRows + 1];
+        // Initialize the compressed Yale format in result
+        result.values = new double[nnz];
+        result.columnIndices = new int[nnz];
+        result.firstIndicesForRows = new int[result.numRows + 1];
         // Load in the values from this
         int idx = 0;
         for (int i = minRow; i <= maxRow; ++i)
         {
-            ret.rows[i - minRow] = new SparseVector(ret.numCols);
-            ret.firstIndicesForRows[i - minRow] = idx;
+            result.rows[i - minRow] = new SparseVector(result.numCols);
+            result.firstIndicesForRows[i - minRow] = idx;
             for (int j = firstIndicesForRows[i]; j < firstIndicesForRows[i + 1]; ++j)
             {
                 if (columnIndices[j] >= minColumn && columnIndices[j] <= maxColumn)
                 {
-                    ret.values[idx] = values[j];
-                    ret.columnIndices[idx] = columnIndices[j] - minColumn;
+                    result.values[idx] = values[j];
+                    result.columnIndices[idx] = columnIndices[j] - minColumn;
                     ++idx;
                 }
             }
         }
-        ret.firstIndicesForRows[maxRow - minRow + 1] = idx;
+        result.firstIndicesForRows[maxRow - minRow + 1] = idx;
 
-        return ret;
+        return result;
     }
 
     /**
@@ -1801,7 +1801,7 @@ public class SparseMatrix
     @Override
     final public Matrix transpose()
     {
-        SparseMatrix ret = new SparseMatrix(numCols, numRows);
+        SparseMatrix result = new SparseMatrix(numCols, numRows);
         if (!isCompressed())
         {
             compress();
@@ -1814,10 +1814,10 @@ public class SparseMatrix
             {
                 ++rowNum;
             }
-            ret.setElement(columnIndices[i], rowNum, values[i]);
+            result.setElement(columnIndices[i], rowNum, values[i]);
         }
 
-        return ret;
+        return result;
     }
 
     /**
@@ -1929,12 +1929,12 @@ public class SparseMatrix
         {
             compress();
         }
-        double ret = 0;
+        double result = 0;
         for (int i = 0; i < values.length; ++i)
         {
-            ret += values[i] * values[i];
+            result += values[i] * values[i];
         }
-        return ret;
+        return result;
     }
 
     /**
@@ -2056,13 +2056,13 @@ public class SparseMatrix
         {
             compress();
         }
-        SparseVector ret = new SparseVector(numRows);
+        SparseVector result = new SparseVector(numRows);
         for (int i = 0; i < numRows; ++i)
         {
-            ret.setElement(i, getElement(i, columnIndex));
+            result.setElement(i, getElement(i, columnIndex));
         }
 
-        return ret;
+        return result;
     }
 
     @Override
@@ -2072,17 +2072,17 @@ public class SparseMatrix
         {
             compress();
         }
-        DenseVector ret = new DenseVector(numRows);
+        DenseVector result = new DenseVector(numRows);
         for (int i = 0; i < numRows; ++i)
         {
-            ret.elements()[i] = 0;
+            result.values[i] = 0;
             for (int j = firstIndicesForRows[i]; j < firstIndicesForRows[i + 1]; ++j)
             {
-                ret.elements()[i] += values[j];
+                result.values[i] += values[j];
             }
         }
 
-        return ret;
+        return result;
     }
 
     @Override
@@ -2092,16 +2092,16 @@ public class SparseMatrix
         {
             compress();
         }
-        DenseVector ret = new DenseVector(numCols);
+        DenseVector result = new DenseVector(numCols);
         for (int i = 0; i < numRows; ++i)
         {
             for (int j = firstIndicesForRows[i]; j < firstIndicesForRows[i + 1]; ++j)
             {
-                ret.elements()[columnIndices[j]] += values[j];
+                result.values[columnIndices[j]] += values[j];
             }
         }
 
-        return ret;
+        return result;
     }
 
     /**
@@ -2121,13 +2121,13 @@ public class SparseMatrix
         }
         else
         {
-            SparseVector ret = new SparseVector(numCols);
+            SparseVector result = new SparseVector(numCols);
             for (int i = firstIndicesForRows[rowIndex]; i
                 < firstIndicesForRows[rowIndex + 1]; ++i)
             {
-                ret.setElement(columnIndices[i], values[i]);
+                result.setElement(columnIndices[i], values[i]);
             }
-            return ret;
+            return result;
         }
     }
 
@@ -2190,7 +2190,7 @@ public class SparseMatrix
     @Override
     final public Vector convertToVector()
     {
-        SparseVector ret = new SparseVector(numRows * numCols);
+        SparseVector result = new SparseVector(numRows * numCols);
         if (isCompressed())
         {
             for (int i = 0; i < numRows; ++i)
@@ -2199,7 +2199,7 @@ public class SparseMatrix
                     < firstIndicesForRows[i + 1];
                     ++j)
                 {
-                    ret.setElement(i + columnIndices[j] * numRows, values[j]);
+                    result.setElement(i + columnIndices[j] * numRows, values[j]);
                 }
             }
         }
@@ -2210,12 +2210,12 @@ public class SparseMatrix
                 rows[i].compress();
                 for (int j = 0; j < rows[i].getIndices().length; ++j)
                 {
-                    ret.setElement(i + rows[i].getIndices()[j] * numRows,
+                    result.setElement(i + rows[i].getIndices()[j] * numRows,
                         rows[i].getValues()[j]);
                 }
             }
         }
-        return ret;
+        return result;
     }
 
     /**
@@ -2388,7 +2388,7 @@ public class SparseMatrix
         @Override
         public MatrixEntry next()
         {
-            ReadOnlySparseMatrixEntry ret
+            ReadOnlySparseMatrixEntry result
                 = new ReadOnlySparseMatrixEntry(rowIdx, columnValueIndex);
             columnValueIndex++;
             // If there are no-entry rows, we need to skip past them
@@ -2400,7 +2400,7 @@ public class SparseMatrix
                 }
             }
 
-            return ret;
+            return result;
         }
 
         @Override
@@ -2473,19 +2473,19 @@ public class SparseMatrix
         {
             compress();
         }
-        SparseVector ret = new SparseVector(getNumColumns());
+        SparseVector result = new SparseVector(getNumColumns());
         vector.compress();
         for (int j = 0; j < vector.getIndices().length; ++j)
         {
             for (int i = firstIndicesForRows[vector.getIndices()[j]]; i
                 < firstIndicesForRows[vector.getIndices()[j] + 1]; ++i)
             {
-                ret.setElement(columnIndices[i], ret.getElement(columnIndices[i])
+                result.setElement(columnIndices[i], result.getElement(columnIndices[i])
                     + values[i] * vector.getValues()[j]);
             }
         }
 
-        return ret;
+        return result;
     }
 
     /**
@@ -2503,7 +2503,7 @@ public class SparseMatrix
         {
             compress();
         }
-        DenseVector ret = new DenseVector(getNumColumns());
+        DenseVector result = new DenseVector(getNumColumns());
         int row = 0;
         for (int i = 0; i < values.length; ++i)
         {
@@ -2511,11 +2511,11 @@ public class SparseMatrix
             {
                 ++row;
             }
-            ret.setElement(columnIndices[i], ret.getElement(columnIndices[i])
+            result.setElement(columnIndices[i], result.getElement(columnIndices[i])
                 + vector.getElement(row) * values[i]);
         }
 
-        return ret;
+        return result;
     }
 
     /**

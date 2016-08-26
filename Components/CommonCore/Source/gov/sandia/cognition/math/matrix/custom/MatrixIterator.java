@@ -79,7 +79,7 @@ class MatrixIterator
         }
 
         // Get the current value
-        BaseMatrixEntry ret = new BaseMatrixEntry(matrix, rowIndex, columnIndex);
+        BaseMatrixEntry result = new BaseMatrixEntry(matrix, rowIndex, columnIndex);
         // Go to the next value
         ++columnIndex;
         // Roll to the next row
@@ -89,7 +89,7 @@ class MatrixIterator
             ++rowIndex;
         }
 
-        return ret;
+        return result;
     }
 
     /**

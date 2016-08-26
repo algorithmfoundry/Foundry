@@ -20,7 +20,7 @@ import gov.sandia.cognition.math.matrix.MatrixFactory;
  * Factory for Sparse Matrices.
  * 
  * @author Jeremy D. Wendt
- * @since   3.4.3
+ * @since   3.4.4
  */
 public class CustomSparseMatrixFactory
     extends MatrixFactory<SparseMatrix>
@@ -39,7 +39,7 @@ public class CustomSparseMatrixFactory
      */
     @Override
     final public SparseMatrix copyMatrix(
-        Matrix m)
+        final Matrix m)
     {
         if (m instanceof SparseMatrix)
         {
@@ -55,9 +55,9 @@ public class CustomSparseMatrixFactory
         }
 
         // I have to handle other matrix types
-        SparseMatrix ret = new SparseMatrix(m.getNumRows(), m.getNumColumns());
-        ret.convertFromVector(m.convertToVector());
-        return ret;
+        SparseMatrix result = new SparseMatrix(m.getNumRows(), m.getNumColumns());
+        result.convertFromVector(m.convertToVector());
+        return result;
     }
 
     /**
@@ -69,8 +69,8 @@ public class CustomSparseMatrixFactory
      */
     @Override
     final public SparseMatrix createMatrix(
-        int numRows,
-        int numColumns)
+        final int numRows,
+        final int numColumns)
     {
         return new SparseMatrix(numRows, numColumns);
     }
