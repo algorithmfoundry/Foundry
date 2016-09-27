@@ -248,7 +248,8 @@ public class ParallelUtilTest
         ThreadPoolExecutor threadPool = ParallelUtil.createThreadPool();
         assertEquals( num, ParallelUtil.getNumThreads( threadPool ) );
         
-        ParallelUtil.setDefaultNumThreads(ParallelUtil.OPTIMAL_THREADS);
+        // Set value back to normal default in case this test runs before others
+        ParallelUtil.setDefaultNumThreads( ParallelUtil.OPTIMAL_THREADS );
         
     }
     

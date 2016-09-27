@@ -2,7 +2,6 @@ package gov.sandia.cognition.statistics;
 
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
-import gov.sandia.cognition.math.matrix.mtj.DenseVector;
 import gov.sandia.cognition.statistics.TransferEntropy.TransferEntropyDistributionObject;
 import gov.sandia.cognition.statistics.TransferEntropy.TransferEntropyPartialSumObject;
 import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
@@ -27,7 +26,7 @@ public class TransferEntropyTest
     @Test
     public void testComputeTE()
     {
-        VectorFactory vectorFactory = VectorFactory.getDenseDefault();
+        VectorFactory<? extends Vector> vectorFactory = VectorFactory.getDenseDefault();
         final double[] value1 = {1,0,0,1,0,0,0,1,0,0};
         Vector vector1 = vectorFactory.copyArray(value1);
         final double[] value2 = {0,1,0,0,1,0,0,0,1,0};
@@ -130,7 +129,7 @@ public class TransferEntropyTest
     @Test
     public void testComputeTEWithPartialSums()
     {
-        VectorFactory vectorFactory = VectorFactory.getDenseDefault();
+        VectorFactory<? extends Vector> vectorFactory = VectorFactory.getDenseDefault();
         double[] value1 = {1,0,0,1,0,0,0,1,0,0};
         Vector vector1 = vectorFactory.copyArray(value1);
         double[] value2 = {0,1,0,0,1,0,0,0,1,0};

@@ -45,7 +45,7 @@ public class DefaultClusterCreator<DataType>
      * @return  A new cluster from the given members.
      */
     public DefaultCluster<DataType> createCluster(
-        final Collection<DataType> members)
+        final Collection<? extends DataType> members)
     {
         if (members == null)
         {

@@ -83,7 +83,7 @@ public class GaussianClusterCreator
      *         a MultivariateGaussian.
      */
     public GaussianCluster createCluster(
-        Collection<Vector> members)
+        Collection<? extends Vector> members)
     {
         // Generate a gaussian from the data.
         MultivariateGaussian.PDF gaussian =
