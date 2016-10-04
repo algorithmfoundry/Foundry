@@ -237,8 +237,9 @@ public class SparseMatrix
      * @param numRows The number of rows in the matrix
      * @param numCols The number of columns in the matrix
      */
-    public SparseMatrix(int numRows,
-        int numCols)
+    public SparseMatrix(
+        final int numRows,
+        final int numCols)
     {
         this.numCols = numCols;
         this.numRows = numRows;
@@ -259,14 +260,15 @@ public class SparseMatrix
      *
      * @param m The sparse matrix to copy
      */
-    public SparseMatrix(SparseMatrix m)
+    public SparseMatrix(
+        final SparseMatrix m)
     {
         this.numCols = m.getNumColumns();
         this.numRows = m.getNumRows();
         rows = new SparseVector[m.rows.length];
         if (m.isCompressed())
         {
-            for (int i = 0; i < getNumRows(); ++i)
+            for (int i = 0; i < this.numRows; ++i)
             {
                 rows[i] = new SparseVector(m.numCols);
             }
@@ -277,7 +279,7 @@ public class SparseMatrix
         }
         else
         {
-            for (int i = 0; i < getNumRows(); ++i)
+            for (int i = 0; i < this.numRows; ++i)
             {
                 rows[i] = new SparseVector(m.rows[i]);
             }
@@ -294,7 +296,8 @@ public class SparseMatrix
      *
      * @param d The dense matrix to copy
      */
-    public SparseMatrix(DenseMatrix d)
+    public SparseMatrix(
+        final DenseMatrix d)
     {
         int nnz = d.numNonZero();
         this.numCols = d.getNumColumns();
@@ -330,18 +333,19 @@ public class SparseMatrix
      *
      * @param d The diagonal matrix to copy
      */
-    public SparseMatrix(DiagonalMatrix d)
+    public SparseMatrix(
+        final DiagonalMatrix d)
     {
+        this.numCols = d.getNumColumns();
+        this.numRows = d.getNumRows();
         int nnz = 0;
-        for (int i = 0; i < d.getNumRows(); ++i)
+        for (int i = 0; i < this.numRows; ++i)
         {
             if (d.getElement(i, i) != 0)
             {
                 ++nnz;
             }
         }
-        this.numCols = d.getNumColumns();
-        this.numRows = d.getNumRows();
         rows = new SparseVector[numRows];
         values = new double[nnz];
         firstIndicesForRows = new int[numRows + 1];
@@ -373,9 +377,10 @@ public class SparseMatrix
      * @param unused Only present to differentiate from the other full
      * constructor
      */
-    SparseMatrix(int numRows,
-        int numCols,
-        boolean unused)
+    SparseMatrix(
+        final int numRows,
+        final int numCols,
+        final boolean unused)
     {
         this.numCols = numCols;
         this.numRows = numRows;
@@ -412,7 +417,7 @@ public class SparseMatrix
         clone.rows = new SparseVector[this.rows.length];
         if (this.isCompressed())
         {
-            for (int i = 0; i < getNumRows(); ++i)
+            for (int i = 0; i < this.numRows; ++i)
             {
                 clone.rows[i] = new SparseVector(this.numCols);
             }
@@ -423,7 +428,7 @@ public class SparseMatrix
         }
         else
         {
-            for (int i = 0; i < getNumRows(); ++i)
+            for (int i = 0; i < this.numRows; ++i)
             {
                 clone.rows[i] = new SparseVector(this.rows[i]);
             }
@@ -495,14 +500,15 @@ public class SparseMatrix
      * @return The number of non-zero elements expected by the operation and the
      * location of the elements.
      */
-    private int getNumNonZeroWhenCombinedWith(int[] otherColIds,
-        int[] otherFirstInRows,
-        Combiner combiner)
+    private int getNumNonZeroWhenCombinedWith(
+        final int[] otherColIds,
+        final int[] otherFirstInRows,
+        final Combiner combiner)
     {
         int nnz = 0;
         int myidx, otheridx;
         // This assumes none of the entries combine together to 0
-        for (int i = 0; i < getNumRows(); ++i)
+        for (int i = 0; i < this.numRows; ++i)
         {
             // Counters for me and other on this row
             myidx = firstIndicesForRows[i];
@@ -572,16 +578,17 @@ public class SparseMatrix
      * @param scaleOtherBy The scalar to multiply the other's values by before
      * summing.
      */
-    private void plusEqualsScaled(int[] colIdxsOut,
-        int[] firstInRowsOut,
-        double[] valsOut,
-        SparseMatrix other,
-        double scaleOtherBy)
+    private void plusEqualsScaled(
+        final int[] colIdxsOut,
+        final int[] firstInRowsOut,
+        final double[] valsOut,
+        final SparseMatrix other,
+        final double scaleOtherBy)
     {
         int newidx = 0;
         int myctr, otherctr;
         // For all rows
-        for (int i = 0; i < getNumRows(); ++i)
+        for (int i = 0; i < this.numRows; ++i)
         {
             // The first index for the row is the current idx
             firstInRowsOut[i] = newidx;
@@ -646,8 +653,9 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    public void scaledPlusEquals(SparseMatrix other,
-        double scaleFactor)
+    public void scaledPlusEquals(
+        final SparseMatrix other,
+        final double scaleFactor)
     {
         this.assertSameDimensions(other);
         if (!isCompressed())
@@ -683,8 +691,9 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    public void scaledPlusEquals(DenseMatrix other,
-        double scaleFactor)
+    public void scaledPlusEquals(
+        final DenseMatrix other,
+        final double scaleFactor)
     {
         this.assertSameDimensions(other);
         
@@ -715,11 +724,11 @@ public class SparseMatrix
             }
             row.setElement(columnIndices[i], row.getElement(columnIndices[i]) + values[i]);
         }
-        while (rowNum < getNumRows())
+        while (rowNum < this.numRows)
         {
             rows[rowNum] = row;
             ++rowNum;
-            if (rowNum >= getNumRows())
+            if (rowNum >= this.numRows)
             {
                 break;
             }
@@ -738,8 +747,9 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    public void scaledPlusEquals(DiagonalMatrix other,
-        double scaleFactor)
+    public void scaledPlusEquals(
+        final DiagonalMatrix other,
+        final double scaleFactor)
     {
         this.assertSameDimensions(other);
         if (!isCompressed())
@@ -771,7 +781,8 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    public final void plusEquals(SparseMatrix other)
+    public final void plusEquals(
+        final SparseMatrix other)
     {
         this.assertSameDimensions(other);
         if (!isCompressed())
@@ -806,7 +817,8 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    public final void plusEquals(DenseMatrix other)
+    public final void plusEquals(
+        final DenseMatrix other)
     {
         this.assertSameDimensions(other);
         
@@ -835,11 +847,11 @@ public class SparseMatrix
             }
             row.setElement(columnIndices[i], row.getElement(columnIndices[i]) + values[i]);
         }
-        while (rowNum < getNumRows())
+        while (rowNum < this.numRows)
         {
             rows[rowNum] = row;
             ++rowNum;
-            if (rowNum >= getNumRows())
+            if (rowNum >= this.numRows)
             {
                 break;
             }
@@ -860,7 +872,8 @@ public class SparseMatrix
      * @param n The length of the array desired
      * @return The above-described array
      */
-    private static int[] getZeroToNMinusOneArray(int n)
+    private static int[] getZeroToNMinusOneArray(
+        final int n)
     {
         int[] result = new int[n];
         for (int i = 0; i < n; ++i)
@@ -885,11 +898,12 @@ public class SparseMatrix
      * @param other The diagonal matrix to scale then sum with this
      * @param scaleOtherBy The amount to scale other by (usually +/- 1)
      */
-    private void plusEqualsScaled(int[] colIdxsOut,
-        int[] firstInRowsOut,
-        double[] valsOut,
-        DiagonalMatrix other,
-        double scaleOtherBy)
+    private void plusEqualsScaled(
+        final int[] colIdxsOut,
+        final int[] firstInRowsOut,
+        final double[] valsOut,
+        final DiagonalMatrix other,
+        final double scaleOtherBy)
     {
         int rowNum = 0;
         int idx = 0;
@@ -944,7 +958,7 @@ public class SparseMatrix
             ++idx;
         }
         // Now add elements for diagonals past the last non-zero row in this
-        while (rowNum < getNumRows())
+        while (rowNum < numRows)
         {
             if (!addedOnRow)
             {
@@ -964,7 +978,8 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    public final void plusEquals(DiagonalMatrix other)
+    public final void plusEquals(
+        final DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
         if (!isCompressed())
@@ -996,7 +1011,8 @@ public class SparseMatrix
      * NOTE: Upon completion this and other are in the compressed Yale format.
      */
     @Override
-    public final void minusEquals(SparseMatrix other)
+    public final void minusEquals(
+        final SparseMatrix other)
     {
         this.assertSameDimensions(other);
         if (!isCompressed())
@@ -1032,7 +1048,8 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    public final void minusEquals(DenseMatrix other)
+    public final void minusEquals(
+        final DenseMatrix other)
     {
         this.assertSameDimensions(other);
         
@@ -1062,11 +1079,11 @@ public class SparseMatrix
             }
             row.setElement(columnIndices[i], row.getElement(columnIndices[i]) + values[i]);
         }
-        while (rowNum < getNumRows())
+        while (rowNum < this.numRows)
         {
             rows[rowNum] = row;
             ++rowNum;
-            if (rowNum >= getNumRows())
+            if (rowNum >= this.numRows)
             {
                 break;
             }
@@ -1084,7 +1101,8 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    public final void minusEquals(DiagonalMatrix other)
+    public final void minusEquals(
+        final DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
         
@@ -1117,7 +1135,8 @@ public class SparseMatrix
      * NOTE: Upon completion this and other are in the compressed Yale format.
      */
     @Override
-    public final void dotTimesEquals(SparseMatrix other)
+    public final void dotTimesEquals(
+        final SparseMatrix other)
     {
         this.assertSameDimensions(other);
         
@@ -1143,7 +1162,7 @@ public class SparseMatrix
         int newidx = 0;
         int myctr, otherctr;
         // For all rows
-        for (int i = 0; i < getNumRows(); ++i)
+        for (int i = 0; i < this.numRows; ++i)
         {
             // The first index for the row is the current idx
             newFirstIdxsForRows[i] = newidx;
@@ -1191,7 +1210,8 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    public final void dotTimesEquals(DenseMatrix other)
+    public final void dotTimesEquals(
+        final DenseMatrix other)
     {
         this.assertSameDimensions(other);
         if (!isCompressed())
@@ -1217,7 +1237,8 @@ public class SparseMatrix
      * NOTE: Upon completion this is in the compressed Yale format.
      */
     @Override
-    public final void dotTimesEquals(DiagonalMatrix other)
+    public final void dotTimesEquals(
+        final DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
         if (!isCompressed())
@@ -1271,7 +1292,8 @@ public class SparseMatrix
      * @return {@inheritDoc}
      */
     @Override
-    public final Matrix times(SparseMatrix other)
+    public final Matrix times(
+        final SparseMatrix other)
     {
         this.assertMultiplicationDimensions(other);
         if (!isCompressed())
@@ -1284,7 +1306,7 @@ public class SparseMatrix
         }
         DenseMatrix result = new DenseMatrix(getNumRows(), other.getNumColumns(),
             true);
-        for (int i = 0; i < getNumRows(); ++i)
+        for (int i = 0; i < this.numRows; ++i)
         {
             DenseVector row = new DenseVector(other.getNumColumns());
             for (int j = firstIndicesForRows[i]; j < firstIndicesForRows[i + 1]; ++j)
@@ -1315,14 +1337,16 @@ public class SparseMatrix
      * @return {@inheritDoc}
      */
     @Override
-    public final Matrix times(DenseMatrix other)
+    public final Matrix times(
+        final DenseMatrix other)
     {
         this.assertMultiplicationDimensions(other);
         if (!isCompressed())
         {
             compress();
         }
-        DenseMatrix result = new DenseMatrix(getNumRows(), other.getNumColumns());
+        final int otherNumColumns = other.getNumColumns();
+        DenseMatrix result = new DenseMatrix(getNumRows(), otherNumColumns);
         int curRow = 0;
         for (int i = 0; i < values.length; ++i)
         {
@@ -1330,7 +1354,7 @@ public class SparseMatrix
             {
                 ++curRow;
             }
-            for (int j = 0; j < other.getNumColumns(); ++j)
+            for (int j = 0; j < otherNumColumns; ++j)
             {
                 result.row(curRow).values[j] += values[i]
                     * other.row(columnIndices[i]).values[j];
@@ -1347,7 +1371,8 @@ public class SparseMatrix
      * @return {@inheritDoc}
      */
     @Override
-    public final Matrix times(DiagonalMatrix other)
+    public final Matrix times(
+        final DiagonalMatrix other)
     {
         this.assertMultiplicationDimensions(other);
         if (!isCompressed())
@@ -1378,7 +1403,8 @@ public class SparseMatrix
      * @return The sparse matrix (compressed Yale format) resulting from
      * multiplying other * this.
      */
-    public final Matrix preTimes(DiagonalMatrix other)
+    public final Matrix preTimes(
+        final DiagonalMatrix other)
     {
         other.assertMultiplicationDimensions(this);
         if (!isCompressed())
@@ -1411,7 +1437,8 @@ public class SparseMatrix
      */
     @Override
     // Not final because this method is overridden by the Parallel implementation
-    public Vector times(SparseVector vector)
+    public Vector times(
+        final SparseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumColumns());
         if (!isCompressed())
@@ -1470,7 +1497,8 @@ public class SparseMatrix
      */
     @Override
     // Not final because this method is overridden by the Parallel implementation
-    public Vector times(DenseVector vector)
+    public Vector times(
+        final DenseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumColumns());
         if (!isCompressed())
@@ -1499,7 +1527,8 @@ public class SparseMatrix
      * @param scaleFactor {@inheritDoc}
      */
     @Override
-    final public void scaleEquals(double scaleFactor)
+    final public void scaleEquals(
+        final double scaleFactor)
     {
         if (!isCompressed())
         {
@@ -1544,8 +1573,9 @@ public class SparseMatrix
      * @return {@inheritDoc}
      */
     @Override
-    public double get(int rowIndex,
-        int columnIndex)
+    public double get(
+        final int rowIndex,
+        final int columnIndex)
     {
         return getElement(rowIndex, columnIndex);
     }
@@ -1559,8 +1589,9 @@ public class SparseMatrix
      * @return {@inheritDoc}
      */
     @Override
-    final public double getElement(int rowIndex,
-        int columnIndex)
+    final public double getElement(
+        final int rowIndex,
+        final int columnIndex)
     {
         if (!isCompressed())
         {
@@ -1602,9 +1633,10 @@ public class SparseMatrix
      * @throws ArrayIndexOutOfBoundsException if the indices are out of bounds
      */
     @Override
-    public void set(int rowIndex,
-        int columnIndex,
-        double value)
+    public void set(
+        final int rowIndex,
+        final int columnIndex,
+        final double value)
     {
         setElement(rowIndex, columnIndex, value);
     }
@@ -1620,9 +1652,10 @@ public class SparseMatrix
      * @throws ArrayIndexOutOfBoundsException if the indices are out of bounds
      */
     @Override
-    final public void setElement(int rowIndex,
-        int columnIndex,
-        double value)
+    final public void setElement(
+        final int rowIndex,
+        final int columnIndex,
+        final double value)
     {
         if (isCompressed())
         {
@@ -1646,10 +1679,11 @@ public class SparseMatrix
      * the acceptable bounds
      */
     @Override
-    final public Matrix getSubMatrix(int minRow,
-        int maxRow,
-        int minColumn,
-        int maxColumn)
+    final public Matrix getSubMatrix(
+        final int minRow,
+        final int maxRow,
+        final int minColumn,
+        final int maxColumn)
     {
         checkSubmatrixRange(minRow, maxRow, minColumn, maxColumn);
         if (!isCompressed())
@@ -1706,7 +1740,8 @@ public class SparseMatrix
      * @throws IllegalArgumentException if effectiveZero less than zero.
      */
     @Override
-    final public boolean isSymmetric(double effectiveZero)
+    final public boolean isSymmetric(
+        final double effectiveZero)
     {
         ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
         if (numRows != numCols)
@@ -1771,7 +1806,8 @@ public class SparseMatrix
      * @throws IllegalArgumentException if effectiveZero less than zero.
      */
     @Override
-    final public boolean isZero(double effectiveZero)
+    final public boolean isZero(
+        final double effectiveZero)
     {
         ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
         if (!isCompressed())
@@ -1858,7 +1894,8 @@ public class SparseMatrix
      * @return {@inheritDoc}
      */
     @Override
-    final public Matrix pseudoInverse(double effectiveZero)
+    final public Matrix pseudoInverse(
+        final double effectiveZero)
     {
         if (!isCompressed())
         {
@@ -1904,7 +1941,8 @@ public class SparseMatrix
      * @return {@inheritDoc}
      */
     @Override
-    final public int rank(double effectiveZero)
+    final public int rank(
+        final double effectiveZero)
     {
         if (!isCompressed())
         {
@@ -1976,7 +2014,8 @@ public class SparseMatrix
      * @return {@inheritDoc}
      */
     @Override
-    final public Matrix solve(Matrix B)
+    final public Matrix solve(
+        final Matrix B)
     {
         if (!isCompressed())
         {
@@ -2001,7 +2040,8 @@ public class SparseMatrix
      * @return {@inheritDoc}
      */
     @Override
-    final public Vector solve(Vector b)
+    final public Vector solve(
+        final Vector b)
     {
         if (!isCompressed())
         {
@@ -2050,7 +2090,8 @@ public class SparseMatrix
      * @return {@inheritDoc}
      */
     @Override
-    final public Vector getColumn(int columnIndex)
+    final public Vector getColumn(
+        final int columnIndex)
     {
         if (!isCompressed())
         {
@@ -2113,7 +2154,8 @@ public class SparseMatrix
      * @return {@inheritDoc}
      */
     @Override
-    final public Vector getRow(int rowIndex)
+    final public Vector getRow(
+        final int rowIndex)
     {
         if (!isCompressed())
         {
@@ -2134,7 +2176,7 @@ public class SparseMatrix
     /**
      * {@inheritDoc}
      *
-     * NOTE: Upon completion this is in the compressed Yale format.
+     * NOTE: Upon ocmpletion this is in the compressed Yale format.
      *
      * @param parameters {@inheritDoc}
      * @throws IllegalArgumentException if parameters does not have the same
@@ -2142,13 +2184,15 @@ public class SparseMatrix
      * values).
      */
     @Override
-    final public void convertFromVector(Vector parameters)
+    final public void convertFromVector(
+        final Vector parameters)
     {
         parameters.assertDimensionalityEquals(numRows * numCols);
 
         // Count how many non-zero elements there will be at the end
         int nnz = 0;
-        for (int i = 0; i < parameters.getDimensionality(); ++i)
+        final int d = parameters.getDimensionality();
+        for (int i = 0; i < d; ++i)
         {
             if (parameters.getElement(i) != 0)
             {
@@ -2243,8 +2287,9 @@ public class SparseMatrix
          * @param columnValueIndex The index for the column and value in the
          * compressed data
          */
-        public ReadOnlySparseMatrixEntry(int rowIndex,
-            int columnValueIndex)
+        public ReadOnlySparseMatrixEntry(
+            final int rowIndex,
+            final int columnValueIndex)
         {
             this.rowIndex = rowIndex;
             this.columnValueIndex = columnValueIndex;
@@ -2262,7 +2307,8 @@ public class SparseMatrix
         }
 
         @Override
-        public void setRowIndex(int rowIndex)
+        public void setRowIndex(
+            final int rowIndex)
         {
             throw new UnsupportedOperationException(
                 "This implementation immutable.");
@@ -2280,7 +2326,8 @@ public class SparseMatrix
         }
 
         @Override
-        public void setValue(double value)
+        public void setValue(
+            final double value)
         {
             throw new UnsupportedOperationException(
                 "This implementation immutable.");
@@ -2298,7 +2345,8 @@ public class SparseMatrix
         }
 
         @Override
-        public void setColumnIndex(int columnIndex)
+        public void setColumnIndex(
+            final int columnIndex)
         {
             throw new UnsupportedOperationException(
                 "This implementation immutable.");
@@ -2348,7 +2396,8 @@ public class SparseMatrix
          * @throws IllegalArgumentException if startRow is outside of [0 ..
          * numRows]
          */
-        public NonZeroEntryIterator(int startRow)
+        public NonZeroEntryIterator(
+            final int startRow)
         {
             if (startRow >= getNumRows() || startRow < 0)
             {
@@ -2449,7 +2498,8 @@ public class SparseMatrix
      * @return an iterator over the non-zero entries in this matrix
      * (left-to-right, top-to-bottom).
      */
-    final public Iterator<MatrixEntry> getNonZeroValueIterator(int startRow)
+    final public Iterator<MatrixEntry> getNonZeroValueIterator(
+        final int startRow)
     {
         if (!isCompressed())
         {
@@ -2466,7 +2516,8 @@ public class SparseMatrix
      * @return {@inheritDoc}
      */
     @Override
-    public final Vector preTimes(SparseVector vector)
+    public final Vector preTimes(
+        final SparseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumRows());
         if (!isCompressed())
@@ -2475,13 +2526,15 @@ public class SparseMatrix
         }
         SparseVector result = new SparseVector(getNumColumns());
         vector.compress();
+        final int[] otherIndices = vector.getIndices();
+        final double[] otherValues = vector.getValues();
         for (int j = 0; j < vector.getIndices().length; ++j)
         {
-            for (int i = firstIndicesForRows[vector.getIndices()[j]]; i
-                < firstIndicesForRows[vector.getIndices()[j] + 1]; ++i)
+            for (int i = firstIndicesForRows[otherIndices[j]]; i
+                < firstIndicesForRows[otherIndices[j] + 1]; ++i)
             {
                 result.setElement(columnIndices[i], result.getElement(columnIndices[i])
-                    + values[i] * vector.getValues()[j]);
+                    + values[i] * otherValues[j]);
             }
         }
 
@@ -2496,7 +2549,8 @@ public class SparseMatrix
      * @return {@inheritDoc}
      */
     @Override
-    public final Vector preTimes(DenseVector vector)
+    public final Vector preTimes(
+        final DenseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumRows());
         if (!isCompressed())
@@ -2528,8 +2582,9 @@ public class SparseMatrix
      * @param i The row index
      * @param v The vector that to put in the new row
      */
-    final void setRowInternal(int i,
-        SparseVector v)
+    final void setRowInternal(
+        final int i,
+        final SparseVector v)
     {
         if (isCompressed())
         {
@@ -2552,7 +2607,8 @@ public class SparseMatrix
      * @param oos The stream to write this to
      * @throws IOException If there's a problem
      */
-    private void writeObject(ObjectOutputStream oos)
+    private void writeObject(
+        final ObjectOutputStream oos)
         throws IOException
     {
         compress();
@@ -2571,7 +2627,8 @@ public class SparseMatrix
      * @throws IOException If there's a problem
      * @throws ClassNotFoundException If there's a problem
      */
-    private void readObject(ObjectInputStream ois)
+    private void readObject(
+        final ObjectInputStream ois)
         throws IOException, ClassNotFoundException
     {
         numRows = ois.readInt();
@@ -2580,7 +2637,7 @@ public class SparseMatrix
         firstIndicesForRows = (int[]) ois.readObject();
         values = (double[]) ois.readObject();
         rows = new SparseVector[numRows];
-        for (int i = 0; i < getNumRows(); ++i)
+        for (int i = 0; i < this.numRows; ++i)
         {
             rows[i] = new SparseVector(numCols);
         }

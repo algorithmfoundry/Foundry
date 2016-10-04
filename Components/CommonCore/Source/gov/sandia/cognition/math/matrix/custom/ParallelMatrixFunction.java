@@ -92,11 +92,12 @@ abstract class ParallelMatrixFunction<InputType1, InputType2, OutputType>
      * @param maxRow The maximum row (not inclusive) for this thread to operate
      * on
      */
-    public ParallelMatrixFunction(InputType1 input1,
-        InputType2 input2,
-        OutputType output,
-        int minRow,
-        int maxRow)
+    public ParallelMatrixFunction(
+        final InputType1 input1,
+        final InputType2 input2,
+        final OutputType output,
+        final int minRow,
+        final int maxRow)
     {
         this.input1 = input1;
         this.input2 = input2;
@@ -136,13 +137,13 @@ abstract class ParallelMatrixFunction<InputType1, InputType2, OutputType>
      * @param factory The factory for creating ParallelMatrixFunction instnaces
      */
     public static <InputType1, InputType2, OutputType> void solve(
-        InputType1 input1,
-        InputType2 input2,
-        OutputType output,
-        int numPieces,
-        int numThreads,
-        int numRows,
-        Factory<InputType1, InputType2, OutputType> factory)
+        final InputType1 input1,
+        final InputType2 input2,
+        final OutputType output,
+        final int numPieces,
+        final int numThreads,
+        final int numRows,
+        final Factory<InputType1, InputType2, OutputType> factory)
     {
         double numRowsPer = numRows / ((double) numPieces);
         numRowsPer = Math.max(numRowsPer, 1.0);

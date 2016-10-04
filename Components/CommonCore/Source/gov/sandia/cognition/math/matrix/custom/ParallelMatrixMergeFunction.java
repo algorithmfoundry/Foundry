@@ -86,10 +86,11 @@ abstract class ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>
      * @param maxRow The maximum row (not inclusive) for this thread to operate
      * on
      */
-    public ParallelMatrixMergeFunction(InputType1 input1,
-        InputType2 input2,
-        int minRow,
-        int maxRow)
+    public ParallelMatrixMergeFunction(
+        final InputType1 input1,
+        final InputType2 input2,
+        final int minRow,
+        final int maxRow)
     {
         this.input1 = input1;
         this.input2 = input2;
@@ -116,7 +117,8 @@ abstract class ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>
      * @param pieces The results from all of the pieces
      * @return The merged, final result
      */
-    abstract protected MergeType merge(List<Future<MergeType>> pieces);
+    abstract protected MergeType merge(
+        final List<Future<MergeType>> pieces);
 
     /**
      * This static method handles all the logic of splitting up the chunks of a
@@ -136,12 +138,12 @@ abstract class ParallelMatrixMergeFunction<InputType1, InputType2, MergeType>
      * @param factory The factory for creating ParallelMatrixFunction instnaces
      */
     public static <InputType1, InputType2, MergeType> MergeType solve(
-        InputType1 input1,
-        InputType2 input2,
-        int numPieces,
-        int numThreads,
-        int numRows,
-        ParallelMatrixMergeFunction.Factory<InputType1, InputType2, MergeType> factory)
+        final InputType1 input1,
+        final InputType2 input2,
+        final int numPieces,
+        final int numThreads,
+        final int numRows,
+        final ParallelMatrixMergeFunction.Factory<InputType1, InputType2, MergeType> factory)
     {
         double numRowsPer = numRows / ((double) numPieces);
         numRowsPer = Math.max(numRowsPer, 1.0);

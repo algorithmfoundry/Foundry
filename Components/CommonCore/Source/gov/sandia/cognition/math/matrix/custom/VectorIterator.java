@@ -18,31 +18,32 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * Small helper class that iterates over all values from this vector
+ * Small helper class that iterates over all values from this vector.
  * 
  * @author Jeremy D. Wendt
- * @since   3.4.3
+ * @since 3.4.4
  */
 public class VectorIterator
     implements Iterator<VectorEntry>
 {
 
     /**
-     * The vector to iterate over
+     * The vector to iterate over.
      */
     private BaseVector vector;
 
     /**
-     * The index of the next value to return
+     * The index of the next value to return.
      */
     private int index;
 
     /**
-     * Initialize to iterate over v
+     * Initialize to iterate over v.
      *
      * @param v The vector to iterate over
      */
-    VectorIterator(final BaseVector v)
+    VectorIterator(
+        final BaseVector v)
     {
         this.vector = v;
         this.index = 0;
@@ -51,7 +52,7 @@ public class VectorIterator
     @Override
     final public boolean hasNext()
     {
-        return index < vector.getDimensionality();
+        return this.index < this.vector.getDimensionality();
     }
 
     @Override
@@ -59,11 +60,11 @@ public class VectorIterator
     {
         if (!hasNext())
         {
-            throw new NoSuchElementException("Iterator has exceeded the "
-                + "bounds of the vector");
+            throw new NoSuchElementException(
+                "Iterator has exceeded the bounds of the vector.");
         }
-        VectorEntry result = new BaseVectorEntry(index, vector);
-        ++index;
+        VectorEntry result = new BaseVectorEntry(this.index, this.vector);
+        ++this.index;
 
         return result;
     }
@@ -76,7 +77,7 @@ public class VectorIterator
     final public void remove()
     {
         throw new UnsupportedOperationException(
-            "Cannot remove eleemnts from a DenseVector.");
+            "Cannot remove elements from a DenseVector.");
     }
 
 }

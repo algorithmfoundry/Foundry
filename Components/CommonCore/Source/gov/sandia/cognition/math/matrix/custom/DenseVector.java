@@ -52,7 +52,8 @@ public class DenseVector
      *
      * @param n The length the vector should be
      */
-    public DenseVector(int n)
+    public DenseVector(
+        final int n)
     {
         values = new double[n];
     }
@@ -64,8 +65,9 @@ public class DenseVector
      * @param n The length the vector should be
      * @param defaultVal The initial value for all elements of the vector
      */
-    public DenseVector(int n,
-        double defaultVal)
+    public DenseVector(
+        final int n,
+        final double defaultVal)
     {
         values = new double[n];
         Arrays.fill(values, defaultVal);
@@ -76,7 +78,8 @@ public class DenseVector
      *
      * @param v The vector to copy
      */
-    public DenseVector(final DenseVector v)
+    public DenseVector(
+        final DenseVector v)
     {
         values = Arrays.copyOf(v.values, v.values.length);
     }
@@ -86,7 +89,8 @@ public class DenseVector
      *
      * @param arr An array of doubles to put in this dense vector
      */
-    public DenseVector(double[] arr)
+    public DenseVector(
+        final double[] arr)
     {
         values = Arrays.copyOf(arr, arr.length);
     }
@@ -96,10 +100,12 @@ public class DenseVector
      *
      * @param arr A list of doubles to put into this dense vector
      */
-    public DenseVector(List<Double> arr)
+    public DenseVector(
+        final List<Double> arr)
     {
-        values = new double[arr.size()];
-        for (int i = 0; i < arr.size(); ++i)
+        final int d = arr.size();
+        values = new double[d];
+        for (int i = 0; i < d; ++i)
         {
             values[i] = arr.get(i);
         }
@@ -114,8 +120,9 @@ public class DenseVector
     }
 
     @Override
-    public void scaledPlusEquals(DenseVector other,
-        double scaleFactor)
+    public void scaledPlusEquals(
+        final DenseVector other,
+        final double scaleFactor)
     {
         this.assertSameDimensionality(other);
         for (int i = 0; i < values.length; ++i)
@@ -125,8 +132,9 @@ public class DenseVector
     }
 
     @Override
-    public void scaledPlusEquals(SparseVector other,
-        double scaleFactor)
+    public void scaledPlusEquals(
+        final SparseVector other,
+        final double scaleFactor)
     {
         this.assertSameDimensionality(other);
         other.compress();
@@ -139,7 +147,8 @@ public class DenseVector
     }
 
     @Override
-    public final void plusEquals(DenseVector other)
+    public final void plusEquals(
+        final DenseVector other)
     {
         this.assertSameDimensionality(other);
         for (int i = 0; i < values.length; ++i)
@@ -149,7 +158,8 @@ public class DenseVector
     }
 
     @Override
-    public final void plusEquals(SparseVector other)
+    public final void plusEquals(
+        final SparseVector other)
     {
         this.assertSameDimensionality(other);
         other.compress();
@@ -162,7 +172,8 @@ public class DenseVector
     }
 
     @Override
-    public final void minusEquals(DenseVector other)
+    public final void minusEquals(
+        final DenseVector other)
     {
         this.assertSameDimensionality(other);
         for (int i = 0; i < values.length; ++i)
@@ -172,7 +183,8 @@ public class DenseVector
     }
 
     @Override
-    public final void minusEquals(SparseVector other)
+    public final void minusEquals(
+        final SparseVector other)
     {
         this.assertSameDimensionality(other);
         other.compress();
@@ -185,7 +197,8 @@ public class DenseVector
     }
 
     @Override
-    public final void dotTimesEquals(DenseVector other)
+    public final void dotTimesEquals(
+        final DenseVector other)
     {
         this.assertSameDimensionality(other);
         for (int i = 0; i < values.length; ++i)
@@ -195,7 +208,8 @@ public class DenseVector
     }
 
     @Override
-    public final void dotTimesEquals(SparseVector other)
+    public final void dotTimesEquals(
+        final SparseVector other)
     {
         this.assertSameDimensionality(other);
         other.compress();
@@ -217,7 +231,8 @@ public class DenseVector
     }
 
     @Override
-    public final double euclideanDistanceSquared(DenseVector other)
+    public final double euclideanDistanceSquared(
+        final DenseVector other)
     {
         this.assertSameDimensionality(other);
         double dist = 0.0;
@@ -232,13 +247,15 @@ public class DenseVector
     }
 
     @Override
-    public final double euclideanDistanceSquared(SparseVector other)
+    public final double euclideanDistanceSquared(
+        final SparseVector other)
     {
         return other.euclideanDistanceSquared(this);
     }
 
     @Override
-    public final Matrix outerProduct(DenseVector other)
+    public final Matrix outerProduct(
+        final DenseVector other)
     {
         int numRows = getDimensionality();
         int numCols = other.getDimensionality();
@@ -257,7 +274,8 @@ public class DenseVector
     }
 
     @Override
-    public final Matrix outerProduct(SparseVector other)
+    public final Matrix outerProduct(
+        final SparseVector other)
     {
         int numRows = getDimensionality();
         int numCols = other.getDimensionality();
@@ -279,7 +297,8 @@ public class DenseVector
     }
 
     @Override
-    public final Vector stack(DenseVector other)
+    public final Vector stack(
+        final DenseVector other)
     {
         DenseVector result = new DenseVector(values.length + other.values.length);
         for (int i = 0; i < values.length; ++i)
@@ -295,7 +314,8 @@ public class DenseVector
     }
 
     @Override
-    public final Vector stack(SparseVector other)
+    public final Vector stack(
+        final SparseVector other)
     {
         Vector result;
         int len = values.length + other.getDimensionality();
@@ -326,7 +346,8 @@ public class DenseVector
         int[] locs = other.getIndices();
         double[] vals = other.getValues();
         int idx = 0;
-        for (int i = 0; i < other.getDimensionality(); ++i)
+        final int otherDimensionality = other.getDimensionality();
+        for (int i = 0; i < otherDimensionality; ++i)
         {
             if ((idx < locs.length) && (locs[idx] == i))
             {
@@ -343,7 +364,8 @@ public class DenseVector
     }
 
     @Override
-    public final double dotProduct(DenseVector other)
+    public final double dotProduct(
+        final DenseVector other)
     {
         this.assertSameDimensionality(other);
         double result = 0;
@@ -356,7 +378,8 @@ public class DenseVector
     }
 
     @Override
-    public final double dotProduct(SparseVector other)
+    public final double dotProduct(
+        final SparseVector other)
     {
         return other.dotProduct(this);
     }
@@ -374,30 +397,35 @@ public class DenseVector
     }
 
     @Override
-    public double get(int index)
+    public double get(
+        final int index)
     {
         return values[index];
     }
 
     @Override
-    final public double getElement(int index)
+    final public double getElement(
+        final int index)
     {
         return values[index];
     }
 
     @Override
-    public void set(int index,
-        double value)
+    public void set(
+        final int index,
+        final double value)
     {
         values[index] = value;
     }
 
     @Override
-    final public void setElement(int index,
-        double value)
+    final public void setElement(
+        final int index,
+        final double value)
     {
         values[index] = value;
     }
+    
     /**
      * Package-private method that allows peers direct access to the elements
      * contained herein.
@@ -410,8 +438,9 @@ public class DenseVector
     }
     
     @Override
-    final public Vector subVector(int minIndex,
-        int maxIndex)
+    final public Vector subVector(
+        final int minIndex,
+        final int maxIndex)
     {
         if (minIndex > maxIndex)
         {
@@ -435,7 +464,8 @@ public class DenseVector
     }
 
     @Override
-    final public Vector scale(double d)
+    final public Vector scale(
+        final double d)
     {
         DenseVector result = new DenseVector(values.length);
         for (int i = 0; i < values.length; ++i)
@@ -447,7 +477,8 @@ public class DenseVector
     }
 
     @Override
-    final public Vector dotTimes(Vector v)
+    final public Vector dotTimes(
+        final Vector v)
     {
         // By switch from this.dotTimes(v) to v.dotTimes(this), we get sparse
         // vectors dotted with dense still being sparse and dense w/ dense is
@@ -468,7 +499,7 @@ public class DenseVector
     final public int numNonZero()
     {
         int nnz = 0;
-        for (double d : values)
+        for (final double d : values)
         {
             nnz += (d == 0) ? 0 : 1;
         }

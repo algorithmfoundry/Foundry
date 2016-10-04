@@ -444,9 +444,11 @@ public class DenseMatrix
         final double scaleFactor)
     {
         this.assertSameDimensions(other);
-        for (int i = 0; i < getNumRows(); ++i)
+        final int numRows = this.getNumRows();
+        final int numColumns = this.getNumColumns();
+        for (int i = 0; i < numRows; ++i)
         {
-            for (int j = 0; j < getNumColumns(); ++j)
+            for (int j = 0; j < numColumns; ++j)
             {
                 this.rows[i].values[j] += other.rows[i].values[j] * scaleFactor;
             }
@@ -459,7 +461,8 @@ public class DenseMatrix
         final double scaleFactor)
     {
         this.assertSameDimensions(other);
-        for (int i = 0; i < getNumRows(); ++i)
+        final int numRows = this.getNumRows();
+        for (int i = 0; i < numRows; ++i)
         {
             this.rows[i].values[i] += other.get(i, i) * scaleFactor;
         }
@@ -494,9 +497,11 @@ public class DenseMatrix
         final DenseMatrix other)
     {
         this.assertSameDimensions(other);
-        for (int i = 0; i < getNumRows(); ++i)
+        final int numRows = this.getNumRows();
+        final int numColumns = this.getNumColumns();
+        for (int i = 0; i < numRows; ++i)
         {
-            for (int j = 0; j < getNumColumns(); ++j)
+            for (int j = 0; j < numColumns; ++j)
             {
                 this.rows[i].values[j] += other.rows[i].values[j];
             }
@@ -508,7 +513,8 @@ public class DenseMatrix
         final DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
-        for (int i = 0; i < getNumRows(); ++i)
+        final int numRows = this.getNumRows();
+        for (int i = 0; i < numRows; ++i)
         {
             this.rows[i].values[i] += other.get(i, i);
         }
@@ -543,9 +549,11 @@ public class DenseMatrix
         final DenseMatrix other)
     {
         this.assertSameDimensions(other);
-        for (int i = 0; i < getNumRows(); ++i)
+        final int numRows = this.getNumRows();
+        final int numColumns = this.getNumColumns();
+        for (int i = 0; i < numRows; ++i)
         {
-            for (int j = 0; j < getNumColumns(); ++j)
+            for (int j = 0; j < numColumns; ++j)
             {
                 this.rows[i].values[j] -= other.rows[i].values[j];
             }
@@ -557,7 +565,8 @@ public class DenseMatrix
         final DiagonalMatrix other)
     {
         this.assertSameDimensions(other);
-        for (int i = 0; i < getNumRows(); ++i)
+        final int numRows = this.getNumRows();
+        for (int i = 0; i < numRows; ++i)
         {
             this.rows[i].values[i] -= other.get(i, i);
         }
@@ -609,9 +618,11 @@ public class DenseMatrix
         final DenseMatrix other)
     {
         this.assertSameDimensions(other);
-        for (int i = 0; i < getNumRows(); ++i)
+        final int numRows = this.getNumRows();
+        final int numColumns = this.getNumColumns();
+        for (int i = 0; i < numRows; ++i)
         {
-            for (int j = 0; j < getNumColumns(); ++j)
+            for (int j = 0; j < numColumns; ++j)
             {
                 this.rows[i].values[j] *= other.rows[i].values[j];
             }
@@ -658,7 +669,8 @@ public class DenseMatrix
         }
         DenseMatrix result = new DenseMatrix(getNumRows(), other.getNumColumns(),
             true);
-        for (int i = 0; i < getNumRows(); ++i)
+        final int numRows = this.getNumRows();
+        for (int i = 0; i < numRows; ++i)
         {
             result.setRow(i, (DenseVector) other.preTimes(rows[i]));
         }
@@ -666,7 +678,8 @@ public class DenseMatrix
     }
 
     @Override
-    public final Matrix times(DenseMatrix other)
+    public final Matrix times(
+        final DenseMatrix other)
     {
         this.assertMultiplicationDimensions(other);
         // TODO: Make sure this BLAS is truly faster than slow version
@@ -687,11 +700,15 @@ public class DenseMatrix
     }
 
     @Override
-    public final Matrix times(DiagonalMatrix other)
+    public final Matrix times(
+        final DiagonalMatrix other)
     {
         this.assertMultiplicationDimensions(other);
-        DenseMatrix result = new DenseMatrix(getNumRows(), getNumColumns(), true);
-        for (int i = 0; i < getNumRows(); ++i)
+        
+        final int numRows = this.getNumRows();
+        final int numColumns = this.getNumColumns();
+        DenseMatrix result = new DenseMatrix(numRows, numColumns, true);
+        for (int i = 0; i < numRows; ++i)
         {
             result.setRow(i, (DenseVector) other.preTimes(rows[i]));
         }
@@ -706,11 +723,14 @@ public class DenseMatrix
      * @param vector The vector to multiply
      * @return The vector resulting from multiplying this * vector
      */
-    private Vector timesInternal(Vector vector)
+    private Vector timesInternal(
+        final Vector vector)
     {
         vector.assertDimensionalityEquals(this.getNumColumns());
-        DenseVector result = new DenseVector(getNumRows());
-        for (int i = 0; i < getNumRows(); ++i)
+        
+        final int numRows = this.getNumRows();
+        DenseVector result = new DenseVector(numRows);
+        for (int i = 0; i < numRows; ++i)
         {
             result.setElement(i, vector.dotProduct(rows[i]));
         }
@@ -719,7 +739,8 @@ public class DenseMatrix
     }
 
     @Override
-    public final Vector times(SparseVector vector)
+    public final Vector times(
+        final SparseVector vector)
     {
         // It's the same for sparse and dense vectors (the difference is handled
         // in the vector's dotProduct code
@@ -727,7 +748,8 @@ public class DenseMatrix
     }
 
     @Override
-    public final Vector times(DenseVector vector)
+    public final Vector times(
+        final DenseVector vector)
     {
         // It's the same for sparse and dense vectors (the difference is handled
         // in the vector's dotProduct code
@@ -735,11 +757,14 @@ public class DenseMatrix
     }
 
     @Override
-    public final void scaleEquals(double scaleFactor)
+    public final void scaleEquals(
+        final double scaleFactor)
     {
-        for (int i = 0; i < getNumRows(); ++i)
+        final int numRows = this.getNumRows();
+        final int numColumns = this.getNumColumns();
+        for (int i = 0; i < numRows; ++i)
         {
-            for (int j = 0; j < getNumColumns(); ++j)
+            for (int j = 0; j < numColumns; ++j)
             {
                 this.rows[i].values[j] *= scaleFactor;
             }
@@ -749,7 +774,7 @@ public class DenseMatrix
     @Override
     final public int getNumRows()
     {
-        return rows.length;
+        return this.rows.length;
     }
 
     @Override
@@ -760,17 +785,19 @@ public class DenseMatrix
     }
 
     @Override
-    public double get(int rowIndex,
-        int columnIndex)
+    public double get(
+        final int rowIndex,
+        final int columnIndex)
     {
         return getElement(rowIndex, columnIndex);
     }
 
     @Override
-    final public double getElement(int rowIndex,
-        int columnIndex)
+    final public double getElement(
+        final int rowIndex,
+        final int columnIndex)
     {
-        return rows[rowIndex].getElement(columnIndex);
+        return this.rows[rowIndex].getElement(columnIndex);
     }
 
     @Override
@@ -800,10 +827,11 @@ public class DenseMatrix
      * @return {@inheritDoc}
      */
     @Override
-    final public Matrix getSubMatrix(int minRow,
-        int maxRow,
-        int minColumn,
-        int maxColumn)
+    final public Matrix getSubMatrix(
+        final int minRow,
+        final int maxRow,
+        final int minColumn,
+        final int maxColumn)
     {
         checkSubmatrixRange(minRow, maxRow, minColumn, maxColumn);
         DenseMatrix result = new DenseMatrix(maxRow - minRow + 1, maxColumn
@@ -822,7 +850,8 @@ public class DenseMatrix
     }
 
     @Override
-    final public boolean isSymmetric(double effectiveZero)
+    final public boolean isSymmetric(
+        final double effectiveZero)
     {
         ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
         // If it's not square, it's not symmetric
@@ -832,9 +861,11 @@ public class DenseMatrix
         }
         // Now check that all upper triangular values equal their corresponding
         // lower triangular vals (within effectiveZero range)
-        for (int i = 0; i < getNumRows(); ++i)
+        final int numRows = this.getNumRows();
+        final int numColumns = this.getNumColumns();
+        for (int i = 0; i < numRows; ++i)
         {
-            for (int j = i + 1; j < getNumColumns(); ++j)
+            for (int j = i + 1; j < numColumns; ++j)
             {
                 if (Math.abs(this.rows[i].values[j] - rows[j].values[i])
                     > effectiveZero)
@@ -884,7 +915,8 @@ public class DenseMatrix
     }
 
     @Override
-    final public Matrix pseudoInverse(double effectiveZero)
+    final public Matrix pseudoInverse(
+        final double effectiveZero)
     {
         ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
         SVD svd = svdDecompose();
@@ -976,7 +1008,8 @@ public class DenseMatrix
     }
 
     @Override
-    final public int rank(double effectiveZero)
+    final public int rank(
+        final double effectiveZero)
     {
         ArgumentChecker.assertIsNonNegative("effectiveZero", effectiveZero);
         QR qr = qrDecompose();
@@ -1057,7 +1090,8 @@ public class DenseMatrix
          * @param A The matrix that will be decomposed and so it specifies the
          * sizes for U, Sigma, and V.
          */
-        private SVD(DenseMatrix A)
+        private SVD(
+            final DenseMatrix A)
         {
             U = new DenseMatrix(A.getNumRows(), A.getNumRows());
             Sigma = new SparseMatrix(A.getNumRows(), A.getNumColumns());
@@ -1174,7 +1208,8 @@ public class DenseMatrix
          * @param A The matrix to be factored -- specifies the dimensions of the
          * parts of this.
          */
-        private LU(DenseMatrix A)
+        private LU(
+            final DenseMatrix A)
         {
             int m = A.getNumRows();
             int n = A.getNumColumns();
@@ -1305,7 +1340,8 @@ public class DenseMatrix
          *
          * @param A The matrix to be factored into the Q and R stored herein.
          */
-        private QR(DenseMatrix A)
+        private QR(
+            final DenseMatrix A)
         {
             Q = new DenseMatrix(A.getNumRows(), A.getNumRows());
             R = new DenseMatrix(A.getNumRows(), A.getNumColumns());
@@ -1412,11 +1448,12 @@ public class DenseMatrix
      * @param n The number of columns in A
      * @return The value stored in A(i, j)
      */
-    private double blasElement(int i,
-        int j,
-        double[] A,
-        int m,
-        int n)
+    private double blasElement(
+        final int i,
+        final int j,
+        final double[] A,
+        final int m,
+        final int n)
     {
         return A[i + m * j];
     }
@@ -1434,8 +1471,9 @@ public class DenseMatrix
      * @throws UnsupportedOperationException if any diagonal element of R is
      * zero (as it does not span the space).
      */
-    private static Vector upperTriangularSolve(Matrix R,
-        Vector QtransB)
+    private static Vector upperTriangularSolve(
+        final Matrix R,
+        final Vector QtransB)
     {
         // This should be tested in the solve methods, this is here just to
         // make sure no one else calls this w/o checking
@@ -1447,7 +1485,10 @@ public class DenseMatrix
 
         // Test bottom triangle is zero
         // And test that all diagonals are non-zero (else you can't solve)
-        for (int i = 0; i < R.getNumRows(); ++i)
+        
+        final int numRows = R.getNumRows();
+        final int numColumns = R.getNumColumns();
+        for (int i = 0; i < numRows; ++i)
         {
             // diagonals
             if (R.getElement(i, i) == 0)
@@ -1466,15 +1507,15 @@ public class DenseMatrix
             }
         }
 
-        DenseVector result = new DenseVector(R.getNumColumns());
+        DenseVector result = new DenseVector(numColumns);
         // Start from the bottom of the triangle
-        for (int i = R.getNumColumns() - 1; i >= 0; --i)
+        for (int i = numColumns - 1; i >= 0; --i)
         {
             // Start w/ the value in B
             double v = QtransB.getElement(i);
 
             // Back substitute all solved parts in
-            for (int j = i + 1; j < R.getNumColumns(); ++j)
+            for (int j = i + 1; j < numColumns; ++j)
             {
                 v -= R.getElement(i, j) * result.values[j];
             }
@@ -1487,7 +1528,8 @@ public class DenseMatrix
     }
 
     @Override
-    final public Matrix solve(Matrix B)
+    final public Matrix solve(
+        final Matrix B)
     {
         checkSolveDimensions(B);
         if (!isSquare())
@@ -1500,8 +1542,9 @@ public class DenseMatrix
         // I'll only use it as the transpose
         qr.Q = qr.Q.transpose();
 
-        DenseMatrix X = new DenseMatrix(getNumColumns(), B.getNumColumns());
-        for (int i = 0; i < B.getNumColumns(); ++i)
+        final int numColumns = B.getNumColumns();
+        DenseMatrix X = new DenseMatrix(getNumColumns(), numColumns);
+        for (int i = 0; i < numColumns; ++i)
         {
             X.setColumn(i,
                 upperTriangularSolve(qr.R, qr.Q.times(B.getColumn(i))));
@@ -1511,7 +1554,8 @@ public class DenseMatrix
     }
 
     @Override
-    final public Vector solve(Vector b)
+    final public Vector solve(
+        final Vector b)
     {
         checkSolveDimensions(b);
         if (!isSquare())
@@ -1530,9 +1574,11 @@ public class DenseMatrix
     {
         // NOTE: This is a bad idea as you're storing a diagonal matrix in a
         // dense data structure
-        for (int i = 0; i < getNumRows(); ++i)
+        final int numRows = this.getNumRows();
+        final int numColumns = this.getNumColumns();
+        for (int i = 0; i < numRows; ++i)
         {
-            for (int j = 0; j < getNumColumns(); ++j)
+            for (int j = 0; j < numColumns; ++j)
             {
                 if (i == j)
                 {
@@ -1547,7 +1593,8 @@ public class DenseMatrix
     }
 
     @Override
-    final public Vector getColumn(int columnIndex)
+    final public Vector getColumn(
+        final int columnIndex)
     {
         if (columnIndex < 0 || columnIndex >= getNumColumns())
         {
@@ -1556,7 +1603,8 @@ public class DenseMatrix
                 + getNumColumns() + " matrix");
         }
         DenseVector result = new DenseVector(getNumRows());
-        for (int i = 0; i < getNumRows(); ++i)
+        final int numRows = this.getNumRows();
+        for (int i = 0; i < numRows; ++i)
         {
             result.values[i] = rows[i].getElement(columnIndex);
         }
@@ -1565,7 +1613,8 @@ public class DenseMatrix
     }
 
     @Override
-    final public Vector getRow(int rowIndex)
+    final public Vector getRow(
+        final int rowIndex)
     {
         if (rowIndex < 0 || rowIndex >= getNumRows())
         {
@@ -1578,13 +1627,16 @@ public class DenseMatrix
     }
 
     @Override
-    final public void convertFromVector(Vector v)
+    final public void convertFromVector(
+        final Vector v)
     {
         v.assertDimensionalityEquals(this.getNumRows() * this.getNumColumns());
 
-        for (int i = 0; i < getNumRows(); ++i)
+        final int numRows = this.getNumRows();
+        final int numColumns = this.getNumColumns();
+        for (int i = 0; i < numRows; ++i)
         {
-            for (int j = 0; j < getNumColumns(); ++j)
+            for (int j = 0; j < numColumns; ++j)
             {
                 this.rows[i].values[j] = v.getElement(i + j
                     * getNumRows());
@@ -1597,9 +1649,11 @@ public class DenseMatrix
     {
         DenseVector result = new DenseVector(getNumRows() * getNumColumns());
 
-        for (int i = 0; i < getNumRows(); ++i)
+        final int numRows = this.getNumRows();
+        final int numColumns = this.getNumColumns();
+        for (int i = 0; i < numRows; ++i)
         {
-            for (int j = 0; j < getNumColumns(); ++j)
+            for (int j = 0; j < numColumns; ++j)
             {
                 result.values[i + j * getNumRows()] = this.rows[i].values[j];
             }
@@ -1609,14 +1663,16 @@ public class DenseMatrix
     }
 
     @Override
-    public final Vector preTimes(SparseVector vector)
+    public final Vector preTimes(
+        final SparseVector vector)
     {
         vector.assertDimensionalityEquals(this.getNumRows());
         DenseVector result = new DenseVector(getNumColumns());
         vector.compress();
         int[] locs = vector.getIndices();
         double[] vals = vector.getValues();
-        for (int i = 0; i < getNumColumns(); ++i)
+        final int numColumns = this.getNumColumns();
+        for (int i = 0; i < numColumns; ++i)
         {
             double entry = 0;
             for (int j = 0; j < locs.length; ++j)
@@ -1630,14 +1686,19 @@ public class DenseMatrix
     }
 
     @Override
-    public final Vector preTimes(DenseVector vector)
+    public final Vector preTimes(
+        final DenseVector vector)
     {
-        vector.assertDimensionalityEquals(this.getNumRows());
-        DenseVector result = new DenseVector(getNumColumns());
-        for (int i = 0; i < getNumColumns(); ++i)
+        
+        final int numRows = this.getNumRows();
+        final int numColumns = this.getNumColumns();
+        vector.assertDimensionalityEquals(numRows);
+        DenseVector result = new DenseVector(numColumns);
+        
+        for (int i = 0; i < numColumns; ++i)
         {
             double entry = 0;
-            for (int j = 0; j < getNumRows(); ++j)
+            for (int j = 0; j < numRows; ++j)
             {
                 entry += vector.getElement(j) * rows[j].getElement(i);
             }
@@ -1655,7 +1716,8 @@ public class DenseMatrix
      * @param i The row index -- only checked by Java's array indexing.
      * @return The DenseVector stored at i
      */
-    final DenseVector row(int i)
+    final DenseVector row(
+        final int i)
     {
         return rows[i];
     }
@@ -1668,8 +1730,9 @@ public class DenseMatrix
      * @param i The row index -- only checked by Java's array indexing.
      * @param v The DenseVector to store at i -- not checked at all
      */
-    final void setRow(int i,
-        DenseVector v)
+    final void setRow(
+        final int i,
+        final DenseVector v)
     {
         rows[i] = v;
     }
@@ -1683,9 +1746,11 @@ public class DenseMatrix
     final public int numNonZero()
     {
         int nnz = 0;
-        for (int i = 0; i < getNumRows(); ++i)
+        final int numRows = this.getNumRows();
+        final int numColumns = this.getNumColumns();
+        for (int i = 0; i < numRows; ++i)
         {
-            for (int j = 0; j < getNumColumns(); ++j)
+            for (int j = 0; j < numColumns; ++j)
             {
                 nnz += (rows[i].getElement(j) == 0) ? 0 : 1;
             }

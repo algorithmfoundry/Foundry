@@ -67,9 +67,10 @@ public class ParallelSparseMatrix
      * @param numThreads The number of threads to use for parallelized
      * operations
      */
-    public ParallelSparseMatrix(int numRows,
-        int numCols,
-        int numThreads)
+    public ParallelSparseMatrix(
+        final int numRows,
+        final int numCols,
+        final int numThreads)
     {
         super(numRows, numCols);
         this.numThreads = numThreads;
@@ -83,7 +84,8 @@ public class ParallelSparseMatrix
      *
      * @param m The sparse matrix to copy
      */
-    public ParallelSparseMatrix(ParallelSparseMatrix m)
+    public ParallelSparseMatrix(
+        final ParallelSparseMatrix m)
     {
         super(m);
         this.numThreads = m.numThreads;
@@ -99,8 +101,9 @@ public class ParallelSparseMatrix
      * @param numThreads The number of threads to use for parallelized
      * operations
      */
-    public ParallelSparseMatrix(SparseMatrix m,
-        int numThreads)
+    public ParallelSparseMatrix(
+        final SparseMatrix m,
+        final int numThreads)
     {
         super(m);
         this.numThreads = numThreads;
@@ -116,8 +119,9 @@ public class ParallelSparseMatrix
      * @param numThreads The number of threads to use for parallelized
      * operations
      */
-    public ParallelSparseMatrix(DenseMatrix d,
-        int numThreads)
+    public ParallelSparseMatrix(
+        final DenseMatrix d,
+        final int numThreads)
     {
         super(d);
         this.numThreads = numThreads;
@@ -133,8 +137,9 @@ public class ParallelSparseMatrix
      * @param numThreads The number of threads to use for parallelized
      * operations
      */
-    public ParallelSparseMatrix(DiagonalMatrix d,
-        int numThreads)
+    public ParallelSparseMatrix(
+        final DiagonalMatrix d,
+        final int numThreads)
     {
         super(d);
         this.numThreads = numThreads;
@@ -152,10 +157,11 @@ public class ParallelSparseMatrix
      * @param unused Only present to differentiate from the other full
      * constructor
      */
-    ParallelSparseMatrix(int numRows,
-        int numCols,
-        int numThreads,
-        boolean unused)
+    ParallelSparseMatrix(
+        final int numRows,
+        final int numCols,
+        final int numThreads,
+        final boolean unused)
     {
         super(numRows, numCols, unused);
         this.numThreads = numThreads;
@@ -191,7 +197,8 @@ public class ParallelSparseMatrix
      * @return {@inheritDoc}
      */
     @Override
-    public Vector times(SparseVector vector)
+    public Vector times(
+        final SparseVector vector)
     {
         if (!isCompressed())
         {
@@ -273,7 +280,8 @@ public class ParallelSparseMatrix
      * @return {@inheritDoc}
      */
     @Override
-    public Vector times(DenseVector vector)
+    public Vector times(
+        final DenseVector vector)
     {
         if (!isCompressed())
         {

@@ -56,7 +56,8 @@ class MatrixIterator
      *
      * @param m The matrix to iterate over
      */
-    public MatrixIterator(BaseMatrix m)
+    public MatrixIterator(
+        final BaseMatrix m)
     {
         // Start in the upper left corner
         this.rowIndex = this.columnIndex = 0;
