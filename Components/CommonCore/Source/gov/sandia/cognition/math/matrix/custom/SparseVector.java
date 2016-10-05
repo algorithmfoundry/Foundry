@@ -283,20 +283,18 @@ public class SparseVector
 
         return nnz;
     }
-
     /**
-     * Helper that handles the addition (scalar = 1) and subtraction (scalar =
-     * -1) logic for plusEquals(Dense) and minusEquals(Dense).
+     * {@inheritDoc}
      *
-     * @param other The other vector to add to this
-     * @param scalar The scalar (+1/-1) for differentiating addition from
-     * subtraction.
+     * NOTE: This operation is not recommended as it is most likely to create a
+     * very dense vector being stored in a sparse-vector format. This will be
+     * memory inefficient.
      */
-    private void plusEqualsScaled(
+    @Override
+    public void scaledPlusEquals(
         final DenseVector other,
-        final double scalar)
+        final double scaleFactor)
     {
-// TODO: Why is this in a separate helper function? Can't we just chain the main ones?
         this.assertSameDimensionality(other);
         compress();
 
@@ -310,12 +308,12 @@ public class SparseVector
         {
             if ((idx < indices.length) && indices[idx] == i)
             {
-                valsAfter[i] = values[idx] + other.values[i] * scalar;
+                valsAfter[i] = values[idx] + other.values[i] * scaleFactor;
                 ++idx;
             }
             else
             {
-                valsAfter[i] = other.values[i] * scalar;
+                valsAfter[i] = other.values[i] * scaleFactor;
             }
             locsAfter[i] = i;
         }
@@ -323,19 +321,11 @@ public class SparseVector
         indices = locsAfter;
     }
 
-    /**
-     * Helper that handles the addition (scalar = 1) and subtraction (scalar =
-     * -1) logic for plusEquals(Sparse) and minusEquals(Sparse).
-     *
-     * @param other The other vector to add to this
-     * @param scalar The scalar (+1/-1) for differentiating addition from
-     * subtraction.
-     */
-    private void plusEqualsScaled(
+    @Override
+    public void scaledPlusEquals(
         final SparseVector other,
-        final double scalar)
+        final double scaleFactor)
     {
-// TODO: Why is this in a separate helper function? Can't we just chain the main ones?
         this.assertSameDimensionality(other);
         compress();
 
@@ -350,7 +340,7 @@ public class SparseVector
         {
             if (indices[myidx] == other.indices[otheridx])
             {
-                valsAfter[outidx] = values[myidx] + other.values[otheridx] * scalar;
+                valsAfter[outidx] = values[myidx] + other.values[otheridx] * scaleFactor;
                 locsAfter[outidx] = indices[myidx];
                 ++myidx;
                 ++otheridx;
@@ -363,7 +353,7 @@ public class SparseVector
             }
             else // if (other.locs[otheridx] < locs[myidx])
             {
-                valsAfter[outidx] = other.values[otheridx] * scalar;
+                valsAfter[outidx] = other.values[otheridx] * scaleFactor;
                 locsAfter[outidx] = other.indices[otheridx];
                 ++otheridx;
             }
@@ -378,7 +368,7 @@ public class SparseVector
         }
         while (otheridx < other.values.length)
         {
-            valsAfter[outidx] = other.values[otheridx] * scalar;
+            valsAfter[outidx] = other.values[otheridx] * scaleFactor;
             locsAfter[outidx] = other.indices[otheridx];
             ++otheridx;
             ++outidx;
@@ -395,40 +385,17 @@ public class SparseVector
      * memory inefficient.
      */
     @Override
-    public void scaledPlusEquals(
-        final DenseVector other,
-        final double scaleFactor)
-    {
-        plusEqualsScaled(other, scaleFactor);
-    }
-
-    @Override
-    public void scaledPlusEquals(
-        final SparseVector other,
-        final double scaleFactor)
-    {
-        plusEqualsScaled(other, scaleFactor);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * NOTE: This operation is not recommended as it is most likely to create a
-     * very dense vector being stored in a sparse-vector format. This will be
-     * memory inefficient.
-     */
-    @Override
     public final void plusEquals(
         final DenseVector other)
     {
-        plusEqualsScaled(other, 1);
+        this.scaledPlusEquals(other, 1.0);
     }
 
     @Override
     public final void plusEquals(
         final SparseVector other)
     {
-        plusEqualsScaled(other, 1);
+        this.scaledPlusEquals(other, 1.0);
     }
 
     /**
@@ -442,14 +409,14 @@ public class SparseVector
     public final void minusEquals(
         final DenseVector other)
     {
-        plusEqualsScaled(other, -1);
+        this.scaledPlusEquals(other, -1.0);
     }
 
     @Override
     public final void minusEquals(
         final SparseVector other)
     {
-        plusEqualsScaled(other, -1);
+        this.scaledPlusEquals(other, -1.0);
     }
 
     @Override
