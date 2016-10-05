@@ -319,7 +319,7 @@ public class DenseVector
     {
         Vector result;
         int len = values.length + other.getDimensionality();
-        int nnz = numNonZero() + other.numNonZero();
+        int nnz = countNonZeros() + other.getNonZeroCount();
         if (nnz > SparseVector.SPARSE_TO_DENSE_THRESHOLD * len)
         {
             result = new DenseVector(len);
@@ -495,8 +495,7 @@ public class DenseVector
      *
      * @return The number of non-zero entries in this
      */
-// TODO: Rename this.
-    final public int numNonZero()
+    final public int countNonZeros()
     {
         int nnz = 0;
         for (final double d : values)

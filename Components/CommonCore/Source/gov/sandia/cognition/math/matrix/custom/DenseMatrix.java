@@ -1743,7 +1743,7 @@ public class DenseMatrix
      *
      * @return the number of elements in this that are non-zero.
      */
-    final public int numNonZero()
+    final public int getNonZeroCount()
     {
         int nnz = 0;
         final int numRows = this.getNumRows();
@@ -1766,7 +1766,7 @@ public class DenseMatrix
      */
     final public double percentNonzero()
     {
-        return ((double) numNonZero()) / ((double) (getNumRows()
+        return ((double) getNonZeroCount()) / ((double) (getNumRows()
             * getNumColumns()));
     }
 

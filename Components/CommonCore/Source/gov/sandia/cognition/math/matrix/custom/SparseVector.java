@@ -110,7 +110,7 @@ public class SparseVector
         final DenseVector v)
     {
         this.dimensionality = v.values.length;
-        int nnz = v.numNonZero();
+        int nnz = v.countNonZeros();
         values = new double[nnz];
         indices = new int[nnz];
         elements = new TreeMap<>();
@@ -630,7 +630,7 @@ public class SparseVector
         compress();
         Vector result;
         int len = dimensionality + other.values.length;
-        int nnz = numNonZero() + other.numNonZero();
+        int nnz = getNonZeroCount() + other.countNonZeros();
         if (nnz > SPARSE_TO_DENSE_THRESHOLD * len)
         {
             result = new DenseVector(len);
@@ -671,7 +671,7 @@ public class SparseVector
         compress();
         other.compress();
         int len = dimensionality + other.dimensionality;
-        int nnz = numNonZero() + other.numNonZero();
+        int nnz = getNonZeroCount() + other.getNonZeroCount();
         SparseVector result = new SparseVector(len);
         result.values = new double[nnz];
         result.indices = new int[nnz];
@@ -894,7 +894,7 @@ public class SparseVector
      *
      * @return the number of non-zero entries in this sparse vector
      */
-    final int numNonZero()
+    final int getNonZeroCount()
     {
         if (isCompressed())
         {

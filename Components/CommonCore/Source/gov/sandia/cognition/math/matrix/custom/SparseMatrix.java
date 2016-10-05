@@ -112,17 +112,18 @@ public class SparseMatrix
             return;
         }
 
-        int numNonZero = 0;
-        for (int i = 0; i < getNumRows(); ++i)
+        final int numRows = this.getNumRows();
+        int nonZeroCount = 0;
+        for (int i = 0; i < numRows; ++i)
         {
             rows[i].compress();
-            numNonZero += rows[i].numNonZero();
+            nonZeroCount += rows[i].getNonZeroCount();
         }
-        values = new double[numNonZero];
-        firstIndicesForRows = new int[getNumRows() + 1];
-        columnIndices = new int[numNonZero];
+        values = new double[nonZeroCount];
+        firstIndicesForRows = new int[numRows + 1];
+        columnIndices = new int[nonZeroCount];
         int curIdx = 0;
-        for (int i = 0; i < getNumRows(); ++i)
+        for (int i = 0; i < numRows; ++i)
         {
             firstIndicesForRows[i] = curIdx;
             for (int j = 0; j < rows[i].getIndices().length; ++j)
@@ -133,7 +134,7 @@ public class SparseMatrix
             }
             rows[i].clear();
         }
-        firstIndicesForRows[getNumRows()] = curIdx;
+        firstIndicesForRows[numRows] = curIdx;
     }
 
     /**
@@ -299,7 +300,7 @@ public class SparseMatrix
     public SparseMatrix(
         final DenseMatrix d)
     {
-        int nnz = d.numNonZero();
+        int nnz = d.getNonZeroCount();
         this.numCols = d.getNumColumns();
         this.numRows = d.getNumRows();
         rows = new SparseVector[numRows];
