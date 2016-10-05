@@ -186,8 +186,7 @@ public class ParallelSparseMatrix
     @Override
     final public Matrix clone()
     {
-// TODO: Fix this clone.
-        return new ParallelSparseMatrix(this);
+        return (ParallelSparseMatrix) super.clone();
     }
 
     /**
