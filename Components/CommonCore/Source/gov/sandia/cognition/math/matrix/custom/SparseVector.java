@@ -91,6 +91,11 @@ public class SparseVector
         if (!v.isCompressed())
         {
             elements = new TreeMap<>(v.elements);
+            // Need to copy over all the values.
+            for (Map.Entry<Integer, MutableDouble> entry : this.elements.entrySet())
+            {
+                entry.setValue(new MutableDouble(entry.getValue()));
+            }
             values = null;
             indices = null;
         }
@@ -207,6 +212,7 @@ public class SparseVector
     @Override
     final public Vector clone()
     {
+// TODO: Fix this clone.
         return new SparseVector(this);
     }
 
