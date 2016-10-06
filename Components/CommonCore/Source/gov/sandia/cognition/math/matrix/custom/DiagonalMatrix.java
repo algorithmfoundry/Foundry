@@ -438,14 +438,14 @@ public class DiagonalMatrix
         final DenseMatrix other)
     {
         this.assertMultiplicationDimensions(other);
-        DenseMatrix result = new DenseMatrix(diagonal.length, other.getNumColumns(),
-            true);
+        
+        final DenseVector[] rows = new DenseVector[diagonal.length];
         for (int i = 0; i < diagonal.length; ++i)
         {
             DenseVector v = other.row(i);
-            result.setRow(i, (DenseVector) v.scale(diagonal[i]));
+            rows[i] = (DenseVector) v.scale(diagonal[i]);
         }
-        return result;
+        return new DenseMatrix(rows);
     }
 
     @Override

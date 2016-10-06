@@ -1305,8 +1305,8 @@ public class SparseMatrix
         {
             other.compress();
         }
-        DenseMatrix result = new DenseMatrix(getNumRows(), other.getNumColumns(),
-            true);
+        
+        final DenseVector[] rows = new DenseVector[this.numRows];
         for (int i = 0; i < this.numRows; ++i)
         {
             DenseVector row = new DenseVector(other.getNumColumns());
@@ -1318,10 +1318,12 @@ public class SparseMatrix
                     row.values[other.columnIndices[k]] += other.values[k] * values[j];
                 }
             }
-            result.setRow(i, row);
+            rows[i] = row;
         }
+        
+        final DenseMatrix result = new DenseMatrix(rows);
 
-        if (result.percentNonzero() < SparseVector.SPARSE_TO_DENSE_THRESHOLD)
+        if (result.getNonZeroPercent() < SparseVector.SPARSE_TO_DENSE_THRESHOLD)
         {
             return new SparseMatrix(result);
         }

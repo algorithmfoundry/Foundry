@@ -68,7 +68,14 @@ public class DenseMatrix
         final int numRows,
         final int numCols)
     {
-        this(numRows, numCols, 0.0);
+        super();
+        
+        this.rows = new DenseVector[numRows];
+        for (int i = 0; i < numRows; i++)
+        {
+            this.rows[i] = new DenseVector(numCols);
+        }
+        initBlas();
     }
 
     /**
@@ -86,7 +93,10 @@ public class DenseMatrix
         super();
         
         this.rows = new DenseVector[numRows];
-        this.initialize(numRows, numCols, defaultVal);
+        for (int i = 0; i < numRows; i++)
+        {
+            this.rows[i] = new DenseVector(numCols, defaultVal);
+        }
         initBlas();
     }
 
@@ -101,8 +111,9 @@ public class DenseMatrix
     {
         super();
         
-        this.rows = new DenseVector[m.getNumRows()];
-        for (int i = 0; i < m.getNumRows(); ++i)
+        final int numRows = m.getNumRows();
+        this.rows = new DenseVector[numRows];
+        for (int i = 0; i < numRows; i++)
         {
             this.rows[i] = new DenseVector(m.rows[i]);
         }
@@ -120,44 +131,47 @@ public class DenseMatrix
     {
         super();
         
-        this.rows = new DenseVector[m.getNumRows()];
-        for (int i = 0; i < m.getNumRows(); ++i)
+        final int numRows = m.getNumRows();
+        final int numColumns = m.getNumColumns();
+        this.rows = new DenseVector[numRows];
+        for (int i = 0; i < numRows; ++i)
         {
-            this.rows[i] = new DenseVector(m.getNumColumns());
-            for (int j = 0; j < m.getNumColumns(); ++j)
+            this.rows[i] = new DenseVector(numColumns);
+            for (int j = 0; j < numColumns; ++j)
             {
-                this.rows[i].setElement(j, m.getElement(i, j));
+                this.rows[i].values[j] = m.get(i, j);
             }
         }
         initBlas();
     }
 
     /**
-     * Package private optimized constructor that does not set any values for
-     * the rows. If the package private setRowInternal (or equivalent) is not called
-     * for all rows, this sets up for weird null pointer exceptions later. Also,
-     * please note that the numCols parameter isn't used here and you can pass
-     * in rows with a different number of columns, but that would be -such- bad
-     * form.
+     * Package private optimized constructor that allows creation of a matrix
+     * from the given rows.
      *
      * This is an optimized constructor for within package only. Don't call this
      * unless you are -super- careful.
      *
-     * @param numRows The number of rows for this
-     * @param numCols The number of columns for this
-     * @param unused An unused boolean passed just to change the interface from
-     * the standard constructor
+     * @param rows The array of rows for the matrix. Each row must be the same
+     *        length.
      */
-// TODO: This seems like a hack. Clean it up.
     DenseMatrix(
-        final int numRows,
-        final int numCols,
-        final boolean unused)
+        final DenseVector[] rows)
     {
         super();
         
-        this.rows = new DenseVector[numRows];
-        // Don't initialize the row's values
+        final int numRows = rows.length;
+        if (numRows > 0)
+        {
+            final int numColumns = rows[0].getDimensionality();
+            for (int i = 1; i < numRows; i++)
+            {
+                rows[i].assertDimensionalityEquals(numColumns);
+            }
+        }
+        
+        this.rows = rows;
+
         initBlas();
     }
 
@@ -179,13 +193,14 @@ public class DenseMatrix
         this.rows = new DenseVector[numRows];
         for (int i = 0; i < numRows; ++i)
         {
-            DenseVector v = new DenseVector(numCols);
+            final DenseVector v = new DenseVector(numCols);
             for (int j = 0; j < numCols; ++j)
             {
                 v.values[j] = values[i][j];
             }
-            this.setRow(i, v);
+            this.rows[i] = v;
         }
+        initBlas();
     }
 
     /**
@@ -206,13 +221,15 @@ public class DenseMatrix
         this.rows = new DenseVector[numRows];
         for (int i = 0; i < numRows; ++i)
         {
-            DenseVector v = new DenseVector(numCols);
+            final DenseVector v = new DenseVector(numCols);
+            final List<Double> list = values.get(i);
             for (int j = 0; j < numCols; ++j)
             {
-                v.values[j] = values.get(i).get(j);
+                v.values[j] = list.get(j);
             }
-            this.setRow(i, v);
+            this.rows[i] = v;
         }
+        initBlas();
     }
 
     /**
@@ -223,27 +240,6 @@ public class DenseMatrix
     {
         super();
         // NOTE: This doesn't initialize anything
-    }
-
-    /**
-     * Helper that sets all values in the matrix to the specified default value.
-     * Initializes each row herein as well.
-     *
-     * @param numRows The number of rows to set the value in (should be all of
-     * the rows in the matrix).
-     * @param numCols The number of columns in the matrix -- all rows are
-     * initialized to that length.
-     * @param defaultVal The value to specify in each element of the matrix.
-     */
-    private void initialize(
-        final int numRows,
-        final int numCols,
-        final double defaultVal)
-    {
-        for (int i = 0; i < numRows; ++i)
-        {
-            this.rows[i] = new DenseVector(numCols, defaultVal);
-        }
     }
 
     /**
@@ -667,14 +663,14 @@ public class DenseMatrix
         {
             other.compress();
         }
-        DenseMatrix result = new DenseMatrix(getNumRows(), other.getNumColumns(),
-            true);
+
         final int numRows = this.getNumRows();
+        final DenseVector[] resultRows = new DenseVector[numRows];
         for (int i = 0; i < numRows; ++i)
         {
-            result.setRow(i, (DenseVector) other.preTimes(rows[i]));
+            resultRows[i] = (DenseVector) other.preTimes(this.rows[i]);
         }
-        return result;
+        return new DenseMatrix(resultRows);
     }
 
     @Override
@@ -706,14 +702,13 @@ public class DenseMatrix
         this.assertMultiplicationDimensions(other);
         
         final int numRows = this.getNumRows();
-        final int numColumns = this.getNumColumns();
-        DenseMatrix result = new DenseMatrix(numRows, numColumns, true);
+        final DenseVector[] resultRows = new DenseVector[numRows];
         for (int i = 0; i < numRows; ++i)
         {
-            result.setRow(i, (DenseVector) other.preTimes(rows[i]));
+            resultRows[i] = (DenseVector) other.preTimes(this.rows[i]);
         }
 
-        return result;
+        return new DenseMatrix(resultRows);
     }
 
     /**
@@ -834,16 +829,15 @@ public class DenseMatrix
         final int maxColumn)
     {
         checkSubmatrixRange(minRow, maxRow, minColumn, maxColumn);
-        DenseMatrix result = new DenseMatrix(maxRow - minRow + 1, maxColumn
-            - minColumn + 1, true);
+        DenseMatrix result = new DenseMatrix(
+            maxRow - minRow + 1, 
+            maxColumn - minColumn + 1);
         for (int i = minRow; i <= maxRow; ++i)
         {
-            DenseVector row = new DenseVector(maxColumn - minColumn + 1);
             for (int j = minColumn; j <= maxColumn; ++j)
             {
-                row.setElement(j - minColumn, this.rows[i].values[j]);
+                result.set(i - minRow, j - minColumn, this.rows[i].values[j]);
             }
-            result.setRow(i - minRow, row);
         }
 
         return result;
@@ -885,8 +879,8 @@ public class DenseMatrix
         // It's the transpose of me
         int m = getNumColumns();
         int n = getNumRows();
-        DenseMatrix result = new DenseMatrix(m, n, true);
-
+        
+        final DenseVector[] resultRows = new DenseVector[m];
         for (int i = 0; i < m; ++i)
         {
             DenseVector row = new DenseVector(n);
@@ -894,10 +888,10 @@ public class DenseMatrix
             {
                 row.setElement(j, getElement(j, i));
             }
-            result.setRow(i, row);
+            resultRows[i] = row;
         }
 
-        return result;
+        return new DenseMatrix(resultRows);
     }
 
     @Override
@@ -1764,7 +1758,7 @@ public class DenseMatrix
      *
      * @return the percentage of this that is non-zero elements
      */
-    final public double percentNonzero()
+    final public double getNonZeroPercent()
     {
         return ((double) getNonZeroCount()) / ((double) (getNumRows()
             * getNumColumns()));

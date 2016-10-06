@@ -184,7 +184,7 @@ public class ConstructorTest
         List<List<Double>> nulll = new ArrayList<List<Double>>();
         DenseMatrix dm13 = new DenseMatrix(nulll);
         MatrixUtil.testMatrixEquals(dm13, DenseMatrix.class, 0, 0);
-        DenseMatrix dm14 = new DenseMatrix(0, 0, true);
+        DenseMatrix dm14 = new DenseMatrix(new DenseVector[0]);
         MatrixUtil.testMatrixEquals(dm14, DenseMatrix.class, 0, 0);
 
         CustomSparseMatrixFactory sf = new CustomSparseMatrixFactory();

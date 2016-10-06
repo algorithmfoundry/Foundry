@@ -259,7 +259,7 @@ public class DenseVector
     {
         int numRows = getDimensionality();
         int numCols = other.getDimensionality();
-        DenseMatrix result = new DenseMatrix(numRows, numCols, true);
+        final DenseVector[] rows = new DenseVector[numRows];
         for (int i = 0; i < numRows; ++i)
         {
             DenseVector row = new DenseVector(numCols);
@@ -267,10 +267,10 @@ public class DenseVector
             {
                 row.values[j] = values[i] * other.values[j];
             }
-            result.setRow(i, row);
+            rows[i] = row;
         }
 
-        return result;
+        return new DenseMatrix(rows);
     }
 
     @Override
