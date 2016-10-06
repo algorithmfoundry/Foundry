@@ -13,6 +13,7 @@
 
 package gov.sandia.cognition.math.matrix.custom;
 
+import gov.sandia.cognition.math.MutableDouble;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
@@ -48,7 +49,7 @@ public class SparseVector
     /**
      * The index-to-value map
      */
-    private Map<Integer, Double> elements;
+    private TreeMap<Integer, MutableDouble> elements;
 
     /**
      * Compressed version of the data: The values. Similar to the Yale format
@@ -168,10 +169,10 @@ public class SparseVector
         values = new double[nnz];
         indices = new int[nnz];
         int idx = 0;
-        for (Map.Entry<Integer, Double> e : elements.entrySet())
+        for (Map.Entry<Integer, MutableDouble> e : elements.entrySet())
         {
             indices[idx] = e.getKey();
-            values[idx] = e.getValue();
+            values[idx] = e.getValue().value;
             ++idx;
         }
         elements.clear();
@@ -193,7 +194,11 @@ public class SparseVector
         elements.clear();
         for (int i = 0; i < values.length; ++i)
         {
-            elements.put(indices[i], values[i]);
+            final double value = values[i];
+            if (value != 0.0)
+            {
+                elements.put(indices[i], new MutableDouble(value));
+            }
         }
         indices = null;
         values = null;
@@ -552,7 +557,7 @@ public class SparseVector
             {
                 for (int j = 0; j < numCols; ++j)
                 {
-                    row.elements.put(j, values[idx] * other.values[j]);
+                    row.elements.put(j, new MutableDouble(values[idx] * other.values[j]));
                 }
                 ++idx;
             }
@@ -580,7 +585,7 @@ public class SparseVector
             {
                 for (int j = 0; j < other.indices.length; ++j)
                 {
-                    row.elements.put(other.indices[j], values[idx] * other.values[j]);
+                    row.elements.put(other.indices[j], new MutableDouble(values[idx] * other.values[j]));
                 }
                 ++idx;
             }
@@ -772,8 +777,8 @@ public class SparseVector
         }
         else
         {
-            Double v = elements.get(index);
-            return (v == null) ? 0 : v;
+            MutableDouble v = elements.get(index);
+            return (v == null) ? 0 : v.value;
         }
     }
 
@@ -790,15 +795,41 @@ public class SparseVector
         final int index,
         final double value)
     {
+        if (this.isCompressed())
+        {
+            // If we're in compressed mode and this matches an existing index,
+            // then we can just update the array value.
+            final int i = Arrays.binarySearch(this.indices, index);
+            if (i >= 0)
+            {
+                // Found the index in the array, so update the value.
+                this.values[i] = value;
+                return;
+            }
+            // else - No entry found. Go through to normal modification mode.
+        }
+        
         decompress();
         checkBounds(index);
-        if (value != 0)
+        if (value == 0.0)
         {
-            elements.put(index, value);
+            // Remove zeros. If it is not there, then this will be a no-op.
+            this.elements.remove(index);
         }
-        else if (elements.containsKey(index))
+        else
         {
-            elements.remove(index);
+            // See if there is already an entry for this value.
+            MutableDouble entry = this.elements.get(index);
+            if (entry != null)
+            {
+                // Update the value.
+                entry.value = value;
+            }
+            else
+            {
+                // Make a new entry for the value.
+                this.elements.put(index, new MutableDouble(value));
+            }
         }
     }
 
@@ -824,7 +855,7 @@ public class SparseVector
         {
             if ((indices[i] >= minIndex) && (indices[i] <= maxIndex))
             {
-                result.elements.put(indices[i] - minIndex, values[i]);
+                result.elements.put(indices[i] - minIndex, new MutableDouble(values[i]));
             }
         }
 
