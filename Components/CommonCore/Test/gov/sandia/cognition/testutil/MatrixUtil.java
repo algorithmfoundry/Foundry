@@ -5,8 +5,6 @@ import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixEntry;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 import static org.junit.Assert.*;
 
@@ -39,71 +37,40 @@ public class MatrixUtil
         assertTrue(c.isInstance(m));
         assertEquals(m.getNumRows(), numRows);
         assertEquals(m.getNumColumns(), numCols);
-        Iterator<MatrixEntry> iter = m.iterator();
+        
+        int nonZeroCount = 0;
         for (int i = 0; i < numRows;
             ++i)
         {
             for (int j = 0; j < numCols;
                 ++j)
             {
-                assertTrue(iter.hasNext());
                 double v = vals[i * numCols + j];
                 double mij = m.getElement(i, j);
-                MatrixEntry me = iter.next();
-                assertEquals(i, me.getRowIndex());
-                assertEquals(j, me.getColumnIndex());
                 AssertUtil.equalToNumDigits("At " + i + ", " + j + ": " + v
                     + " != " + mij, v, mij, 6);
-                AssertUtil.equalToNumDigits("At " + i + ", " + j + ": " + v
-                    + " != " + me.getValue(), v, me.getValue(), 6);
-                try
+                
+                if (v != 0.0)
                 {
-                    me.setColumnIndex(numCols);
-                    assertTrue(false);
-                }
-                catch (IllegalArgumentException e)
-                {
-                    // Correct path
-                }
-                try
-                {
-                    me.setRowIndex(numRows);
-                    assertTrue(false);
-                }
-                catch (IllegalArgumentException e)
-                {
-                    // Correct path
-                }
-                try
-                {
-                    me.setColumnIndex(-1);
-                    assertTrue(false);
-                }
-                catch (IllegalArgumentException e)
-                {
-                    // Correct path
-                }
-                try
-                {
-                    me.setRowIndex(-1);
-                    assertTrue(false);
-                }
-                catch (IllegalArgumentException e)
-                {
-                    // Correct path
+                    nonZeroCount++;
                 }
             }
         }
-        assertFalse(iter.hasNext());
-        try
+        
+        int entryCount = 0;
+        for (MatrixEntry entry : m)
         {
-            iter.next();
-            assertTrue(false);
+            int i = entry.getRowIndex();
+            int j = entry.getColumnIndex();
+            
+            double v = vals[i * numCols + j];
+            double mij = entry.getValue();
+            AssertUtil.equalToNumDigits("At " + i + ", " + j + ": " + v
+                + " != " + mij, v, mij, 6);
+            assertEquals(m.getElement(i, j), mij, 0.0);
+            entryCount++;
         }
-        catch (NoSuchElementException e)
-        {
-            // This is the correct path
-        }
+        assertTrue(entryCount >= nonZeroCount);
     }
 
     /**
@@ -124,6 +91,7 @@ public class MatrixUtil
     {
         assertTrue(c.isInstance(v));
         assertEquals(v.getDimensionality(), dimensionality);
+        int nonZeroCount = 0;
         for (int i = 0; i < dimensionality;
             ++i)
         {
@@ -132,7 +100,28 @@ public class MatrixUtil
             
             AssertUtil.equalToNumDigits("At " + i + ": " + val + " != " + vi,
                 val, vi, 6);
+            
+            if (val != 0.0)
+            {
+                nonZeroCount++;
+            }
+                
         }
+        
+        int entryCount = 0;
+        for (VectorEntry entry : v)
+        {
+            int i = entry.getIndex();
+            double val = vals[i];
+            double vi = entry.getValue();
+            
+            AssertUtil.equalToNumDigits("At " + i + ": " + val + " != " + vi,
+                val, vi, 6);
+            assertEquals(v.get(i), vi, 0.0);
+            entryCount++;
+        }
+        
+        assertTrue(entryCount >= nonZeroCount);
     }
 
     /**

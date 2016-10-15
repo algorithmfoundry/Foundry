@@ -13,12 +13,6 @@
 
 package gov.sandia.cognition.math.matrix.custom;
 
-import gov.sandia.cognition.math.matrix.custom.SparseVector;
-import gov.sandia.cognition.math.matrix.custom.ParallelSparseMatrix;
-import gov.sandia.cognition.math.matrix.custom.DenseVector;
-import gov.sandia.cognition.math.matrix.custom.SparseMatrix;
-import gov.sandia.cognition.math.matrix.custom.DenseMatrix;
-import gov.sandia.cognition.math.matrix.custom.DiagonalMatrix;
 import gov.sandia.cognition.math.ComplexNumber;
 import gov.sandia.cognition.math.matrix.DimensionalityMismatchException;
 import gov.sandia.cognition.math.matrix.Matrix;
@@ -1812,7 +1806,7 @@ public class MatrixCorrectnessTest
             SparseMatrix.class, 2, 2, 0, 0, 0, 0);
 
         // m1.getNonZeroValueIterator()
-        testIter(m1.getNonZeroValueIterator(), new double[]
+        testIter(m1.iterator(), new double[]
         {
             4, 6, 3, 2, 1
         }, new int[]
@@ -1822,7 +1816,7 @@ public class MatrixCorrectnessTest
         {
             0, 3, 2, 3, 1
         });
-        testIter(m2.getNonZeroValueIterator(), new double[]
+        testIter(m2.iterator(), new double[]
         {
             6, 2, 4, 3, 2
         }, new int[]
@@ -1832,7 +1826,7 @@ public class MatrixCorrectnessTest
         {
             0, 1, 0, 1, 0
         });
-        testIter(m3.getNonZeroValueIterator(), new double[]
+        testIter(m3.iterator(), new double[]
         {
             1, 5
         }, new int[]
@@ -5687,7 +5681,7 @@ public class MatrixCorrectnessTest
         // No way to cause an exception
         // m1.zero()
         // No way to cause an exception
-        Iterator<MatrixEntry> iter = s1.getNonZeroValueIterator();
+        Iterator<MatrixEntry> iter = s1.iterator();
         for (int i = 0; i < 3; ++i)
         {
             iter.next();
@@ -5700,7 +5694,7 @@ public class MatrixCorrectnessTest
         catch (Exception e)
         {
         }
-        iter = s1.getNonZeroValueIterator();
+        iter = s1.iterator();
         MatrixEntry me = iter.next();
         try
         {
@@ -5713,14 +5707,6 @@ public class MatrixCorrectnessTest
         try
         {
             me.setRowIndex(1);
-            assertFalse(true);
-        }
-        catch (UnsupportedOperationException e)
-        {
-        }
-        try
-        {
-            me.setValue(1);
             assertFalse(true);
         }
         catch (UnsupportedOperationException e)

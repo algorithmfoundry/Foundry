@@ -117,7 +117,7 @@ public class SparseMatrix
         for (int i = 0; i < numRows; ++i)
         {
             rows[i].compress();
-            nonZeroCount += rows[i].getNonZeroCount();
+            nonZeroCount += rows[i].getIndices().length;
         }
         values = new double[nonZeroCount];
         firstIndicesForRows = new int[numRows + 1];
@@ -2269,7 +2269,7 @@ public class SparseMatrix
      * Private helper class that reads sparse entries from a compressed
      * SparseMatrix. Does not support the edit operations.
      */
-    final private class ReadOnlySparseMatrixEntry
+    final private class SparseMatrixEntry
         implements MatrixEntry
     {
 
@@ -2290,7 +2290,7 @@ public class SparseMatrix
          * @param columnValueIndex The index for the column and value in the
          * compressed data
          */
-        public ReadOnlySparseMatrixEntry(
+        public SparseMatrixEntry(
             final int rowIndex,
             final int columnValueIndex)
         {
@@ -2332,8 +2332,7 @@ public class SparseMatrix
         public void setValue(
             final double value)
         {
-            throw new UnsupportedOperationException(
-                "This implementation immutable.");
+            values[columnValueIndex] = value;
         }
 
         /**
@@ -2440,8 +2439,8 @@ public class SparseMatrix
         @Override
         public MatrixEntry next()
         {
-            ReadOnlySparseMatrixEntry result
-                = new ReadOnlySparseMatrixEntry(rowIdx, columnValueIndex);
+            SparseMatrixEntry result
+                = new SparseMatrixEntry(rowIdx, columnValueIndex);
             columnValueIndex++;
             // If there are no-entry rows, we need to skip past them
             while (columnValueIndex >= firstIndicesForRows[rowIdx + 1])
@@ -2467,8 +2466,11 @@ public class SparseMatrix
     @Override
     public Iterator<MatrixEntry> iterator()
     {
-// TODO: Make this a sparse iterator.
-        return super.iterator();
+        if (!isCompressed())
+        {
+            compress();
+        }
+        return new NonZeroEntryIterator();
     }
         
     /**
@@ -2481,13 +2483,10 @@ public class SparseMatrix
      * @return an iterator over the non-zero entries in this matrix
      * (left-to-right, top-to-bottom).
      */
+    @Deprecated
     final public Iterator<MatrixEntry> getNonZeroValueIterator()
     {
-        if (!isCompressed())
-        {
-            compress();
-        }
-        return new NonZeroEntryIterator();
+        return iterator();
     }
 
     /**
