@@ -20,6 +20,7 @@ import gov.sandia.cognition.math.matrix.VectorEntry;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.util.ArgumentChecker;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -209,6 +210,14 @@ public class SparseVector
         values = null;
     }
 
+    @Override
+    public void zero()
+    {
+        this.elements.clear();           
+        this.indices = null;
+        this.values = null;
+    }
+    
     @Override
     final public Vector clone()
     {
@@ -716,11 +725,11 @@ public class SparseVector
         return result;
     }
 
-// TODO: This iterator should only be over the sparse entries.
     @Override
     final public Iterator<VectorEntry> iterator()
     {
-        return new VectorIterator(this);
+        this.compress();
+        return new EntryIterator();
     }
 
     @Override
@@ -1008,4 +1017,106 @@ public class SparseVector
         return this.values.length;
     }
 
+    /**
+     * Implements an iterator over sparse entries in this vector.
+     */
+    private class EntryIterator
+        extends Object
+        implements Iterator<VectorEntry>
+    {
+        
+        /** Index of current element in iterator. */
+        private int offset;
+        
+        /**
+         * Creates a new {@link EntryIterator}.
+         */
+        public EntryIterator()
+        {
+            super();
+            
+            this.offset = 0;
+        }
+
+        @Override
+        public boolean hasNext()
+        {
+            this.assertNoModification();
+            return indices != null && this.offset < indices.length;
+        }
+
+        @Override
+        public VectorEntry next()
+        {
+            this.assertNoModification();
+            final VectorEntry result = new Entry(this.offset);
+            this.offset++;
+            return result;
+        }
+        
+        /**
+         * Asserts that no (bad) modifications have been made since the
+         * iterator started.
+         */
+        private void assertNoModification()
+        {
+            if (!elements.isEmpty())
+            {
+                throw new ConcurrentModificationException();
+            }
+        }
+        
+    }
+    
+    /**
+     * Represents an entry in the sparse vector. Used by the 
+     * {@link EntryIterator}.
+     */
+    class Entry
+        extends Object
+        implements VectorEntry
+    {
+        /** The 0-based offset in the compressed representation. */
+        private int offset;
+        
+        /**
+         * Creates a new {@link Entry}/
+         * 
+         * @param   offset The 0-based offset in the compressed representation.
+         */
+        public Entry(
+            final int offset)
+        {
+            super();
+            
+            this.offset = offset;
+        }
+
+        @Override
+        public int getIndex()
+        {
+            return indices[offset];
+        }
+
+        @Override
+        public void setIndex(
+            final int index)
+        {
+            throw new UnsupportedOperationException("Not supported.");
+        }
+
+        @Override
+        public double getValue()
+        {
+            return values[offset];
+        }
+
+        @Override
+        public void setValue(
+            final double value)
+        {
+            values[offset] = value;
+        }
+        
+    }
 }

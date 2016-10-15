@@ -124,31 +124,14 @@ public class MatrixUtil
     {
         assertTrue(c.isInstance(v));
         assertEquals(v.getDimensionality(), dimensionality);
-        Iterator<VectorEntry> iter = v.iterator();
         for (int i = 0; i < dimensionality;
             ++i)
         {
-            assertTrue(iter.hasNext());
             double val = vals[i];
             double vi = v.getElement(i);
-            VectorEntry ve = iter.next();
-            assertEquals(i, ve.getIndex());
-            AssertUtil.equalToNumDigits("At " + i + ": " + val + " != "
-                + ve.getValue(), val, ve.getValue(), 6);
+            
             AssertUtil.equalToNumDigits("At " + i + ": " + val + " != " + vi,
                 val, vi, 6);
-            ve.setIndex(0);
-            assertEquals(0, ve.getIndex());
-        }
-        assertFalse(iter.hasNext());
-        try
-        {
-            iter.next();
-            assertTrue(false);
-        }
-        catch (NoSuchElementException e)
-        {
-            // This is the correct path
         }
     }
 
