@@ -219,10 +219,28 @@ public class SparseVector
     }
     
     @Override
-    final public Vector clone()
+    final public SparseVector clone()
     {
-// TODO: Fix this clone.
-        return new SparseVector(this);
+        final SparseVector clone = (SparseVector) super.clone();
+        
+        if (!this.isCompressed())
+        {
+            clone.elements = new TreeMap<>(this.elements);
+            // Need to copy over all the values.
+            for (Map.Entry<Integer, MutableDouble> entry : clone.elements.entrySet())
+            {
+                entry.setValue(new MutableDouble(entry.getValue()));
+            }
+            clone.values = null;
+            clone.indices = null;
+        }
+        else
+        {
+            clone.elements = new TreeMap<>();
+            clone.values = Arrays.copyOf(this.values, this.values.length);
+            clone.indices = Arrays.copyOf(this.indices, this.indices.length);
+        }
+        return clone;
     }
 
     @Override
