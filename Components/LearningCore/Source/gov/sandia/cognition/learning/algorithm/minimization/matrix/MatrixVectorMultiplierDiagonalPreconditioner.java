@@ -5,7 +5,7 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix;
+import gov.sandia.cognition.math.matrix.custom.DiagonalMatrix;
 
 /**
  * 

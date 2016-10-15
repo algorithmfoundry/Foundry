@@ -5,10 +5,10 @@ import gov.sandia.cognition.algorithm.IterativeAlgorithm;
 import gov.sandia.cognition.algorithm.IterativeAlgorithmListener;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.math.matrix.Vector;
-import gov.sandia.cognition.math.matrix.optimized.DenseVector;
-import gov.sandia.cognition.math.matrix.optimized.DiagonalMatrix;
-import gov.sandia.cognition.math.matrix.optimized.SparseMatrix;
-import gov.sandia.cognition.math.matrix.optimized.SparseVector;
+import gov.sandia.cognition.math.matrix.custom.DenseVector;
+import gov.sandia.cognition.math.matrix.custom.DiagonalMatrix;
+import gov.sandia.cognition.math.matrix.custom.SparseMatrix;
+import gov.sandia.cognition.math.matrix.custom.SparseVector;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
