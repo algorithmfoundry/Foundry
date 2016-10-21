@@ -129,7 +129,7 @@ class BaseMatrixEntry
     @Override
     final public double getValue()
     {
-        return this.matrix.getElement(this.rowIndex, this.columnIndex);
+        return this.matrix.get(this.rowIndex, this.columnIndex);
     }
 
     /**

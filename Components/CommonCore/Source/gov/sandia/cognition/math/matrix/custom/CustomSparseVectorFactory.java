@@ -50,7 +50,7 @@ public class CustomSparseVectorFactory
         SparseVector result = new SparseVector(n);
         for (int i = 0; i < n; ++i)
         {
-            result.setElement(i, m.getElement(i));
+            result.setElement(i, m.get(i));
         }
         return result;
     }

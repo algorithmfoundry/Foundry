@@ -79,7 +79,7 @@ class BaseVectorEntry
     @Override
     final public double getValue()
     {
-        return vector.getElement(this.index);
+        return vector.get(this.index);
     }
 
     @Override

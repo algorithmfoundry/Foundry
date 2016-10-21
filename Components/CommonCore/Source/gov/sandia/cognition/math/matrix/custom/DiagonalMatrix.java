@@ -87,13 +87,13 @@ public class DiagonalMatrix
             {
                 if (i == j)
                 {
-                    diagonal[i] = m.getElement(i, i);
+                    diagonal[i] = m.get(i, i);
                 }
-                else if (m.getElement(i, j) != 0)
+                else if (m.get(i, j) != 0)
                 {
                     throw new IllegalArgumentException("Unable to copy the "
                         + "input to a diagonal matrix as the element at " + i
-                        + ", " + j + " is non-zero (" + m.getElement(i, j) + ")");
+                        + ", " + j + " is non-zero (" + m.get(i, j) + ")");
                 }
             }
         }
@@ -400,7 +400,7 @@ public class DiagonalMatrix
         this.assertSameDimensions(other);
         for (int i = 0; i < diagonal.length; ++i)
         {
-            diagonal[i] *= other.getElement(i, i);
+            diagonal[i] *= other.get(i, i);
         }
     }
 
@@ -486,7 +486,7 @@ public class DiagonalMatrix
         DenseVector result = new DenseVector(diagonal.length);
         for (int i = 0; i < diagonal.length; ++i)
         {
-            result.setElement(i, vector.getElement(i) * diagonal[i]);
+            result.setElement(i, vector.get(i) * diagonal[i]);
         }
 
         return result;
@@ -543,7 +543,12 @@ public class DiagonalMatrix
         final int rowIndex,
         final int columnIndex)
     {
-        return getElement(rowIndex, columnIndex);
+        checkBounds(rowIndex, columnIndex);
+        if (rowIndex == columnIndex)
+        {
+            return diagonal[rowIndex];
+        }
+        return 0.0;
     }
 
     /**
@@ -565,7 +570,7 @@ public class DiagonalMatrix
         {
             return diagonal[rowIndex];
         }
-        return 0;
+        return 0.0;
     }
 
     @Override
@@ -625,7 +630,7 @@ public class DiagonalMatrix
             if (i >= minColumn && i <= maxColumn)
             {
                 // If it is, add it at the right place in the output
-                result.setElement(i - minRow, i - minColumn, getElement(i, i));
+                result.setElement(i - minRow, i - minColumn, get(i, i));
             }
         }
         return result;
@@ -784,7 +789,7 @@ public class DiagonalMatrix
                 }
                 else
                 {
-                    result.setElement(i, j, result.getElement(i, j) / diagonal[i]);
+                    result.setElement(i, j, result.get(i, j) / diagonal[i]);
                 }
             }
         }
@@ -802,7 +807,7 @@ public class DiagonalMatrix
         {
             if (diagonal[i] == 0)
             {
-                if (result.getElement(i) != 0)
+                if (result.get(i) != 0)
                 {
                     throw new UnsupportedOperationException("Unable to solve "
                         + "Ax=b because b spans different space than A");
@@ -810,7 +815,7 @@ public class DiagonalMatrix
             }
             else
             {
-                result.setElement(i, result.getElement(i) / diagonal[i]);
+                result.setElement(i, result.get(i) / diagonal[i]);
             }
         }
 
@@ -879,10 +884,10 @@ public class DiagonalMatrix
             {
                 if (i == j)
                 {
-                    diagonal[i] = parameters.getElement(i * numColumns + j);
+                    diagonal[i] = parameters.get(i * numColumns + j);
                 }
                 // this checks that all off-diagonal elements are zero
-                else if (parameters.getElement(i * numColumns + j) != 0)
+                else if (parameters.get(i * numColumns + j) != 0)
                 {
                     throw new IllegalArgumentException("Cannot convert "
                         + "diagonal matrix from vector with non-zero element "

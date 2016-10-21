@@ -331,7 +331,7 @@ public class DenseMatrix
         {
             for (int j = 0; j < getNumColumns(); ++j)
             {
-                result[i + (j * getNumRows())] = this.rows[i].getElement(j);
+                result[i + (j * getNumRows())] = this.rows[i].get(j);
             }
         }
 
@@ -387,7 +387,7 @@ public class DenseMatrix
                 double val = 0;
                 for (int k = 0; k < getNumColumns(); k++)
                 {
-                    val += getElement(i, k) * m.getElement(k, j);
+                    val += get(i, k) * m.get(k, j);
                 }
                 result.setElement(i, j, val);
             }
@@ -784,7 +784,7 @@ public class DenseMatrix
         final int rowIndex,
         final int columnIndex)
     {
-        return getElement(rowIndex, columnIndex);
+        return this.rows[rowIndex].get(columnIndex);
     }
 
     @Override
@@ -792,7 +792,7 @@ public class DenseMatrix
         final int rowIndex,
         final int columnIndex)
     {
-        return this.rows[rowIndex].getElement(columnIndex);
+        return this.rows[rowIndex].get(columnIndex);
     }
 
     @Override
@@ -886,7 +886,7 @@ public class DenseMatrix
             DenseVector row = new DenseVector(n);
             for (int j = 0; j < n; ++j)
             {
-                row.setElement(j, getElement(j, i));
+                row.setElement(j, get(j, i));
             }
             resultRows[i] = row;
         }
@@ -917,13 +917,13 @@ public class DenseMatrix
         int min = Math.min(getNumRows(), getNumColumns());
         for (int i = 0; i < min; ++i)
         {
-            if (Math.abs(svd.Sigma.getElement(i, i)) <= effectiveZero)
+            if (Math.abs(svd.Sigma.get(i, i)) <= effectiveZero)
             {
                 svd.Sigma.setElement(i, i, 0);
             }
             else
             {
-                svd.Sigma.setElement(i, i, 1.0 / svd.Sigma.getElement(i, i));
+                svd.Sigma.setElement(i, i, 1.0 / svd.Sigma.get(i, i));
             }
         }
 
@@ -982,7 +982,7 @@ public class DenseMatrix
         double logsum = 0.0;
         for (int i = 0; i < M; i++)
         {
-            double eigenvalue = lu.U.getElement(i, i);
+            double eigenvalue = lu.U.get(i, i);
             if (eigenvalue < 0.0)
             {
                 sign = -sign;
@@ -1011,7 +1011,7 @@ public class DenseMatrix
         int result = 0;
         for (int i = 0; i < min; ++i)
         {
-            if (Math.abs(qr.R.getElement(i, i)) > effectiveZero)
+            if (Math.abs(qr.R.get(i, i)) > effectiveZero)
             {
                 ++result;
             }
@@ -1485,7 +1485,7 @@ public class DenseMatrix
         for (int i = 0; i < numRows; ++i)
         {
             // diagonals
-            if (R.getElement(i, i) == 0)
+            if (R.get(i, i) == 0)
             {
                 throw new UnsupportedOperationException("Can't invert matrix "
                     + "because it does not span the columns");
@@ -1493,7 +1493,7 @@ public class DenseMatrix
             // lower triangle
             for (int j = 0; j < i; ++j)
             {
-                if (R.getElement(i, j) != 0)
+                if (R.get(i, j) != 0)
                 {
                     throw new IllegalArgumentException("upperTriangleSolve "
                         + "passed a non-upper-triangle matrix");
@@ -1506,16 +1506,16 @@ public class DenseMatrix
         for (int i = numColumns - 1; i >= 0; --i)
         {
             // Start w/ the value in B
-            double v = QtransB.getElement(i);
+            double v = QtransB.get(i);
 
             // Back substitute all solved parts in
             for (int j = i + 1; j < numColumns; ++j)
             {
-                v -= R.getElement(i, j) * result.values[j];
+                v -= R.get(i, j) * result.values[j];
             }
 
             // Solve with the diagonal element
-            result.values[i] = (v / R.getElement(i, i));
+            result.values[i] = (v / R.get(i, i));
         }
 
         return result;
@@ -1600,7 +1600,7 @@ public class DenseMatrix
         final int numRows = this.getNumRows();
         for (int i = 0; i < numRows; ++i)
         {
-            result.values[i] = rows[i].getElement(columnIndex);
+            result.values[i] = rows[i].get(columnIndex);
         }
 
         return result;
@@ -1632,7 +1632,7 @@ public class DenseMatrix
         {
             for (int j = 0; j < numColumns; ++j)
             {
-                this.rows[i].values[j] = v.getElement(i + j
+                this.rows[i].values[j] = v.get(i + j
                     * getNumRows());
             }
         }
@@ -1671,7 +1671,7 @@ public class DenseMatrix
             double entry = 0;
             for (int j = 0; j < locs.length; ++j)
             {
-                entry += vals[j] * rows[locs[j]].getElement(i);
+                entry += vals[j] * rows[locs[j]].get(i);
             }
             result.setElement(i, entry);
         }
@@ -1694,7 +1694,7 @@ public class DenseMatrix
             double entry = 0;
             for (int j = 0; j < numRows; ++j)
             {
-                entry += vector.getElement(j) * rows[j].getElement(i);
+                entry += vector.get(j) * rows[j].get(i);
             }
             result.setElement(i, entry);
         }
@@ -1746,7 +1746,7 @@ public class DenseMatrix
         {
             for (int j = 0; j < numColumns; ++j)
             {
-                nnz += (rows[i].getElement(j) == 0) ? 0 : 1;
+                nnz += (rows[i].get(j) == 0) ? 0 : 1;
             }
         }
 

@@ -576,7 +576,7 @@ abstract class BaseMatrix
         {
             for (int j = 0; j < n; ++j)
             {
-                sb.append(format.format(getElement(i, j))).append(" ");
+                sb.append(format.format(get(i, j))).append(" ");
             }
             sb.append('\n');
         }

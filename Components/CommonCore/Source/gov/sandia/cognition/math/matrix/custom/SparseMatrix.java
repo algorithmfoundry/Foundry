@@ -342,7 +342,7 @@ public class SparseMatrix
         int nnz = 0;
         for (int i = 0; i < this.numRows; ++i)
         {
-            if (d.getElement(i, i) != 0)
+            if (d.get(i, i) != 0)
             {
                 ++nnz;
             }
@@ -356,7 +356,7 @@ public class SparseMatrix
         {
             rows[i] = new SparseVector(numCols);
             firstIndicesForRows[i] = idx;
-            double val = d.getElement(i, i);
+            double val = d.get(i, i);
             if (val != 0)
             {
                 values[idx] = val;
@@ -723,7 +723,7 @@ public class SparseMatrix
                 row = new SparseVector(other.row(rowNum));
                 row.scaleEquals(scaleFactor);
             }
-            row.setElement(columnIndices[i], row.getElement(columnIndices[i]) + values[i]);
+            row.setElement(columnIndices[i], row.get(columnIndices[i]) + values[i]);
         }
         while (rowNum < this.numRows)
         {
@@ -846,7 +846,7 @@ public class SparseMatrix
                 ++rowNum;
                 row = new SparseVector(other.row(rowNum));
             }
-            row.setElement(columnIndices[i], row.getElement(columnIndices[i]) + values[i]);
+            row.setElement(columnIndices[i], row.get(columnIndices[i]) + values[i]);
         }
         while (rowNum < this.numRows)
         {
@@ -919,7 +919,7 @@ public class SparseMatrix
                 // the other matrix
                 if (!addedOnRow)
                 {
-                    valsOut[idx] = (other.getElement(rowNum, rowNum)
+                    valsOut[idx] = (other.get(rowNum, rowNum)
                         * scaleOtherBy);
                     colIdxsOut[idx] = rowNum;
                     ++idx;
@@ -933,7 +933,7 @@ public class SparseMatrix
             if (rowNum == columnIndices[i])
             {
                 // Add the current value with the other guy's diagoal
-                valsOut[idx] = (other.getElement(rowNum, rowNum) * scaleOtherBy)
+                valsOut[idx] = (other.get(rowNum, rowNum) * scaleOtherBy)
                     + values[i];
                 addedOnRow = true;
             }
@@ -943,7 +943,7 @@ public class SparseMatrix
             {
                 // Add the diagonal
                 colIdxsOut[idx] = rowNum;
-                valsOut[idx] = (other.getElement(rowNum, rowNum) * scaleOtherBy);
+                valsOut[idx] = (other.get(rowNum, rowNum) * scaleOtherBy);
                 addedOnRow = true;
                 // Then add the current value
                 ++idx;
@@ -963,7 +963,7 @@ public class SparseMatrix
         {
             if (!addedOnRow)
             {
-                valsOut[idx] = (other.getElement(rowNum, rowNum) * scaleOtherBy);
+                valsOut[idx] = (other.get(rowNum, rowNum) * scaleOtherBy);
                 colIdxsOut[idx] = rowNum;
                 ++idx;
             }
@@ -1078,7 +1078,7 @@ public class SparseMatrix
                 row = new SparseVector(other.row(rowNum));
                 row.negativeEquals();
             }
-            row.setElement(columnIndices[i], row.getElement(columnIndices[i]) + values[i]);
+            row.setElement(columnIndices[i], row.get(columnIndices[i]) + values[i]);
         }
         while (rowNum < this.numRows)
         {
@@ -1228,7 +1228,7 @@ public class SparseMatrix
             {
                 ++rownum;
             }
-            values[i] *= other.getElement(rownum, columnIndices[i]);
+            values[i] *= other.get(rownum, columnIndices[i]);
         }
     }
 
@@ -1270,7 +1270,7 @@ public class SparseMatrix
             }
             if (rowNum == columnIndices[i])
             {
-                newVals[idx] = values[i] * other.getElement(rowNum, rowNum);
+                newVals[idx] = values[i] * other.get(rowNum, rowNum);
                 newColIdxs[idx] = rowNum;
                 ++idx;
             }
@@ -1389,7 +1389,7 @@ public class SparseMatrix
         result.values = new double[values.length];
         for (int i = 0; i < values.length; ++i)
         {
-            result.values[i] = values[i] * other.getElement(columnIndices[i], columnIndices[i]);
+            result.values[i] = values[i] * other.get(columnIndices[i], columnIndices[i]);
         }
 
         return result;
@@ -1426,7 +1426,7 @@ public class SparseMatrix
             {
                 ++curRow;
             }
-            result.values[i] = values[i] * other.getElement(curRow, curRow);
+            result.values[i] = values[i] * other.get(curRow, curRow);
         }
 
         return result;
@@ -1580,25 +1580,9 @@ public class SparseMatrix
         final int rowIndex,
         final int columnIndex)
     {
-        return getElement(rowIndex, columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * No change to compressed Yale or sparse row format.
-     * @param rowIndex {@inheritDoc}
-     * @param columnIndex {@inheritDoc}
-     * @return {@inheritDoc}
-     */
-    @Override
-    final public double getElement(
-        final int rowIndex,
-        final int columnIndex)
-    {
         if (!isCompressed())
         {
-            return rows[rowIndex].getElement(columnIndex);
+            return rows[rowIndex].get(columnIndex);
         }
         else
         {
@@ -1623,6 +1607,22 @@ public class SparseMatrix
             }
             return 0;
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * No change to compressed Yale or sparse row format.
+     * @param rowIndex {@inheritDoc}
+     * @param columnIndex {@inheritDoc}
+     * @return {@inheritDoc}
+     */
+    @Override
+    final public double getElement(
+        final int rowIndex,
+        final int columnIndex)
+    {
+        return this.get(rowIndex, columnIndex);
     }
 
     /**
@@ -1764,7 +1764,7 @@ public class SparseMatrix
             {
                 ++rowNum;
             }
-            if (Math.abs(values[i] - getElement(columnIndices[i], rowNum))
+            if (Math.abs(values[i] - get(columnIndices[i], rowNum))
                 > effectiveZero)
             {
                 return false;
@@ -2103,7 +2103,7 @@ public class SparseMatrix
         SparseVector result = new SparseVector(numRows);
         for (int i = 0; i < numRows; ++i)
         {
-            result.setElement(i, getElement(i, columnIndex));
+            result.setElement(i, get(i, columnIndex));
         }
 
         return result;
@@ -2197,7 +2197,7 @@ public class SparseMatrix
         final int d = parameters.getDimensionality();
         for (int i = 0; i < d; ++i)
         {
-            if (parameters.getElement(i) != 0)
+            if (parameters.get(i) != 0)
             {
                 ++nnz;
             }
@@ -2214,7 +2214,7 @@ public class SparseMatrix
             firstIndicesForRows[i] = idx;
             for (int j = 0; j < numCols; ++j)
             {
-                double val = parameters.getElement(i + j * numRows);
+                double val = parameters.get(i + j * numRows);
                 if (val != 0)
                 {
                     columnIndices[idx] = j;
@@ -2535,7 +2535,7 @@ public class SparseMatrix
             for (int i = firstIndicesForRows[otherIndices[j]]; i
                 < firstIndicesForRows[otherIndices[j] + 1]; ++i)
             {
-                result.setElement(columnIndices[i], result.getElement(columnIndices[i])
+                result.setElement(columnIndices[i], result.get(columnIndices[i])
                     + values[i] * otherValues[j]);
             }
         }
@@ -2567,8 +2567,8 @@ public class SparseMatrix
             {
                 ++row;
             }
-            result.setElement(columnIndices[i], result.getElement(columnIndices[i])
-                + vector.getElement(row) * values[i]);
+            result.setElement(columnIndices[i], result.get(columnIndices[i])
+                + vector.get(row) * values[i]);
         }
 
         return result;

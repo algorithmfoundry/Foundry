@@ -777,13 +777,6 @@ public class SparseVector
     public double get(
         final int index)
     {
-        return getElement(index);
-    }
-
-    @Override
-    final public double getElement(
-        final int index)
-    {
         checkBounds(index);
         if (isCompressed())
         {
@@ -813,6 +806,13 @@ public class SparseVector
             MutableDouble v = elements.get(index);
             return (v == null) ? 0 : v.value;
         }
+    }
+
+    @Override
+    final public double getElement(
+        final int index)
+    {
+        return this.get(index);
     }
 
     @Override

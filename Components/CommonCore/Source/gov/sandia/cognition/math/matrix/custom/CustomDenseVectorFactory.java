@@ -42,7 +42,7 @@ public class CustomDenseVectorFactory
         DenseVector result = new DenseVector(n);
         for (int i = 0; i < n; ++i)
         {
-            result.values[i] = m.getElement(i);
+            result.values[i] = m.get(i);
         }
 
         return result;
