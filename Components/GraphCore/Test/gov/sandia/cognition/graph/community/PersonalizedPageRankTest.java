@@ -17,7 +17,7 @@ package gov.sandia.cognition.graph.community;
 import gov.sandia.cognition.graph.DenseMemoryGraph;
 import gov.sandia.cognition.graph.DirectedNodeEdgeGraph;
 import gov.sandia.cognition.graph.WeightedDenseMemoryGraph;
-import gov.sandia.cognition.util.DoubleVector;
+import gov.sandia.cognition.collection.DoubleArrayList;
 import java.util.Set;
 import org.junit.Test;
 
@@ -54,7 +54,7 @@ public class PersonalizedPageRankTest
         graph.addEdge(6, 7);
 
         PersonalizedPageRank<Integer> ppr = new PersonalizedPageRank<>(graph);
-        DoubleVector rank = ppr.getScoresForAllNodesById(0);
+        DoubleArrayList rank = ppr.getScoresForAllNodesById(0);
         // These scores pulled by running the above test against the original Python code
         assertEquals(rank.get(0), 0.12537838024216372, 1e-10);
         assertEquals(rank.get(1), 0.11052762994515698, 1e-10);
@@ -79,7 +79,7 @@ public class PersonalizedPageRankTest
         assertNotEquals(rank.get(5), 0.07236686571571394, 1e-10);
         assertNotEquals(rank.get(6), 0.0725170996662634, 1e-10);
         assertNotEquals(rank.get(7), 0.07259186730843395, 1e-10);
-        DoubleVector last = rank;
+        DoubleArrayList last = rank;
         rank = ppr.getScoresForAllNodesById(0, true);
         assertNotEquals(rank.get(0), 0.12537838024216372, 1e-10);
         assertNotEquals(rank.get(1), 0.11052762994515698, 1e-10);
@@ -186,9 +186,9 @@ public class PersonalizedPageRankTest
         graph.addEdge(5, 4, .1);
 
         PersonalizedPageRank<Integer> ppr = new PersonalizedPageRank<>(graph);
-        DoubleVector from3 = ppr.getScoresForAllNodesByIdMultirun(
+        DoubleArrayList from3 = ppr.getScoresForAllNodesByIdMultirun(
             graph.getNodeId(3), 20000);
-        DoubleVector from4 = ppr.getScoresForAllNodesByIdMultirun(
+        DoubleArrayList from4 = ppr.getScoresForAllNodesByIdMultirun(
             graph.getNodeId(4), 20000);
         assertEquals(from3.get(graph.getNodeId(0)),
             from4.get(graph.getNodeId(7)), 1e-3);
@@ -329,7 +329,7 @@ public class PersonalizedPageRankTest
         graph.addEdge(25, 27);
 
         PersonalizedPageRank<Integer> ppr = new PersonalizedPageRank<>(graph);
-        DoubleVector scores = ppr.getScoresForAllNodes(1);
+        DoubleArrayList scores = ppr.getScoresForAllNodes(1);
         assertEquals(scores.get(0), 0.05443035867625151, 1e-10);
         assertEquals(scores.get(1), 0.02019683469901085, 1e-10);
         assertEquals(scores.get(2), 0.02908997726706587, 1e-10);

@@ -141,7 +141,7 @@ public class RunLouvain
         // Print the results
         for (int i = 0; i < output.numLevels(); ++i)
         {
-            for (int j = 0; j < graph.numNodes(); ++j)
+            for (int j = 0; j < graph.getNumNodes(); ++j)
             {
                 String node = graph.getNode(j);
                 int level = a.reverse ? output.numLevels() - i - 1 : i;

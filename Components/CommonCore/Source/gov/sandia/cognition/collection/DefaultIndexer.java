@@ -23,22 +23,25 @@ import java.util.Set;
  * list of objects plus a mapping of values to indices. This implementation is
  * not synchronized.
  *
- * @param   <ValueType>
- *      The type of the value being indexed. Must have a valid equals and
- *      hashCode implementation.
- * @author  Justin Basilico
- * @since   3.3.3
- * @see     Indexer
+ * @param <ValueType> The type of the value being indexed. Must have a valid
+ * equals and hashCode implementation.
+ * @author Justin Basilico
+ * @since 3.3.3
+ * @see Indexer
  */
 public class DefaultIndexer<ValueType>
     extends AbstractCloneableSerializable
     implements Indexer<ValueType>
 {
 
-    /** The list of values, which can be accessed by index. */
+    /**
+     * The list of values, which can be accessed by index.
+     */
     protected ArrayList<ValueType> valueList;
 
-    /** The mapping of values to their indices. */
+    /**
+     * The mapping of values to their indices.
+     */
     protected LinkedHashMap<ValueType, Integer> valueToIndexMap;
 
     /**
@@ -48,23 +51,23 @@ public class DefaultIndexer<ValueType>
     {
         super();
 
-        this.valueList = new ArrayList<ValueType>();
-        this.valueToIndexMap = new LinkedHashMap<ValueType, Integer>();
+        this.valueList = new ArrayList<>();
+        this.valueToIndexMap = new LinkedHashMap<>();
     }
 
     /**
      * Creates a new, empty {@link DefaultIndexer} with the given initial
      * capacity.
      *
-     * @param   initialCapacity
-     *      The initial capacity for the indexer. Must be positive.
+     * @param initialCapacity The initial capacity for the indexer. Must be
+     * positive.
      */
     public DefaultIndexer(
         final int initialCapacity)
     {
         super();
 
-        this.valueList = new ArrayList<ValueType>(initialCapacity);
+        this.valueList = new ArrayList<>(initialCapacity);
         this.valueToIndexMap = CollectionUtil.createLinkedHashMapWithSize(
             initialCapacity);
     }
@@ -73,8 +76,7 @@ public class DefaultIndexer<ValueType>
      * Creates a new {@link DefaultIndexer} and adds he given collection of
      * values to it.
      *
-     * @param values
-     *      The initial set of values to add to the indexer.
+     * @param values The initial set of values to add to the indexer.
      */
     public DefaultIndexer(
         final Collection<? extends ValueType> values)
@@ -88,13 +90,13 @@ public class DefaultIndexer<ValueType>
     public DefaultIndexer<ValueType> clone()
     {
         @SuppressWarnings("unchecked")
-        final DefaultIndexer<ValueType> clone = (DefaultIndexer<ValueType>)
-            super.clone();
+        final DefaultIndexer<ValueType> clone
+            = (DefaultIndexer<ValueType>) super.clone();
 
-        clone.valueList = new ArrayList<ValueType>(this.valueList);
-        clone.valueToIndexMap = new LinkedHashMap<ValueType, Integer>(
+        clone.valueList = new ArrayList<>(this.valueList);
+        clone.valueToIndexMap = new LinkedHashMap<>(
             this.valueToIndexMap);
-        
+
         return clone;
     }
 
@@ -105,7 +107,7 @@ public class DefaultIndexer<ValueType>
         Integer result = this.getIndex(value);
         if (result == null)
         {
-            result = Integer.valueOf(this.valueList.size());
+            result = this.valueList.size();
             this.valueList.add(value);
             this.valueToIndexMap.put(value, result);
         }
@@ -192,6 +194,13 @@ public class DefaultIndexer<ValueType>
     public Map<ValueType, Integer> asMap()
     {
         return Collections.unmodifiableMap(this.valueToIndexMap);
+    }
+
+    @Override
+    public void clear()
+    {
+        valueList.clear();
+        valueToIndexMap.clear();
     }
 
 }

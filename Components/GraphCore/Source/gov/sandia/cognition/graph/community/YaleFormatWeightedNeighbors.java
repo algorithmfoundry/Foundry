@@ -18,8 +18,8 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.graph.DirectedNodeEdgeGraph;
 import gov.sandia.cognition.graph.DirectedWeightedNodeEdgeGraph;
-import gov.sandia.cognition.util.DoubleVector;
-import gov.sandia.cognition.util.IntVector;
+import gov.sandia.cognition.collection.DoubleArrayList;
+import gov.sandia.cognition.collection.IntArrayList;
 import gov.sandia.cognition.util.Pair;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +45,7 @@ class YaleFormatWeightedNeighbors<NodeNameType>
      * https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_.28CSR.2C_CRS_or_Yale_format.29
      * ). This specifies the index of the first neighbor in the neighbors list.
      */
-    private final IntVector neighborsFirstIdx;
+    private final IntArrayList neighborsFirstIdx;
 
     /**
      * Yale-format-like representation of the neighbors of each node (see
@@ -54,7 +54,7 @@ class YaleFormatWeightedNeighbors<NodeNameType>
      * figure out a specific node's neighbors, look from indices
      * neighborsFirstIdx.get(i) to neighborsFirstIdx.get(i+1).
      */
-    private final IntVector neighbors;
+    private final IntArrayList neighbors;
 
     /**
      * Yale-format-like representation of the neighbors of each node (see
@@ -62,7 +62,7 @@ class YaleFormatWeightedNeighbors<NodeNameType>
      * ). This contains the weights of all neighbors of all nodes in node-order.
      * Follows the same order as IntVector neighbors.
      */
-    private final DoubleVector wNeighbors;
+    private final DoubleArrayList wNeighbors;
 
     /**
      * Initializes the three parts of the weighted Yale format for the neighbors
@@ -75,18 +75,18 @@ class YaleFormatWeightedNeighbors<NodeNameType>
     public YaleFormatWeightedNeighbors(DirectedNodeEdgeGraph<NodeNameType> graph,
         boolean removeSelfLoops)
     {
-        int numNodes = graph.numNodes();
-        this.neighborsFirstIdx = new IntVector(numNodes + 1);
+        int numNodes = graph.getNumNodes();
+        this.neighborsFirstIdx = new IntArrayList(numNodes + 1);
 
         // Initialize the per-node values
         int neighborsSoFar = 0;
         Map<Integer, HashMap<Integer, Double>> edges = new HashMap<>(
-            graph.numNodes());
-        for (int i = 0; i < graph.numNodes(); ++i)
+            graph.getNumNodes());
+        for (int i = 0; i < graph.getNumNodes(); ++i)
         {
             edges.put(i, new HashMap<>());
         }
-        for (int i = 0; i < graph.numEdges(); ++i)
+        for (int i = 0; i < graph.getNumEdges(); ++i)
         {
             Pair<Integer, Integer> edge = graph.getEdgeEndpointIds(i);
             int l = edge.getFirst();
@@ -111,7 +111,7 @@ class YaleFormatWeightedNeighbors<NodeNameType>
             }
             edges.get(r).put(l, w + edges.get(r).get(l));
         }
-        for (int i = 0; i < graph.numNodes(); ++i)
+        for (int i = 0; i < graph.getNumNodes(); ++i)
         {
             // This is to optimize the nieghbors list
             this.neighborsFirstIdx.add(neighborsSoFar);
@@ -119,8 +119,8 @@ class YaleFormatWeightedNeighbors<NodeNameType>
         }
         this.neighborsFirstIdx.add(neighborsSoFar);
         // Initialize neighbors to null values (for filling on next loop)
-        this.neighbors = new IntVector(neighborsSoFar);
-        this.wNeighbors = new DoubleVector(neighborsSoFar);
+        this.neighbors = new IntArrayList(neighborsSoFar);
+        this.wNeighbors = new DoubleArrayList(neighborsSoFar);
         for (int i = 0; i < neighborsSoFar; ++i)
         {
             this.neighbors.add(-1);
@@ -178,7 +178,7 @@ class YaleFormatWeightedNeighbors<NodeNameType>
      * @return the int vector containing the neighbors for all nodes stored in
      * Yale format
      */
-    public IntVector getNeighbors()
+    public IntArrayList getNeighbors()
     {
         return neighbors;
     }
@@ -190,7 +190,7 @@ class YaleFormatWeightedNeighbors<NodeNameType>
      * @return the int vector containing the first index into the neighbors
      * vector for all nodes stored in Yale format
      */
-    public IntVector getNeighborsFirstIndex()
+    public IntArrayList getNeighborsFirstIndex()
     {
         return neighborsFirstIdx;
     }
@@ -202,7 +202,7 @@ class YaleFormatWeightedNeighbors<NodeNameType>
      * @return the double vector containing the weights for all neighbors for
      * all nodes stored in Yale format
      */
-    public DoubleVector getNeighborsWeights()
+    public DoubleArrayList getNeighborsWeights()
     {
         return wNeighbors;
     }

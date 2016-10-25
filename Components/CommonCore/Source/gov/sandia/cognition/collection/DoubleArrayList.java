@@ -12,7 +12,7 @@
  * 
  */
 
-package gov.sandia.cognition.util;
+package gov.sandia.cognition.collection;
 
 import java.util.Arrays;
 
@@ -21,8 +21,8 @@ import java.util.Arrays;
  * altering elements, etc. Allocates a local array of double. Doubles the size
  * as needed and copies the old values into the new, larger array.
  */
-public final class DoubleVector
-    extends PrimitiveVector
+public final class DoubleArrayList
+    extends PrimitiveArrayList
 {
 
     /**
@@ -38,7 +38,7 @@ public final class DoubleVector
     /**
      * Initializes an empty vector with a default allocation.
      */
-    public DoubleVector()
+    public DoubleArrayList()
     {
         this(DEFAULT_SIZE);
         elements = new double[DEFAULT_SIZE];
@@ -51,7 +51,7 @@ public final class DoubleVector
      *
      * @param startSize The number of positions to start the storage
      */
-    public DoubleVector(int startSize)
+    public DoubleArrayList(int startSize)
     {
         super(startSize);
         elements = new double[startSize];
@@ -62,7 +62,7 @@ public final class DoubleVector
      *
      * @param copy The vector to make a deep copy of
      */
-    public DoubleVector(DoubleVector copy)
+    public DoubleArrayList(DoubleArrayList copy)
     {
         super(copy.size() + 1);
         elements = new double[copy.size() + 1];
@@ -180,11 +180,11 @@ public final class DoubleVector
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof DoubleVector))
+        if (!(o instanceof DoubleArrayList))
         {
             return false;
         }
-        DoubleVector v = (DoubleVector) o;
+        DoubleArrayList v = (DoubleArrayList) o;
         if (v.size() != size())
         {
             return false;
@@ -206,9 +206,9 @@ public final class DoubleVector
      * @param size The number of zeros to put in the returned DoubleVector
      * @return a DoubleVector of the input size with zeroes in every entry
      */
-    public static DoubleVector zeros(int size)
+    public static DoubleArrayList zeros(int size)
     {
-        DoubleVector ret = new DoubleVector(size);
+        DoubleArrayList ret = new DoubleArrayList(size);
         for (int i = 0; i < size; ++i)
         {
             ret.add(0.0);

@@ -139,22 +139,22 @@ public class YaleFormatWeightedNeighborsTest
         int numSelfLinks,
         boolean selfLinksAllowed)
     {
-        assertEquals(g.numNodes() + 1, neigh.getNeighborsFirstIndex().size());
+        assertEquals(g.getNumNodes() + 1, neigh.getNeighborsFirstIndex().size());
         if (selfLinksAllowed)
         {
-            assertEquals(g.numEdges() * 2 - numSelfLinks,
+            assertEquals(g.getNumEdges() * 2 - numSelfLinks,
                 neigh.getNeighbors().size());
-            assertEquals(g.numEdges() * 2 - numSelfLinks,
+            assertEquals(g.getNumEdges() * 2 - numSelfLinks,
                 neigh.getNeighborsWeights().size());
         }
         else
         {
-            assertEquals((g.numEdges() - numSelfLinks) * 2,
+            assertEquals((g.getNumEdges() - numSelfLinks) * 2,
                 neigh.getNeighbors().size());
-            assertEquals((g.numEdges() - numSelfLinks) * 2,
+            assertEquals((g.getNumEdges() - numSelfLinks) * 2,
                 neigh.getNeighborsWeights().size());
         }
-        for (int i = 0; i < g.numEdges(); ++i)
+        for (int i = 0; i < g.getNumEdges(); ++i)
         {
             Pair<Integer, Integer> e = g.getEdgeEndpointIds(i);
             double w = 1.0;

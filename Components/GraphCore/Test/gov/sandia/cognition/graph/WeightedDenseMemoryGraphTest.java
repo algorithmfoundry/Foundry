@@ -61,8 +61,8 @@ public class WeightedDenseMemoryGraphTest
         graph.addEdge(4, 0, 0.2);
         graph.addNode(5);
 
-        assertEquals(6, graph.numNodes());
-        assertEquals(8, graph.numEdges());
+        assertEquals(6, graph.getNumNodes());
+        assertEquals(8, graph.getNumEdges());
         assertTrue(graph.containsNode(0));
         assertTrue(graph.containsNode(1));
         assertTrue(graph.containsNode(2));
@@ -111,7 +111,7 @@ public class WeightedDenseMemoryGraphTest
         });
 
         Iterator<Integer> nodes = graph.getNodes().iterator();
-        for (int i = 0; i < graph.numNodes(); ++i)
+        for (int i = 0; i < graph.getNumNodes(); ++i)
         {
             for (Pair<Integer, Double> successor
                 : graph.getSuccessorsWithWeights(i))
@@ -125,7 +125,7 @@ public class WeightedDenseMemoryGraphTest
         assertFalse(nodes.hasNext());
 
         int lastStartNodeId = -1;
-        for (int i = 0; i < graph.numEdges(); ++i)
+        for (int i = 0; i < graph.getNumEdges(); ++i)
         {
             Pair<Integer, Integer> edge = graph.getEdgeEndpointIds(i);
             if (edge.getFirst() != lastStartNodeId)
@@ -140,8 +140,8 @@ public class WeightedDenseMemoryGraphTest
         }
 
         graph.clear();
-        assertEquals(0, graph.numNodes());
-        assertEquals(0, graph.numEdges());
+        assertEquals(0, graph.getNumNodes());
+        assertEquals(0, graph.getNumEdges());
     }
 
 }

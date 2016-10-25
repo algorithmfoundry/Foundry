@@ -129,8 +129,8 @@ public class GraphWrappingEnergyFunction<LabelType, NodeNameType>
         this.labeledNodes = new HashMap<>();
         this.graph = graph;
         this.handler = handler;
-        this.edges = new ArrayList<>(graph.numEdges());
-        for (int i = 0; i < graph.numEdges(); ++i)
+        this.edges = new ArrayList<>(graph.getNumEdges());
+        for (int i = 0; i < graph.getNumEdges(); ++i)
         {
             edges.add(graph.getEdgeEndpointIds(i));
         }
@@ -216,7 +216,7 @@ public class GraphWrappingEnergyFunction<LabelType, NodeNameType>
     @Override
     public int numEdges()
     {
-        return graph.numEdges();
+        return graph.getNumEdges();
     }
 
     /**
@@ -225,7 +225,7 @@ public class GraphWrappingEnergyFunction<LabelType, NodeNameType>
     @Override
     public int numNodes()
     {
-        return graph.numNodes();
+        return graph.getNumNodes();
     }
 
     /**

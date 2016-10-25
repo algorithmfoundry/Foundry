@@ -15,7 +15,7 @@
 package gov.sandia.cognition.graph;
 
 import gov.sandia.cognition.util.DefaultKeyValuePair;
-import gov.sandia.cognition.util.DoubleVector;
+import gov.sandia.cognition.collection.DoubleArrayList;
 import gov.sandia.cognition.util.Pair;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -44,7 +44,7 @@ public class WeightedDenseMemoryGraph<NodeNameType>
      * Storage for the weights -- This stays in-line with the edges when the
      * edges are added and sorted
      */
-    private DoubleVector weights;
+    private DoubleArrayList weights;
 
     /**
      * Default constructor creates an empty graph
@@ -68,7 +68,7 @@ public class WeightedDenseMemoryGraph<NodeNameType>
         int expectedNumEdges)
     {
         super(expectedNumNodes, expectedNumEdges);
-        weights = new DoubleVector(expectedNumEdges);
+        weights = new DoubleArrayList(expectedNumEdges);
     }
 
     /**
@@ -124,7 +124,7 @@ public class WeightedDenseMemoryGraph<NodeNameType>
         // first check that the given node is in the graph
         int nodeId = getNodeId(node);
 
-        int m = numEdges();
+        int m = getNumEdges();
 
         // find matching node pair, and iterate through all that match
         int idx0 = getFirstEdgeFrom(nodeId);

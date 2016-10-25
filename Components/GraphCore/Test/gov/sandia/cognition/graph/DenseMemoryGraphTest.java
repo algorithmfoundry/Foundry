@@ -62,8 +62,8 @@ public class DenseMemoryGraphTest
         graph.addEdge(4, 0);
         graph.addNode(5);
 
-        assertEquals(6, graph.numNodes());
-        assertEquals(8, graph.numEdges());
+        assertEquals(6, graph.getNumNodes());
+        assertEquals(8, graph.getNumEdges());
         assertTrue(graph.containsNode(0));
         assertTrue(graph.containsNode(1));
         assertTrue(graph.containsNode(2));
@@ -73,12 +73,12 @@ public class DenseMemoryGraphTest
         assertFalse(graph.containsNode(6));
 
         Collection<Integer> nodes = graph.getNodes();
-        assertEquals(nodes.size(), graph.numNodes());
+        assertEquals(nodes.size(), graph.getNumNodes());
         for (Integer node : nodes)
         {
             assertTrue(graph.containsNode(node));
         }
-        for (int i = 0; i < graph.numNodes(); ++i)
+        for (int i = 0; i < graph.getNumNodes(); ++i)
         {
             assertEquals(i, graph.getNodeId(graph.getNode(i)));
         }
@@ -92,7 +92,7 @@ public class DenseMemoryGraphTest
             // The correct path
         }
 
-        for (int i = 0; i < graph.numEdges(); ++i)
+        for (int i = 0; i < graph.getNumEdges(); ++i)
         {
             Pair<Integer, Integer> edge = graph.getEdgeEndpointIds(i);
             switch (edge.getFirst())
@@ -150,8 +150,8 @@ public class DenseMemoryGraphTest
         });
 
         graph.clear();
-        assertEquals(0, graph.numNodes());
-        assertEquals(0, graph.numEdges());
+        assertEquals(0, graph.getNumNodes());
+        assertEquals(0, graph.getNumEdges());
     }
 
 }

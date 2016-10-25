@@ -1,5 +1,5 @@
 /*
- * File:                DoubleVectorTest.java
+ * File:                IntVectorTest.java
  * Authors:             Jeremy Wendt
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
@@ -12,7 +12,7 @@
  *
  */
 
-package gov.sandia.cognition.util;
+package gov.sandia.cognition.collection;
 
 import static org.junit.Assert.*;
 
@@ -22,13 +22,13 @@ import org.junit.Test;
  *
  * @author jdwendt
  */
-public class DoubleVectorTest
+public class IntArrayListTest
 {
 
     @Test
     public void basicTest()
     {
-        DoubleVector v = new DoubleVector(10);
+        IntArrayList v = new IntArrayList(10);
         v.add(1);
         v.add(2);
         v.add(3);
@@ -37,14 +37,14 @@ public class DoubleVectorTest
         assertEquals(4, v.size());
         for (int i = 0; i < v.size(); ++i)
         {
-            assertEquals(i + 1.0, v.get(i), 1e-12);
+            assertEquals(i + 1, v.get(i), 1e-12);
         }
 
         v.decreaseTo(3);
         assertEquals(3, v.size());
         for (int i = 0; i < v.size(); ++i)
         {
-            assertEquals(i + 1.0, v.get(i), 1e-12);
+            assertEquals(i + 1, v.get(i), 1e-12);
         }
         // decreaseTo has to be less than the current size
         try
@@ -62,7 +62,7 @@ public class DoubleVectorTest
         assertEquals(3, v.size());
         for (int i = 0; i < v.size(); ++i)
         {
-            assertEquals(i + 1.0, v.get(i), 1e-12);
+            assertEquals(i + 1, v.get(i), 1e-12);
         }
         try
         {
@@ -74,10 +74,10 @@ public class DoubleVectorTest
             // This is the correct path
         }
 
-        DoubleVector d = new DoubleVector(10);
-        d.add(1.0);
-        d.add(2.0);
-        d.add(3.0);
+        IntArrayList d = new IntArrayList(10);
+        d.add(1);
+        d.add(2);
+        d.add(3);
         assertTrue(v.equals(d));
         assertTrue(d.equals(v));
         assertTrue(v.equals(v));
@@ -105,8 +105,8 @@ public class DoubleVectorTest
 
         v.plusEquals(1, 3);
         v.set(0, 2);
-        assertEquals(2.0, v.get(0), 1e-12);
-        assertEquals(5.0, v.get(1), 1e-12);
+        assertEquals(2, v.get(0), 1e-12);
+        assertEquals(5, v.get(1), 1e-12);
         try
         {
             v.set(-1, 1);
@@ -145,8 +145,8 @@ public class DoubleVectorTest
         }
 
         v.swap(0, 1);
-        assertEquals(5.0, v.get(0), 1e-12);
-        assertEquals(2.0, v.get(1), 1e-12);
+        assertEquals(5, v.get(0), 1e-12);
+        assertEquals(2, v.get(1), 1e-12);
         try
         {
             v.swap(5, 1);

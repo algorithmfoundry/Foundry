@@ -18,7 +18,7 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.graph.DirectedNodeEdgeGraph;
 import gov.sandia.cognition.graph.GraphMetrics;
-import gov.sandia.cognition.util.IntVector;
+import gov.sandia.cognition.collection.IntArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -90,7 +90,7 @@ public class Permanence<NodeNameType>
      */
     public NodePartitioning<NodeNameType> solveCommunities()
     {
-        int n = graph.numNodes();
+        int n = graph.getNumNodes();
         int iter = 0;
         double sum = 0;
         double oldSum = -1;
@@ -102,7 +102,7 @@ public class Permanence<NodeNameType>
             ++iter;
             oldSum = sum;
             sum = 0;
-            IntVector order = IntVector.range(n);
+            IntArrayList order = IntArrayList.range(n);
             order.randomizeOrder();
             for (int ii = 0; ii < n; ++ii)
             {

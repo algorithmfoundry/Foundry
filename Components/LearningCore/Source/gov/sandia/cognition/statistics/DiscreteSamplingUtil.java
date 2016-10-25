@@ -25,9 +25,9 @@ import java.util.Random;
 
 /**
  * A utility class for sampling.
- *
- * @author Justin Basilico
- * @since 3.1
+ * 
+ * @author  Justin Basilico
+ * @since   3.1
  */
 public class DiscreteSamplingUtil
 {
@@ -35,9 +35,12 @@ public class DiscreteSamplingUtil
     /**
      * Samples an random index according to the given array of probabilities.
      *
-     * @param random The random number generator to use.
-     * @param probabilities The array of probabilities. Must sum to 1.0.
-     * @return A random index sampled according to the given probabilities.
+     * @param   random
+     *      The random number generator to use.
+     * @param   probabilities
+     *      The array of probabilities. Must sum to 1.0.
+     * @return
+     *      A random index sampled according to the given probabilities.
      */
     public static int sampleIndexFromProbabilities(
         final Random random,
@@ -63,9 +66,12 @@ public class DiscreteSamplingUtil
     /**
      * Samples an random index according to the given vector of probabilities.
      *
-     * @param random The random number generator to use.
-     * @param probabilities The vector of probabilities. Must sum to 1.0.
-     * @return A random index sampled according to the given probabilities.
+     * @param   random
+     *      The random number generator to use.
+     * @param   probabilities
+     *      The vector of probabilities. Must sum to 1.0.
+     * @return
+     *      A random index sampled according to the given probabilities.
      */
     public static int sampleIndexFromProbabilities(
         final Random random,
@@ -90,14 +96,17 @@ public class DiscreteSamplingUtil
 
     /**
      * Samples a random index according to the given proportions. Note that
-     * calling this requires calculating the sum of the proportions first, so if
-     * it is known in advance, it is more efficient to call the version of this
-     * method that takes the sum of the proportions as a parameter.
+     * calling this requires calculating the sum of the proportions first, so
+     * if it is known in advance, it is more efficient to call the version of
+     * this method that takes the sum of the proportions as a parameter.
      *
-     * @param random The random number generator to use.
-     * @param proportions The array of proportions. All entries must be greater
-     * than or equal to zero.
-     * @return A random index sampled according to the given proportions.
+     * @param   random
+     *      The random number generator to use.
+     * @param   proportions
+     *      The array of proportions. All entries must be greater than or
+     *      equal to zero.
+     * @return
+     *      A random index sampled according to the given proportions.
      */
     public static int sampleIndexFromProportions(
         final Random random,
@@ -116,12 +125,16 @@ public class DiscreteSamplingUtil
     /**
      * Samples an array of indices from a given set of proportions.
      *
-     * @param random The random number generator to use.
-     * @param proportions The array of proportions. All entries must be greater
-     * than or equal to zero.
-     * @param sampleSize The number of samples to make.
-     * @return A an array of random indices sampled according to the given
-     * proportions.
+     * @param   random
+     *      The random number generator to use.
+     * @param   proportions
+     *      The array of proportions. All entries must be greater than or
+     *      equal to zero.
+     * @param sampleSize
+     *      The number of samples to make.
+     * @return
+     *      A an array of random indices sampled according to the given
+     *      proportions.
      */
     public static int[] sampleIndicesFromProportions(
         final Random random,
@@ -144,10 +157,7 @@ public class DiscreteSamplingUtil
             // Sample one index.
             final int randomIndex = sampleIndexFromProportions(
                 random, proportions, proportionSum);
-            return new int[]
-            {
-                randomIndex
-            };
+            return new int[] { randomIndex };
         }
         else
         {
@@ -166,17 +176,22 @@ public class DiscreteSamplingUtil
         }
     }
 
+
     /**
      * Samples a random index according to the given proportions. Note that
      * sampling according cumulative proportions may be slightly faster than
      * this method.
      *
-     * @param random The random number generator to use.
-     * @param proportions An array of proportions. None of the entries can be
-     * negative. It must sum to proportionSum.
-     * @param proportionSum The sum of the given proportions array.
-     * @return An index sampled at random from the given proportions array,
-     * according to those proportions.
+     * @param   random
+     *      The random number generator to use.
+     * @param   proportions
+     *      An array of proportions. None of the entries can be negative. It
+     *      must sum to proportionSum.
+     * @param   proportionSum
+     *      The sum of the given proportions array.
+     * @return
+     *      An index sampled at random from the given proportions array,
+     *      according to those proportions.
      */
     public static int sampleIndexFromProportions(
         final Random random,
@@ -201,11 +216,14 @@ public class DiscreteSamplingUtil
     /**
      * Samples a random index from an array of cumulative proportions.
      *
-     * @param random The random number generator to use.
-     * @param cumulativeProportions The array of cumulative proportions. The
-     * entries must be non-negative and monotonically increasing.
-     * @return An index of the given array samples at random according to the
-     * given cumulative proportions.
+     * @param   random
+     *      The random number generator to use.
+     * @param   cumulativeProportions
+     *      The array of cumulative proportions. The entries must be
+     *      non-negative and monotonically increasing.
+     * @return
+     *      An index of the given array samples at random according to the
+     *      given cumulative proportions.
      */
     public static int sampleIndexFromCumulativeProportions(
         final Random random,
@@ -228,18 +246,20 @@ public class DiscreteSamplingUtil
 
         return index;
     }
-
     /**
      * Samples a multiple indices with replacement from an array of cumulative
      * proportions.
      *
-     * @param random The random number generator to use.
-     * @param cumulativeProportions The array of cumulative proportions. The
-     * entries must be non-negative and monotonically increasing.
-     * @param sampleSize The number of samples to draw from the cumulative
-     * proportions.
-     * @return An array of indices of sampled with replacement according to the
-     * given cumulative proportions.
+     * @param   random
+     *      The random number generator to use.
+     * @param   cumulativeProportions
+     *      The array of cumulative proportions. The entries must be
+     *      non-negative and monotonically increasing.
+     * @param   sampleSize
+     *      The number of samples to draw from the cumulative proportions.
+     * @return
+     *      An array of indices of sampled with replacement according to
+     *      the given cumulative proportions.
      */
     public static int[] sampleIndicesFromCumulativeProportions(
         final Random random,
@@ -258,12 +278,17 @@ public class DiscreteSamplingUtil
     /**
      * Samples a a given number of items from a list with replacement.
      *
-     * @param <DataType> The type of data in the list.
-     * @param random The random number generator.
-     * @param data The list to sample from.
-     * @param sampleSize The sample size. Must be positive.
-     * @return An array list of the given size sampled with replacement from the
-     * given data.
+     * @param   <DataType>
+     *      The type of data in the list.
+     * @param   random
+     *      The random number generator.
+     * @param   data
+     *      The list to sample from.
+     * @param   sampleSize
+     *      The sample size. Must be positive.
+     * @return
+     *      An array list of the given size sampled with replacement from the
+     *      given data.
      */
     public static <DataType> ArrayList<DataType> sampleWithReplacement(
         final Random random,
@@ -279,12 +304,17 @@ public class DiscreteSamplingUtil
      * Samples a a given number of items from a list with replacement and puts
      * the samples into the given collection.
      *
-     * @param <DataType> The type of data in the list.
-     * @param random The random number generator.
-     * @param data The list to sample from.
-     * @param sampleSize The sample size. Must be positive.
-     * @param result The resulting collection to sample into. All sampled
-     * elements will be added to this collection..
+     * @param   <DataType>
+     *      The type of data in the list.
+     * @param   random
+     *      The random number generator.
+     * @param   data
+     *      The list to sample from.
+     * @param   sampleSize
+     *      The sample size. Must be positive.
+     * @param   result
+     *      The resulting collection to sample into. All sampled elements will
+     *      be added to this collection..
      */
     public static <DataType> void sampleWithReplacementInto(
         final Random random,
@@ -293,26 +323,28 @@ public class DiscreteSamplingUtil
         final Collection<? super DataType> result)
     {
         final int dataSize = data.size();
-        if (dataSize > 0)
+        for (int i = 0; i < sampleSize; i++)
         {
-            for (int i = 0; i < sampleSize; i++)
-            {
-                final int randomIndex = random.nextInt(dataSize);
-                result.add(data.get(randomIndex));
-            }
+            final int randomIndex = random.nextInt(dataSize);
+            result.add(data.get(randomIndex));
         }
     }
 
     /**
      * Samples a a given number of items from a list without replacement.
      *
-     * @param <DataType> The type of data in the list.
-     * @param random The random number generator.
-     * @param data The list to sample from.
-     * @param sampleSize The sample size. Must be positive and less than or
-     * equal to the data size.
-     * @return A list sampled without replacement from the given data. It will
-     * be of size sampleSize.
+     * @param   <DataType>
+     *      The type of data in the list.
+     * @param   random
+     *      The random number generator.
+     * @param   data
+     *      The list to sample from.
+     * @param   sampleSize
+     *      The sample size. Must be positive and less than or equal to
+     *      the data size.
+     * @return
+     *      A list sampled without replacement from the given data. It will
+     *      be of size sampleSize.
      */
     public static <DataType> List<DataType> sampleWithoutReplacement(
         final Random random,
@@ -349,5 +381,4 @@ public class DiscreteSamplingUtil
                 + "data size (" + dataSize + ")");
         }
     }
-
 }

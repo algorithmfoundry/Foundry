@@ -469,4 +469,43 @@ public class GraphMetricsTest
         assertFalse(m.isWcc());
     }
 
+    @Test
+    public void testBetweennessCentrality()
+    {
+        // Graph and answers from http://support.sas.com/documentation/cdl/en/procgralg/68145/HTML/default/viewer.htm#procgralg_optgraph_examples04.htm
+        DirectedNodeEdgeGraph<String> graph = new DenseMemoryGraph<>();
+        graph.addEdge("A", "B");
+        graph.addEdge("A", "C");
+        graph.addEdge("A", "D");
+        graph.addEdge("B", "C");
+        graph.addEdge("B", "D");
+        graph.addEdge("B", "E");
+        graph.addEdge("C", "D");
+        graph.addEdge("C", "F");
+        graph.addEdge("C", "H");
+        graph.addEdge("D", "E");
+        graph.addEdge("D", "F");
+        graph.addEdge("D", "G");
+        graph.addEdge("E", "F");
+        graph.addEdge("E", "G");
+        graph.addEdge("F", "G");
+        graph.addEdge("F", "H");
+        graph.addEdge("H", "I");
+        graph.addEdge("I", "J");
+
+        GraphMetrics<String> m = new GraphMetrics<>(graph);
+        // NOTE: I normalize by an undirected graph's values, while SAS seems to
+        // normalize as if it were a directed graph (so I multiply their answer by 2)
+        assertEquals(0.23148 * 2, m.getPerNodeBetweennessCentrality("C"), 1e-5);
+        assertEquals(0.23148 * 2, m.getPerNodeBetweennessCentrality("F"), 1e-5);
+        assertEquals(0.10185 * 2, m.getPerNodeBetweennessCentrality("D"), 1e-5);
+        assertEquals(0.38889 * 2, m.getPerNodeBetweennessCentrality("H"), 1e-5);
+        assertEquals(0.02315 * 2, m.getPerNodeBetweennessCentrality("B"), 1e-5);
+        assertEquals(0.02315 * 2, m.getPerNodeBetweennessCentrality("E"), 1e-5);
+        assertEquals(0.00000 * 2, m.getPerNodeBetweennessCentrality("A"), 1e-5);
+        assertEquals(0.00000 * 2, m.getPerNodeBetweennessCentrality("G"), 1e-5);
+        assertEquals(0.22222 * 2, m.getPerNodeBetweennessCentrality("I"), 1e-5);
+        assertEquals(0.00000 * 2, m.getPerNodeBetweennessCentrality("J"), 1e-5);
+    }
+
 }

@@ -14,10 +14,10 @@
 package examples;
 
 import examples.io.GraphFileIo;
+import gov.sandia.cognition.collection.DoubleArrayList;
 import gov.sandia.cognition.graph.DirectedNodeEdgeGraph;
 import gov.sandia.cognition.graph.community.PersonalizedPageRank;
 import gov.sandia.cognition.util.DefaultKeyValuePair;
-import gov.sandia.cognition.util.DoubleVector;
 import gov.sandia.cognition.util.Pair;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -127,7 +127,7 @@ public class RunPpr
         }
         if (a.scoresOnly)
         {
-            DoubleVector scores = ppr.getScoresForAllNodesMultirun(
+            DoubleArrayList scores = ppr.getScoresForAllNodesMultirun(
                 a.getProbeNodes(), a.numRunsScores);
             List<Pair<String, Double>> sorted = new ArrayList<>(scores.size());
             for (int i = 0; i < scores.size(); ++i)

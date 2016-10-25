@@ -16,9 +16,8 @@ package gov.sandia.cognition.learning.algorithm.clustering;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
-import gov.sandia.cognition.learning.algorithm.clustering.cluster.CentroidCluster;
 import gov.sandia.cognition.learning.algorithm.clustering.cluster.ClusterCreator;
-import gov.sandia.cognition.learning.algorithm.clustering.cluster.MiniBatchClusterCreator;
+import gov.sandia.cognition.learning.algorithm.clustering.cluster.MiniBatchCentroidCluster;
 import gov.sandia.cognition.learning.algorithm.clustering.cluster.VectorMeanMiniBatchCentroidClusterCreator;
 import gov.sandia.cognition.learning.algorithm.clustering.divergence.CentroidClusterDivergenceFunction;
 import gov.sandia.cognition.learning.algorithm.clustering.initializer.FixedClusterInitializer;
@@ -37,6 +36,7 @@ import java.util.Random;
 import java.util.RandomAccess;
 import static java.util.stream.Collectors.*;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Approximates <i>k</i>-means clustering by working on random subsets of the
@@ -62,7 +62,7 @@ import java.util.stream.IntStream;
     = "to appear"
 )
 public class MiniBatchKMeansClusterer<DataType extends Vector>
-    extends KMeansClusterer<DataType, CentroidCluster<DataType>>
+    extends KMeansClusterer<Vector, MiniBatchCentroidCluster>
     implements Randomized
 {
 
@@ -102,16 +102,15 @@ public class MiniBatchKMeansClusterer<DataType extends Vector>
      *
      * @param numClusters the number of clusters to output
      */
-    @SuppressWarnings("unchecked")
     public MiniBatchKMeansClusterer(int numClusters)
     {
         this(numClusters, new Random(),
-            (MiniBatchClusterCreator) new VectorMeanMiniBatchCentroidClusterCreator());
+            VectorMeanMiniBatchCentroidClusterCreator.INSTANCE);
     }
 
     private MiniBatchKMeansClusterer(int numClusters,
         Random random,
-        MiniBatchClusterCreator<CentroidCluster<DataType>, DataType> creator)
+        ClusterCreator<MiniBatchCentroidCluster, Vector> creator)
     {
         this(
             numClusters, DEFAULT_MAX_ITERATIONS,
@@ -134,9 +133,9 @@ public class MiniBatchKMeansClusterer<DataType extends Vector>
     public MiniBatchKMeansClusterer(
         int numClusters,
         int maxIterations,
-        FixedClusterInitializer<CentroidCluster<DataType>, DataType> initializer,
-        Semimetric<? super DataType> metric,
-        MiniBatchClusterCreator<CentroidCluster<DataType>, DataType> creator,
+        FixedClusterInitializer<MiniBatchCentroidCluster, Vector> initializer,
+        Semimetric<? super Vector> metric,
+        ClusterCreator<MiniBatchCentroidCluster, Vector> creator,
         Random random)
     {
         super(numClusters, maxIterations, initializer,
@@ -188,22 +187,24 @@ public class MiniBatchKMeansClusterer<DataType extends Vector>
 
         int[] sampleAssignments = this.assignDataToClusters(samples);
 
-        MiniBatchClusterCreator<CentroidCluster<DataType>, DataType> creator
+        ClusterCreator<MiniBatchCentroidCluster, Vector> creator
             = getCreator();
 
         // Bin all of the samples into their clusters
-        Map<CentroidCluster<DataType>, List<DataType>> samplesInCluster
+        Map<MiniBatchCentroidCluster, List<DataType>> samplesInCluster
             = IntStream.range(0, sampleIndices.size()).parallel()
             .mapToObj(Integer::valueOf)
-            .collect(groupingByConcurrent(idx -> clusters.get(
-                sampleAssignments[idx]), mapping(idx -> samples.get(
-                idx), toList())));
+            .collect(groupingByConcurrent(
+                idx -> clusters.get(sampleAssignments[idx]),
+                mapping(idx -> samples.get(idx), toList())
+            ));
 
         // Update centroids
         samplesInCluster.entrySet().stream().parallel().forEach(
-            (Map.Entry<CentroidCluster<DataType>, List<DataType>> clusterAndSamples)
-            -> creator.updatePrototype(clusterAndSamples.getKey(),
-                clusterAndSamples.getValue()));
+            (Map.Entry<MiniBatchCentroidCluster, List<DataType>> clusterAndSamples)
+            -> clusterAndSamples.getKey().updateCluster(
+                clusterAndSamples.getValue())
+        );
 
         int numChanged = 0;
 
@@ -265,6 +266,7 @@ public class MiniBatchKMeansClusterer<DataType extends Vector>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<? extends DataType> getData()
     {
         return (List<? extends DataType>) super.getData();
@@ -277,7 +279,7 @@ public class MiniBatchKMeansClusterer<DataType extends Vector>
      * @param data
      */
     @Override
-    public void setData(Collection<? extends DataType> data)
+    public void setData(Collection<? extends Vector> data)
     {
         if (data == null)
         {
@@ -288,13 +290,6 @@ public class MiniBatchKMeansClusterer<DataType extends Vector>
             : new ArrayList<>(data));
         this.dataIndices = IntStream.range(0, data.size()).boxed().collect(
             toList());
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public CentroidClusterDivergenceFunction<DataType> getDivergenceFunction()
-    {
-        return (CentroidClusterDivergenceFunction) super.getDivergenceFunction();
     }
 
     /**
@@ -342,38 +337,14 @@ public class MiniBatchKMeansClusterer<DataType extends Vector>
     }
 
     @Override
-    public MiniBatchClusterCreator<CentroidCluster<DataType>, DataType> getCreator()
+    protected int[] assignDataToClusters(
+        Collection<? extends Vector> data)
     {
-        return (MiniBatchClusterCreator<CentroidCluster<DataType>, DataType>) super.getCreator();
-    }
+        // Parallelize if there are more than a few data points
+        Stream<? extends Vector> dataStream = data.size() > 25
+            ? data.parallelStream() : data.stream();
 
-    /**
-     * {@inheritDoc}
-     *
-     * The given creator must be a {@link MiniBatchClusterCreator}, or this
-     * method call will fail.
-     *
-     * @param creator
-     */
-    @Override
-    public void setCreator(
-        ClusterCreator<CentroidCluster<DataType>, DataType> creator)
-    {
-        if (!(creator instanceof MiniBatchClusterCreator))
-        {
-            throw new IllegalArgumentException(
-                "For mini-batch clustering, the cluster creator must be of type "
-                + MiniBatchClusterCreator.class.getName());
-        }
-        MiniBatchClusterCreator<CentroidCluster<DataType>, DataType> mbcc
-            = (MiniBatchClusterCreator<CentroidCluster<DataType>, DataType>) creator;
-        this.setCreator(mbcc);
-    }
-
-    public void setCreator(
-        MiniBatchClusterCreator<CentroidCluster<DataType>, DataType> creator)
-    {
-        super.setCreator(creator);
+        return dataStream.mapToInt(point -> this.getClosestClusterIndex(point)).toArray();
     }
 
     /**
@@ -387,11 +358,11 @@ public class MiniBatchKMeansClusterer<DataType extends Vector>
 
         private int numClusters, maxIterations, minibatchSize;
 
-        private FixedClusterInitializer<CentroidCluster<DataType>, DataType> initializer;
+        private FixedClusterInitializer<MiniBatchCentroidCluster, Vector> initializer;
 
-        private Semimetric<? super DataType> metric;
+        private Semimetric<? super Vector> metric;
 
-        private MiniBatchClusterCreator<CentroidCluster<DataType>, DataType> creator;
+        private ClusterCreator<MiniBatchCentroidCluster, Vector> creator;
 
         private Random random;
 
@@ -419,13 +390,12 @@ public class MiniBatchKMeansClusterer<DataType extends Vector>
          */
         @SuppressWarnings("unchecked")
         public Builder(int numClusters,
-            Semimetric<? super DataType> metric)
+            Semimetric<? super Vector> metric)
         {
             this.numClusters = numClusters;
             this.maxIterations = DEFAULT_MAX_ITERATIONS;
             this.random = new Random();
-            this.creator
-                = (MiniBatchClusterCreator) new VectorMeanMiniBatchCentroidClusterCreator();
+            this.creator = VectorMeanMiniBatchCentroidClusterCreator.INSTANCE;
             this.metric = metric;
             this.initializer = new GreedyClusterInitializer<>(this.metric,
                 creator,
@@ -445,7 +415,7 @@ public class MiniBatchKMeansClusterer<DataType extends Vector>
          * @param numClusters the number of clusters to create
          * @return the builder
          */
-        public Builder<DataType> setNumClusters(int numClusters)
+        public Builder<DataType> withNumClusters(int numClusters)
         {
             this.numClusters = numClusters;
             return this;
@@ -455,7 +425,7 @@ public class MiniBatchKMeansClusterer<DataType extends Vector>
          * @param maxIterations the number of iterations before stopping
          * @return the builder
          */
-        public Builder<DataType> setMaxIterations(int maxIterations)
+        public Builder<DataType> withMaxIterations(int maxIterations)
         {
             this.maxIterations = maxIterations;
             return this;
@@ -466,7 +436,7 @@ public class MiniBatchKMeansClusterer<DataType extends Vector>
          * @return the builder
          * @see MiniBatchKMeansClusterer#setMinibatchSize(int)
          */
-        public Builder<DataType> setMinibatchSize(int minibatchSize)
+        public Builder<DataType> withMinibatchSize(int minibatchSize)
         {
             this.minibatchSize = minibatchSize;
             return this;
@@ -476,8 +446,8 @@ public class MiniBatchKMeansClusterer<DataType extends Vector>
          * @param initializer sets the initial centroids
          * @return the builder
          */
-        public Builder<DataType> setInitializer(
-            FixedClusterInitializer<CentroidCluster<DataType>, DataType> initializer)
+        public Builder<DataType> withInitializer(
+            FixedClusterInitializer<MiniBatchCentroidCluster, Vector> initializer)
         {
             this.initializer = initializer;
             return this;
@@ -487,8 +457,8 @@ public class MiniBatchKMeansClusterer<DataType extends Vector>
          * @param creator the cluster creator to use
          * @return the builder
          */
-        public Builder<DataType> setCreator(
-            MiniBatchClusterCreator<CentroidCluster<DataType>, DataType> creator)
+        public Builder<DataType> withCreator(
+            ClusterCreator<MiniBatchCentroidCluster, Vector> creator)
         {
             this.creator = creator;
             return this;
@@ -498,7 +468,7 @@ public class MiniBatchKMeansClusterer<DataType extends Vector>
          * @param random the random number generator to use
          * @return the builder
          */
-        public Builder<DataType> setRandom(Random random)
+        public Builder<DataType> withRandom(Random random)
         {
             this.random = random;
             return this;

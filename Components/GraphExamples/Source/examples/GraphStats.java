@@ -247,7 +247,7 @@ public class GraphStats
             // Print the names of all nodes in order
             tmp = new ArrayList<>();
             tmp.add("Node Names");
-            for (int i = 0; i < graph.numNodes(); ++i)
+            for (int i = 0; i < graph.getNumNodes(); ++i)
             {
                 tmp.add(graph.getNode(i));
             }
@@ -262,7 +262,7 @@ public class GraphStats
                 {
                     tmp = new ArrayList<>();
                     tmp.add(attr);
-                    for (int i = 0; i < graph.numNodes(); ++i)
+                    for (int i = 0; i < graph.getNumNodes(); ++i)
                     {
                         String v = nodeAttrs.get(graph.getNode(i)).get(attr);
                         v = (v == null) ? "" : v;
@@ -276,7 +276,7 @@ public class GraphStats
         {
             tmp = new ArrayList<>();
             tmp.add("Node Degrees");
-            for (int i = 0; i < graph.numNodes(); ++i)
+            for (int i = 0; i < graph.getNumNodes(); ++i)
             {
                 tmp.add(Integer.toString(metrics.degree(i)));
             }
@@ -286,7 +286,7 @@ public class GraphStats
         {
             tmp = new ArrayList<>();
             tmp.add("Node NumNeighbors");
-            for (int i = 0; i < graph.numNodes(); ++i)
+            for (int i = 0; i < graph.getNumNodes(); ++i)
             {
                 tmp.add(Integer.toString(metrics.numNeighbors(i)));
             }
@@ -296,7 +296,7 @@ public class GraphStats
         {
             tmp = new ArrayList<>();
             tmp.add("Node NumSuccessors");
-            for (int i = 0; i < graph.numNodes(); ++i)
+            for (int i = 0; i < graph.getNumNodes(); ++i)
             {
                 tmp.add(Integer.toString(metrics.numSuccessors(i)));
             }
@@ -306,7 +306,7 @@ public class GraphStats
         {
             tmp = new ArrayList<>();
             tmp.add("Node NumTriangles");
-            for (int i = 0; i < graph.numNodes(); ++i)
+            for (int i = 0; i < graph.getNumNodes(); ++i)
             {
                 tmp.add(Integer.toString(metrics.numNodeTriangles(i)));
             }
@@ -318,7 +318,7 @@ public class GraphStats
             // First print all edges in order
             tmp = new ArrayList<>();
             tmp.add("Edge Names");
-            for (int i = 0; i < graph.numEdges(); ++i)
+            for (int i = 0; i < graph.getNumEdges(); ++i)
             {
                 Pair<Integer, Integer> e = graph.getEdgeEndpointIds(i);
                 String edge = "(" + graph.getNode(e.getFirst()) + "-"
@@ -336,7 +336,7 @@ public class GraphStats
                 {
                     tmp = new ArrayList<>();
                     tmp.add(attr);
-                    for (int i = 0; i < graph.numEdges(); ++i)
+                    for (int i = 0; i < graph.getNumEdges(); ++i)
                     {
                         Pair<Integer, Integer> ee = graph.getEdgeEndpointIds(i);
                         String src = graph.getNode(ee.getFirst());
@@ -355,7 +355,7 @@ public class GraphStats
         {
             tmp = new ArrayList<>();
             tmp.add("Edge JaccardSimilarity");
-            for (int i = 0; i < graph.numEdges(); ++i)
+            for (int i = 0; i < graph.getNumEdges(); ++i)
             {
                 tmp.add(Double.toString(
                     metrics.getEdgeJaccardSimilarity(i)));
@@ -366,7 +366,7 @@ public class GraphStats
         {
             tmp = new ArrayList<>();
             tmp.add("Edge NumTriangles");
-            for (int i = 0; i < graph.numEdges(); ++i)
+            for (int i = 0; i < graph.getNumEdges(); ++i)
             {
                 tmp.add(Integer.toString(metrics.numEdgeTriangles(i)));
             }
@@ -376,7 +376,7 @@ public class GraphStats
         {
             tmp = new ArrayList<>();
             tmp.add("Edge TriangleDensity");
-            for (int i = 0; i < graph.numEdges(); ++i)
+            for (int i = 0; i < graph.getNumEdges(); ++i)
             {
                 tmp.add(Double.toString(
                     metrics.getPerEdgeTriangleDensity(i)));

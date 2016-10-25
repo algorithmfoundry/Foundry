@@ -37,7 +37,7 @@ class InferenceHelper
         boolean printResults)
     {
         int idx = 0;
-        for (int i = 0; i < graph.numNodes(); ++i)
+        for (int i = 0; i < graph.getNumNodes(); ++i)
         {
             NodeLabelType node = graph.getNode(i);
             Map<LabelType, Double> b = fn.getBeliefs(node, solver);
@@ -70,7 +70,7 @@ class InferenceHelper
         boolean printResults)
     {
         int idx = 0;
-        for (int i = 0; i < graph.numNodes(); ++i)
+        for (int i = 0; i < graph.getNumNodes(); ++i)
         {
             NodeLabelType node = graph.getNode(i);
             Map<LabelType, Double> b = fn.getBeliefs(node, solver);

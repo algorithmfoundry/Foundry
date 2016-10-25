@@ -123,7 +123,7 @@ public class CommunityMetrics
             return internalMod;
         }
         double modularity = 0.0;
-        for (int i = 0; i < communities.numPartitions(); ++i)
+        for (int i = 0; i < communities.getNumPartitions(); ++i)
         {
             modularity += modularityPartForCommunity(
                 communities.getPartitionMembers(i), graphMetrics);
@@ -192,7 +192,7 @@ public class CommunityMetrics
         double edgesInside = 0;
         double edgesOutside = 0;
         boolean isWeighted = (graph instanceof DirectedWeightedNodeEdgeGraph);
-        for (int i = 0; i < graph.numEdges(); ++i)
+        for (int i = 0; i < graph.getNumEdges(); ++i)
         {
             Pair<Integer, Integer> edge = graph.getEdgeEndpointIds(i);
             double w = 1.0;
@@ -351,7 +351,7 @@ public class CommunityMetrics
         int nodeId)
     {
         int nodesPartition = partitions.getPartitionById(nodeId);
-        int numPartitions = partitions.numPartitions();
+        int numPartitions = partitions.getNumPartitions();
         if (connections == null || connections.length < numPartitions)
         {
             connections = new int[numPartitions];
@@ -466,7 +466,7 @@ public class CommunityMetrics
         NodePartitioning<NodeNameType> partitions)
     {
         double sum = 0;
-        for (int i = 0; i < graph.numNodes(); ++i)
+        for (int i = 0; i < graph.getNumNodes(); ++i)
         {
             sum += computeOneNodePermanenceById(metrics, partitions, i, graph);
         }

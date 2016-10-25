@@ -22,7 +22,7 @@ import static org.junit.Assert.*;
  *
  * @author jdwendt
  */
-public class SummaryStatisticsTest
+public class StreamingSummaryStatisticsTest
 {
 
     /**
@@ -31,9 +31,9 @@ public class SummaryStatisticsTest
      * @param vals The values to load in
      * @return the summary statistics instance with the input values
      */
-    private static SummaryStatistics createAndLoadStats(double[] vals)
+    private static StreamingSummaryStatistics createAndLoadStats(double[] vals)
     {
-        SummaryStatistics ret = new SummaryStatistics();
+        StreamingSummaryStatistics ret = new StreamingSummaryStatistics();
         for (double val : vals)
         {
             ret.addValue(val);
@@ -52,7 +52,7 @@ public class SummaryStatisticsTest
      * @param variance The expected variance
      * @param count The expected count
      */
-    private static void testStats(SummaryStatistics s,
+    private static void testStats(StreamingSummaryStatistics s,
         double min,
         double max,
         double mean,
@@ -81,8 +81,8 @@ public class SummaryStatisticsTest
         {
             3, 4, 5, 6, 7, 8
         };
-        SummaryStatistics s1 = createAndLoadStats(v1);
-        SummaryStatistics s2 = createAndLoadStats(v2);
+        StreamingSummaryStatistics s1 = createAndLoadStats(v1);
+        StreamingSummaryStatistics s2 = createAndLoadStats(v2);
         testStats(s1, 1.0, 6.0, 3.5, 3.5, 6);
         testStats(s2, 3.0, 8.0, 5.5, 3.5, 6);
         s1.merge(s2);
@@ -91,7 +91,7 @@ public class SummaryStatisticsTest
         s1.merge(s2);
         testStats(s1, 1.0, 8.0, 4.8333333333333333333333, 4.029411765, 18);
 
-        s1 = new SummaryStatistics();
+        s1 = new StreamingSummaryStatistics();
         for (double v : v1)
         {
             s1.addValue(v);
@@ -104,7 +104,7 @@ public class SummaryStatisticsTest
         testStats(s1, 1.0, 8.0, 4.8333333333333333333333, 4.029411765, 18);
 
         s1 = createAndLoadStats(v1);
-        s2 = new SummaryStatistics();
+        s2 = new StreamingSummaryStatistics();
         for (double v : v2)
         {
             s2.addValue(v);
@@ -115,10 +115,10 @@ public class SummaryStatisticsTest
         s1.merge(s2);
         testStats(s1, 1.0, 8.0, 4.8333333333333333333333, 4.029411765, 18);
         // Test that nothing changes when I add an empty set of stats
-        s1.merge(new SummaryStatistics());
+        s1.merge(new StreamingSummaryStatistics());
         testStats(s1, 1.0, 8.0, 4.8333333333333333333333, 4.029411765, 18);
         // Test that an empty instance gets all of the values from a full instance
-        s2 = new SummaryStatistics();
+        s2 = new StreamingSummaryStatistics();
         s2.merge(s1);
         testStats(s2, 1.0, 8.0, 4.8333333333333333333333, 4.029411765, 18);
     }

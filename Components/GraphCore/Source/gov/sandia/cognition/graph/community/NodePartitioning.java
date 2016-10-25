@@ -30,7 +30,7 @@ public interface NodePartitioning<NodeNameType>
      *
      * @return the number of partitions in this partitioning
      */
-    public int numPartitions();
+    public int getNumPartitions();
 
     /**
      * Returns the members of the ith partition
@@ -82,7 +82,7 @@ public interface NodePartitioning<NodeNameType>
     public static <NodeNameType> void printPartitioning(
         NodePartitioning<NodeNameType> part)
     {
-        for (int i = 0; i < part.numPartitions(); ++i)
+        for (int i = 0; i < part.getNumPartitions(); ++i)
         {
             System.out.println("Partition " + i);
             for (NodeNameType node : part.getPartitionMembers(i))

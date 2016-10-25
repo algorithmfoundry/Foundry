@@ -18,7 +18,7 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.graph.DirectedNodeEdgeGraph;
 import gov.sandia.cognition.graph.DirectedWeightedNodeEdgeGraph;
 import gov.sandia.cognition.graph.inference.GraphWrappingEnergyFunction.PotentialHandler;
-import gov.sandia.cognition.util.DoubleVector;
+import gov.sandia.cognition.collection.DoubleArrayList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +47,7 @@ public class InfluencePotentialHandler
 
     private final List<Integer> labels;
 
-    private final DoubleVector unaryPotentials;
+    private final DoubleArrayList unaryPotentials;
 
     /**
      * Creates a potential handler.
@@ -63,8 +63,8 @@ public class InfluencePotentialHandler
         labels.add(0);
         labels.add(1);
 
-        int n = graph.numNodes();
-        this.unaryPotentials = new DoubleVector(n);
+        int n = graph.getNumNodes();
+        this.unaryPotentials = new DoubleArrayList(n);
         for (int i = 0; i < n; ++i)
         {
             this.unaryPotentials.add(-Double.MAX_VALUE);

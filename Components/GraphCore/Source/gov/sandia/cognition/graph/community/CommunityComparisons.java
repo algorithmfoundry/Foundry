@@ -129,8 +129,8 @@ public class CommunityComparisons<NodeNameType>
             = condEntropyVGivenU = mutualInformation = expectedMutualInformation
             = Double.MAX_VALUE;
         n = sv.size();
-        nu = u.numPartitions();
-        nv = v.numPartitions();
+        nu = u.getNumPartitions();
+        nv = v.getNumPartitions();
         contingencyTable = new int[nu][];
         uSums = new int[nu];
         vSums = new int[nv];

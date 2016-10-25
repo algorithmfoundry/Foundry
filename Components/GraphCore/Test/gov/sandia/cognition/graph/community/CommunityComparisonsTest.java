@@ -57,7 +57,7 @@ public class CommunityComparisonsTest
         }
 
         @Override
-        public int numPartitions()
+        public int getNumPartitions()
         {
             return partitions.size();
         }

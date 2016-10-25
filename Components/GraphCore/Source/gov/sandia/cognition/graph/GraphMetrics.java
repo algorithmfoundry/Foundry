@@ -17,8 +17,8 @@ package gov.sandia.cognition.graph;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.util.DefaultKeyValuePair;
-import gov.sandia.cognition.util.DoubleVector;
-import gov.sandia.cognition.util.IntVector;
+import gov.sandia.cognition.collection.DoubleArrayList;
+import gov.sandia.cognition.collection.IntArrayList;
 import gov.sandia.cognition.util.Pair;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,10 +26,13 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
+import java.util.Stack;
 
 /**
  * This class is intended to allow programmers to get any number of graph
@@ -71,7 +74,7 @@ public class GraphMetrics<NodeNameType>
     /**
      * The list of degrees for all nodes in the graph
      */
-    private IntVector allNodeDegrees;
+    private IntArrayList allNodeDegrees;
 
     /**
      * The other two node ids for all triangles that each node in the graph is
@@ -88,7 +91,7 @@ public class GraphMetrics<NodeNameType>
      * The Jaccard similarity for all edges in the graph -- That is, the Jaccard
      * similarity of the neighbors (undirected) for the endpoints on each edge
      */
-    private DoubleVector perEdgeJaccardSimilarity;
+    private DoubleArrayList perEdgeJaccardSimilarity;
 
     /**
      * The other node involved in all triangles that any edge is in
@@ -99,12 +102,17 @@ public class GraphMetrics<NodeNameType>
      * The percentage of closed triangles compared to the total number that any
      * edge could be in
      */
-    private DoubleVector perEdgeTriangleDensity;
+    private DoubleArrayList perEdgeTriangleDensity;
 
     /**
      * The eccentricities of all nodes in the unweighted graph
      */
-    private IntVector perNodeEccentricity;
+    private IntArrayList perNodeEccentricity;
+
+    /**
+     * The betweenness centralities for all nodes in the unweighted graph
+     */
+    private DoubleArrayList perNodeBetweenCentrality;
 
     private int radius;
 
@@ -133,6 +141,7 @@ public class GraphMetrics<NodeNameType>
         perEdgeTriangleDensity = null;
         radius = diameter = Integer.MAX_VALUE;
         perNodeEccentricity = null;
+        perNodeBetweenCentrality = null;
         isWcc = null;
     }
 
@@ -165,7 +174,7 @@ public class GraphMetrics<NodeNameType>
      */
     public int numNodes()
     {
-        return graph.numNodes();
+        return graph.getNumNodes();
     }
 
     /**
@@ -175,7 +184,7 @@ public class GraphMetrics<NodeNameType>
      */
     public int numEdges()
     {
-        return graph.numEdges();
+        return graph.getNumEdges();
     }
 
     /**
@@ -196,7 +205,7 @@ public class GraphMetrics<NodeNameType>
     public void initializeNodeDegrees()
     {
         int n = numNodes();
-        allNodeDegrees = new IntVector(n);
+        allNodeDegrees = new IntArrayList(n);
         for (int i = 0; i < n; ++i)
         {
             allNodeDegrees.add(0);
@@ -859,7 +868,7 @@ public class GraphMetrics<NodeNameType>
             initializeNodeNeighbors();
         }
         int m = numEdges();
-        perEdgeJaccardSimilarity = new DoubleVector(m);
+        perEdgeJaccardSimilarity = new DoubleArrayList(m);
         for (int i = 0; i < m; ++i)
         {
             Pair<Integer, Integer> edge = graph.getEdgeEndpointIds(i);
@@ -999,7 +1008,7 @@ public class GraphMetrics<NodeNameType>
         }
 
         int m = numEdges();
-        perEdgeTriangleDensity = new DoubleVector(m);
+        perEdgeTriangleDensity = new DoubleArrayList(m);
         for (int i = 0; i < m; ++i)
         {
             Pair<Integer, Integer> edge = graph.getEdgeEndpointIds(i);
@@ -1059,7 +1068,7 @@ public class GraphMetrics<NodeNameType>
         }
 
         int n = numNodes();
-        perNodeEccentricity = new IntVector(n);
+        perNodeEccentricity = new IntArrayList(n);
         int[] minEccentricity = new int[n];
         int[] maxEccentricity = new int[n];
         radius = Integer.MAX_VALUE;
@@ -1359,6 +1368,133 @@ public class GraphMetrics<NodeNameType>
             initializePerNodeEccentricity();
         }
         return isWcc;
+    }
+
+    /**
+     * Private helper that tests if per-node betweenness centrality has been
+     * initialized.
+     *
+     * @return true if initialized, else false
+     */
+    private boolean isInitializedPerNodeBetweennessCentrality()
+    {
+        return perNodeBetweenCentrality != null;
+    }
+
+    /**
+     * Initializes the per-node eccentricity.
+     */
+    @PublicationReference(author = "Ulrik Brandes", title
+        = "A Faster Algorithm for Betweenness Centrality", type
+        = PublicationType.Journal, publication
+        = "Journal of Mathematical Sociology", year = 2001, pages =
+        {
+            163, 177
+        })
+    public void initializePerNodeBetweennessCentrality()
+    {
+        int n = numNodes();
+        perNodeBetweenCentrality = new DoubleArrayList(n);
+        for (int i = 0; i < n; ++i)
+        {
+            perNodeBetweenCentrality.add(0);
+        }
+        List<List<Integer>> P = new ArrayList<>();
+        Queue<Integer> Q = new LinkedList<>();
+        Stack<Integer> S = new Stack<>();
+        double[] sigma = new double[n];
+        double[] d = new double[n];
+        double[] delta = new double[n];
+        for (int s = 0; s < n; ++s)
+        {
+            S.clear();
+            P.clear();
+            for (int j = 0; j < n; ++j)
+            {
+                P.add(new ArrayList<>());
+                sigma[j] = 0;
+                d[j] = -1;
+            }
+            sigma[s] = 1;
+            d[s] = 0;
+            Q.clear();
+            Q.add(s);
+            while (!Q.isEmpty())
+            {
+                int v = Q.remove();
+                S.push(v);
+                for (int w : neighborIds(v))
+                {
+                    // w found for the first time?
+                    if (d[w] < 0)
+                    {
+                        Q.add(w);
+                        d[w] = d[v] + 1;
+                    }
+                    // shortest path to w via v?
+                    if (d[w] == (d[v] + 1))
+                    {
+                        sigma[w] += sigma[v];
+                        P.get(w).add(v);
+                    }
+                }
+            }
+            for (int i = 0; i < n; ++i)
+            {
+                delta[i] = 0;
+            }
+            // S returns vertices in order of non-increasing distance from s
+            while (!S.isEmpty())
+            {
+                int w = S.pop();
+                for (int v : P.get(w))
+                {
+                    delta[v] += (sigma[v] / sigma[w]) * (1 + delta[w]);
+                }
+                if (w != s)
+                {
+                    perNodeBetweenCentrality.plusEquals(w, delta[w]);
+                }
+            }
+        }
+        // Different from paper, but see https://en.wikipedia.org/wiki/Betweenness_centrality
+        // Normalize by number of pairs not including each node
+        double normalizeBy = 2.0 / ((n - 1) * (n - 2));
+        for (int i = 0; i < n; ++i)
+        {
+            perNodeBetweenCentrality.set(i, normalizeBy
+                * perNodeBetweenCentrality.get(i));
+        }
+    }
+
+    /**
+     * Returns the per-node betweenness centrality for the input node
+     *
+     * @param nodeId The node whose betweenness centrality is requested
+     * @return the per-node betweenness centrality for the input node
+     */
+    public double getPerNodeBetweennessCentralityById(int nodeId)
+    {
+        if (!isInitializedPerNodeBetweennessCentrality())
+        {
+            initializePerNodeBetweennessCentrality();
+        }
+        return perNodeBetweenCentrality.get(nodeId);
+    }
+
+    /**
+     * Returns the per-node betweenness centrality for the input node
+     *
+     * @param node The node whose betweenness centrality is requested
+     * @return the per-node betweenness centrality for the input node
+     */
+    public double getPerNodeBetweennessCentrality(NodeNameType node)
+    {
+        if (!isInitializedPerNodeBetweennessCentrality())
+        {
+            initializePerNodeBetweennessCentrality();
+        }
+        return perNodeBetweenCentrality.get(graph.getNodeId(node));
     }
 
 }

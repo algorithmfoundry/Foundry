@@ -18,8 +18,8 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.graph.DirectedNodeEdgeGraph;
 import gov.sandia.cognition.graph.DirectedWeightedNodeEdgeGraph;
-import gov.sandia.cognition.util.DoubleVector;
-import gov.sandia.cognition.util.IntVector;
+import gov.sandia.cognition.collection.DoubleArrayList;
+import gov.sandia.cognition.collection.IntArrayList;
 import gov.sandia.cognition.util.Pair;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,7 +50,7 @@ public class Louvain<NodeNameType>
      * The weighted degree of each node in the graph at the current level of the
      * hierarchy.
      */
-    private DoubleVector weightedNodeDegree;
+    private DoubleArrayList weightedNodeDegree;
 
     /**
      * The total weight of the graph at the current level of the hierarchy.
@@ -60,22 +60,22 @@ public class Louvain<NodeNameType>
     /**
      * Map from each node id to its assigned community id.
      */
-    private IntVector nodeToCommunity;
+    private IntArrayList nodeToCommunity;
 
     /**
      * Total weighted edges inside and outside a community.
      */
-    private DoubleVector communityTotal;
+    private DoubleArrayList communityTotal;
 
     /**
      * Weighted edges inside a community.
      */
-    private DoubleVector communityInternal;
+    private DoubleArrayList communityInternal;
 
     /**
      * Weighted self loops on a specific node.
      */
-    private DoubleVector weightedSelfLoops;
+    private DoubleArrayList weightedSelfLoops;
 
     /**
      * A user-specified parameter that limits the number of passes that might be
@@ -99,13 +99,13 @@ public class Louvain<NodeNameType>
      * Weighted edges to that neighboring community (recalculated on the fly for
      * each node in the update loop -- see initNeighborCommunity)
      */
-    private DoubleVector neighborCommWeight;
+    private DoubleArrayList neighborCommWeight;
 
     /**
      * Neighbor communities' ids (recalculated on the fly for each node in the
      * update loop -- see initNeighborCommunity)
      */
-    private IntVector neighborCommId;
+    private IntArrayList neighborCommId;
 
     /**
      * Number of neighbors calculated on the fly in the update loop (see
@@ -118,7 +118,7 @@ public class Louvain<NodeNameType>
      * http://en.wikipedia.org/wiki/Sparse_matrix#Yale_format). This specifies
      * the index of the first neighbor in the neighbors list.
      */
-    private IntVector neighborsFirstIdx;
+    private IntArrayList neighborsFirstIdx;
 
     /**
      * Yale-format-like representation of the neighbors of each node (see
@@ -127,7 +127,7 @@ public class Louvain<NodeNameType>
      * specific node's neighbors, look from indices neighborsFirstIdx.get(i) to
      * neighborsFirstIdx.get(i+1).
      */
-    private IntVector neighbors;
+    private IntArrayList neighbors;
 
     /**
      * Yale-format-like representation of the neighbors of each node (see
@@ -135,7 +135,7 @@ public class Louvain<NodeNameType>
      * the weights of all neighbors of all nodes in node-order. Follows the same
      * order as IntVector neighbors.
      */
-    private DoubleVector wNeighbors;
+    private DoubleArrayList wNeighbors;
 
     /**
      * The number of nodes in the input graph
@@ -193,12 +193,12 @@ public class Louvain<NodeNameType>
         this.minModularityGain = minModularityGain;
 
         // Initialize various internal data for the communities/nodes
-        this.numNodes = graph.numNodes();
-        this.nodeToCommunity = new IntVector();
-        this.weightedNodeDegree = new DoubleVector(numNodes);
-        this.weightedSelfLoops = new DoubleVector(numNodes);
-        this.neighborCommWeight = new DoubleVector(numNodes);
-        this.neighborCommId = new IntVector(numNodes);
+        this.numNodes = graph.getNumNodes();
+        this.nodeToCommunity = new IntArrayList();
+        this.weightedNodeDegree = new DoubleArrayList(numNodes);
+        this.weightedSelfLoops = new DoubleArrayList(numNodes);
+        this.neighborCommWeight = new DoubleArrayList(numNodes);
+        this.neighborCommId = new IntArrayList(numNodes);
         this.nodeMap = new HashMap<>(numNodes);
 
         // Initialize the per-node values
@@ -206,12 +206,12 @@ public class Louvain<NodeNameType>
         this.numNeighborCommunities = 0;
         this.totalWeight = 0;
         Map<Integer, HashMap<Integer, Double>> edges = new HashMap<>(
-            graph.numNodes());
-        for (int i = 0; i < graph.numNodes(); ++i)
+            graph.getNumNodes());
+        for (int i = 0; i < graph.getNumNodes(); ++i)
         {
             edges.put(i, new HashMap<>());
         }
-        for (int i = 0; i < graph.numEdges(); ++i)
+        for (int i = 0; i < graph.getNumEdges(); ++i)
         {
             Pair<Integer, Integer> edge = graph.getEdgeEndpointIds(i);
             int l = edge.getFirst();
@@ -232,7 +232,7 @@ public class Louvain<NodeNameType>
             }
             edges.get(r).put(l, w + edges.get(r).get(l));
         }
-        for (int i = 0; i < graph.numNodes(); ++i)
+        for (int i = 0; i < graph.getNumNodes(); ++i)
         {
             // Save the vertex-to-id map for myself going forward
             this.nodeMap.put(graph.getNode(i), i);
@@ -263,8 +263,8 @@ public class Louvain<NodeNameType>
                 this.weightedNodeDegree.plusEquals(l, w);
             }
         }
-        this.communityTotal = new DoubleVector(numNodes);
-        this.communityInternal = new DoubleVector(numNodes);
+        this.communityTotal = new DoubleArrayList(numNodes);
+        this.communityInternal = new DoubleArrayList(numNodes);
         // Now that weighted node degree and self loops are computed...
         for (int i = 0; i < numNodes; ++i)
         {
@@ -276,9 +276,9 @@ public class Louvain<NodeNameType>
         }
         YaleFormatWeightedNeighbors<NodeNameType> yale
             = new YaleFormatWeightedNeighbors<>(graph, false);
-        this.neighbors = new IntVector(yale.getNeighbors());
-        this.wNeighbors = new DoubleVector(yale.getNeighborsWeights());
-        this.neighborsFirstIdx = new IntVector(yale.getNeighborsFirstIndex());
+        this.neighbors = new IntArrayList(yale.getNeighbors());
+        this.wNeighbors = new DoubleArrayList(yale.getNeighborsWeights());
+        this.neighborsFirstIdx = new IntArrayList(yale.getNeighborsFirstIndex());
 
         generator = new Random();
         results = new LouvainHierarchy<>(nodeMap);
@@ -504,7 +504,7 @@ public class Louvain<NodeNameType>
 
         // Create random-order list
         int n = nodeToCommunity.size();
-        IntVector randomOrder = new IntVector(n);
+        IntArrayList randomOrder = new IntArrayList(n);
         for (int i = 0; i < n; ++i)
         {
             randomOrder.add(i);
@@ -651,7 +651,7 @@ public class Louvain<NodeNameType>
         }
         // Convert it to the denser structure
         // First the firstIdxs
-        IntVector commFirstIdx = new IntVector(numCommunities + 1);
+        IntArrayList commFirstIdx = new IntArrayList(numCommunities + 1);
         int totalEdges = 0;
         commFirstIdx.add(totalEdges);
         for (int i = 0; i < numCommunities; ++i)
@@ -659,8 +659,8 @@ public class Louvain<NodeNameType>
             totalEdges += edges.get(i).size();
             commFirstIdx.add(totalEdges);
         }
-        IntVector commNeighbors = new IntVector(totalEdges);
-        DoubleVector commNeighWeights = new DoubleVector(totalEdges);
+        IntArrayList commNeighbors = new IntArrayList(totalEdges);
+        DoubleArrayList commNeighWeights = new DoubleArrayList(totalEdges);
         // Initialize all to -1 for edges, 0 for weights
         for (int i = 0; i < totalEdges; ++i)
         {
@@ -835,7 +835,7 @@ public class Louvain<NodeNameType>
          * level1:[level2_community_for_level1_comm_0 ...
          * level2_community_for_level1_comm_m], ...].
          */
-        private final IntVector communities;
+        private final IntArrayList communities;
 
         /**
          * This has numLevels + 1 indices into the communities vector. The ith
@@ -843,7 +843,7 @@ public class Louvain<NodeNameType>
          * (combined with communities) is a lot like the Yale format for densely
          * storing sparse matrices.
          */
-        private final IntVector levelIndex;
+        private final IntArrayList levelIndex;
 
         /**
          * The map from nodes to their local integer ids.
@@ -853,7 +853,7 @@ public class Louvain<NodeNameType>
         /**
          * The modularity at each level in the map.
          */
-        private final DoubleVector modularities;
+        private final DoubleArrayList modularities;
 
         private List<Set<NodeNameType>> topCommunities;
 
@@ -865,9 +865,9 @@ public class Louvain<NodeNameType>
          */
         LouvainHierarchy(Map<NodeNameType, Integer> nodeMap)
         {
-            communities = new IntVector();
-            levelIndex = new IntVector(10);
-            modularities = new DoubleVector(10);
+            communities = new IntArrayList();
+            levelIndex = new IntArrayList(10);
+            modularities = new DoubleArrayList(10);
             levelIndex.add(communities.size());
             this.nodeMap = Collections.unmodifiableMap(nodeMap);
             topCommunities = null;
@@ -881,7 +881,7 @@ public class Louvain<NodeNameType>
          * @param level The level to add
          * @param modularity The modularity after this level was run.
          */
-        void addLevel(IntVector level,
+        void addLevel(IntArrayList level,
             double modularity)
         {
             for (int i = 0; i < level.size(); ++i)
@@ -1018,7 +1018,7 @@ public class Louvain<NodeNameType>
         }
 
         @Override
-        public int numPartitions()
+        public int getNumPartitions()
         {
             return getNumCommunitiesAtLevel(numLevels() - 1);
         }
@@ -1028,8 +1028,8 @@ public class Louvain<NodeNameType>
         {
             if (topCommunities == null)
             {
-                topCommunities = new ArrayList<>(numPartitions());
-                for (int j = 0; j < numPartitions(); ++j)
+                topCommunities = new ArrayList<>(getNumPartitions());
+                for (int j = 0; j < getNumPartitions(); ++j)
                 {
                     topCommunities.add(new HashSet<>());
                 }

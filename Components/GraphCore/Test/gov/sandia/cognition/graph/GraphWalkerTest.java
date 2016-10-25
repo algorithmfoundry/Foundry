@@ -15,6 +15,7 @@
 package gov.sandia.cognition.graph;
 
 import java.util.Map;
+import java.util.Random;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -32,9 +33,10 @@ public class GraphWalkerTest
     {
         DirectedNodeEdgeGraph<String> g = new DenseMemoryGraph<>();
         g.addEdge("a", "b");
+        Random r = new Random();
 
         GraphWalker.RandomWalker<String> undirected
-            = new GraphWalker.RandomWalker<>(false);
+            = new GraphWalker.RandomWalker<>(false, r);
         GraphWalker<String> walker = new GraphWalker<>(g, undirected);
         assertEquals("b", walker.getEndNode("a", 1));
         assertEquals("b", walker.getEndNode("a", 3));
@@ -42,7 +44,7 @@ public class GraphWalkerTest
         assertEquals("b", walker.getEndNode("b", 2));
         assertEquals("a", walker.getEndNode("b", 3));
         GraphWalker.RandomWalker<String> directed
-            = new GraphWalker.RandomWalker<>(true);
+            = new GraphWalker.RandomWalker<>(true, r);
         walker = new GraphWalker<>(g, directed);
         assertEquals("b", walker.getEndNode("a", 1));
         assertEquals("b", walker.getEndNode("a", 3));

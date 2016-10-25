@@ -32,7 +32,6 @@ import gov.sandia.cognition.util.ObjectUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Stream;
 
 /**
  * The {@code KMeansClusterer} class implements the standard k-means
@@ -275,12 +274,19 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
     protected int[] assignDataToClusters(
         Collection<? extends DataType> data)
     {
-        // Parallelize if there are more than a few data points
-        Stream<? extends DataType> dataStream = data.size() > 25
-            ? data.parallelStream() : data.stream();
-        
         // Loop through the elements and find the closest cluster for each.
-        return dataStream.mapToInt(point -> this.getClosestClusterIndex(point)).toArray();
+        int i = 0;
+        int[] localAssignments = new int[ data.size() ];
+        for (DataType element : data)
+        {
+            // Get the i-th element and find the index of the closest cluster
+            // to it.
+            localAssignments[i] = this.getClosestClusterIndex(element);
+            i++;
+        }
+        
+        return localAssignments;
+        
     }
 
     @Override

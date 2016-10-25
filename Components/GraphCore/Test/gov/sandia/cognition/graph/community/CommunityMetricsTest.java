@@ -52,8 +52,8 @@ public class CommunityMetricsTest
         NodePartitioning<String> np = l.solveCommunities();
 
         double modularity = np.getModularity();
-        Set<Set<String>> communities = new HashSet<>(np.numPartitions());
-        for (int i = 0; i < np.numPartitions(); ++i)
+        Set<Set<String>> communities = new HashSet<>(np.getNumPartitions());
+        for (int i = 0; i < np.getNumPartitions(); ++i)
         {
             communities.add(np.getPartitionMembers(i));
         }
@@ -95,7 +95,7 @@ public class CommunityMetricsTest
         NodePartitioning<Integer> part = new NodePartitioning<Integer>()
         {
             @Override
-            public int numPartitions()
+            public int getNumPartitions()
             {
                 return 3;
             }

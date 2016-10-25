@@ -76,7 +76,7 @@ public class PermanenceTest
         testSameCommunity(4, 6, results);
         testSameCommunity(4, 7, results);
         assertEquals(8, results.getAllMembers().size());
-        assertEquals(2, results.numPartitions());
+        assertEquals(2, results.getNumPartitions());
         Set<Integer> p0 = results.getPartitionMembers(0);
         Set<Integer> p1 = results.getPartitionMembers(1);
         // Swap the two so I know which partition is which
@@ -153,7 +153,7 @@ public class PermanenceTest
         assertEquals(14, results.getAllMembers().size());
         // Turns out sometimes it finds only two partitions
 //        assertEquals(3, results.numPartitions());
-        if (results.numPartitions() == 3)
+        if (results.getNumPartitions() == 3)
         {
             Set<Integer> p0 = results.getPartitionMembers(0);
             Set<Integer> p1 = results.getPartitionMembers(1);

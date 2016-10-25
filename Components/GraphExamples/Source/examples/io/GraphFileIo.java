@@ -107,8 +107,8 @@ public class GraphFileIo
             if (!addedWeights)
             {
                 DirectedNodeEdgeGraph<String> noWeights
-                    = new DenseMemoryGraph<>(ret.numNodes(), ret.numEdges());
-                for (int i = 0; i < ret.numEdges(); ++i)
+                    = new DenseMemoryGraph<>(ret.getNumNodes(), ret.getNumEdges());
+                for (int i = 0; i < ret.getNumEdges(); ++i)
                 {
                     Pair<Integer, Integer> e = ret.getEdgeEndpointIds(i);
                     noWeights.addEdge(ret.getNode(e.getFirst()), ret.getNode(
@@ -565,14 +565,14 @@ public class GraphFileIo
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename)))
         {
             bw.write("digraph agraph {\n");
-            for (int i = 0; i < graph.numNodes(); ++i)
+            for (int i = 0; i < graph.getNumNodes(); ++i)
             {
                 String node = graph.getNode(i);
                 bw.write(toNodeLine(i, node, nodeAttrs == null ? null
                     : nodeAttrs.get(node)));
             }
             bw.write("\n\n\n");
-            for (int i = 0; i < graph.numEdges(); ++i)
+            for (int i = 0; i < graph.getNumEdges(); ++i)
             {
                 Double weight = null;
                 if (graph instanceof DirectedWeightedNodeEdgeGraph)

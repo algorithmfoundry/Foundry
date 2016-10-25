@@ -12,7 +12,7 @@
  * Government. See CopyrightHistory.txt for complete details.
  * 
  */
-package gov.sandia.cognition.util;
+package gov.sandia.cognition.collection;
 
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
@@ -25,8 +25,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * altering elements, etc. Allocates a local array of int. Doubles the size as
  * needed and copies the old values into the new, larger array.
  */
-public final class IntVector
-    extends PrimitiveVector
+public final class IntArrayList
+    extends PrimitiveArrayList
 {
 
     /**
@@ -42,7 +42,7 @@ public final class IntVector
     /**
      * Initializes an empty vector with a default allocation.
      */
-    public IntVector()
+    public IntArrayList()
     {
         this(DEFAULT_SIZE);
         elements = new int[DEFAULT_SIZE];
@@ -55,7 +55,7 @@ public final class IntVector
      *
      * @param startSize The number of positions to start the storage
      */
-    public IntVector(int startSize)
+    public IntArrayList(int startSize)
     {
         super(startSize);
         elements = new int[startSize];
@@ -65,7 +65,7 @@ public final class IntVector
      * Copy constructor
      * @param copy The vector to make a deep copy of
      */
-    public IntVector(IntVector copy)
+    public IntArrayList(IntArrayList copy)
     {
         super(copy.size() + 1);
         elements = new int[copy.size() + 1];
@@ -189,11 +189,11 @@ public final class IntVector
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof IntVector))
+        if (!(o instanceof IntArrayList))
         {
             return false;
         }
-        IntVector v = (IntVector) o;
+        IntArrayList v = (IntArrayList) o;
         if (v.size() != size())
         {
             return false;
@@ -243,7 +243,7 @@ public final class IntVector
      * @param max The number of elements to include in the result
      * @return a new instance pre-loaded with values [0 .. max)
      */
-    public static IntVector range(int max)
+    public static IntArrayList range(int max)
     {
         return range(0, max);
     }
@@ -256,11 +256,11 @@ public final class IntVector
      * @param max The number one shy of the maximum value
      * @return a new instance pre-loaded with values [min .. max)
      */
-    public static IntVector range(int min,
+    public static IntArrayList range(int min,
         int max)
     {
         int size = max - min;
-        IntVector ret = new IntVector(size);
+        IntArrayList ret = new IntArrayList(size);
         for (int i = min; i < max; ++i)
         {
             ret.add(i);
@@ -276,9 +276,9 @@ public final class IntVector
      * @param size The number of zeros to put in the returned DoubleVector
      * @return a IntVector of the input size with zeroes in every entry
      */
-    public static IntVector zeros(int size)
+    public static IntArrayList zeros(int size)
     {
-        IntVector ret = new IntVector(size);
+        IntArrayList ret = new IntArrayList(size);
         for (int i = 0; i < size; ++i)
         {
             ret.add(0);

@@ -18,8 +18,8 @@ import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.graph.DirectedNodeEdgeGraph;
 import gov.sandia.cognition.util.DefaultKeyValuePair;
-import gov.sandia.cognition.util.DoubleVector;
-import gov.sandia.cognition.util.IntVector;
+import gov.sandia.cognition.collection.DoubleArrayList;
+import gov.sandia.cognition.collection.IntArrayList;
 import gov.sandia.cognition.util.Pair;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,14 +53,14 @@ public class PersonalizedPageRank<NodeNameType>
      * specific node's neighbors, look from indices neighborsFirstIdx.get(i) to
      * neighborsFirstIdx.get(i+1).
      */
-    private final IntVector neighbors;
+    private final IntArrayList neighbors;
 
     /**
      * Yale-format-like representation of the neighbors of each node (see
      * http://en.wikipedia.org/wiki/Sparse_matrix#Yale_format). This specifies
      * the index of the first neighbor in the neighbors list.
      */
-    private final IntVector neighborsFirstIdx;
+    private final IntArrayList neighborsFirstIdx;
 
     /**
      * Yale-format-like representation of the neighbors of each node (see
@@ -68,12 +68,12 @@ public class PersonalizedPageRank<NodeNameType>
      * the weights of all neighbors of all nodes in node-order. Follows the same
      * order as IntVector neighbors.
      */
-    private final DoubleVector neighborsWeights;
+    private final DoubleArrayList neighborsWeights;
 
     /**
      * Stores the weighted degree of each node in the graph
      */
-    private final DoubleVector nodeWeightedDegree;
+    private final DoubleArrayList nodeWeightedDegree;
 
     /**
      * Stores a copy of the graph for some of the translation capabilities, etc.
@@ -129,9 +129,9 @@ public class PersonalizedPageRank<NodeNameType>
         this.neighborsFirstIdx = neigh.getNeighborsFirstIndex();
         this.neighborsWeights = neigh.getNeighborsWeights();
         this.graph = graph;
-        this.nodeWeightedDegree = new DoubleVector(graph.numNodes());
+        this.nodeWeightedDegree = new DoubleArrayList(graph.getNumNodes());
         double tmpgVol = 0;
-        for (int i = 0; i < graph.numNodes(); ++i)
+        for (int i = 0; i < graph.getNumNodes(); ++i)
         {
             this.nodeWeightedDegree.add(0.0);
             for (int j = this.neighborsFirstIdx.get(i); j
@@ -175,7 +175,7 @@ public class PersonalizedPageRank<NodeNameType>
      * @param node The node to use as seed
      * @return the vector of all scores for all nodes in the graph
      */
-    public DoubleVector getScoresForAllNodes(NodeNameType node)
+    public DoubleArrayList getScoresForAllNodes(NodeNameType node)
     {
         return getScoresForAllNodesById(graph.getNodeId(node));
     }
@@ -187,7 +187,7 @@ public class PersonalizedPageRank<NodeNameType>
      * @param nodeIdx The node index to use as seed
      * @return the vector of all scores for all nodes in the graph
      */
-    public DoubleVector getScoresForAllNodesById(int nodeIdx)
+    public DoubleArrayList getScoresForAllNodesById(int nodeIdx)
     {
         return getScoresForAllNodesByIds(Collections.singletonList(nodeIdx),
             false);
@@ -201,7 +201,7 @@ public class PersonalizedPageRank<NodeNameType>
      * @param nodes The nodes to use as seed
      * @return the vector of all scores for all nodes in the graph
      */
-    public DoubleVector getScoresForAllNodes(List<NodeNameType> nodes)
+    public DoubleArrayList getScoresForAllNodes(List<NodeNameType> nodes)
     {
         return getScoresForAllNodesByIds(convertToIds(nodes), false);
     }
@@ -217,7 +217,7 @@ public class PersonalizedPageRank<NodeNameType>
      * true answer.
      * @return the vector of all scores for all nodes in the graph
      */
-    public DoubleVector getScoresForAllNodes(NodeNameType node,
+    public DoubleArrayList getScoresForAllNodes(NodeNameType node,
         boolean randomized)
     {
         return getScoresForAllNodesById(graph.getNodeId(node), randomized);
@@ -234,7 +234,7 @@ public class PersonalizedPageRank<NodeNameType>
      * true answer.
      * @return the vector of all scores for all nodes in the graph
      */
-    public DoubleVector getScoresForAllNodesById(int nodeIdx,
+    public DoubleArrayList getScoresForAllNodesById(int nodeIdx,
         boolean randomized)
     {
         return getScoresForAllNodesByIds(Collections.singletonList(nodeIdx),
@@ -253,7 +253,7 @@ public class PersonalizedPageRank<NodeNameType>
      * true answer.
      * @return the vector of all scores for all nodes in the graph
      */
-    public DoubleVector getScoresForAllNodes(List<NodeNameType> nodes,
+    public DoubleArrayList getScoresForAllNodes(List<NodeNameType> nodes,
         boolean randomized)
     {
         return getScoresForAllNodesByIds(convertToIds(nodes), randomized);
@@ -267,7 +267,7 @@ public class PersonalizedPageRank<NodeNameType>
      * @param nodeIdxs The node indices to use as seed
      * @return the vector of all scores for all nodes in the graph
      */
-    public DoubleVector getScoresForAllNodesByIds(List<Integer> nodeIdxs)
+    public DoubleArrayList getScoresForAllNodesByIds(List<Integer> nodeIdxs)
     {
         return getScoresForAllNodesByIds(nodeIdxs, false);
     }
@@ -284,16 +284,16 @@ public class PersonalizedPageRank<NodeNameType>
      * true answer.
      * @return the vector of all scores for all nodes in the graph
      */
-    public DoubleVector getScoresForAllNodesByIds(List<Integer> nodeIdxs,
+    public DoubleArrayList getScoresForAllNodesByIds(List<Integer> nodeIdxs,
         boolean randomized)
     {
         final double ALPHA = 0.99;
         final double TOL = pprTolerance;
 
         Queue<Integer> fifo = new LinkedList<>();
-        DoubleVector residual = new DoubleVector(graph.numNodes());
-        DoubleVector x = new DoubleVector(graph.numNodes());
-        for (int i = 0; i < graph.numNodes(); ++i)
+        DoubleArrayList residual = new DoubleArrayList(graph.getNumNodes());
+        DoubleArrayList x = new DoubleArrayList(graph.getNumNodes());
+        for (int i = 0; i < graph.getNumNodes(); ++i)
         {
             residual.add(0.0);
             x.add(0.0);
@@ -311,7 +311,7 @@ public class PersonalizedPageRank<NodeNameType>
             x.plusEquals(v, (1 - ALPHA) * residual.get(v));
             double mass = ALPHA * residual.get(v) / (2 * nodeWeightedDegree.get(
                 v));
-            IntVector range = IntVector.range(neighborsFirstIdx.get(v),
+            IntArrayList range = IntArrayList.range(neighborsFirstIdx.get(v),
                 neighborsFirstIdx.get(v + 1));
             if (randomized)
             {
@@ -355,7 +355,7 @@ public class PersonalizedPageRank<NodeNameType>
      * @param numRuns The number of runs to perform
      * @return the vector of all scores for all nodes in the graph
      */
-    public DoubleVector getScoresForAllNodesMultirun(NodeNameType node,
+    public DoubleArrayList getScoresForAllNodesMultirun(NodeNameType node,
         int numRuns)
     {
         return getScoresForAllNodesByIdMultirun(graph.getNodeId(node), numRuns);
@@ -371,7 +371,7 @@ public class PersonalizedPageRank<NodeNameType>
      * @param numRuns The number of runs to perform
      * @return the vector of all scores for all nodes in the graph
      */
-    public DoubleVector getScoresForAllNodesMultirun(List<NodeNameType> nodes,
+    public DoubleArrayList getScoresForAllNodesMultirun(List<NodeNameType> nodes,
         int numRuns)
     {
         return getScoresForAllNodesByIdMultirun(convertToIds(nodes), numRuns);
@@ -387,7 +387,7 @@ public class PersonalizedPageRank<NodeNameType>
      * @param numRuns The number of runs to perform
      * @return the vector of all scores for all nodes in the graph
      */
-    public DoubleVector getScoresForAllNodesByIdMultirun(int nodeIdx,
+    public DoubleArrayList getScoresForAllNodesByIdMultirun(int nodeIdx,
         int numRuns)
     {
         return getScoresForAllNodesByIdMultirun(Collections.singletonList(
@@ -404,13 +404,13 @@ public class PersonalizedPageRank<NodeNameType>
      * @param numRuns The number of runs to perform
      * @return the vector of all scores for all nodes in the graph
      */
-    public DoubleVector getScoresForAllNodesByIdMultirun(List<Integer> nodeIdxs,
+    public DoubleArrayList getScoresForAllNodesByIdMultirun(List<Integer> nodeIdxs,
         int numRuns)
     {
-        DoubleVector x = DoubleVector.zeros(graph.numNodes());
+        DoubleArrayList x = DoubleArrayList.zeros(graph.getNumNodes());
         for (int i = 0; i < numRuns; ++i)
         {
-            DoubleVector tmp = getScoresForAllNodesByIds(nodeIdxs, true);
+            DoubleArrayList tmp = getScoresForAllNodesByIds(nodeIdxs, true);
             for (int j = 0; j < tmp.size(); ++j)
             {
                 x.plusEquals(j, tmp.get(j));
@@ -533,8 +533,8 @@ public class PersonalizedPageRank<NodeNameType>
         int numRunsPpr,
         int numRunsCut)
     {
-        DoubleVector x = getScoresForAllNodesByIdMultirun(nodeIdxs, numRunsPpr);
-        for (int i = 0; i < graph.numNodes(); ++i)
+        DoubleArrayList x = getScoresForAllNodesByIdMultirun(nodeIdxs, numRunsPpr);
+        for (int i = 0; i < graph.getNumNodes(); ++i)
         {
             x.set(i, x.get(i) / nodeWeightedDegree.get(i));
         }
@@ -571,7 +571,7 @@ public class PersonalizedPageRank<NodeNameType>
             {
                 int idx = sorted.get(i).getFirst();
                 volS += nodeWeightedDegree.get(idx);
-                IntVector loop = IntVector.range(neighborsFirstIdx.get(idx),
+                IntArrayList loop = IntArrayList.range(neighborsFirstIdx.get(idx),
                     neighborsFirstIdx.get(idx + 1));
                 loop.randomizeOrder(generator);
                 for (int s = 0; s < loop.size(); ++s)

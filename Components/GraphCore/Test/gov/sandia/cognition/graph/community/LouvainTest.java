@@ -85,7 +85,7 @@ public class LouvainTest
         assertEquals(0.357143, results.getModularity(
             results.numLevels() - 1), 1e-6);
         assertEquals(8, results.getAllMembers().size());
-        assertEquals(2, results.numPartitions());
+        assertEquals(2, results.getNumPartitions());
         Set<Integer> p0 = results.getPartitionMembers(0);
         Set<Integer> p1 = results.getPartitionMembers(1);
         // Swap the two so I know which partition is which
@@ -162,7 +162,7 @@ public class LouvainTest
         assertEquals(0.426538, results.getModularity(
             results.numLevels() - 1), 1e-6);
         assertEquals(14, results.getAllMembers().size());
-        assertEquals(3, results.numPartitions());
+        assertEquals(3, results.getNumPartitions());
         Set<Integer> p0 = results.getPartitionMembers(0);
         Set<Integer> p1 = results.getPartitionMembers(1);
         Set<Integer> p2 = results.getPartitionMembers(2);
@@ -255,7 +255,7 @@ public class LouvainTest
         assertEquals(1, result.getCommunityForNodeAtLevel(6, level));
         assertEquals(1, result.getCommunityForNodeAtLevel(7, level));
         assertEquals(8, result.getAllMembers().size());
-        assertEquals(2, result.numPartitions());
+        assertEquals(2, result.getNumPartitions());
         Set<Integer> p0 = result.getPartitionMembers(0);
         Set<Integer> p1 = result.getPartitionMembers(1);
         // Swap the two so I know which partition is which
@@ -293,7 +293,7 @@ public class LouvainTest
         assertEquals(1, result.getCommunityForNodeAtLevel(6, level));
         assertEquals(1, result.getCommunityForNodeAtLevel(7, level));
         assertEquals(8, result.getAllMembers().size());
-        assertEquals(2, result.numPartitions());
+        assertEquals(2, result.getNumPartitions());
         p0 = result.getPartitionMembers(0);
         p1 = result.getPartitionMembers(1);
         // Swap the two so I know which partition is which

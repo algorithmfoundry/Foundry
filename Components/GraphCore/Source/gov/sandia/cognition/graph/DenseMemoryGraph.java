@@ -4,7 +4,7 @@
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
  * 
- * Copyright 2006, Sandia Corporation.
+ * Copyright 2016, Sandia Corporation.
  * Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
  * license for use of this work by or on behalf of the U.S. Government. 
  * Export of this program may require a license from the United States
@@ -14,10 +14,10 @@
 
 package gov.sandia.cognition.graph;
 
+import gov.sandia.cognition.collection.DefaultIndexer;
 import gov.sandia.cognition.util.DefaultKeyValuePair;
-import gov.sandia.cognition.util.IntVector;
+import gov.sandia.cognition.collection.IntArrayList;
 import gov.sandia.cognition.util.Pair;
-import gov.sandia.cognition.util.TwoWayIndex;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -56,14 +56,14 @@ public class DenseMemoryGraph<NodeNameType>
      * Node objects are stored herein. Their "id" is their position in the
      * array. This allows O(1) lookup of the node given the id. Storage: O(n).
      */
-    private TwoWayIndex<NodeNameType> nodes;
+    private DefaultIndexer<NodeNameType> nodes;
 
     /**
      * This links source node and destination node for all edges. Each pair of
      * node id values are in order. The edge is identified by the half the index
      * into this array (because this stores them two-in-a-row). Storage: O(m).
      */
-    private IntVector edges;
+    private IntArrayList edges;
 
     /**
      * Stores whether the edge list is sorted. Set to false after each addEdge.
@@ -95,8 +95,8 @@ public class DenseMemoryGraph<NodeNameType>
     public DenseMemoryGraph(int expectedNumNodes,
         int expectedNumEdges)
     {
-        nodes = new TwoWayIndex<>(expectedNumNodes);
-        edges = new IntVector(expectedNumEdges * 2);
+        nodes = new DefaultIndexer<>(expectedNumNodes);
+        edges = new IntArrayList(expectedNumEdges * 2);
         isOptimized = true;
     }
 
@@ -108,7 +108,7 @@ public class DenseMemoryGraph<NodeNameType>
     @Override
     public Collection<NodeNameType> getNodes()
     {
-        return nodes.getValues();
+        return nodes.valueList();
     }
 
     /**
@@ -117,7 +117,7 @@ public class DenseMemoryGraph<NodeNameType>
      * Execution: O(1) time
      */
     @Override
-    public int numNodes()
+    public int getNumNodes()
     {
         return nodes.size();
     }
@@ -128,7 +128,7 @@ public class DenseMemoryGraph<NodeNameType>
      * Execution: O(1) time
      */
     @Override
-    public int numEdges()
+    public int getNumEdges()
     {
         return edges.size() / 2;
     }
@@ -164,7 +164,7 @@ public class DenseMemoryGraph<NodeNameType>
     @Override
     public boolean containsNode(NodeNameType node)
     {
-        return nodes.contains(node);
+        return nodes.hasValue(node);
     }
 
     /**
@@ -180,7 +180,7 @@ public class DenseMemoryGraph<NodeNameType>
         Set<NodeNameType> ret = new HashSet<>();
         int nodeId = getNodeId(node);
 
-        int m = numEdges();
+        int m = getNumEdges();
 
         // find matching node pair, and iterate through all that match
         int idx0 = getFirstEdgeFrom(nodeId);
@@ -265,7 +265,7 @@ public class DenseMemoryGraph<NodeNameType>
     {
         optimizeEdges();
         int left = 0;
-        int right = numEdges() - 1;
+        int right = getNumEdges() - 1;
 
         // loop invariant: [0..left-1] <= target and [right+1..last] >= nodeVal
         while (left <= right)
@@ -316,13 +316,13 @@ public class DenseMemoryGraph<NodeNameType>
      */
     private int newNode(NodeNameType node)
     {
-        if (nodes.contains(node))
+        if (nodes.hasValue(node))
         {
             return nodes.getIndex(node);
         }
         else
         {
-            int n = nodes.putValue(node);
+            int n = nodes.add(node);
             return n;
         }
     }
@@ -376,7 +376,7 @@ public class DenseMemoryGraph<NodeNameType>
     {
         if (!isOptimized)
         {
-            quicksortEdges(0, numEdges() - 1);
+            quicksortEdges(0, getNumEdges() - 1);
             isOptimized = true;
         }
     }

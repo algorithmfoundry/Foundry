@@ -12,14 +12,14 @@
  * 
  */
 
-package gov.sandia.cognition.util;
+package gov.sandia.cognition.collection;
 
 /**
  * An abstract base class for memory-dense vectors of primitive types that
  * permit adding new values, altering elements, etc. Subclass for "int",
  * "double", and other base types.
  */
-abstract class PrimitiveVector
+abstract class PrimitiveArrayList
     implements java.io.Serializable
 {
 
@@ -43,7 +43,7 @@ abstract class PrimitiveVector
      *
      * @param startSize The number of positions to start the storage
      */
-    protected PrimitiveVector(int startSize)
+    protected PrimitiveArrayList(int startSize)
     {
         checkNewSizePositive(startSize);
         numElements = 0;

@@ -286,14 +286,14 @@ public class InfluenceMaximization
         System.out.println("Reading graph...");
         DirectedNodeEdgeGraph<String> graph
             = InfluenceSpread.createFromEdgeList(graphFile.getPath());
-        System.out.println("Number of nodes: " + graph.numNodes());
-        System.out.println("Number of edges: " + graph.numEdges());
+        System.out.println("Number of nodes: " + graph.getNumNodes());
+        System.out.println("Number of edges: " + graph.getNumEdges());
         GraphWrappingEnergyFunction<Integer, String> f
             = new GraphWrappingEnergyFunction<>(graph,
                 new InfluencePotentialHandler(graph, unaryPotentials));
 
         // Every node must have a unary potential.
-        assert (unaryPotentials.size() == graph.numNodes());
+        assert (unaryPotentials.size() == graph.getNumNodes());
 
         System.out.println("Reading individual node influence...");
         Map<String, Double> nodeInfluenceMap = readInitialInfluence(

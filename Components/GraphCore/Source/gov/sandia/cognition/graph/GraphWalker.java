@@ -14,11 +14,12 @@
 
 package gov.sandia.cognition.graph;
 
-import gov.sandia.cognition.util.DoubleVector;
+import gov.sandia.cognition.collection.DoubleArrayList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -269,14 +270,22 @@ public class GraphWalker<NodeNameType>
         private final boolean directed;
 
         /**
+         * The random instance to use
+         */
+        private final Random r;
+
+        /**
          * Creates a random walker with directedness specified
          *
          * @param directed If true, this follows only edges which originate at
          * the current node
+         * @param r The instance of random to use herein
          */
-        public RandomWalker(boolean directed)
+        public RandomWalker(boolean directed,
+            Random r)
         {
             this.directed = directed;
+            this.r = r;
         }
 
         /**
@@ -307,8 +316,8 @@ public class GraphWalker<NodeNameType>
             {
                 return curNodeId;
             }
-            int which = (int) (Math.random() * numChoices);
-            // If Math.random returns 1.0, then it selects an impossible index
+            int which = (int) (r.nextDouble() * numChoices);
+            // If random returns 1.0, then it selects an impossible index
             if (which == numChoices)
             {
                 --which;
@@ -335,16 +344,18 @@ public class GraphWalker<NodeNameType>
      * input values)
      *
      * @param weights The relative weights of each choice
+     * @param r The instance of Random to use
      * @return The index of the probabilistically chosen input weight
      */
-    public static int probablisticSelect(DoubleVector weights)
+    public static int probablisticSelect(DoubleArrayList weights,
+        Random r)
     {
         double sum = 0;
         for (int i = 0; i < weights.size(); ++i)
         {
             sum += weights.get(i);
         }
-        double random = Math.random() * sum;
+        double random = r.nextDouble() * sum;
         sum = 0;
         for (int i = 0; i < weights.size(); ++i)
         {

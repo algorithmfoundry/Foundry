@@ -16,7 +16,8 @@
 package gov.sandia.cognition.learning.algorithm.clustering;
 
 import gov.sandia.cognition.learning.algorithm.clustering.cluster.CentroidCluster;
-import gov.sandia.cognition.learning.algorithm.clustering.cluster.MiniBatchClusterCreator;
+import gov.sandia.cognition.learning.algorithm.clustering.cluster.ClusterCreator;
+import gov.sandia.cognition.learning.algorithm.clustering.cluster.MiniBatchCentroidCluster;
 import gov.sandia.cognition.learning.function.distance.EuclideanDistanceMetric;
 import gov.sandia.cognition.learning.algorithm.clustering.cluster.VectorMeanMiniBatchCentroidClusterCreator;
 import gov.sandia.cognition.learning.algorithm.clustering.divergence.CentroidClusterDivergenceFunction;
@@ -52,8 +53,7 @@ public class MiniBatchKMeansClustererTest
     /**
      * The cluster creator used in tests.
      */
-    protected MiniBatchClusterCreator<CentroidCluster<Vector>, Vector> creator
-        = null;
+    protected ClusterCreator<MiniBatchCentroidCluster, Vector> creator = null;
 
     /**
      * The random number generator used in tests.
@@ -63,7 +63,7 @@ public class MiniBatchKMeansClustererTest
     /**
      * The cluster initializer used in tests.
      */
-    protected FixedClusterInitializer<CentroidCluster<Vector>, Vector> initializer
+    protected FixedClusterInitializer<MiniBatchCentroidCluster, Vector> initializer
         = null;
 
     /**
@@ -77,7 +77,7 @@ public class MiniBatchKMeansClustererTest
         super(testName);
 
         this.metric = EuclideanDistanceMetric.INSTANCE;
-        this.creator = new VectorMeanMiniBatchCentroidClusterCreator();
+        this.creator = VectorMeanMiniBatchCentroidClusterCreator.INSTANCE;
         this.random = new Random();
         this.initializer = new GreedyClusterInitializer<>(
             CosineDistanceMetric.INSTANCE, creator, random);
@@ -106,7 +106,7 @@ public class MiniBatchKMeansClustererTest
         assertEquals(0, kmeans.getNumClusters());
         assertSame(this.initializer, kmeans.getInitializer());
         assertEquals(this.metric,
-            kmeans.getDivergenceFunction().getDivergenceFunction());
+            ((CentroidClusterDivergenceFunction) kmeans.getDivergenceFunction()).getDivergenceFunction());
         assertSame(this.creator, kmeans.getCreator());
 
         kmeans.setNumRequestedClusters(1);
@@ -123,7 +123,7 @@ public class MiniBatchKMeansClustererTest
         assertEquals(0, kmeans.getNumElements());
 
         ArrayList<Vector> elements = new ArrayList<>();
-        Collection<CentroidCluster<Vector>> clusters = null;
+        Collection<MiniBatchCentroidCluster> clusters = null;
         ArrayList<CentroidCluster<Vector>> clustersList = null;
 
         Vector2 v1 = new Vector2(-2.0, 0.0);

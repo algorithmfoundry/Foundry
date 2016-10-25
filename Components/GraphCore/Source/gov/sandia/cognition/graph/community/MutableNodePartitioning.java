@@ -15,7 +15,7 @@
 package gov.sandia.cognition.graph.community;
 
 import gov.sandia.cognition.graph.DirectedNodeEdgeGraph;
-import gov.sandia.cognition.util.IntVector;
+import gov.sandia.cognition.collection.IntArrayList;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +34,7 @@ class MutableNodePartitioning<NodeNameType>
     /**
      * Stores the partition assignment for each node (by id)
      */
-    private final IntVector nodeToPartitionAssignments;
+    private final IntArrayList nodeToPartitionAssignments;
 
     /**
      * The partitions stored herein (nodes stored by id)
@@ -60,9 +60,9 @@ class MutableNodePartitioning<NodeNameType>
     MutableNodePartitioning(DirectedNodeEdgeGraph<NodeNameType> graph)
     {
         partitionedGraph = graph;
-        int n = graph.numNodes();
+        int n = graph.getNumNodes();
         partitions = new ArrayList<>(n);
-        nodeToPartitionAssignments = new IntVector(n);
+        nodeToPartitionAssignments = new IntArrayList(n);
 
         for (int i = 0; i < n; ++i)
         {
@@ -84,7 +84,7 @@ class MutableNodePartitioning<NodeNameType>
     void removeEmptyPartitions()
     {
         List<Set<Integer>> updatedPartitions = new ArrayList<>();
-        int[] partIdMap = new int[numPartitions()];
+        int[] partIdMap = new int[getNumPartitions()];
         int cnt = 0;
         for (Set<Integer> partition : partitions)
         {
@@ -125,17 +125,17 @@ class MutableNodePartitioning<NodeNameType>
     void moveNodeById(int nodeId,
         int newPartitionId)
     {
-        if (newPartitionId < 0 || newPartitionId >= numPartitions())
+        if (newPartitionId < 0 || newPartitionId >= getNumPartitions())
         {
             throw new ArrayIndexOutOfBoundsException("Input partition id ("
                 + newPartitionId + ") outside of expected bounds[0, "
-                + numPartitions() + ")");
+                + getNumPartitions() + ")");
         }
-        if (nodeId < 0 || nodeId >= partitionedGraph.numNodes())
+        if (nodeId < 0 || nodeId >= partitionedGraph.getNumNodes())
         {
             throw new ArrayIndexOutOfBoundsException("Input node id ("
                 + nodeId + ") outside of expected bounds[0, "
-                + partitionedGraph.numNodes() + ")");
+                + partitionedGraph.getNumNodes() + ")");
         }
         partitions.get(nodeToPartitionAssignments.get(nodeId)).remove(nodeId);
         partitions.get(newPartitionId).add(nodeId);
@@ -158,10 +158,10 @@ class MutableNodePartitioning<NodeNameType>
     }
 
     /**
-     * @see NodePartitioning#numPartitions()
+     * @see NodePartitioning#getNumPartitions()
      */
     @Override
-    public int numPartitions()
+    public int getNumPartitions()
     {
         return partitions.size();
     }

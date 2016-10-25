@@ -40,14 +40,14 @@ public interface DirectedNodeEdgeGraph<NodeNameType>
      *
      * @return the number of nodes
      */
-    public int numNodes();
+    public int getNumNodes();
 
     /**
      * Return the number of edges.
      *
      * @return the number of edges
      */
-    public int numEdges();
+    public int getNumEdges();
 
     /**
      * Adds a directed edge from left to right. If left and right are not
