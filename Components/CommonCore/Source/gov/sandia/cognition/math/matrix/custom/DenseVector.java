@@ -34,7 +34,7 @@ public class DenseVector
 {
 
     /**
-     * The data is stored in this vector
+     * The data is stored in this vector.
      */
     double[] values;
 
@@ -44,6 +44,7 @@ public class DenseVector
      */
     protected DenseVector()
     {
+        super();
         // NOTE: This doesn't initialize anything
     }
 
@@ -55,7 +56,9 @@ public class DenseVector
     public DenseVector(
         final int n)
     {
-        values = new double[n];
+        super();
+        
+        this.values = new double[n];
     }
 
     /**
@@ -69,8 +72,10 @@ public class DenseVector
         final int n,
         final double defaultVal)
     {
-        values = new double[n];
-        Arrays.fill(values, defaultVal);
+        super();
+        
+        this.values = new double[n];
+        Arrays.fill(this.values, defaultVal);
     }
 
     /**
@@ -81,7 +86,7 @@ public class DenseVector
     public DenseVector(
         final DenseVector v)
     {
-        values = Arrays.copyOf(v.values, v.values.length);
+        this(v.values);
     }
 
     /**
@@ -92,7 +97,9 @@ public class DenseVector
     public DenseVector(
         final double[] arr)
     {
-        values = Arrays.copyOf(arr, arr.length);
+        super();
+        
+        this.values = Arrays.copyOf(arr, arr.length);
     }
 
     /**
@@ -103,6 +110,8 @@ public class DenseVector
     public DenseVector(
         final List<Double> arr)
     {
+        super();
+        
         final int d = arr.size();
         values = new double[d];
         for (int i = 0; i < d; ++i)
@@ -116,7 +125,7 @@ public class DenseVector
     {
         final DenseVector result = (DenseVector) super.clone();
         result.values = ArrayUtil.copy(this.values);
-        return new DenseVector(this);
+        return result;
     }
 
     @Override
