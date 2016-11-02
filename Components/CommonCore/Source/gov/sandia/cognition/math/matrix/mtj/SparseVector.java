@@ -398,6 +398,20 @@ public class SparseVector
         return max;
     }
     
+    @Override
+    public int countNonZeros()
+    {
+        int result = 0;
+        for (final double value : this.getInternalVector().getRawData())
+        {
+            if (value != 0.0)
+            {
+                result++;
+            }
+        }
+        return result;
+    }
+    
     /**
      * This method provides custom serialization for the class since the MTJ
      * class does not implement Serializable.

@@ -419,6 +419,16 @@ public interface Vector
      *      The number of active entries in the vector.
      */
     public int getEntryCount();
+    
+    /**
+     * Counts the number of non-zero entries in the vector. Must be between
+     * zero and the dimensionality. This operation may require evaluating all
+     * entries in the vector based on the implementation.
+     * 
+     * @return
+     *      The number of non-zero values in the vector.
+     */
+    public int countNonZeros();
 
     /**
      * Converts this vector to a new array of doubles, in the same order as they

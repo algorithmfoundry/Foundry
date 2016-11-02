@@ -486,6 +486,20 @@ public class DenseVector
         return this.getDimensionality();
     }
     
+    @Override
+    public int countNonZeros()
+    {
+        int result = 0;
+        for (final double value : this.getArray())
+        {
+            if (value != 0.0)
+            {
+                result++;
+            }
+        }
+        return result;
+    }
+    
     /**
      * Writes a DenseVector out to a serialized stream (usually file)
      * @param out output stream to which the DenseVector will be written

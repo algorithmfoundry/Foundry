@@ -635,7 +635,7 @@ public class SparseVector
         compress();
         Vector result;
         int len = dimensionality + other.values.length;
-        int nnz = getNonZeroCount() + other.countNonZeros();
+        int nnz = countNonZeros() + other.countNonZeros();
         if (nnz > SPARSE_TO_DENSE_THRESHOLD * len)
         {
             result = new DenseVector(len);
@@ -676,7 +676,7 @@ public class SparseVector
         compress();
         other.compress();
         int len = dimensionality + other.dimensionality;
-        int nnz = getNonZeroCount() + other.getNonZeroCount();
+        int nnz = countNonZeros() + other.countNonZeros();
         SparseVector result = new SparseVector(len);
         result.values = new double[nnz];
         result.indices = new int[nnz];
@@ -919,20 +919,15 @@ public class SparseVector
         return indices;
     }
 
-    /**
-     * Package-private helper that tells how many non-zero entries are in this
-     * sparse vector
-     *
-     * @return the number of non-zero entries in this sparse vector
-     */
-    final int getNonZeroCount()
+    @Override
+    public int countNonZeros()
     {
         if (isCompressed())
         {
             int nnz = 0;
             for (double v : values)
             {
-                if (v != 0)
+                if (v != 0.0)
                 {
                     ++nnz;
                 }

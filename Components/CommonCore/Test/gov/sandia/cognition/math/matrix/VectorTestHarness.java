@@ -1342,6 +1342,30 @@ abstract public class VectorTestHarness
             assertEquals(CollectionUtil.size(v1), v1.getEntryCount());
         }
     }
+    
+    /**
+     * Test of getEntryCount of Vector.
+     */
+    public void testCountNonZeros()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            Vector v1 = this.createRandom();
+            assertTrue(v1.countNonZeros() >= 0);
+            assertTrue(v1.countNonZeros() <= v1.getDimensionality());
+            
+            int d = v1.getDimensionality();
+            int actualNonZeros = 0;
+            for (int j = 0; j < d; j++)
+            {
+                if (v1.get(j) != 0.0)
+                {
+                    actualNonZeros++;
+                }
+            }
+            assertEquals(actualNonZeros, v1.countNonZeros());
+        }
+    }
 
     /**
      * Test of toString

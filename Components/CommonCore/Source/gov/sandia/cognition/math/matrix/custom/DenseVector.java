@@ -328,7 +328,7 @@ public class DenseVector
     {
         Vector result;
         int len = values.length + other.getDimensionality();
-        int nnz = countNonZeros() + other.getNonZeroCount();
+        int nnz = countNonZeros() + other.countNonZeros();
         if (nnz > SparseVector.SPARSE_TO_DENSE_THRESHOLD * len)
         {
             result = new DenseVector(len);
