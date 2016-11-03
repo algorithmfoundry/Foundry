@@ -33,18 +33,18 @@ import java.util.Iterator;
 import java.util.PriorityQueue;
 
 /**
- * Implementation of a kd-tree.  Every node in a KDTree has a k-dimensional
- * Vectorizable point and an associated value as a generic "DataType."  The
- * At each depth in the KDTree, the KDTree partitions the Vectorizables into
- * two sets along a particular dimension according to the Vectorizable stored
- * in the node value.  The dimension used to partition at a particular depth
- * is (depth % k).  Vectorizables with values less than or equal to the
- * node-value-dimension are placed into the left subtree, and those greater
- * than the node-value-dimension are stored into the right subtree.  This
- * makes average-case nearest-neighbor lookup into a balanced KDTree with "N"
- * points of O(log(N)), rather than the typical "N" time for linear search.
- * Construction of a balanced KDTree with N points takes average-case
- * O(N log(N)).
+ * Implementation of a kd-tree. Every node in a KDTree has a k-dimensional
+ * Vectorizable point and an associated value as a generic "DataType." The At
+ * each depth in the KDTree, the KDTree partitions the Vectorizables into two
+ * sets along a particular dimension according to the Vectorizable stored in the
+ * node value. The dimension used to partition at a particular depth is (depth %
+ * k). Vectorizables with values less than or equal to the node-value-dimension
+ * are placed into the left subtree, and those greater than the
+ * node-value-dimension are stored into the right subtree. This makes
+ * average-case nearest-neighbor lookup into a balanced KDTree with "N" points
+ * of O(log(N)), rather than the typical "N" time for linear search.
+ * Construction of a balanced KDTree with N points takes average-case O(N
+ * log(N)).
  *
  * @param <VectorType> Type of Vectorizable, the first values
  * @param <DataType> Type of data in the Pair, the second values
@@ -53,26 +53,28 @@ import java.util.PriorityQueue;
  * @since 3.0
  */
 @PublicationReferences(
-    references={
+    references =
+    {
         @PublicationReference(
-            author="Andrew W. Moore",
-            title="An intoductory tutorial on kd-trees",
-            type=PublicationType.TechnicalReport,
-            publication="University of Cambridge Computer Laboratory Technical Report No. 209",
-            year=1991,
-            url="http://www.autonlab.org/autonweb/14665.html?branch=1&language=2"
-        )
-        ,
+            author = "Andrew W. Moore",
+            title = "An intoductory tutorial on kd-trees",
+            type = PublicationType.TechnicalReport,
+            publication
+            = "University of Cambridge Computer Laboratory Technical Report No. 209",
+            year = 1991,
+            url
+            = "http://www.autonlab.org/autonweb/14665.html?branch=1&language=2"
+        ),
         @PublicationReference(
-            author="Wikipedia",
-            title="kd-tree",
-            type=PublicationType.WebPage,
-            year=2009,
-            url="http://en.wikipedia.org/wiki/Kd-tree"
+            author = "Wikipedia",
+            title = "kd-tree",
+            type = PublicationType.WebPage,
+            year = 2009,
+            url = "http://en.wikipedia.org/wiki/Kd-tree"
         )
     }
 )
-public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pair<? extends VectorType,DataType>>
+public class KDTree<VectorType extends Vectorizable, DataType, PairType extends Pair<? extends VectorType, DataType>>
     extends AbstractCollection<PairType>
     implements CloneableSerializable
 {
@@ -90,20 +92,21 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
     /**
      * Parent of this node of the subtree.
      */
-    protected KDTree<VectorType,DataType,PairType> parent;
+    protected KDTree<VectorType, DataType, PairType> parent;
 
     /**
      * Left child of this subtree
      */
-    protected KDTree<VectorType,DataType,PairType> leftChild;
+    protected KDTree<VectorType, DataType, PairType> leftChild;
 
     /**
      * Right child of this subtree.
      */
-    protected KDTree<VectorType,DataType,PairType> rightChild;
+    protected KDTree<VectorType, DataType, PairType> rightChild;
 
     /**
-     * Comparator of this node to determine less than, greater than, or equality.
+     * Comparator of this node to determine less than, greater than, or
+     * equality.
      */
     protected PairFirstVectorizableIndexComparator comparator;
 
@@ -112,37 +115,35 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
      */
     public KDTree()
     {
-        this( null, null, null );
+        this(null, null, null);
         this.num = 0;
     }
 
     /**
      * Creates a balanced KDTree from the given points.
-     * @param points
-     * Points to load into the KDTree.
+     *
+     * @param points Points to load into the KDTree.
      */
     public KDTree(
-        Collection<? extends PairType> points )
+        Collection<? extends PairType> points)
     {
-        this( CollectionUtil.asArrayList(points),
-            new PairFirstVectorizableIndexComparator( 0 ),
+        this(CollectionUtil.asArrayList(points),
+            new PairFirstVectorizableIndexComparator(0),
             CollectionUtil.getFirst(points).getFirst().convertToVector().getDimensionality(),
-            null );
+            null);
     }
 
     /**
      * Creates a KDTree subtree for recursion purposes.
-     * @param value
-     * Value of the head of the subtree.
-     * @param comparator
-     * Comparator to use for the Vectorizables.
-     * @param parent
-     * Parent node of this subtree.
+     *
+     * @param value Value of the head of the subtree.
+     * @param comparator Comparator to use for the Vectorizables.
+     * @param parent Parent node of this subtree.
      */
     protected KDTree(
         PairType value,
         PairFirstVectorizableIndexComparator comparator,
-        KDTree<VectorType,DataType,PairType> parent )
+        KDTree<VectorType, DataType, PairType> parent)
     {
         this.num = 1;
         this.value = value;
@@ -154,33 +155,30 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
 
     /**
      * Creates a balanced KDTree subtree for recursion purposes from the given
-     * ArrayList of points.
-     * This is an O(n log n) operation for "n" points because we use a clever
-     * linear-time kth selection algorithm in CollectionUtil.findKthLargest().
-     * @param points
-     * Points to load into the subtree.
-     * @param dimensionality
-     * Dimensionality of the Vectorizables.
-     * @param comparator
-     * Comparator to use for the Vectorizables.
-     * @param parent
-     * Parent node of this subtree.
+     * ArrayList of points. This is an O(n log n) operation for "n" points
+     * because we use a clever linear-time kth selection algorithm in
+     * CollectionUtil.findKthLargest().
+     *
+     * @param points Points to load into the subtree.
+     * @param dimensionality Dimensionality of the Vectorizables.
+     * @param comparator Comparator to use for the Vectorizables.
+     * @param parent Parent node of this subtree.
      */
     protected KDTree(
         ArrayList<? extends PairType> points,
         PairFirstVectorizableIndexComparator comparator,
         int dimensionality,
-        KDTree<VectorType,DataType,PairType> parent )
+        KDTree<VectorType, DataType, PairType> parent)
     {
 
         this.parent = parent;
         this.comparator = comparator;
         this.num = points.size();
-        if( num <= 0 )
+        if (num <= 0)
         {
-            throw new IllegalArgumentException( "No points!" );
+            throw new IllegalArgumentException("No points!");
         }
-        else if( num == 1 )
+        else if (num == 1)
         {
             this.value = points.get(0);
         }
@@ -188,41 +186,42 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
         {
             final int medianIndex = this.num / 2;
             int[] indices = CollectionUtil.findKthLargest(
-                medianIndex, points, comparator );
+                medianIndex, points, comparator);
 
             // This is the median of the axis.
-            this.value = points.get( indices[medianIndex] );
+            this.value = points.get(indices[medianIndex]);
 
-            final int childAxis = (this.comparator.comparator.getIndex()+1) % dimensionality;
-            PairFirstVectorizableIndexComparator childComparator =
-                new PairFirstVectorizableIndexComparator( childAxis );
+            final int childAxis = (this.comparator.comparator.getIndex() + 1)
+                % dimensionality;
+            PairFirstVectorizableIndexComparator childComparator
+                = new PairFirstVectorizableIndexComparator(childAxis);
 
             // Left child recursion
             final int leftNum = medianIndex;
-            if( leftNum > 0 )
+            if (leftNum > 0)
             {
-                ArrayList<PairType> leftPoints =
-                    new ArrayList<PairType>( leftNum );
-                for( int i = 0; i < leftNum; i++ )
+                ArrayList<PairType> leftPoints
+                    = new ArrayList<PairType>(leftNum);
+                for (int i = 0; i < leftNum; i++)
                 {
-                    leftPoints.add( points.get( indices[i] ) );
+                    leftPoints.add(points.get(indices[i]));
                 }
-                this.leftChild = new KDTree<VectorType,DataType,PairType>(
-                    leftPoints, childComparator, dimensionality, this );
+                this.leftChild = new KDTree<VectorType, DataType, PairType>(
+                    leftPoints, childComparator, dimensionality, this);
             }
 
             // Right child recursion
-            final int rightNum = num-medianIndex-1;
-            if( rightNum > 0 )
+            final int rightNum = num - medianIndex - 1;
+            if (rightNum > 0)
             {
-                ArrayList<PairType> rightPoints =
-                    new ArrayList<PairType>( rightNum );
-                for( int i = medianIndex+1; i < this.num; i++ )
+                ArrayList<PairType> rightPoints = new ArrayList<PairType>(
+                    rightNum);
+                for (int i = medianIndex + 1; i < this.num; i++)
                 {
-                    rightPoints.add( points.get( indices[i] ) );
+                    rightPoints.add(points.get(indices[i]));
                 }
-                this.rightChild = new KDTree<VectorType,DataType,PairType>(
-                    rightPoints, childComparator, dimensionality, this );
+                this.rightChild = new KDTree<VectorType, DataType, PairType>(
+                    rightPoints, childComparator, dimensionality, this);
             }
 
         }
@@ -231,12 +230,12 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
 
     @Override
     @SuppressWarnings("unchecked")
-    public KDTree<VectorType,DataType,PairType> clone()
+    public KDTree<VectorType, DataType, PairType> clone()
     {
-        KDTree<VectorType,DataType,PairType> clone;
+        KDTree<VectorType, DataType, PairType> clone;
         try
         {
-            clone = (KDTree<VectorType,DataType,PairType>) super.clone();
+            clone = (KDTree<VectorType, DataType, PairType>) super.clone();
             clone.leftChild = ObjectUtil.cloneSafe(this.leftChild);
             clone.rightChild = ObjectUtil.cloneSafe(this.rightChild);
             clone.value = ObjectUtil.cloneSmart(this.value);
@@ -253,40 +252,39 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
     }
 
     /**
-     * Creates a balanced KDTree based on the given collection of Pairs.
-     * This is an O(n log n) operation for "n" points because we use a clever
+     * Creates a balanced KDTree based on the given collection of Pairs. This is
+     * an O(n log n) operation for "n" points because we use a clever
      * linear-time kth selection algorithm in CollectionUtil.findKthLargest().
      *
      * @param <VectorType> Type of Vectorizable, the first values.
      * @param <DataType> Type of data in the Pair, the second values.
      * @param <PairType> Type of Pair to use in the KDTree.
      * @param points Points to load into the tree.
-     * @return
-     * Balanced KDTree that contains all the given points.
+     * @return Balanced KDTree that contains all the given points.
      */
-    public static <VectorType extends Vectorizable,DataType,PairType extends Pair<? extends VectorType,DataType>>
-            KDTree<VectorType,DataType,PairType> createBalanced(
-                Collection<? extends PairType> points )
+    public static <VectorType extends Vectorizable, DataType, PairType extends Pair<? extends VectorType, DataType>>
+        KDTree<VectorType, DataType, PairType> createBalanced(
+            Collection<? extends PairType> points)
     {
-        return new KDTree<VectorType,DataType,PairType>( points );
+        return new KDTree<VectorType, DataType, PairType>(points);
     }
 
     /**
-     * Rebalances the KDTree.  Does not modify this KDTree.
-     * @return
-     * Balanced representation of this KDTree.
+     * Rebalances the KDTree. Does not modify this KDTree.
+     *
+     * @return Balanced representation of this KDTree.
      */
-    public KDTree<VectorType,DataType,PairType> reblanace()
+    public KDTree<VectorType, DataType, PairType> reblanace()
     {
-        return createBalanced( this );
+        return createBalanced(this);
     }
 
     @Override
     public boolean add(
-        PairType point )
+        PairType point)
     {
 
-        if( this.value == null )
+        if (this.value == null)
         {
             this.num = 1;
             this.value = point;
@@ -295,38 +293,39 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
         else
         {
             this.num++;
-            int comparison = this.comparator.compare(point,this.value);
-            if( comparison <= 0 )
+            int comparison = this.comparator.compare(point, this.value);
+            if (comparison <= 0)
             {
-                if( this.leftChild == null )
+                if (this.leftChild == null)
                 {
-                    int dimension = point.getFirst().convertToVector().getDimensionality();
-                    int childAxis = (this.comparator.comparator.getIndex() + 1) % dimension;
-                    PairFirstVectorizableIndexComparator childComparator =
-                        new PairFirstVectorizableIndexComparator( childAxis );
-                    this.leftChild = new KDTree<VectorType,DataType,PairType>(
-                        point, childComparator, this );
+                    int dimension
+                        = point.getFirst().convertToVector().getDimensionality();
+                    int childAxis = (this.comparator.comparator.getIndex() + 1)
+                        % dimension;
+                    PairFirstVectorizableIndexComparator childComparator
+                        = new PairFirstVectorizableIndexComparator(childAxis);
+                    this.leftChild = new KDTree<VectorType, DataType, PairType>(
+                        point, childComparator, this);
                 }
                 else
                 {
-                    this.leftChild.add( point );
+                    this.leftChild.add(point);
                 }
+            }
+            else if (this.rightChild == null)
+            {
+                int dimension
+                    = point.getFirst().convertToVector().getDimensionality();
+                int childAxis = (this.comparator.comparator.getIndex() + 1)
+                    % dimension;
+                PairFirstVectorizableIndexComparator childComparator
+                    = new PairFirstVectorizableIndexComparator(childAxis);
+                this.rightChild = new KDTree<VectorType, DataType, PairType>(
+                    point, childComparator, this);
             }
             else
             {
-                if( this.rightChild == null )
-                {
-                    int dimension = point.getFirst().convertToVector().getDimensionality();
-                    int childAxis = (this.comparator.comparator.getIndex() + 1) % dimension;
-                    PairFirstVectorizableIndexComparator childComparator =
-                        new PairFirstVectorizableIndexComparator( childAxis );
-                    this.rightChild = new KDTree<VectorType,DataType,PairType>(
-                        point, childComparator, this );
-                }
-                else
-                {
-                    this.rightChild.add( point );
-                }
+                this.rightChild.add(point);
             }
         }
 
@@ -342,52 +341,52 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
 
     /**
      * Iterates through the KDTree using "inorder", also known as "symmetric
-     * traversal", of the tree.  That is, the recursion proceeds as
-     * traverse the left subtree, visit the node, traverse the right subtree.
-     * @return
-     * Inorder iterator of the KDTree.
+     * traversal", of the tree. That is, the recursion proceeds as traverse the
+     * left subtree, visit the node, traverse the right subtree.
+     *
+     * @return Inorder iterator of the KDTree.
      */
     @PublicationReference(
-        author="Wikipedia",
-        title="Tree traversal",
-        type=PublicationType.WebPage,
-        year=2009,
-        url="http://en.wikipedia.org/wiki/Tree_traversal#Traversal"
+        author = "Wikipedia",
+        title = "Tree traversal",
+        type = PublicationType.WebPage,
+        year = 2009,
+        url = "http://en.wikipedia.org/wiki/Tree_traversal#Traversal"
     )
     @Override
     public Iterator<PairType> iterator()
     {
-        return new InOrderKDTreeIterator<VectorType,DataType,PairType>( this );
+        return new InOrderKDTreeIterator<VectorType, DataType, PairType>(this);
     }
 
     @Override
     public String toString()
     {
-        return this.toString( "Head->" );
+        return this.toString("Head->");
     }
 
     /**
      * Recursively prints out the tree "inorder" by printing out the left
      * subtree, then the node, then the right subtree.
-     * @param prefix
-     * Prefix to tack onto the recursion values.
-     * @return
-     * String representation of the KDTree.
+     *
+     * @param prefix Prefix to tack onto the recursion values.
+     * @return String representation of the KDTree.
      */
     protected String toString(
-        String prefix )
+        String prefix)
     {
 
-        String retval = prefix + " (" + this.value.getFirst() + " -> " + this.value.getSecond() + ")\n";
+        String retval = prefix + " (" + this.value.getFirst() + " -> "
+            + this.value.getSecond() + ")\n";
 
-        if( this.leftChild != null )
+        if (this.leftChild != null)
         {
-            retval += this.leftChild.toString( prefix + "L" );
+            retval += this.leftChild.toString(prefix + "L");
         }
 
-        if( this.rightChild != null )
+        if (this.rightChild != null)
         {
-            retval += this.rightChild.toString( prefix + "R" );
+            retval += this.rightChild.toString(prefix + "R");
         }
 
         return retval;
@@ -397,66 +396,60 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
     /**
      * Finds the "num" nearest neighbors to the given "key" stored in the
      * KDTree.
-     * @param key
-     * Vector to find the nearest neighbors of.
-     * @param k
-     * Number of neighbors to find.
-     * @param metric
-     * Metric to use to evaluate the nearness of other points.
-     * @return
-     * Collection of nearest points to the "key" query.  If "num" is greater
-     * than or equal to the number of points in the KDTRee, then the KDTree
-     * is returned.
+     *
+     * @param key Vector to find the nearest neighbors of.
+     * @param k Number of neighbors to find.
+     * @param metric Metric to use to evaluate the nearness of other points.
+     * @return Collection of nearest points to the "key" query. If "num" is
+     * greater than or equal to the number of points in the KDTRee, then the
+     * KDTree is returned.
      */
     public Collection<PairType> findNearest(
         VectorType key,
         int k,
-        Metric<? super VectorType> metric )
+        Metric<? super VectorType> metric)
     {
 
-        if( k < this.size() )
+        if (k < this.size())
         {
-            Neighborhood<VectorType,DataType,PairType> neighborhood =
-                new Neighborhood<VectorType, DataType, PairType>( k );
-            this.findNearest(key, k, neighborhood, metric );
+            Neighborhood<VectorType, DataType, PairType> neighborhood
+                = new Neighborhood<VectorType, DataType, PairType>(k);
+            this.findNearest(key, k, neighborhood, metric);
             return neighborhood;
         }
         else
         {
             return this;
         }
-        
+
     }
 
     /**
      * Finds the "num" nearest neighbors to the given "key" stored in the
      * KDTree.
-     * @param key
-     * Vector to find the nearest neighbors of.
-     * @param k
-     * Number of neighbors to find.
-     * @param neighborhood
-     * PriorityQueue to store the current nearest neighbors.
-     * @param metric
-     * Metric to use to evaluate the nearness of other points.
+     *
+     * @param key Vector to find the nearest neighbors of.
+     * @param k Number of neighbors to find.
+     * @param neighborhood PriorityQueue to store the current nearest neighbors.
+     * @param metric Metric to use to evaluate the nearness of other points.
      */
     protected void findNearest(
         VectorType key,
         int k,
-        Neighborhood<VectorType,DataType,PairType> neighborhood,
-        Metric<? super VectorType> metric )
+        Neighborhood<VectorType, DataType, PairType> neighborhood,
+        Metric<? super VectorType> metric)
     {
 
-        KDTree<VectorType,DataType,PairType> closer = null;
-        KDTree<VectorType,DataType,PairType> further = null;
+        KDTree<VectorType, DataType, PairType> closer = null;
+        KDTree<VectorType, DataType, PairType> further = null;
 
         // If we've got children, then see which child is closer
-        if( (this.leftChild != null) || (this.rightChild != null) )
+        if ((this.leftChild != null) || (this.rightChild != null))
         {
             int comparison = this.comparator.comparator.compare(
-                key, this.value.getFirst() );
+                key, this.value.getFirst());
 
-            if( comparison <= 0 )
+            if (comparison <= 0)
             {
                 closer = this.leftChild;
                 further = this.rightChild;
@@ -468,7 +461,7 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
             }
 
             // recurse into the closer subtree if it exists.
-            if( closer != null )
+            if (closer != null)
             {
                 closer.findNearest(key, k, neighborhood, metric);
             }
@@ -476,14 +469,14 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
         }
 
         // If there's space in the queue, then add our value.
-        if( !neighborhood.isFull() )
+        if (!neighborhood.isFull())
         {
             // Compute our distance to the key
-            double distance = metric.evaluate( this.value.getFirst(), key );
-            neighborhood.add( this.value, distance );
+            double distance = metric.evaluate(this.value.getFirst(), key);
+            neighborhood.add(this.value, distance);
 
             // If there's still space, then recurse to the further tree.
-            if( further != null )
+            if (further != null)
             {
 //                if( !neighborhood.isFull() )
                 {
@@ -503,11 +496,11 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
             // further subtree could contain a better point than the furthest
             // neighbor so far.
             double minimumDistance = this.computeMinimumDifference(key);
-            if( minimumDistance < neighborhood.getFurthestNeighborDistance() )
+            if (minimumDistance < neighborhood.getFurthestNeighborDistance())
             {
-                double distance = metric.evaluate( this.value.getFirst(), key );
-                neighborhood.offer( this.value, distance );
-                if( further != null )
+                double distance = metric.evaluate(this.value.getFirst(), key);
+                neighborhood.offer(this.value, distance);
+                if (further != null)
                 {
                     further.findNearest(key, num, neighborhood, metric);
                 }
@@ -518,37 +511,114 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
     }
 
     /**
-     * Computes the minimum absolute difference between the given key and
-     * the "first" value stored in this subtree for the index given by
-     * the embedded comparator.  That is, the minimum distance
-     * "this is done by intersecting the splitting hyperplane with a hypersphere
-     * around the search node [key] that has a radius equal to the current
-     * nearest distance. Since the hyperplanes are all axis-aligned this is
-     * implemented as a simple comparison to see whether the difference between
-     * the splitting coordinate and the search point is less than the distance
-     * from the search point to the current best."
-     * @param key
-     * Vector to compare against.
-     * @return
-     * Minimum absolute difference for the given index between the key and
-     * the first value stored in this subtree.
+     * Finds the neighbors within a given distance to the given "key" stored in
+     * the KDTree.
+     *
+     * @param key Vector to find the nearest neighbors of.
+     * @param radius Radius of desired neighborhood.
+     * @param metric Metric to use to evaluate the nearness of other points.
+     * @return Collection of points within a given distance to the "key" query.
      */
-    protected double computeMinimumDifference(
-        VectorType key )
+    public Collection<PairType> findNearestWithinRadius(
+        VectorType key,
+        double radius,
+        Metric<? super VectorType> metric)
     {
-        int index = this.comparator.comparator.getIndex();
-        double delta = key.convertToVector().getElement(index) -
-            this.value.getFirst().convertToVector().getElement(index);
-        return Math.abs( delta );
+        Neighborhood<VectorType, DataType, PairType> neighborhood
+            = new Neighborhood<VectorType, DataType, PairType>(this.size());
+        this.findNearestWithinRadius(key, radius, neighborhood, metric);
+        return neighborhood;
     }
 
+    /**
+     * Finds the neighbors within a given distance to the given "key" stored in
+     * the KDTree.
+     *
+     * @param key Vector to find the nearest neighbors of.
+     * @param radius Radius of desired neighborhood.
+     * @param metric Metric to use to evaluate the nearness of other points.
+     * @param neighborhood PriorityQueue to store the neighbors.
+     * @return Collection of points within a given distance to the "key" query.
+     */
+    protected void findNearestWithinRadius(
+        VectorType key,
+        double radius,
+        Neighborhood<VectorType, DataType, PairType> neighborhood,
+        Metric<? super VectorType> metric)
+    {
+        KDTree<VectorType, DataType, PairType> closer = null;
+        KDTree<VectorType, DataType, PairType> further = null;
+
+        // If we've got children, then see which child is closer
+        if ((this.leftChild != null) || (this.rightChild != null))
+        {
+            int comparison = this.comparator.comparator.compare(
+                key, this.value.getFirst());
+
+            if (comparison <= 0)
+            {
+                closer = this.leftChild;
+                further = this.rightChild;
+            }
+            else
+            {
+                closer = this.rightChild;
+                further = this.leftChild;
+            }
+
+            // recurse into the closer subtree if it exists.
+            if (closer != null)
+            {
+                closer.findNearestWithinRadius(key, radius, neighborhood, metric);
+            }
+
+        }
+
+        // Compute our distance to the key
+        double distance = metric.evaluate(this.value.getFirst(), key);
+        if (distance <= radius)
+        {
+            // Add this node if the distance is less than the radius.
+            neighborhood.add(this.value, distance);
+            // Only investigate the further tree if this node was within radius.
+            if (further != null)
+            {
+                further.findNearestWithinRadius(key, radius, neighborhood,
+                    metric);
+            }
+        }
+    }
+
+    /**
+     * Computes the minimum absolute difference between the given key and the
+     * "first" value stored in this subtree for the index given by the embedded
+     * comparator. That is, the minimum distance "this is done by intersecting
+     * the splitting hyperplane with a hypersphere around the search node [key]
+     * that has a radius equal to the current nearest distance. Since the
+     * hyperplanes are all axis-aligned this is implemented as a simple
+     * comparison to see whether the difference between the splitting coordinate
+     * and the search point is less than the distance from the search point to
+     * the current best."
+     *
+     * @param key Vector to compare against.
+     * @return Minimum absolute difference for the given index between the key
+     * and the first value stored in this subtree.
+     */
+    protected double computeMinimumDifference(
+        VectorType key)
+    {
+        int index = this.comparator.comparator.getIndex();
+        double delta = key.convertToVector().getElement(index)
+            - this.value.getFirst().convertToVector().getElement(index);
+        return Math.abs(delta);
+    }
 
     /**
      * Comparator for Pairs that have a Vectorizable as its first parameter.
      */
     protected static class PairFirstVectorizableIndexComparator
         extends AbstractCloneableSerializable
-        implements Comparator<Pair<? extends Vectorizable,?>>
+        implements Comparator<Pair<? extends Vectorizable, ?>>
     {
 
         /**
@@ -558,40 +628,41 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
 
         /**
          * Creates a new instance of PairFirstVectorizableIndexComparator
-         * @param index
-         * Index of the Vectorizable to compare against.
+         *
+         * @param index Index of the Vectorizable to compare against.
          */
         public PairFirstVectorizableIndexComparator(
-            int index )
+            int index)
         {
-            this.comparator = new VectorizableIndexComparator( index );
+            this.comparator = new VectorizableIndexComparator(index);
         }
 
         public int compare(
             Pair<? extends Vectorizable, ?> o1,
-            Pair<? extends Vectorizable, ?> o2 )
+            Pair<? extends Vectorizable, ?> o2)
         {
-            return this.comparator.compare( o1.getFirst(), o2.getFirst() );
+            return this.comparator.compare(o1.getFirst(), o2.getFirst());
         }
-        
+
     }
 
     /**
      * Iterates through the KDTree using "inorder", also known as "symmetric
-     * traversal", of the tree.  That is, the recursion proceeds as
-     * traverse the left subtree, visit the node, traverse the right subtree.
+     * traversal", of the tree. That is, the recursion proceeds as traverse the
+     * left subtree, visit the node, traverse the right subtree.
+     *
      * @param <VectorType> Type of Vectorizable, the first values
      * @param <DataType> Type of data in the Pair, the second values
      * @param <PairType> Type of Pair to use in the KDTree.
      */
     @PublicationReference(
-        author="Wikipedia",
-        title="Tree traversal",
-        type=PublicationType.WebPage,
-        year=2009,
-        url="http://en.wikipedia.org/wiki/Tree_traversal#Traversal"
+        author = "Wikipedia",
+        title = "Tree traversal",
+        type = PublicationType.WebPage,
+        year = 2009,
+        url = "http://en.wikipedia.org/wiki/Tree_traversal#Traversal"
     )
-    protected static class InOrderKDTreeIterator<VectorType extends Vectorizable,DataType,PairType extends Pair<? extends VectorType,DataType>>
+    protected static class InOrderKDTreeIterator<VectorType extends Vectorizable, DataType, PairType extends Pair<? extends VectorType, DataType>>
         implements Iterator<PairType>
     {
 
@@ -603,28 +674,32 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
         /**
          * Iterator for the left subtree.
          */
-        public InOrderKDTreeIterator<VectorType,DataType,PairType> leftIterator;
+        public InOrderKDTreeIterator<VectorType, DataType, PairType> leftIterator;
 
         /**
          * Iterator for the right subtree.
          */
-        public InOrderKDTreeIterator<VectorType,DataType,PairType> rightIterator;
+        public InOrderKDTreeIterator<VectorType, DataType, PairType> rightIterator;
 
         /**
          * Creates a new instance of InOrderKDTreeIterator
-         * @param node
-         * Node from which to iterate.
+         *
+         * @param node Node from which to iterate.
          */
         public InOrderKDTreeIterator(
-            KDTree<VectorType,DataType,PairType> node )
+            KDTree<VectorType, DataType, PairType> node)
         {
-            if( node.leftChild != null )
+            if (node.leftChild != null)
             {
-                this.leftIterator = new InOrderKDTreeIterator<VectorType,DataType,PairType>( node.leftChild );
+                this.leftIterator
+                    = new InOrderKDTreeIterator<VectorType, DataType, PairType>(
+                        node.leftChild);
             }
-            if( node.rightChild != null )
+            if (node.rightChild != null)
             {
-                this.rightIterator = new InOrderKDTreeIterator<VectorType,DataType,PairType>( node.rightChild );
+                this.rightIterator
+                    = new InOrderKDTreeIterator<VectorType, DataType, PairType>(
+                        node.rightChild);
             }
 
             this.nodeValue = node.value;
@@ -633,9 +708,9 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
 
         public boolean hasNext()
         {
-            return (this.nodeValue != null) ||
-                ((this.rightIterator != null) && (this.rightIterator.hasNext())) ||
-                ((this.leftIterator != null) && (this.leftIterator.hasNext()));
+            return (this.nodeValue != null) || ((this.rightIterator != null)
+                && (this.rightIterator.hasNext())) || ((this.leftIterator
+                != null) && (this.leftIterator.hasNext()));
         }
 
         public PairType next()
@@ -643,8 +718,8 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
 
             PairType retval = null;
 
-            if( (this.leftIterator != null)
-                && this.leftIterator.hasNext() )
+            if ((this.leftIterator != null)
+                && this.leftIterator.hasNext())
             {
                 retval = this.leftIterator.next();
             }
@@ -652,14 +727,14 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
             {
                 this.leftIterator = null;
 
-                if( this.nodeValue != null )
+                if (this.nodeValue != null)
                 {
                     retval = this.nodeValue;
                     this.nodeValue = null;
                 }
-                else if( this.rightIterator != null )
+                else if (this.rightIterator != null)
                 {
-                    if( this.rightIterator.hasNext() )
+                    if (this.rightIterator.hasNext())
                     {
                         retval = this.rightIterator.next();
                     }
@@ -670,10 +745,10 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
                 }
             }
 
-            if( retval == null )
+            if (retval == null)
             {
                 throw new IllegalArgumentException(
-                    "Should not have called null since we have no values to iterate!" );
+                    "Should not have called null since we have no values to iterate!");
             }
 
             return retval;
@@ -687,14 +762,14 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
 
     }
 
-
     /**
      * A Collection of nearby pairs.
+     *
      * @param <VectorType> Type of Vectorizable.
      * @param <DataType> Type of output data.
      * @param <PairType> Type of Pair.
      */
-    protected static class Neighborhood<VectorType extends Vectorizable, DataType, PairType extends Pair<? extends VectorType,DataType>>
+    protected static class Neighborhood<VectorType extends Vectorizable, DataType, PairType extends Pair<? extends VectorType, DataType>>
         extends AbstractCollection<PairType>
     {
 
@@ -706,25 +781,25 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
         /**
          * PriorityQueue to store the neighbors.
          */
-        PriorityQueue<Neighbor<VectorType,DataType,PairType>> priorityQueue;
+        PriorityQueue<Neighbor<VectorType, DataType, PairType>> priorityQueue;
 
         /**
          * Creates a new Neighborhood.
-         * @param k
-         * Maximum number of Neighbors in the Neighborhood.
+         *
+         * @param k Maximum number of Neighbors in the Neighborhood.
          */
         public Neighborhood(
-            int k )
+            int k)
         {
-            this.priorityQueue =
-                new PriorityQueue<Neighbor<VectorType, DataType, PairType>>(k);
+            this.priorityQueue
+                = new PriorityQueue<Neighbor<VectorType, DataType, PairType>>(k);
             this.k = k;
         }
 
         /**
          * Returns true if the Neighborhood is full.
-         * @return
-         * True if the Neighborhood is full, false if not full.
+         *
+         * @return True if the Neighborhood is full, false if not full.
          */
         public boolean isFull()
         {
@@ -733,8 +808,8 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
 
         /**
          * Returns the distance of the furthest Neighbor.
-         * @return
-         * Distance of the furthest Neighbor.
+         *
+         * @return Distance of the furthest Neighbor.
          */
         public double getFurthestNeighborDistance()
         {
@@ -743,55 +818,52 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
 
         /**
          * Adds the neighbor to the priority queue.
-         * @param value
-         * Value to add.
-         * @param distance
-         * Distance to associate with the neighbor to the queue.
+         *
+         * @param value Value to add.
+         * @param distance Distance to associate with the neighbor to the queue.
          */
         public void add(
             PairType value,
-            double distance )
+            double distance)
         {
 
-            while( this.isFull() )
+            while (this.isFull())
             {
                 this.priorityQueue.remove();
             }
 
             this.priorityQueue.add(
-                new Neighbor<VectorType,DataType,PairType>(value,distance) );
+                new Neighbor<VectorType, DataType, PairType>(value, distance));
 
         }
 
         /**
          * Offers the neighbor if there is space or it's closer than the
          * furthest neighbor.
-         * @param value
-         * Value of the neighbor.
-         * @param distance
-         * Distance to the key value.
-         * @return
-         * True if added, false if not added.
+         *
+         * @param value Value of the neighbor.
+         * @param distance Distance to the key value.
+         * @return True if added, false if not added.
          */
         public boolean offer(
             PairType value,
-            double distance )
+            double distance)
         {
 
             // If we're full, then see if we're closer than the furthest
             // neighbor.
-            if( this.isFull() )
+            if (this.isFull())
             {
-                if( distance < this.getFurthestNeighborDistance() )
+                if (distance < this.getFurthestNeighborDistance())
                 {
                     this.priorityQueue.remove();
                 }
             }
 
             // If we find there is space, then add the new neighbor.
-            if( !this.isFull() )
+            if (!this.isFull())
             {
-                this.add( value, distance );
+                this.add(value, distance);
                 return true;
             }
             else
@@ -811,16 +883,17 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
         public int size()
         {
             return this.priorityQueue.size();
-        }        
+        }
 
         /**
          * Holds neighbor information used during the evaluate method and is put
          * into a priority queue.
+         *
          * @param <VectorType> Type of Vectorizable, the first values
          * @param <DataType> Type of data in the Pair, the second values
          * @param <PairType> Type of Pair to use in the KDTree.
          */
-        protected class Neighbor<VectorType extends Vectorizable, DataType, PairType extends Pair<? extends VectorType,DataType>>
+        protected class Neighbor<VectorType extends Vectorizable, DataType, PairType extends Pair<? extends VectorType, DataType>>
             extends AbstractCloneableSerializable
             implements Comparable<Neighbor<VectorType, DataType, PairType>>
         {
@@ -842,10 +915,8 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
             /**
              * Creates a new neighbor.
              *
-             * @param   value
-             *      The value associated with the neighbor.
-             * @param distance
-             * Distance associated with this value.
+             * @param value The value associated with the neighbor.
+             * @param distance Distance associated with this value.
              */
             public Neighbor(
                 final PairType value,
@@ -869,14 +940,14 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
                 Object obj)
             {
 
-                if( obj == null )
+                if (obj == null)
                 {
                     return false;
                 }
-                else if( obj instanceof Neighbor )
+                else if (obj instanceof Neighbor)
                 {
-                    return ((Neighbor<?,?,?>) obj).pair.getFirst().convertToVector().equals(
-                        this.pair.getFirst().convertToVector() );
+                    return ((Neighbor<?, ?, ?>) obj).pair.getFirst().convertToVector().equals(
+                        this.pair.getFirst().convertToVector());
                 }
                 else
                 {
@@ -890,7 +961,7 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
             {
                 return this.pair.getFirst().hashCode();
             }
-            
+
         }
 
         /**
@@ -903,7 +974,7 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
             /**
              * PriorityQueue iterator.
              */
-            Iterator<Neighbor<VectorType,DataType,PairType>> priorityQueueIterator;
+            Iterator<Neighbor<VectorType, DataType, PairType>> priorityQueueIterator;
 
             /**
              * Default constructor.
@@ -920,8 +991,8 @@ public class KDTree<VectorType extends Vectorizable,DataType,PairType extends Pa
 
             public PairType next()
             {
-                Neighbor<VectorType,DataType,PairType> next =
-                    this.priorityQueueIterator.next();
+                Neighbor<VectorType, DataType, PairType> next
+                    = this.priorityQueueIterator.next();
                 return next.pair;
             }
 

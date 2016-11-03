@@ -1,7 +1,9 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * File:            VectorUnionIteratorTest.java
+ * Authors:         Justin Basilico
+ * Project:         Cognitive Foundry Common Core
+ * 
+ * Copyright 2015 Cognitive Foundry. All rights reserved.
  */
 
 package gov.sandia.cognition.math.matrix;

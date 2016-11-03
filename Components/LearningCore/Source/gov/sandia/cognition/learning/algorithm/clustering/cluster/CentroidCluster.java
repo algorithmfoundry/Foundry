@@ -85,7 +85,7 @@ public class CentroidCluster<ClusterType>
      */
     public CentroidCluster(
         final ClusterType centroid,
-        final Collection<ClusterType> members)
+        final Collection<? extends ClusterType> members)
     {
         super(members);
         
@@ -102,7 +102,7 @@ public class CentroidCluster<ClusterType>
     public CentroidCluster(
         final int index,
         final ClusterType centroid,
-        final Collection<ClusterType> members)
+        final Collection<? extends ClusterType> members)
     {
         super(index, members);
         

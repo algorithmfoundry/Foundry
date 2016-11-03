@@ -14,6 +14,8 @@
 
 package gov.sandia.cognition.util;
 
+import java.util.Objects;
+
 /**
  * A default implementation of the {@code KeyValuePair} interface.
  *
@@ -72,6 +74,40 @@ public class DefaultKeyValuePair<KeyType, ValueType>
         final KeyValuePair<? extends KeyType, ? extends ValueType> other)
     {
         this(other.getKey(), other.getValue());
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof DefaultKeyValuePair))
+        {
+            return false;
+        }
+        DefaultKeyValuePair<?,?> p = (DefaultKeyValuePair<?,?>)o;
+
+        if (key == null && p.key != null)
+        {
+            return false;
+        }
+        if (!key.equals(p.key))
+        {
+            return false;
+        }
+
+        if (value == null && p.value != null)
+        {
+            return false;
+        }
+        return value.equals(p.value);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int hash = 7;
+        hash = 61 * hash + Objects.hashCode(this.key);
+        hash = 61 * hash + Objects.hashCode(this.value);
+        return hash;
     }
 
     @Override

@@ -238,8 +238,9 @@ public class CustomClusteringExample
         extends AbstractCloneableSerializable
         implements ClusterCreator<CentroidCluster<ExampleData>, ExampleData>
     {
+        @Override
         public CentroidCluster<ExampleData> createCluster(
-            final Collection<ExampleData> members)
+            final Collection<? extends ExampleData> members)
         {        
             if ( members == null )
             {

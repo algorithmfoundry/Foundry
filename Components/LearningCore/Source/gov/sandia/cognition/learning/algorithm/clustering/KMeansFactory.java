@@ -135,15 +135,15 @@ public class KMeansFactory
 
         // Use a greedy cluster initializer.
         final FixedClusterInitializer<CentroidCluster<Vector>, Vector> initializer =
-            new GreedyClusterInitializer<CentroidCluster<Vector>, Vector>(
+            new GreedyClusterInitializer<>(
                 distanceMetric, clusterCreator, random);
         
         // Use centroid clusters.
         final CentroidClusterDivergenceFunction<Vector> clusterDivergence =
-            new CentroidClusterDivergenceFunction<Vector>(distanceMetric);
+            new CentroidClusterDivergenceFunction<>(distanceMetric);
 
         // Create the k-means algorithm.
-        return new ParallelizedKMeansClusterer<Vector, CentroidCluster<Vector>>(
+        return new ParallelizedKMeansClusterer<>(
             numClusters, KMeansClusterer.DEFAULT_MAX_ITERATIONS,
             ParallelUtil.createThreadPool(), initializer, clusterDivergence,
                 clusterCreator);

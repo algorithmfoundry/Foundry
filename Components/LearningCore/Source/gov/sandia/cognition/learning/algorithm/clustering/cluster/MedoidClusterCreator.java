@@ -74,7 +74,7 @@ public class MedoidClusterCreator<DataType>
      *         assigned members
      */
     public CentroidCluster<DataType> createCluster(
-        final Collection<DataType> members)
+        final Collection<? extends DataType> members)
     {
         double minTotalDivergence = Double.POSITIVE_INFINITY;
         DataType medoid = null;

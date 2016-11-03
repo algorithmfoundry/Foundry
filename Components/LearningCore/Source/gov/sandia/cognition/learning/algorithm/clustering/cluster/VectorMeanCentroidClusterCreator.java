@@ -58,7 +58,7 @@ public class VectorMeanCentroidClusterCreator
 
     @Override
     public CentroidCluster<Vector> createCluster(
-        final Collection<Vector> members)
+        final Collection<? extends Vector> members)
     {
         if (members.size() <= 0)
         {
