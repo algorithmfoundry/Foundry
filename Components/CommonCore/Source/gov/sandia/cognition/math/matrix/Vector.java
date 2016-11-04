@@ -419,6 +419,16 @@ public interface Vector
      *      The number of active entries in the vector.
      */
     public int getEntryCount();
+    
+    /**
+     * Counts the number of non-zero entries in the vector. Must be between
+     * zero and the dimensionality. This operation may require evaluating all
+     * entries in the vector based on the implementation.
+     * 
+     * @return
+     *      The number of non-zero values in the vector.
+     */
+    public int countNonZeros();
 
     /**
      * Converts this vector to a new array of doubles, in the same order as they
@@ -464,6 +474,14 @@ public interface Vector
     public String toString(
         final NumberFormat format,
         final String delimiter);
+    
+    /**
+     * Gets a vector factory associated with this kind of vector.
+     * 
+     * @return
+     *      The associated factory.
+     */
+    public VectorFactory<?> getVectorFactory();
 
     /**
      * Defines the functionality for a consumer of vector entries, which are an

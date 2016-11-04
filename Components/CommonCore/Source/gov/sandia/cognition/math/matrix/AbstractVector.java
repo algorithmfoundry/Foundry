@@ -159,7 +159,142 @@ public abstract class AbstractVector
     {
         first.assertDimensionalityEquals( second.getDimensionality() );
     }
+    
+    @Override
+    public void plusEquals(
+        final Vector other)
+    {
+        // This is a generic implementation to support interoperability. 
+        // Sub-classes should make custom ones for performance.
+        this.assertSameDimensionality(other);
+        for (final VectorEntry entry : other)
+        {
+            this.increment(entry.getIndex(), entry.getValue());
+        }
+    }
 
+    @Override
+    public void minusEquals(
+        final Vector other)
+    {
+        // This is a generic implementation to support interoperability. 
+        // Sub-classes should make custom ones for performance.
+        this.assertSameDimensionality(other);
+        for (final VectorEntry entry : other)
+        {
+            this.decrement(entry.getIndex(), entry.getValue());
+        }
+    }
+
+    @Override
+    public void dotTimesEquals(
+        final Vector other)
+    {
+        // This is a generic implementation to support interoperability. 
+        // Sub-classes should make custom ones for performance.
+        this.assertSameDimensionality(other);
+        for (final VectorEntry entry : this)
+        {
+            entry.setValue(entry.getValue() * other.get(entry.getIndex()));
+        }
+    }
+
+    @Override
+    public void scaledPlusEquals(
+        final double scaleFactor,
+        final Vector other)
+    {
+        // This is a generic implementation to support interoperability. 
+        // Sub-classes should make custom ones for performance.
+        this.assertSameDimensionality(other);
+        for (final VectorEntry entry : other)
+        {
+            this.increment(entry.getIndex(), scaleFactor * entry.getValue());
+        }
+    }
+
+    @Override
+    public double dotProduct(
+        final Vector other)
+    {
+        // This is a generic implementation to support interoperability. 
+        // Sub-classes should make custom ones for performance.
+        this.assertSameDimensionality(other);
+        double result = 0.0;
+        for (final VectorEntry entry : this)
+        {
+            result += entry.getValue() * other.get(entry.getIndex());
+        }
+        return result;
+    }
+
+    @Override
+    public double euclideanDistanceSquared(
+        final Vector other)
+    {
+        // This is a generic implementation to support interoperability. 
+        // Sub-classes should make custom ones for performance.
+        this.assertSameDimensionality(other);
+        double result = 0.0;
+        for (final VectorEntry entry : this)
+        {
+            final double difference = 
+                entry.getValue() - other.get(entry.getIndex());
+            result += difference * difference;
+        }
+        return result;
+    }
+    
+    @Override
+    public Vector times(
+        final Matrix matrix)
+    {
+        // This is a generic implementation to support interoperability. 
+        // Sub-classes should make custom ones for performance.
+        this.assertDimensionalityEquals(matrix.getNumRows());
+        final int n = matrix.getNumColumns();
+        final Vector result = this.getVectorFactory().createVector(n);
+        for (final MatrixEntry entry : matrix)
+        {
+            result.increment(entry.getColumnIndex(), 
+                this.get(entry.getRowIndex()) * entry.getValue());
+        }
+        return result;
+    }
+
+    @Override
+    public Matrix outerProduct(
+        final Vector other)
+    {
+        final int rowCount = this.getDimensionality();
+        final int columnCount = other.getDimensionality();
+        final Matrix result;
+        if (!other.isSparse())
+        {
+            result = this.getVectorFactory().getAssociatedMatrixFactory()
+                .createMatrix(rowCount, columnCount);
+        }
+        else
+        {
+            result = other.getVectorFactory().getAssociatedMatrixFactory()
+                .createMatrix(rowCount, columnCount);
+        }
+        
+        for (VectorEntry thisEntry : this)
+        {
+            final int i = thisEntry.getIndex();
+            final double thisI = thisEntry.getValue();
+            for (VectorEntry otherEntry : other)
+            {
+                final int j = otherEntry.getIndex();
+                final double otherJ = otherEntry.getValue();
+                result.set(i, j, thisI * otherJ);
+            }
+        }
+        
+        return result;
+    }
+    
     @Override
     public Vector dotDivide(
         final Vector other)
@@ -343,6 +478,26 @@ public abstract class AbstractVector
         final double value)
     {
         this.increment(index, -value);
+    }
+    
+    @Override
+    public Vector stack(
+        final Vector other)
+    {
+        final int d1 = this.getDimensionality();
+        final int d2 = other.getDimensionality();
+        
+        final Vector stacked = this.getVectorFactory().createVector(d1 + d2);
+        for (final VectorEntry e : this)
+        {
+            stacked.setElement(e.getIndex(), e.getValue());
+        }
+        for (final VectorEntry e : other)
+        {
+            stacked.setElement(d1 + e.getIndex(), e.getValue());
+        }
+        
+        return stacked;
     }
     
     @Override

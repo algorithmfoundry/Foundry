@@ -14,6 +14,7 @@
 
 package gov.sandia.cognition.math.matrix.mtj;
 
+import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.Vector1D;
 import gov.sandia.cognition.math.matrix.VectorFactory;
@@ -125,6 +126,12 @@ public class DenseVectorFactoryMTJ
         final no.uib.cipr.matrix.DenseVector internalVector)
     {
         return new DenseVector(internalVector);
+    }
+
+    @Override
+    public MatrixFactory<?> getAssociatedMatrixFactory()
+    {
+        return DenseMatrixFactoryMTJ.INSTANCE;
     }
 
 }

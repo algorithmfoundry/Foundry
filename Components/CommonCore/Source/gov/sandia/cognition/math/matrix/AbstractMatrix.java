@@ -168,7 +168,7 @@ public abstract class AbstractMatrix
     public void assertSameDimensions(
         Matrix other )
     {
-        if (this.checkSameDimensions( other ) == false)
+        if (!this.checkSameDimensions(other))
         {
             throw new DimensionalityMismatchException(
                 "Matrices must have same dimensions: " +
@@ -179,11 +179,85 @@ public abstract class AbstractMatrix
 
     @Override
     public boolean checkMultiplicationDimensions(
-        Matrix postMultiplicationMatrix )
+        final Matrix postMultiplicationMatrix)
     {
         return this.getNumColumns() == postMultiplicationMatrix.getNumRows();
     }
+    
+    @Override
+    public void assertMultiplicationDimensions(
+        final Matrix postMultiplicationMatrix)
+    {
+        if (!this.checkMultiplicationDimensions(postMultiplicationMatrix))
+        {
+            throw new DimensionalityMismatchException(
+                "Matrices must have same internal dimensions: " +
+                + this.getNumRows() + "x" + this.getNumColumns() + " != " +
+                + postMultiplicationMatrix.getNumRows() + "x" 
+                + postMultiplicationMatrix.getNumColumns());
+        }
+    }
 
+    @Override
+    public void plusEquals(
+        final Matrix other)
+    {
+        // This is a generic implementation to support interoperability. 
+        // Sub-classes should make custom ones for performance.
+        this.assertSameDimensions(other);
+        
+        for (final MatrixEntry entry : other)
+        {
+            this.increment(entry.getRowIndex(), entry.getColumnIndex(), 
+                entry.getValue());
+        }
+    }
+
+    @Override
+    public void minusEquals(
+        final Matrix other)
+    {
+        // This is a generic implementation to support interoperability. 
+        // Sub-classes should make custom ones for performance.
+        this.assertSameDimensions(other);
+        
+        for (final MatrixEntry entry : other)
+        {
+            this.decrement(entry.getRowIndex(), entry.getColumnIndex(), 
+                entry.getValue());
+        }
+    }
+
+    @Override
+    public void dotTimesEquals(
+        final Matrix other)
+    {
+        // This is a generic implementation to support interoperability. 
+        // Sub-classes should make custom ones for performance.
+        this.assertSameDimensions(other);
+        
+        for (final MatrixEntry entry : this)
+        {
+            entry.setValue(entry.getValue() * other.get(entry.getRowIndex(), 
+                entry.getColumnIndex()));
+        }
+    }
+
+    @Override
+    public void scaledPlusEquals(
+        final double scaleFactor,
+        final Matrix other)
+    {
+        // This is a generic implementation to support interoperability. 
+        // Sub-classes should make custom ones for performance.
+        this.assertSameDimensions(other);
+        
+        for (final MatrixEntry entry : other)
+        {
+            this.increment(entry.getRowIndex(), entry.getColumnIndex(), 
+                scaleFactor * entry.getValue());
+        }
+    }
 
     @Override
     public Matrix dotDivide(
@@ -212,7 +286,54 @@ public abstract class AbstractMatrix
             }
         }
     }
+    
+    @Override
+    public Matrix times(
+        final Matrix other)
+    {
+                // This is a generic implementation to support interoperability. 
+        // Sub-classes should make custom ones for performance.
+        
+        if (this.getNumColumns() != other.getNumRows())
+        {
+            throw new DimensionalityMismatchException("Cannot multiply a matrix that is "
+                + this.getNumRows() + "x" + this.getNumColumns() + " with a matrix that is "
+                + other.getNumRows() + "x" + other.getNumColumns());
+        }
+            
+        final Matrix result = this.getMatrixFactory().createMatrix(
+            this.getNumRows(), other.getNumColumns());
+        
+        for (final MatrixEntry thisEntry : this)
+        {
+            final int rowIndex = thisEntry.getRowIndex();
+            final double thisEntryValue = thisEntry.getValue();
+            for (final VectorEntry otherEntry 
+                : other.getRow(thisEntry.getColumnIndex()))
+            {
+                result.increment(rowIndex, otherEntry.getIndex(),
+                    thisEntryValue * otherEntry.getValue());
+            }
+        }
+        
+        return result;
+    }
 
+    @Override
+    public Vector times(
+        final Vector vector)
+    {
+        vector.assertDimensionalityEquals(this.getNumColumns());
+        final Vector result = vector.getVectorFactory().createVector(
+            this.getNumRows());
+        for (final MatrixEntry entry : this)
+        {
+            result.increment(entry.getRowIndex(), 
+                entry.getValue() * vector.get(entry.getColumnIndex()));
+        }
+        return result;
+    }
+    
     @Override
     public double trace()
     {
@@ -402,6 +523,12 @@ public abstract class AbstractMatrix
         }
 
         return true;
+    }
+
+    @Override
+    public boolean isSquare()
+    {
+        return this.getNumRows() == this.getNumColumns();
     }
 
     @Override

@@ -22,6 +22,7 @@ import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.matrix.mtj.decomposition.SingularValueDecompositionMTJ;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixEntry;
+import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.MatrixReader;
 import gov.sandia.cognition.math.matrix.Vector;
 import java.io.IOException;
@@ -417,4 +418,10 @@ public class DenseMatrix
 
     }
 
+    @Override
+    public MatrixFactory<?> getMatrixFactory()
+    {
+        return DenseMatrixFactoryMTJ.INSTANCE;
+    }
+    
 }

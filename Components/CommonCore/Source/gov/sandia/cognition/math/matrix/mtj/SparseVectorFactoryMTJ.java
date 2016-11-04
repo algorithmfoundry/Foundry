@@ -14,6 +14,7 @@
 
 package gov.sandia.cognition.math.matrix.mtj;
 
+import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.SparseVectorFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.Vector1D;
@@ -96,6 +97,12 @@ public class SparseVectorFactoryMTJ
         final no.uib.cipr.matrix.sparse.SparseVector internalVector)
     {
         return new SparseVector(internalVector);
+    }
+
+    @Override
+    public MatrixFactory<?> getAssociatedMatrixFactory()
+    {
+        return SparseMatrixFactoryMTJ.INSTANCE;
     }
     
 }

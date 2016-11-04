@@ -15,6 +15,7 @@
 package gov.sandia.cognition.math.matrix.mtj;
 
 import gov.sandia.cognition.annotation.CodeReview;
+import gov.sandia.cognition.math.matrix.SparseVectorFactory;
 import gov.sandia.cognition.math.UnivariateScalarFunction;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
@@ -397,6 +398,20 @@ public class SparseVector
         return max;
     }
     
+    @Override
+    public int countNonZeros()
+    {
+        int result = 0;
+        for (final double value : this.getInternalVector().getRawData())
+        {
+            if (value != 0.0)
+            {
+                result++;
+            }
+        }
+        return result;
+    }
+    
     /**
      * This method provides custom serialization for the class since the MTJ
      * class does not implement Serializable.
@@ -424,7 +439,13 @@ public class SparseVector
         out.writeObject( dimensionality );
         out.writeObject( index );
         out.writeObject( data );
-    }    
+    }
+    
+    @Override
+    public SparseVectorFactory<?> getVectorFactory()
+    {
+        return SparseVectorFactoryMTJ.INSTANCE;
+    }
     
     /**
      * This method provides custom deserialization for the class since the MTJ

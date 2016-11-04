@@ -17,6 +17,7 @@ package gov.sandia.cognition.math.matrix.mtj;
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixEntry;
+import gov.sandia.cognition.math.matrix.MatrixFactory;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -260,4 +261,10 @@ public class SparseRowMatrix
         }
     }
 
+    @Override
+    public MatrixFactory<?> getMatrixFactory()
+    {
+        return SparseMatrixFactoryMTJ.INSTANCE;
+    }
+    
 }

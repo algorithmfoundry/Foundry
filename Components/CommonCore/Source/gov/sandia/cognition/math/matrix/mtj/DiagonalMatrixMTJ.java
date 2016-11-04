@@ -19,6 +19,7 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.ComplexNumber;
 import gov.sandia.cognition.math.matrix.DiagonalMatrix;
 import gov.sandia.cognition.math.matrix.Matrix;
+import gov.sandia.cognition.math.matrix.MatrixFactory;
 import gov.sandia.cognition.math.matrix.Vector;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -99,11 +100,7 @@ public class DiagonalMatrixMTJ
     public AbstractMTJMatrix times(
         AbstractMTJMatrix matrix )
     {
-        if( !this.checkMultiplicationDimensions( matrix ) )
-        {
-            throw new IllegalArgumentException(
-                "Number of columns of this != number of rows of matrix" );
-        }
+        this.assertMultiplicationDimensions(matrix);
         
         final int M = this.getNumRows();
         final int N = matrix.getNumColumns();
@@ -577,6 +574,12 @@ public class DiagonalMatrixMTJ
         double[] diag = (double[]) in.readObject();
         this.setInternalMatrix( new no.uib.cipr.matrix.BandMatrix( diag.length, 0, 0 ) );
         System.arraycopy(diag, 0, this.getDiagonal(), 0, diag.length);
+    }
+    
+    @Override
+    public MatrixFactory<?> getMatrixFactory()
+    {
+        return SparseMatrixFactoryMTJ.INSTANCE;
     }
 
 }

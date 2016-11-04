@@ -428,5 +428,14 @@ public abstract class VectorFactory<VectorType extends Vector>
         }
         return result;
     }
+    
+    /**
+     * Gets the matrix factory implementation associated with this vector
+     * factory.
+     * 
+     * @return 
+     *      The associated matrix factory.
+     */
+    public abstract MatrixFactory<?> getAssociatedMatrixFactory();
 
 }

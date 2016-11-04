@@ -21,6 +21,7 @@ import gov.sandia.cognition.annotation.PublicationType;
 import gov.sandia.cognition.math.UnivariateScalarFunction;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
+import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.VectorReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -290,9 +291,9 @@ public class DenseVector
         int M2 = other.getDimensionality();
         
         DenseVector stacked = new DenseVector( M1 + M2 );
-        for( VectorEntry e : this )
+        for( int i = 0; i < M1; i++ )
         {
-            stacked.setElement( e.getIndex(), e.getValue() );
+            stacked.setElement(i, this.array[i]);
         }
         for( VectorEntry e : other )
         {
@@ -473,10 +474,30 @@ public class DenseVector
     }
 
     @Override
+    public VectorFactory<?> getVectorFactory()
+    {
+        return DenseVectorFactoryMTJ.INSTANCE;
+    }
+    
+    @Override
     public int getEntryCount()
     {
         // Dense, so the entry count is the dimensionality.
         return this.getDimensionality();
+    }
+    
+    @Override
+    public int countNonZeros()
+    {
+        int result = 0;
+        for (final double value : this.getArray())
+        {
+            if (value != 0.0)
+            {
+                result++;
+            }
+        }
+        return result;
     }
     
     /**
