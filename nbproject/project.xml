@@ -60,6 +60,22 @@
                 <id>jar</id>
             </reference>
             <reference>
+                <foreign-project>Cognitive_Foundry_Graph_Core</foreign-project>
+                <artifact-type>jar</artifact-type>
+                <script>build.xml</script>
+                <target>jar</target>
+                <clean-target>clean</clean-target>
+                <id>jar</id>
+            </reference>
+            <reference>
+                <foreign-project>Cognitive_Foundry_Graph_Examples</foreign-project>
+                <artifact-type>jar</artifact-type>
+                <script>build.xml</script>
+                <target>jar</target>
+                <clean-target>clean</clean-target>
+                <id>jar</id>
+            </reference>
+            <reference>
                 <foreign-project>Cognitive_Foundry_Learning_Core</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>

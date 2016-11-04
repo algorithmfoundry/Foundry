@@ -45,5 +45,5 @@ public interface ClusterCreator<ClusterType extends Cluster<DataType>, DataType>
      * @throws NullPointerException If members is null.
      */
     public ClusterType createCluster(
-        Collection<DataType> members);
+        Collection<? extends DataType> members);
 }

@@ -8,8 +8,6 @@
 
 package gov.sandia.cognition.collection;
 
-import gov.sandia.cognition.collection.DefaultIndexer;
-import gov.sandia.cognition.collection.DefaultIndexer;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
@@ -469,4 +467,27 @@ public class DefaultIndexerTest
         assertEquals(4, (int) instance.asMap().get("b"));
     }
 
+    /**
+     * Test of the clear method
+     */
+    @Test
+    public void testClear()
+    {
+        DefaultIndexer<String> instance = new DefaultIndexer<>(5);
+        instance.add("bob");
+        instance.add("frank");
+        assertEquals(2, instance.size());
+        assertTrue(instance.hasValue("bob"));
+        assertTrue(instance.hasValue("frank"));
+        instance.clear();
+        assertEquals(0, instance.size());
+        assertFalse(instance.hasValue("bob"));
+        assertFalse(instance.hasValue("frank"));
+        instance.add("billy");
+        instance.add("bob");
+        assertEquals(2, instance.size());
+        assertTrue(instance.hasValue("bob"));
+        assertTrue(instance.hasValue("billy"));
+        assertFalse(instance.hasValue("frank"));
+    }
 }

@@ -33,28 +33,29 @@ import java.util.List;
  * same utility class so that they can be interchanged without changing the
  * method call.
  *
- * @author  Justin Basilico
- * @since   2.1
+ * @author Justin Basilico
+ * @since 2.1
  */
 @CodeReview(
-    reviewer="Kevin R. Dixon",
-    date="2008-12-02",
-    changesNeeded=false,
-    comments="Looks good."
+    reviewer = "Kevin R. Dixon",
+    date = "2008-12-02",
+    changesNeeded = false,
+    comments = "Looks good."
 )
 public class CollectionUtil
     extends Object
 {
-    /** The default load factor for a hash map is {@value}. */
+
+    /**
+     * The default load factor for a hash map is {@value}.
+     */
     private static final float DEFAULT_LOAD_FACTOR = 0.75f;
 
     /**
      * Returns true if the given collection is null or empty.
      *
-     * @param   collection
-     *      The collection to determine if it is null or empty.
-     * @return
-     *      True if the given collection is null or empty.
+     * @param collection The collection to determine if it is null or empty.
+     * @return True if the given collection is null or empty.
      */
     public static boolean isEmpty(
         final Collection<?> collection)
@@ -65,10 +66,8 @@ public class CollectionUtil
     /**
      * Returns true if the given iterable is null or empty.
      *
-     * @param   iterable
-     *      The iterable to determine if it is null or empty.
-     * @return
-     *      True if the given iterable is null or empty.
+     * @param iterable The iterable to determine if it is null or empty.
+     * @return True if the given iterable is null or empty.
      */
     public static boolean isEmpty(
         final Iterable<?> iterable)
@@ -89,36 +88,36 @@ public class CollectionUtil
     }
 
     /**
-     * Returns the Collection as an ArrayList.  It first checks to see if
-     * data is already an ArrayList and returns the casted value.  Otherwise,
-     * this method creates a new ArrayList from the data without copying each
-     * value.
+     * Returns the Collection as an ArrayList. It first checks to see if data is
+     * already an ArrayList and returns the casted value. Otherwise, this method
+     * creates a new ArrayList from the data without copying each value.
+     *
      * @param <DataType> Type of data in the Collection.
      * @param data Collection to return as an ArrayList.
      * @return ArrayList of the given Collection.
      */
     public static <DataType> ArrayList<DataType> asArrayList(
-        Iterable<DataType> data )
+        Iterable<DataType> data)
     {
-        if( data == null )
+        if (data == null)
         {
             return null;
         }
-        else if( data instanceof ArrayList )
+        else if (data instanceof ArrayList)
         {
             return (ArrayList<DataType>) data;
         }
-        else if( data instanceof Collection )
+        else if (data instanceof Collection)
         {
-            return new ArrayList<DataType>( (Collection<? extends DataType>) data );
+            return new ArrayList<DataType>((Collection<? extends DataType>) data);
         }
         else
         {
             final int num = CollectionUtil.size(data);
-            ArrayList<DataType> retval = new ArrayList<DataType>( num );
-            for( DataType value : data )
+            ArrayList<DataType> retval = new ArrayList<DataType>(num);
+            for (DataType value : data)
             {
-                retval.add( value );
+                retval.add(value);
             }
             return retval;
         }
@@ -127,10 +126,8 @@ public class CollectionUtil
     /**
      * Determines the size of the given collection, checking for null.
      *
-     * @param   collection
-     *      The collection to get the size of.
-     * @return
-     *      The size of the collection. If it is null, zero is returned.
+     * @param collection The collection to get the size of.
+     * @return The size of the collection. If it is null, zero is returned.
      */
     public static int size(
         final Collection<?> collection)
@@ -150,10 +147,8 @@ public class CollectionUtil
      * returned. If it is a {@code Collection}, then the size method is used.
      * Otherwise, the iterable is iterated over to get the size.
      *
-     * @param   iterable
-     *      The iterable to determine the size of.
-     * @return
-     *      The size of the given iterable.
+     * @param iterable The iterable to determine the size of.
+     * @return The size of the given iterable.
      */
     public static int size(
         final Iterable<?> iterable)
@@ -187,13 +182,10 @@ public class CollectionUtil
      * Gets the first element from an iterable. If the iterable is null or
      * empty, null is returned.
      *
-     * @param   <T>
-     *      The type of element.
-     * @param   iterable
-     *      The iterable to get the first element from.
-     * @return
-     *      The first element from the iterable, if one exists. Otherwise,
-     *      null.
+     * @param <T> The type of element.
+     * @param iterable The iterable to get the first element from.
+     * @return The first element from the iterable, if one exists. Otherwise,
+     * null.
      */
     public static <T> T getFirst(
         final Iterable<? extends T> iterable)
@@ -217,15 +209,12 @@ public class CollectionUtil
     }
 
     /**
-     * Gets the first element of the list. If the list is null or empty, null
-     * is returned.
+     * Gets the first element of the list. If the list is null or empty, null is
+     * returned.
      *
-     * @param   <T>
-     *      The type of element in the list.
-     * @param   list
-     *      The list to get the first element from.
-     * @return
-     *      The first element from the list, if one exists. Otherwise, null.
+     * @param <T> The type of element in the list.
+     * @param list The list to get the first element from.
+     * @return The first element from the list, if one exists. Otherwise, null.
      */
     public static <T> T getFirst(
         final List<? extends T> list)
@@ -241,15 +230,12 @@ public class CollectionUtil
     }
 
     /**
-     * Gets the last element of the list. If the list is null or empty, null
-     * is returned.
+     * Gets the last element of the list. If the list is null or empty, null is
+     * returned.
      *
-     * @param   <T>
-     *      The type of element in the list.
-     * @param   list
-     *      The list to get the last element from.
-     * @return
-     *      The last element from the list, if one exists. Otherwise, null.
+     * @param <T> The type of element in the list.
+     * @param list The list to get the last element from.
+     * @return The last element from the list, if one exists. Otherwise, null.
      */
     public static <T> T getLast(
         final List<? extends T> list)
@@ -265,89 +251,149 @@ public class CollectionUtil
     }
 
     /**
+     * Check if two collections return exactly the same objects in the same
+     * order. This means that both collections must return the same number of
+     * objects.
+     *
+     * @param <T>
+     * @param data1
+     * @param data2
+     * @return {@code true} if simultaneous iteration of {@code data1} and
+     * {@code data2} always returns objects for which
+     * {@link Object#equals(java.lang.Object)} is {@code true}; {@code false}
+     * otherwise
+     */
+    public static <T> boolean equals(Collection<? extends T> data1,
+        Collection<? extends T> data2)
+    {
+        return data1.size() == data2.size()
+            ? equals((Iterable<? extends T>) data1,
+                (Iterable<? extends T>) data2)
+            : false; // Don't waste time iterating if sizes are different
+    }
+
+    /**
+     * Check if two iterables return exactly the same objects in the same order.
+     * This means that both iterables must return the same number of objects.
+     *
+     * @param <T>
+     * @param data1
+     * @param data2
+     * @return {@code true} if simultaneous iteration of {@code data1} and
+     * {@code data2} always returns objects for which
+     * {@link Object#equals(java.lang.Object)} is {@code true}; {@code false}
+     * otherwise
+     */
+    public static <T> boolean equals(Iterable<? extends T> data1,
+        Iterable<? extends T> data2)
+    {
+        boolean equal = true;
+        Iterator<? extends T> iterator1 = data1.iterator(),
+            iterator2 = data2.iterator();
+        for (T val1, val2; iterator1.hasNext() && iterator2.hasNext() && equal;)
+        {   // Ensure equality of all items
+            val1 = iterator1.next();
+            val2 = iterator2.next();
+            equal &= val1.equals(val2);
+        }
+        if (iterator1.hasNext() || iterator2.hasNext())
+        {   // Ensure same size
+            equal = false;
+        }
+        return equal;
+    }
+
+    /**
      * Returns the set of indices of the data array such that
-     * data[return[0..k-1]] <= data[return[k]] <= data[return[k+1...N-1]].
-     * This algorithm will partition the data set in O(N) time.  This is
-     * faster than the typical sort and split time of O(N*log(N)).
-     * Note that the subsets data[return[0..k-1]] and data[return[k+1..N-1]]
-     * are themselves unsorted.  Because of this, NRC calls "Selection is
-     * sorting's austere sister."
+     * data[return[0..k-1]] &le; data[return[k]] &le; data[return[k+1...N-1]].
+     * This algorithm will partition the data set in O(N) time. This is faster
+     * than the typical sort and split time of O(N*log(N)). Note that the
+     * subsets data[return[0..k-1]] and data[return[k+1..N-1]] are themselves
+     * unsorted. Because of this, NRC calls "Selection is sorting's austere
+     * sister."
+     *
      * @param <ComparableType> Type of data to compare to.
-     * @param k
-     * kth largest value to split upon.
-     * @param data
-     * Data to partition, left unchanged by this method.
-     * @param comparator Comparator used to determine if two values
-     * are greater than, less than, or equal to each other.
-     * @return
-     * Indices into data so that
-     * data[return[0..k-1]] <= data[return[k]] <= data[return[k+1...N-1]].
+     * @param k kth largest value to split upon.
+     * @param data Data to partition, left unchanged by this method.
+     * @param comparator Comparator used to determine if two values are greater
+     * than, less than, or equal to each other.
+     * @return Indices into data so that data[return[0..k-1]] &le;
+     * data[return[k]] &le; data[return[k+1...N-1]].
      */
     @PublicationReference(
-        author={
+        author =
+        {
             "William H Press",
             "Saul A. Teukolsky",
             "William T. Vetterling",
             "Brian P. Flannery"
         },
-        title="Numerical Recipes, Third Edition",
-        type=PublicationType.Book,
-        year=2007,
-        pages=1104,
-        notes="Loosely based on the selecti() function"
+        title = "Numerical Recipes, Third Edition",
+        type = PublicationType.Book,
+        year = 2007,
+        pages = 1104,
+        notes = "Loosely based on the selecti() function"
     )
     public static <ComparableType> int[] findKthLargest(
         int k,
         ArrayList<? extends ComparableType> data,
-        Comparator<? super ComparableType> comparator )
+        Comparator<? super ComparableType> comparator)
     {
 
         final int num = data.size();
-        final int[] indices = new int[ num ];
-        for( int i = 0; i < num; i++ )
+        final int[] indices = new int[num];
+        for (int i = 0; i < num; i++)
         {
             indices[i] = i;
         }
 
         int leftIndex = 0;
-        int rightIndex = num-1;
+        int rightIndex = num - 1;
 
-        while( true )
+        while (true)
         {
-            if( rightIndex <= leftIndex+1 )
+            if (rightIndex <= leftIndex + 1)
             {
-                if( rightIndex == leftIndex+1 )
+                if (rightIndex == leftIndex + 1)
                 {
-                    swapIfAGreaterThanB(leftIndex, rightIndex, indices, data, comparator);
+                    swapIfAGreaterThanB(leftIndex, rightIndex, indices, data,
+                        comparator);
                 }
                 return indices;
             }
             else
             {
                 final int mid = (leftIndex + rightIndex) / 2;
-                swapArrayValues(mid, leftIndex+1, indices);
-                swapIfAGreaterThanB(leftIndex,   rightIndex,  indices, data, comparator);
-                swapIfAGreaterThanB(leftIndex+1, rightIndex,  indices, data, comparator);
-                swapIfAGreaterThanB(leftIndex,   leftIndex+1, indices, data, comparator);
+                swapArrayValues(mid, leftIndex + 1, indices);
+                swapIfAGreaterThanB(leftIndex, rightIndex, indices, data,
+                    comparator);
+                swapIfAGreaterThanB(leftIndex + 1, rightIndex, indices, data,
+                    comparator);
+                swapIfAGreaterThanB(leftIndex, leftIndex + 1, indices, data,
+                    comparator);
                 int i = leftIndex + 1;
                 final int originali = indices[i];
                 int j = rightIndex;
                 ComparableType valueOriginali = data.get(originali);
-                while( true )
+                while (true)
                 {
                     // Find from the left a value that is >= valueOriginali
                     do
                     {
                         i++;
-                    } while( comparator.compare( data.get(indices[i]), valueOriginali ) < 0 );
+                    }
+                    while (comparator.compare(data.get(indices[i]),
+                        valueOriginali) < 0);
 
                     // Find from the right a value that is <= valueOriginali
                     do
                     {
                         j--;
-                    } while( comparator.compare( data.get(indices[j]), valueOriginali ) > 0 );
+                    }
+                    while (comparator.compare(data.get(indices[j]),
+                        valueOriginali) > 0);
 
-                    if( j < i )
+                    if (j < i)
                     {
                         break;
                     }
@@ -355,13 +401,13 @@ public class CollectionUtil
                     swapArrayValues(i, j, indices);
                 }
 
-                indices[leftIndex+1] = indices[j];
+                indices[leftIndex + 1] = indices[j];
                 indices[j] = originali;
-                if( j >= k )
+                if (j >= k)
                 {
-                    rightIndex = j-1;
+                    rightIndex = j - 1;
                 }
-                if( j <= k )
+                if (j <= k)
                 {
                     leftIndex = i;
                 }
@@ -374,27 +420,27 @@ public class CollectionUtil
     /**
      * Swaps the indices "a" and "b" in the array "indices" if the corresponding
      * data values data[indices[a]] is greater than data[indices[b]].
+     *
      * @param <ComparableType> Type of data to compare to.
      * @param a first index
      * @param b second index
-     * @param indices array of indices to index into "data", which is
-     * modified by this method.
+     * @param indices array of indices to index into "data", which is modified
+     * by this method.
      * @param data ArrayList of values, unchanged.
-     * @param comparator Comparator used to determine if two values
-     * are greater than, less than, or equal to each other.
-     * @return
-     * True if swapped, false if left alone.
+     * @param comparator Comparator used to determine if two values are greater
+     * than, less than, or equal to each other.
+     * @return True if swapped, false if left alone.
      */
     private static <ComparableType> boolean swapIfAGreaterThanB(
         int a,
         int b,
         int[] indices,
         ArrayList<? extends ComparableType> data,
-        Comparator<? super  ComparableType> comparator )
+        Comparator<? super ComparableType> comparator)
     {
         final boolean doSwap = comparator.compare(
-            data.get(indices[a]), data.get(indices[b]) ) > 0;
-        if( doSwap )
+            data.get(indices[a]), data.get(indices[b])) > 0;
+        if (doSwap)
         {
             swapArrayValues(a, b, indices);
         }
@@ -402,9 +448,9 @@ public class CollectionUtil
 
     }
 
-
     /**
      * Swaps the two indexed values in the indices array.
+     *
      * @param i1 First index
      * @param i2 Second index
      * @param indices Array of indices to swap
@@ -412,7 +458,7 @@ public class CollectionUtil
     private static void swapArrayValues(
         int i1,
         int i2,
-        int[] indices )
+        int[] indices)
     {
         int temp = indices[i1];
         indices[i1] = indices[i2];
@@ -421,48 +467,49 @@ public class CollectionUtil
 
     /**
      * Creates a partition of the given data into "numPartition" roughly equal
-     * sets, preserving their pre-existing sequential ordering, with the
-     * nonzero remainder elements going into the final partition.
+     * sets, preserving their pre-existing sequential ordering, with the nonzero
+     * remainder elements going into the final partition.
      *
      * @param <DataType> Type of data to partition.
      * @param data Collection of data to partition
      * @param numPartitions Number of partitions to create.
-     * @return
-     * List of Lists of size data.size()/numPartitions, with the remainder of
-     * data elements going into the final partition.
+     * @return List of Lists of size data.size()/numPartitions, with the
+     * remainder of data elements going into the final partition.
      */
     public static <DataType> ArrayList<List<? extends DataType>> createSequentialPartitions(
         Iterable<? extends DataType> data,
-        int numPartitions )
+        int numPartitions)
     {
         if (data instanceof List<?>)
         {
             @SuppressWarnings("unchecked")
-            final List<? extends DataType> list = (List<? extends DataType>) data;
+            final List<? extends DataType> list
+                = (List<? extends DataType>) data;
             return createSequentialPartitions(list,
                 numPartitions);
         }
 
-        final int numData = CollectionUtil.size( data );
+        final int numData = CollectionUtil.size(data);
         final int numEach = numData / numPartitions;
-        ArrayList<List<? extends DataType>> retval =
-            new ArrayList<List<? extends DataType>>( numPartitions );
+        ArrayList<List<? extends DataType>> retval
+            = new ArrayList<List<? extends DataType>>(numPartitions);
 
         int index = 0;
         Iterator<? extends DataType> iterator = data.iterator();
-        for( int n = 0; n < numPartitions; n++ )
+        for (int n = 0; n < numPartitions; n++)
         {
             // The remainder goes into the final partition
-            int numThis = (n < (numPartitions-1)) ? numEach : (numData-index);
-            ArrayList<DataType> partition = new ArrayList<DataType>( numThis );
+            int numThis = (n < (numPartitions - 1)) ? numEach
+                : (numData - index);
+            ArrayList<DataType> partition = new ArrayList<DataType>(numThis);
 
-            for( int i = 0; i < numThis; i++ )
+            for (int i = 0; i < numThis; i++)
             {
-                partition.add( iterator.next() );
+                partition.add(iterator.next());
                 index++;
             }
 
-            retval.add( partition );
+            retval.add(partition);
 
         }
         return retval;
@@ -470,15 +517,14 @@ public class CollectionUtil
 
     /**
      * Creates a partition of the given data into "numPartition" roughly equal
-     * sets, preserving their pre-existing sequential ordering, with the
-     * nonzero remainder elements going into the final partition.
+     * sets, preserving their pre-existing sequential ordering, with the nonzero
+     * remainder elements going into the final partition.
      *
      * @param <DataType> Type of data to partition.
      * @param data Collection of data to partition
      * @param numPartitions Number of partitions to create.
-     * @return
-     * List of Lists of size data.size()/numPartitions, with the remainder of
-     * data elements going into the final partition.
+     * @return List of Lists of size data.size()/numPartitions, with the
+     * remainder of data elements going into the final partition.
      */
     public static <DataType> ArrayList<List<? extends DataType>> createSequentialPartitions(
         List<? extends DataType> data,
@@ -486,8 +532,8 @@ public class CollectionUtil
     {
         final int numData = CollectionUtil.size(data);
         final int numEach = numData / numPartitions;
-        ArrayList<List<? extends DataType>> result =
-            new ArrayList<List<? extends DataType>>(numPartitions);
+        ArrayList<List<? extends DataType>> result
+            = new ArrayList<List<? extends DataType>>(numPartitions);
         int beginIndex = 0;
         int endIndex = beginIndex + numEach;
         for (int i = 0; i < numPartitions; i++)
@@ -509,17 +555,12 @@ public class CollectionUtil
      * see if the {@code Iterable} is a {@code List}, and if so calls the get
      * method. Otherwise, it walks the {@code Iterable} to get to the element.
      *
-     * @param <DataType>
-     *      The type of data.
-     * @param iterable
-     *      The iterable to pull the value from.
-     * @param index
-     *      The 0-based index to pull from the iterable.
-     * @return
-     *      The value at the given spot in the iterable.
-     * @throws IndexOutOfBoundsException
-     *      If the index is less than zero or greater than or equal to the
-     *      number of elements in the iterable.
+     * @param <DataType> The type of data.
+     * @param iterable The iterable to pull the value from.
+     * @param index The 0-based index to pull from the iterable.
+     * @return The value at the given spot in the iterable.
+     * @throws IndexOutOfBoundsException If the index is less than zero or
+     * greater than or equal to the number of elements in the iterable.
      */
     public static <DataType> DataType getElement(
         final Iterable<DataType> iterable,
@@ -527,7 +568,7 @@ public class CollectionUtil
     {
         if (iterable instanceof List<?>)
         {
-           return ((List<DataType>) iterable).get(index);
+            return ((List<DataType>) iterable).get(index);
         }
         else
         {
@@ -554,26 +595,21 @@ public class CollectionUtil
     }
 
     /**
-     * Removes and returns the indexed value into the {@code Iterable}. It
-     * first checks to see if the {@code Iterable} is a {@code List}, and if so
-     * calls the remove method. Otherwise, it walks the {@code Iterable} to
-     * get to the element and remove it. This only works on {@code Iterable}s
-     * that are {@code List}s or whose {@code Iterator} implements the optional
+     * Removes and returns the indexed value into the {@code Iterable}. It first
+     * checks to see if the {@code Iterable} is a {@code List}, and if so calls
+     * the remove method. Otherwise, it walks the {@code Iterable} to get to the
+     * element and remove it. This only works on {@code Iterable}s that are
+     * {@code List}s or whose {@code Iterator} implements the optional
      * {@code remove} method.
      *
-     * @param <DataType>
-     *      The type of data.
-     * @param iterable
-     *      The iterable to remove the value from.
-     * @param index
-     *      The 0-based index to remove from the iterable.
-     * @return
-     *      The value removed from the given index in the iterable.
-     * @throws IndexOutOfBoundsException
-     *      If the index is less than zero or greater than or equal to the
-     *      number of elements in the iterable.
-     * @throws UnsupportedOperationException
-     *      If the iterable does not support remove.
+     * @param <DataType> The type of data.
+     * @param iterable The iterable to remove the value from.
+     * @param index The 0-based index to remove from the iterable.
+     * @return The value removed from the given index in the iterable.
+     * @throws IndexOutOfBoundsException If the index is less than zero or
+     * greater than or equal to the number of elements in the iterable.
+     * @throws UnsupportedOperationException If the iterable does not support
+     * remove.
      */
     public static <DataType> DataType removeElement(
         final Iterable<DataType> iterable,
@@ -581,7 +617,7 @@ public class CollectionUtil
     {
         if (iterable instanceof List<?>)
         {
-           return ((List<DataType>) iterable).remove(index);
+            return ((List<DataType>) iterable).remove(index);
         }
         else
         {
@@ -616,14 +652,11 @@ public class CollectionUtil
      * Performs a toString on each element given iterable with a given delimiter
      * between elements.
      *
-     * @param   list
-     *      The list to call toString on each element for.
-     * @param   delimiter
-     *      The delimiter.
-     * @return
-     *      A string with the toString on each element in the list called with
-     *      a given delimiter between elements. If null is given, then
-     *      "null" is returned. If an empty list is given, "" is returned.
+     * @param list The list to call toString on each element for.
+     * @param delimiter The delimiter.
+     * @return A string with the toString on each element in the list called
+     * with a given delimiter between elements. If null is given, then "null" is
+     * returned. If an empty list is given, "" is returned.
      */
     public static String toStringDelimited(
         final Iterable<?> list,
@@ -651,18 +684,13 @@ public class CollectionUtil
         return result.toString();
     }
 
-
     /**
      * Creates a new ArrayList from the given pair of values.
      *
-     * @param <DataType>
-     *      The data type.
-     * @param   first
-     *      The first value.
-     * @param   second
-     *      The second value.
-     * @return
-     *      A new array list with the two elements in it.
+     * @param <DataType> The data type.
+     * @param first The first value.
+     * @param second The second value.
+     * @return A new array list with the two elements in it.
      */
     public static <DataType> ArrayList<DataType> createArrayList(
         final DataType first,
@@ -680,37 +708,29 @@ public class CollectionUtil
      * the data structure to avoid a rehash or resize when the given number of
      * elements are added.
      *
-     * @param   <KeyType>
-     *      The type for the key of the map.
-     * @param   <ValueType>
-     *      The type of the value in the map.
-     * @param   size
-     *      The size. Must be positive.
-     * @return
-     *      A new hash map with the given expected size.
+     * @param <KeyType> The type for the key of the map.
+     * @param <ValueType> The type of the value in the map.
+     * @param size The size. Must be positive.
+     * @return A new hash map with the given expected size.
      */
     public static <KeyType, ValueType> HashMap<KeyType, ValueType> createHashMapWithSize(
         final int size)
     {
         final int initialCapacity = (int) Math.ceil(size / DEFAULT_LOAD_FACTOR);
-        return new HashMap<KeyType, ValueType>(initialCapacity, 
+        return new HashMap<KeyType, ValueType>(initialCapacity,
             DEFAULT_LOAD_FACTOR);
     }
 
     /**
-     * Creates a new {@link LinkedHashMap} with the given expected size. It uses the
-     * default load factor (0.75) to estimate the proper number of elements for
-     * the data structure to avoid a rehash or resize when the given number of
-     * elements are added.
+     * Creates a new {@link LinkedHashMap} with the given expected size. It uses
+     * the default load factor (0.75) to estimate the proper number of elements
+     * for the data structure to avoid a rehash or resize when the given number
+     * of elements are added.
      *
-     * @param   <KeyType>
-     *      The type for the key of the map.
-     * @param   <ValueType>
-     *      The type of the value in the map.
-     * @param   size
-     *      The size. Must be positive.
-     * @return
-     *      A new hash map with the given expected size.
+     * @param <KeyType> The type for the key of the map.
+     * @param <ValueType> The type of the value in the map.
+     * @param size The size. Must be positive.
+     * @return A new hash map with the given expected size.
      */
     public static <KeyType, ValueType> LinkedHashMap<KeyType, ValueType> createLinkedHashMapWithSize(
         final int size)
@@ -726,12 +746,9 @@ public class CollectionUtil
      * the data structure to avoid a rehash or resize when the given number of
      * elements are added.
      *
-     * @param   <ValueType>
-     *      The type of the value in the set.
-     * @param   size
-     *      The size. Must be positive.
-     * @return
-     *      A new hash map with the given expected size.
+     * @param <ValueType> The type of the value in the set.
+     * @param size The size. Must be positive.
+     * @return A new hash map with the given expected size.
      */
     public static <ValueType> HashSet<ValueType> createHashSetWithSize(
         final int size)
@@ -741,17 +758,14 @@ public class CollectionUtil
     }
 
     /**
-     * Creates a new {@link LinkedHashSet} with the given expected size. It uses the
-     * default load factor (0.75) to estimate the proper number of elements for
-     * the data structure to avoid a rehash or resize when the given number of
-     * elements are added.
+     * Creates a new {@link LinkedHashSet} with the given expected size. It uses
+     * the default load factor (0.75) to estimate the proper number of elements
+     * for the data structure to avoid a rehash or resize when the given number
+     * of elements are added.
      *
-     * @param   <ValueType>
-     *      The type of the value in the set.
-     * @param   size
-     *      The size. Must be positive.
-     * @return
-     *      A new hash map with the given expected size.
+     * @param <ValueType> The type of the value in the set.
+     * @param size The size. Must be positive.
+     * @return A new hash map with the given expected size.
      */
     public static <ValueType> LinkedHashSet<ValueType> createLinkedHashSetWithSize(
         final int size)
@@ -759,4 +773,5 @@ public class CollectionUtil
         final int initialCapacity = (int) Math.ceil(size / DEFAULT_LOAD_FACTOR);
         return new LinkedHashSet<ValueType>(initialCapacity, DEFAULT_LOAD_FACTOR);
     }
+
 }

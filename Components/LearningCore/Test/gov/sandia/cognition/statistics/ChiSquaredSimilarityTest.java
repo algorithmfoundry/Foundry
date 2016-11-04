@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
  */
 public class ChiSquaredSimilarityTest
 {
-    VectorFactory vectorFactory = VectorFactory.getDenseDefault();
+    VectorFactory<? extends Vector> vectorFactory = VectorFactory.getDenseDefault();
     double[] value1 = {1,0,0,1,0,0,0,1,0,0};
 
     Vector vector1 = vectorFactory.copyArray(value1);

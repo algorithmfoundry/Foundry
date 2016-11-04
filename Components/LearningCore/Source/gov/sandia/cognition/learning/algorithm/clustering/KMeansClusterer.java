@@ -34,35 +34,37 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * The {@code KMeansClusterer} class implements the standard k-means 
- * (k-centroids) clustering algorithm. 
+ * The {@code KMeansClusterer} class implements the standard k-means
+ * (k-centroids) clustering algorithm.
  *
- * @param   <DataType> The type of the data to cluster. This is typically 
- *          defined by the divergence function used.
- * @param   <ClusterType> The type of {@code Cluster} created by the algorithm.
- *          This is typically defined by the cluster creator function used.
- * @author  Justin Basilico
- * @author  Kevin R. Dixon
- * @since   1.0
+ * @param <DataType> The type of the data to cluster. This is typically defined
+ * by the divergence function used.
+ * @param <ClusterType> The type of {@code Cluster} created by the algorithm.
+ * This is typically defined by the cluster creator function used.
+ * @author Justin Basilico
+ * @author Kevin R. Dixon
+ * @since 1.0
  */
 @CodeReviews(
-    reviews={
+    reviews =
+    {
         @CodeReview(
-            reviewer="Kevin R. Dixon",
-            date="2008-10-06",
-            changesNeeded=true,
-            comments={
+            reviewer = "Kevin R. Dixon",
+            date = "2008-10-06",
+            changesNeeded = true,
+            comments =
+            {
                 "The constructors for this class are not user friendly.",
                 "I've been trying to write a test GUI for k-means for over an hour and STILL can't figure out the combination of classes to configure the constructor.",
                 "Please make a constructor that configures the class with meaningful, user-friendly default arguments."
             }
-        )
-        ,
+        ),
         @CodeReview(
-            reviewer="Kevin R. Dixon",
-            date="2008-07-22",
-            changesNeeded=false,
-            comments={
+            reviewer = "Kevin R. Dixon",
+            date = "2008-07-22",
+            changesNeeded = false,
+            comments =
+            {
                 "Changed the condition to be 'members.size() > 0' instead of 1 in createClustersFromAssignments()",
                 "Cleaned up javadoc.",
                 "Code generally looks fine."
@@ -71,64 +73,84 @@ import java.util.Collection;
     }
 )
 @PublicationReferences(
-    references={
+    references =
+    {
         @PublicationReference(
-            author="Wikipedia",
-            title="K-means algorithm",
-            type=PublicationType.WebPage,
-            year=2008,
-            url="http://en.wikipedia.org/wiki/K-means_algorithm"
-        )
-        ,
+            author = "Wikipedia",
+            title = "K-means algorithm",
+            type = PublicationType.WebPage,
+            year = 2008,
+            url = "http://en.wikipedia.org/wiki/K-means_algorithm"
+        ),
         @PublicationReference(
-            author="Matteo Matteucci",
-            title="A Tutorial on Clustering Algorithms: k-means Demo",
-            type=PublicationType.WebPage,
-            year=2008,
-            url="http://home.dei.polimi.it/matteucc/Clustering/tutorial_html/AppletKM.html"
+            author = "Matteo Matteucci",
+            title = "A Tutorial on Clustering Algorithms: k-means Demo",
+            type = PublicationType.WebPage,
+            year = 2008,
+            url
+            = "http://home.dei.polimi.it/matteucc/Clustering/tutorial_html/AppletKM.html"
         )
     }
 )
 public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
     extends AbstractAnytimeBatchLearner<Collection<? extends DataType>, Collection<ClusterType>>
-    implements BatchClusterer<DataType, ClusterType>, MeasurablePerformanceAlgorithm,
-        DivergenceFunctionContainer<ClusterType, DataType>
+    implements BatchClusterer<DataType, ClusterType>,
+    MeasurablePerformanceAlgorithm,
+    DivergenceFunctionContainer<ClusterType, DataType>
 {
-    /** The default number of requested clusters is {@value}. */
+
+    /**
+     * The default number of requested clusters is {@value}.
+     */
     public static final int DEFAULT_NUM_REQUESTED_CLUSTERS = 10;
-    
-    /** The default maximum number of iterations is {@value}. */
+
+    /**
+     * The default maximum number of iterations is {@value}.
+     */
     public static final int DEFAULT_MAX_ITERATIONS = 1000;
-    
-    /** The number of clusters requested. */
+
+    /**
+     * The number of clusters requested.
+     */
     protected int numRequestedClusters;
 
-    /** The initializer for the algorithm. */
+    /**
+     * The initializer for the algorithm.
+     */
     protected FixedClusterInitializer<ClusterType, DataType> initializer;
 
-    /** The divergence function between cluster being used. */
-    protected ClusterDivergenceFunction<? super ClusterType, ? super DataType>
-        divergenceFunction;
+    /**
+     * The divergence function between cluster being used.
+     */
+    protected ClusterDivergenceFunction<? super ClusterType, ? super DataType> divergenceFunction;
 
-    /** The cluster creator for creating clusters. */
-    protected ClusterCreator<ClusterType, DataType> creator;
+    /**
+     * The cluster creator for creating clusters.
+     */
+    private ClusterCreator<ClusterType, DataType> creator;
 
-    /** The current set of clusters. */
+    /**
+     * The current set of clusters.
+     */
     protected ArrayList<ClusterType> clusters;
 
-    /** The current assignments of elements to clusters. */
+    /**
+     * The current assignments of elements to clusters.
+     */
     protected int[] assignments;
 
-    /** The current number of elements assigned to each cluster. */
+    /**
+     * The current number of elements assigned to each cluster.
+     */
     protected int[] clusterCounts;
 
     /**
      * Returns the number of samples that changed assignment between iterations
      */
     private int numChanged;
-    
+
     /**
-     * Creates a new instance of {@code KMeansClusterer} with default 
+     * Creates a new instance of {@code KMeansClusterer} with default
      * parameters.
      */
     public KMeansClusterer()
@@ -160,30 +182,32 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
         this.setDivergenceFunction(divergenceFunction);
         this.setCreator(creator);
     }
-    
+
     @Override
     public KMeansClusterer<DataType, ClusterType> clone()
     {
         @SuppressWarnings("unchecked")
-        final KMeansClusterer<DataType, ClusterType> result =
-            (KMeansClusterer<DataType, ClusterType>) super.clone();
+        final KMeansClusterer<DataType, ClusterType> result
+            = (KMeansClusterer<DataType, ClusterType>) super.clone();
         result.initializer = ObjectUtil.cloneSmart(this.initializer);
-        result.divergenceFunction = ObjectUtil.cloneSmart(this.divergenceFunction);
+        result.divergenceFunction = ObjectUtil.cloneSmart(
+            this.divergenceFunction);
         result.creator = ObjectUtil.cloneSmart(this.creator);
-        
+
         result.clusters = null;
         result.assignments = null;
         result.clusterCounts = null;
-        
+
         return result;
-        
+
     }
 
+    @Override
     protected boolean initializeAlgorithm()
     {
         // Set the cluster state variables.
         this.setClusters(this.initializer.initializeClusters(
-            this.numRequestedClusters, this.data));
+            this.numRequestedClusters, this.getData()));
         this.setClusterCounts(new int[this.getNumClusters()]);
 
         this.setAssignments(new int[this.getNumElements()]);
@@ -198,18 +222,18 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
     }
 
     /**
-     * Do a step of the clustering algorithm. Return the number of
-     * elements the changed their cluster membership. If this is zero then
-     * the clustering is complete.
+     * Do a step of the clustering algorithm.
+     *
      * @return true means keep going, false means stop clustering.
      */
+    @Override
     protected boolean step()
     {
         // First, assign each data point to a cluster, given the current
         // location of the clusters
-        int[] newAssignements = this.assignDataToClusters( this.getData() );
+        int[] newAssignements = this.assignDataToClusters(this.getData());
         int nc = 0;
-        for( int i = 0; i < newAssignements.length; i++ )
+        for (int i = 0; i < newAssignements.length; i++)
         {
             final int newAssignment = newAssignements[i];
             if (this.setAssignment(i, newAssignment))
@@ -217,9 +241,9 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
                 nc++;
             }
         }
-        
-        this.setNumChanged( nc );
-        
+
+        this.setNumChanged(nc);
+
         // There was a change so create the clusters and keep going.
         if (this.getNumChanged() > 0)
         {
@@ -236,17 +260,19 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
 
     }
 
+    @Override
     protected void cleanupAlgorithm()
     {
     }
 
     /**
      * Creates the cluster assignments given the current locations of clusters
+     *
      * @param data Data to assign
      * @return Assignments of the data to each of the k-clusters
      */
     protected int[] assignDataToClusters(
-        Collection<? extends DataType> data )
+        Collection<? extends DataType> data)
     {
         // Loop through the elements and find the closest cluster for each.
         int i = 0;
@@ -265,43 +291,43 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
 
     @Override
     public void setData(
-        Collection<? extends DataType> data )
+        Collection<? extends DataType> data)
     {
-        super.setData( data );
+        super.setData(data);
     }
-    
+
     /**
      * Puts the data into a list of lists for each cluster to then estimate
-     * @return
-     * The list of lists for each cluster to then estimate
+     *
+     * @return The list of lists for each cluster to then estimate
      */
     protected ArrayList<ArrayList<DataType>> assignDataFromIndices()
     {
         // Loop through the clusters and initialize their membership lists
         // based on who is in them.
         int numClusters = this.getNumClusters();
-        ArrayList<ArrayList<DataType>> clustersMembers =
-            new ArrayList<ArrayList<DataType>>( numClusters );
+        ArrayList<ArrayList<DataType>> clustersMembers = new ArrayList<>(
+            numClusters);
         for (int i = 0; i < numClusters; i++)
         {
             int clusterSize = this.clusterCounts[i];
-            clustersMembers.add(new ArrayList<DataType>(clusterSize));
+            clustersMembers.add(new ArrayList<>(clusterSize));
         }
 
         // Go through and add each element to its proper cluster based on
         // the current assignments.
         int index = 0;
-        for (DataType element : this.data)
+        for (DataType element : this.getData())
         {
             int assignment = this.assignments[index];
             clustersMembers.get(assignment).add(element);
             index++;
         }
-        
+
         return clustersMembers;
-        
+
     }
-    
+
     /**
      * Creates the set of clusters using the current cluster assignments.
      */
@@ -309,8 +335,8 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
     {
         // Loop through the clusters and initialize their membership lists
         // based on who is in them.
-        final ArrayList<ArrayList<DataType>> clustersMembers = 
-            this.assignDataFromIndices();
+        final ArrayList<ArrayList<DataType>> clustersMembers
+            = this.assignDataFromIndices();
 
         // Create the clusters from their memberships.
         int clusterIndex = 0;
@@ -328,13 +354,13 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
             this.clusters.set(clusterIndex, cluster);
             clusterIndex++;
         }
-        
+
     }
 
     /**
      * Gets the index of the closest cluster for the given element.
      *
-     * @param  element The element to get the closet cluster for.
+     * @param element The element to get the closet cluster for.
      * @return The index of the closest cluster.
      */
     protected int getClosestClusterIndex(
@@ -353,8 +379,8 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
             if (cluster != null)
             {
                 // Compute the distance to the i-th cluster.
-                double distance =
-                    this.divergenceFunction.evaluate(cluster, element);
+                double distance = this.divergenceFunction.evaluate(cluster,
+                    element);
 
                 if (closestClusterIndex < 0 || distance < minDistance)
                 {
@@ -377,8 +403,7 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
      *
      * @param elementIndex The index of the element.
      * @param newClusterIndex The new cluster the element is assigned to.
-     * @return
-     *      True if the assignment changed. Otherwise, false.
+     * @return True if the assignment changed. Otherwise, false.
      */
     protected boolean setAssignment(
         int elementIndex,
@@ -454,6 +479,7 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
      *
      * @return The divergence function.
      */
+    @Override
     public ClusterDivergenceFunction<? super ClusterType, ? super DataType>
         getDivergenceFunction()
     {
@@ -523,13 +549,14 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
 
     /**
      * Returns the number of elements
+     *
      * @return number of elements being clustered
      */
     public int getNumElements()
     {
-        if( this.data != null )
+        if (this.getData() != null)
         {
-            return this.data.size();
+            return this.getData().size();
         }
         else
         {
@@ -558,6 +585,7 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
         return this.clusters;
     }
 
+    @Override
     public ArrayList<ClusterType> getResult()
     {
         return this.getClusters();
@@ -597,6 +625,7 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
 
     /**
      * Getter for clusterCounts
+     *
      * @return counts for how many elements are assigned to each cluster
      */
     protected int[] getClusterCounts()
@@ -606,8 +635,9 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
 
     /**
      * Getter for numChanged
-     * @return 
-     * Returns the number of samples that changed assignment between iterations
+     *
+     * @return Returns the number of samples that changed assignment between
+     * iterations
      */
     public int getNumChanged()
     {
@@ -616,23 +646,25 @@ public class KMeansClusterer<DataType, ClusterType extends Cluster<DataType>>
 
     /**
      * Setter for numChanged
-     * @param numChanged 
-     * Returns the number of samples that changed assignment between iterations
+     *
+     * @param numChanged Returns the number of samples that changed assignment
+     * between iterations
      */
     protected void setNumChanged(
         int numChanged)
     {
         this.numChanged = numChanged;
     }
-    
+
     /**
      * Gets the performance, which is the number changed on the last iteration.
-     * 
+     *
      * @return The performance of the algorithm.
      */
+    @Override
     public NamedValue<Integer> getPerformance()
     {
-        return new DefaultNamedValue<Integer>(
+        return new DefaultNamedValue<>(
             "Assignments changed", this.getNumChanged());
     }
 
