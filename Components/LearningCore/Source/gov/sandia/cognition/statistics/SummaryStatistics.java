@@ -1,6 +1,6 @@
 /*
  * File:                SummaryStatistics.java
- * Authors:             Jeremy D. Wendt
+ * Authors:             Jeremy D. Wendt and Justin Basilico
  * Company:             Sandia National Laboratories
  * Project:             Cognitive Foundry
  *
@@ -14,72 +14,54 @@
 package gov.sandia.cognition.statistics;
 
 /**
- * A straightforward class for computing summary statistics for a series of
- * numbers (mean, min, max, standard deviation, variance). This class stores
- * only the summary statistics, but is written such that it can compute them in
- * the best known numerically stable manner, computes variance in a single pass,
- * maintains values (so you can query then add new data), and will allow you to
- * merge results from other instances keeping correct values for all summary
- * statistics.
+ * An interface for a collection of basic summary statistics for a series of
+ * numbers (mean, min, max, standard deviation, variance, and count).
  *
- * @author jdwendt
+ * @author  jdwendt
+ * @author  Justin Basilico
+ * @since   3.4.4
  */
 public interface SummaryStatistics
 {
     /**
-     * Add the input value to the summary statistics
+     * Gets the mean of the values.
      *
-     * @param x the value to add to the summary statistics
+     * @return
+     *      The mean.
      */
-    public void addValue(double x);
+    public double getMean();
 
     /**
-     * Merges the summary statistics stored in the input into this
+     * Gets the unbiased variance of the values seen so far. It is the
+     * unbiased version of the second moment and the square of the
+     * standard deviation.
      *
-     * @param stats The other statistics to merge into this
+     * @return
+     *      The unbiased variance.
      */
-    public void merge(StreamingSummaryStatistics stats);
+    public double getVariance();
 
     /**
-     * Returns the minimum value seen thus far
+     * Gets the standard deviation.
      *
-     * @return the minimum value seen thus far
+     * @return
+     *      The standard deviation. Cannot be negative.
      */
-    public double min();
-
+    public double getStandardDeviation();
+    
     /**
-     * Returns the maximum value seen thus far
+     * Gets the minimum value.
      *
-     * @return the maximum value seen thus far
+     * @return
+     *      The minimum value.
      */
-    public double max();
-
+    public double getMin();
     /**
-     * Returns the arithmetic mean of all values seen thus far
+     * Gets the maximum value.
      *
-     * @return the arithmetic mean of all values seen thus far
+     * @return
+     *      The maximum value.
      */
-    public double mean();
-
-    /**
-     * Returns the number of entries seen thus far
-     *
-     * @return the number of entries seen thus far
-     */
-    public double numEntries();
-
-    /**
-     * Returns the variance of the values seen thus far
-     *
-     * @return the variance of the values seen thus far
-     */
-    public double variance();
-
-    /**
-     * Returns the standard deviation of the values seen thus far
-     *
-     * @return the standard deviation of the values seen thus far
-     */
-    public double standardDeviation();
+    public double getMax();
 
 }
