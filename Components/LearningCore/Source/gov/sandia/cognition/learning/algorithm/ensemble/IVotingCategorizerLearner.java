@@ -282,7 +282,6 @@ public class IVotingCategorizerLearner<InputType, CategoryType>
         for (int i = 0; i < dataSize; i++)
         {
             this.dataFullEstimates.add(new DefaultDataDistribution<CategoryType>(2));
-            this.dataOutOfBagEstimates.add(new DefaultDataDistribution<CategoryType>(2));
             this.dataOutOfBagEstimates.add(this.counterFactory.create());
             this.currentIncorrectIndices.add(i);
         }
