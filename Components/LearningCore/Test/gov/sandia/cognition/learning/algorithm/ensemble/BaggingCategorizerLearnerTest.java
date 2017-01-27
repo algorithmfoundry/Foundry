@@ -123,5 +123,53 @@ public class BaggingCategorizerLearnerTest
             assertTrue(member.getValue() instanceof LinearBinaryCategorizer);
         }
     }
+    
+    
+    /**
+     * Test of learn method, of class BaggingCategorizerLearner
+     * using the out-of-bag stopping criteria.
+     */
+    public void testLearnWithOOB()
+    {
+        BaggingCategorizerLearner<Vector, Boolean> instance =
+            new BaggingCategorizerLearner<Vector, Boolean>();
+        instance.setLearner(new Perceptron());
+        instance.setRandom(random);
+        instance.setMaxIterations(5);
+        instance.setPercentToSample(0.5);
+        instance.addIterativeAlgorithmListener(
+            new BaggingCategorizerLearner.OutOfBagErrorStoppingCriteria<>(2));
+
+        assertNull(instance.getResult());
+
+        ArrayList<InputOutputPair<Vector, Boolean>> data =
+            new ArrayList<InputOutputPair<Vector, Boolean>>();
+        VectorFactory<?> vectorFactory = VectorFactory.getDefault();
+        
+        for (int i = 0; i < 10; i++)
+        {
+            data.add(new DefaultInputOutputPair<Vector, Boolean>(
+                vectorFactory.createUniformRandom(
+                    14, 0.0, 1.0, random), true));
+        }
+        for (int i = 0; i < 5; i++)
+        {
+            data.add(new DefaultInputOutputPair<Vector, Boolean>(
+                vectorFactory.createUniformRandom(
+                    14, -1.0, 0.0, random), false));
+        }
+
+        WeightedVotingCategorizerEnsemble<Vector, Boolean, ?> result =
+            instance.learn(data);
+        assertSame(result, instance.getResult());
+
+        assertEquals(4, result.getMembers().size());
+        for (WeightedValue<?> member : result.getMembers())
+        {
+            assertEquals(1.0, member.getWeight(), 0.0);
+            assertNotNull(member.getValue());
+            assertTrue(member.getValue() instanceof LinearBinaryCategorizer);
+        }
+    }
 
 }
