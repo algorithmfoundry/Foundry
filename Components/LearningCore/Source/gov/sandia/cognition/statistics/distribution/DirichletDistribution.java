@@ -114,6 +114,33 @@ public class DirichletDistribution
     }
 
     @Override
+    public Vector sample(
+        final Random random)
+    {
+        // We create one Gamma and update it to reuse across the function.
+        final GammaDistribution.CDF gammaRV = new GammaDistribution.CDF(1.0, 1.0);
+        
+        // Create the result vector.
+        final int K = this.getParameters().getDimensionality();
+        final Vector y = VectorFactory.getDenseDefault().createVector(K);
+        double sum = 0.0;
+        for (int i = 0; i < K; i++)
+        {
+            gammaRV.setShape(this.parameters.get(i));
+            final double yi = gammaRV.sampleAsDouble(random);
+            y.set(i, yi);
+            sum += yi;
+        }
+        
+        if (sum != 0.0)
+        {
+            y.scaleEquals(1.0 / sum);
+        }
+        
+        return y;
+    }
+    
+    @Override
     public void sampleInto(
         final Random random,
         final int numSamples,
@@ -132,13 +159,13 @@ public class DirichletDistribution
 
         for (int n = 0; n < numSamples; n++)
         {
-            Vector y = VectorFactory.getDefault().createVector(K);
+            Vector y = VectorFactory.getDenseDefault().createVector(K);
             double sum = 0.0;
             for (int i = 0; i < K; i++)
             {
                 double yin = gammaData[i][n];
-                sum += yin;
                 y.set(i, yin);
+                sum += yin;
             }
             if (sum != 0.0)
             {
