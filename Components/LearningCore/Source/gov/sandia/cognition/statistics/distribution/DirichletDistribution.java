@@ -110,24 +110,21 @@ public class DirichletDistribution
     @Override
     public Vector getMean()
     {
-        return this.parameters.scale( 1.0/this.parameters.norm1() );
+        return this.parameters.scale(1.0 / this.parameters.norm1());
     }
 
     @Override
     public Vector sample(
         final Random random)
     {
-        // We create one Gamma and update it to reuse across the function.
-        final GammaDistribution.CDF gammaRV = new GammaDistribution.CDF(1.0, 1.0);
-        
         // Create the result vector.
         final int K = this.getParameters().getDimensionality();
         final Vector y = VectorFactory.getDenseDefault().createVector(K);
         double sum = 0.0;
         for (int i = 0; i < K; i++)
         {
-            gammaRV.setShape(this.parameters.get(i));
-            final double yi = gammaRV.sampleAsDouble(random);
+            final double yi = GammaDistribution.sampleStandard(
+                this.parameters.get(i), random);
             y.set(i, yi);
             sum += yi;
         }

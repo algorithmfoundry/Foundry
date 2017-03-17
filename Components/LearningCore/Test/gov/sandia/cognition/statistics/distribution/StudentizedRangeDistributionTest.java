@@ -32,6 +32,8 @@ public class StudentizedRangeDistributionTest
     public StudentizedRangeDistributionTest()
     {
         super( "StudentizedRangeDistributionTest" );
+        
+        this.NUM_SAMPLES = 1000;
     }
 
     /**
@@ -233,7 +235,7 @@ public class StudentizedRangeDistributionTest
     @Override
     public void testDistributionGetMeanAsDouble()
     {
-        TOLERANCE = 1e-2;
+        TOLERANCE = 1e-1;
         super.testDistributionGetMeanAsDouble();
     }
 

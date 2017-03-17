@@ -14,8 +14,11 @@
 
 package gov.sandia.cognition.statistics.distribution;
 
+import gov.sandia.cognition.math.UnivariateStatisticsUtil;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.statistics.SmoothUnivariateDistributionTestHarness;
+import java.util.Collection;
+import java.util.Random;
 
 /**
  * Unit testsf or class {@link GammaDistribution}.
@@ -34,6 +37,7 @@ public class GammaDistributionTest
         String testName )
     {
         super( testName );
+        this.RANDOM = new Random(122333);
     }
 
     @Override
@@ -317,6 +321,36 @@ public class GammaDistributionTest
         GammaDistribution.WeightedMomentMatchingEstimator learner =
             new GammaDistribution.WeightedMomentMatchingEstimator();
         this.weightedDistributionEstimatorTest(learner);
+    }
+    
+    public void testKnownDistributions()
+    {
+        GammaDistribution[] instances = 
+        { 
+            new GammaDistribution(1.0, 1.0), 
+            new GammaDistribution(10, 2.0),
+            new GammaDistribution(5.65, 3.05),
+            new GammaDistribution(20.0, 1000.0),
+            new GammaDistribution(200.0, 10000.0),
+            new GammaDistribution(2000.0, 100000.0),
+            
+            new GammaDistribution(20.0, 1.0),
+            new GammaDistribution(200.0, 1.0),
+            new GammaDistribution(2000.0, 1.0),
+        };
+        
+        for (GammaDistribution instance : instances)
+        {
+            Collection<Double> samples = instance.sample(RANDOM, 1000000);
+            
+            System.out.println("Gamma: " + instance);
+            System.out.println("  Mean Expected: " + instance.getMean());
+            System.out.println("  Mean Measured: " + UnivariateStatisticsUtil.computeMean(samples));
+            System.out.println("  Variance Expected: " + instance.getVariance());
+            System.out.println("  Variance Measured: " + UnivariateStatisticsUtil.computeVariance(samples));
+            
+            assertEquals(instance.getMean(), UnivariateStatisticsUtil.computeMean(samples), 1e-1 * instance.getScale());
+        }
     }
 
 }
