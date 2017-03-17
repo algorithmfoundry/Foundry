@@ -404,7 +404,8 @@ public class GammaDistribution
     {
         ArgumentChecker.assertIsPositive("shape", shape);
         
-        // This is based on the gamma distribution algorithm used in numpy.
+        // This is based on the gamma distribution algorithm used in numpy:
+        // https://github.com/numpy/numpy/blob/master/numpy/random/mtrand/distributions.c
         if (shape == 1.0)
         {
             // Sample standard exponential:
