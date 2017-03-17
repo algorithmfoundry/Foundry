@@ -299,13 +299,7 @@ public class GammaDistribution
         final double scale,
         final Random random)
     {
-        ArgumentChecker.assertIsPositive("shape", shape);
-        ArgumentChecker.assertIsPositive("scale", scale);
-        
-        final int k = (int) Math.floor(shape);
-        final double delta = shape - k;
-        final double v0 = (delta > 0.0) ? Math.E / (Math.E + delta) : 0.0;
-        return sample(random, shape, scale, k, delta, v0);
+        return sample(shape, scale, random);
     }
     
     /**
@@ -360,86 +354,121 @@ public class GammaDistribution
         final int start,
         final int length)
     {
-        ArgumentChecker.assertIsPositive("shape", shape);
-        ArgumentChecker.assertIsPositive("scale", scale);
-
-        // Note: This code is duplicated in sampleAsDouble to avoid overhead
-        // of creating objects.
-        final int k = (int) Math.floor(shape);
-        final double delta = shape - k;
-        final double v0 = (delta > 0.0) ? Math.E / (Math.E + delta) : 0.0;
         final int end = start + length;
         for (int i = start; i < end; i++)
         {
-            output[i] = sample(random, shape, scale, k, delta, v0);
+            output[i] = sample(shape, scale, random);
         }
     }
     
-    // Internal sampling function implementation.
-    private static double sample(
-        final Random random,
+    /**
+     * Provides a single sample from a Gamma distribution with the given shape
+     * and scale.
+     * 
+     * @param shape
+     *      Shape parameter of the Gamma distribution, often written as "k",
+     *      must be greater than zero.
+     * @param scale
+     *      Scale parameters of the Gamma distribution, often written as "theta",
+     *      must be greater than zero.
+     * @param random
+     *      Random number generator to use.
+     * @return 
+     *      A value sampled from a Gamma distribution.
+     */
+    public static double sample(
         final double shape,
         final double scale,
-        final int k,
-        final double delta,
-        final double v0)
+        final Random random)
     {
-        double logSum = 0.0;
-        for( int i = 0; i < k; i++ )
+        // Shape is checked in the next function.
+        ArgumentChecker.assertIsPositive("scale", scale);
+        return scale * sampleStandard(shape, random);
+    }
+    
+    /**
+     * Provides a single sample from a Gamma distribution with the given shape
+     * and a scale of 1.
+     * 
+     * @param shape
+     *      Shape parameter of the Gamma distribution, often written as "k",
+     *      must be greater than zero.
+     * @param random
+     *      Random number generator to use.
+     * @return 
+     *      A value sampled from a Gamma distribution.
+     */
+    public static double sampleStandard(
+        final double shape,
+        final Random random)
+    {
+        ArgumentChecker.assertIsPositive("shape", shape);
+        
+        // This is based on the gamma distribution algorithm used in numpy:
+        // https://github.com/numpy/numpy/blob/master/numpy/random/mtrand/distributions.c
+        if (shape == 1.0)
         {
-            double u = random.nextDouble();
-            logSum += Math.log( u );
+            // Sample standard exponential:
+            return -Math.log(random.nextDouble());
         }
-
-        double xi = 0.0;
-        if( delta > 0.0 )
+        else if (shape < 1.0)
         {
-            double nu = 0.0;
-            double xidm1;
-            double emxi;
-            final int MAX_ITERATIONS = 100;
-            int m = 0;
-            for( m = 0; m < MAX_ITERATIONS; m++ )
+            while (true)
             {
-                double vm2 = random.nextDouble();
-                double vm1 = random.nextDouble();
-                double vm0 = random.nextDouble();
-                if( vm2 < v0 )
+                final double u = random.nextDouble();
+                final double v = -Math.log(random.nextDouble());
+                if (u <= 1.0 - shape)
                 {
-                    xi = Math.pow( vm1, 1.0/delta );
-                    xidm1 = Math.pow(xi,delta-1.0);
-                    emxi = Math.exp(-xi);
-                    nu = vm0 * xidm1;
+                    final double x = Math.pow(u, 1.0 / shape);
+                    if (x <= v)
+                    {
+                        return x;
+                    }
                 }
                 else
                 {
-                    xi = 1.0 - Math.log(vm1);
-                    xidm1 = Math.pow(xi,delta-1.0);
-                    emxi = Math.exp(-xi);
-                    nu = vm0 * emxi;
-                }
-
-                if( nu <= xidm1*emxi )
-                {
-                    break;
+                    final double y = -Math.log((1.0 - u) / shape);
+                    final double x = Math.pow(1.0 - shape + shape * y, 1.0 / shape);
+                    if (x <= (v + y))
+                    {
+                        return x;
+                    }
                 }
             }
-
-            if( m >= MAX_ITERATIONS )
-            {
-                throw new IllegalArgumentException(
-                    "Exceeded max iterations in GammaDistribution.sample" );
-            }
-
         }
-        return scale * (xi - logSum);
+        else
+        {
+            // Marsaglia's method.
+            final double b = shape - 1.0 / 3.0;
+            final double c = 1.0 / Math.sqrt(9.0 * b);
+            while (true)
+            {
+                double x = 0.0;
+                double v = 0.0;
+                do
+                {
+                    x = random.nextGaussian();
+                    v = 1.0 + c * x;
+                }
+                while (v <= 0.0);
+
+                v = v * v * v;
+                final double xx = x * x;
+                final double u = random.nextDouble();
+                if (u < (1.0 - 0.0331 * xx * xx)
+                    || Math.log(u) < ((0.5 * xx) + (b * (1.0 - v + Math.log(v)))))
+                {
+                    return b * v;
+                }
+            }
+        }
     }
 
     @Override
     public double sampleAsDouble(
         final Random random)
     {
-        return sampleAsDouble(this.getShape(), this.getScale(), random);
+        return sample(this.getShape(), this.getScale(), random);
     }
     
     @Override

@@ -110,9 +110,33 @@ public class DirichletDistribution
     @Override
     public Vector getMean()
     {
-        return this.parameters.scale( 1.0/this.parameters.norm1() );
+        return this.parameters.scale(1.0 / this.parameters.norm1());
     }
 
+    @Override
+    public Vector sample(
+        final Random random)
+    {
+        // Create the result vector.
+        final int K = this.getParameters().getDimensionality();
+        final Vector y = VectorFactory.getDenseDefault().createVector(K);
+        double sum = 0.0;
+        for (int i = 0; i < K; i++)
+        {
+            final double yi = GammaDistribution.sampleStandard(
+                this.parameters.get(i), random);
+            y.set(i, yi);
+            sum += yi;
+        }
+        
+        if (sum != 0.0)
+        {
+            y.scaleEquals(1.0 / sum);
+        }
+        
+        return y;
+    }
+    
     @Override
     public void sampleInto(
         final Random random,
@@ -122,30 +146,29 @@ public class DirichletDistribution
         GammaDistribution.CDF gammaRV = new GammaDistribution.CDF(1.0, 1.0);
 
         int K = this.getParameters().getDimensionality();
-        ArrayList<ArrayList<Double>> gammaData =
-            new ArrayList<ArrayList<Double>>(K);
-        for( int i = 0; i < K; i++ )
+        double[][] gammaData = new double[K][];
+        for (int i = 0; i < K; i++)
         {
-            double ai = this.parameters.getElement(i);
+            double ai = this.parameters.get(i);
             gammaRV.setShape(ai);
-            gammaData.add( gammaRV.sample(random, numSamples) );
+            gammaData[i] = gammaRV.sampleAsDoubles(random, numSamples);
         }
 
-        for( int n = 0; n < numSamples; n++ )
+        for (int n = 0; n < numSamples; n++)
         {
-            Vector y = VectorFactory.getDefault().createVector(K);
-            double ysum = 0.0;
-            for( int i = 0; i < K; i++ )
+            Vector y = VectorFactory.getDenseDefault().createVector(K);
+            double sum = 0.0;
+            for (int i = 0; i < K; i++)
             {
-                double yin = gammaData.get(i).get(n);
-                ysum += yin;
-                y.setElement(i, yin );
+                double yin = gammaData[i][n];
+                y.set(i, yin);
+                sum += yin;
             }
-            if( ysum != 0.0 )
+            if (sum != 0.0)
             {
-                y.scaleEquals(1.0/ysum);
+                y.scaleEquals(1.0 / sum);
             }
-            output.add( y );
+            output.add(y);
         }
     }
 

@@ -131,10 +131,8 @@ public class BetaDistribution
     public double sampleAsDouble(
         final Random random)
     {
-        final double x = GammaDistribution.sampleAsDouble(
-            this.alpha, 1.0, random);
-        final double y = GammaDistribution.sampleAsDouble(
-            this.beta, 1.0, random);
+        final double x = GammaDistribution.sampleStandard(this.alpha, random);
+        final double y = GammaDistribution.sampleStandard(this.beta, random);
         return x / (x + y);
     }
     
@@ -145,16 +143,10 @@ public class BetaDistribution
         final int start,
         final int length)
     {
-        final double[] Xs = GammaDistribution.sampleAsDoubles(
-            this.alpha, 1.0, random, length);
-        final double[] Ys = GammaDistribution.sampleAsDoubles(
-            this.beta, 1.0, random, length);
         final int end = start + length;
         for (int i = start; i < end; i++)
         {
-            final double x = Xs[i - start];
-            final double y = Ys[i - start];
-            output[i] = x / (x + y);
+            output[i] = this.sampleAsDouble(random);
         }
     }    
     
