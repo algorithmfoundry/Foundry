@@ -14,12 +14,18 @@
 
 package gov.sandia.cognition.learning.algorithm.ensemble;
 
+import gov.sandia.cognition.algorithm.IterativeAlgorithm;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.collection.CollectionUtil;
 import gov.sandia.cognition.evaluator.Evaluator;
 import gov.sandia.cognition.learning.algorithm.BatchLearner;
 import gov.sandia.cognition.learning.data.DatasetUtil;
 import gov.sandia.cognition.learning.data.InputOutputPair;
+import gov.sandia.cognition.statistics.DataDistribution;
+import gov.sandia.cognition.statistics.distribution.DefaultDataDistribution;
+import gov.sandia.cognition.util.WeightedValue;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 import java.util.Set;
@@ -58,6 +64,7 @@ import java.util.Set;
     url="http://www.springerlink.com/index/L4780124W2874025.pdf")
 public class BaggingCategorizerLearner<InputType, CategoryType>
     extends AbstractBaggingLearner<InputType, CategoryType, Evaluator<? super InputType, ? extends CategoryType>, WeightedVotingCategorizerEnsemble<InputType, CategoryType, Evaluator<? super InputType, ? extends CategoryType>>>
+    implements BagBasedCategorizerEnsembleLearner<InputType, CategoryType>
 {
     /**
      * Creates a new instance of BaggingCategorizerLearner.
@@ -119,5 +126,134 @@ public class BaggingCategorizerLearner<InputType, CategoryType>
         this.ensemble.add(member, 1.0);
     }
 
+    @Override
+    public int[] getDataInBag()
+    {
+        return this.dataInBag;
+    }
+
+    @Override
+    public InputOutputPair<? extends InputType, CategoryType> getExample(
+        final int index)
+    {
+        return this.dataList.get(index);
+    }
+    
+    /**
+     * Implements a stopping criteria for bagging that uses the out-of-bag
+     * error to determine when to stop learning the ensemble. It tracks the
+     * out-of-bag error rate of the ensemble and keeps it in a given smoothing
+     * window. Once the smoothed error rate stops decreasing, it stops learning
+     * and removes all of the ensemble members back to the one that had the
+     * minimal error in that window.
+     *
+     * @param <InputType>
+     *      The input type the algorithm is learning over.
+     * @param <CategoryType>
+     *      The category type the algorithm is learning over.
+     */
+    public static class OutOfBagErrorStoppingCriteria<InputType, CategoryType>
+        extends AbstractCategorizerOutOfBagStoppingCriteria<InputType, CategoryType>
+    {
+
+        /** The running estimate of the ensemble for each example where an ensemble
+         *  member can only vote on elements that were not in the bag used to train
+         *  it. Same size as the training data. */
+        protected transient ArrayList<DataDistribution<CategoryType>> outOfBagEstimates;
+
+        /**
+         * Creates a new {@code OutOfBagErrorStoppingCriteria}.
+         */
+        public OutOfBagErrorStoppingCriteria()
+        {
+            this(DEFAULT_SMOOTHING_WINDOW_SIZE);
+        }
+
+        /**
+         * Creates a new {@code OutOfBagErrorStoppingCriteria} with the given
+         * smoothing window size.
+         *
+         * @param   smoothingWindowSize
+         *      The smoothing window size to use. Must be positive.
+         */
+        public OutOfBagErrorStoppingCriteria(
+            final int smoothingWindowSize)
+        {
+            super(smoothingWindowSize);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void algorithmStarted(
+            final IterativeAlgorithm algorithm)
+        {
+            super.algorithmStarted(algorithm);
+            
+            final int dataSize = this.learner.getData().size();
+            this.outOfBagEstimates = new ArrayList<>(dataSize);
+            for (int i = 0; i < dataSize; i++)
+            {
+                this.outOfBagEstimates.add(new DefaultDataDistribution<>(2));
+            }
+        }
+
+        @Override
+        public void algorithmEnded(
+            final IterativeAlgorithm algorithm)
+        {
+            super.algorithmEnded(algorithm);
+            
+            this.outOfBagEstimates = null;
+        }
+
+        @Override
+        public DataDistribution<CategoryType> getOutOfBagEstimate(
+            final int index)
+        {
+            return this.outOfBagEstimates.get(index);
+        }
+
+        /**
+         * Updates the out-of-bag estimates that this ensemble keeps.
+         */
+        protected void updateOutOfBagEstimates()
+        {
+            final WeightedValue<? extends Evaluator<? super InputType, ? extends CategoryType>> weightedMember = 
+                CollectionUtil.getLast(this.learner.getResult().getMembers());
+            
+            final double weight = weightedMember.getWeight();
+            final Evaluator<? super InputType, ? extends CategoryType> member = 
+                weightedMember.getValue();
+            
+            final int[] dataInBag = this.learner.getDataInBag();
+
+            // Go through the data and update the values for the data that was
+            // not in the bag.
+            final int dataSize = dataInBag.length;
+             for (int i = 0; i < dataSize; i++)
+            {
+                if (dataInBag[i] <= 0)
+                {
+                    final InputOutputPair<? extends InputType, CategoryType> example =
+                        this.learner.getExample(i);
+                    final CategoryType memberGuess = member.evaluate(
+                        example.getInput());
+                    this.outOfBagEstimates.get(i).increment(
+                        memberGuess, weight);
+                }
+            }
+        }
+        
+        @Override
+        public void stepEnded(
+            final IterativeAlgorithm algorithm)
+        {
+            // First update all the estimates since they're used by the super
+            // class.
+            this.updateOutOfBagEstimates();
+            super.stepEnded(algorithm);
+        }
+
+    }
 }
 
