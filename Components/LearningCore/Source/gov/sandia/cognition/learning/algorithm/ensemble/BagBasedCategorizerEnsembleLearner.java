@@ -47,6 +47,8 @@ public interface BagBasedCategorizerEnsembleLearner<InputType, CategoryType>
      * 
      * @return
      *      The counter per example of how many times it is in the current bag.
+     *      Note that this may be an internal state array for the algorithm so
+     *      it shouldn't be modified. It is provided for efficient access.
      */
     public int[] getDataInBag();
     
