@@ -272,8 +272,14 @@ public class TransferEntropy{
      * A helper class that define the objects used by the distributions in transfer entropy.
      */
     public static class TransferEntropyDistributionObject{
+        
+        /** The prior for the destination vector. */
         public final List<? extends Object> destinationVectorPrior;
+        
+        /** The prior for the source vector. */
         public final List<? extends Object> sourceVectorPrior;
+        
+        /** The posterior. */
         public final Object posterior;
         
         /**
@@ -372,8 +378,14 @@ public class TransferEntropy{
      * Helper class for holding information about the partial sums.
      */
     public static class TransferEntropyPartialSumObject {
+        
+        /** The state. */
         public final TransferEntropy.TransferEntropyDistributionObject state;
+        
+        /** The partial sum. */
         public final double partialSum;
+        
+        /** The number of appearances. */
         public final double numberOfAppearances;
         
         /**
@@ -393,6 +405,14 @@ public class TransferEntropy{
             return state.toString() + "\nPartial Sum: " + partialSum + "\nNumber of Appearances: " + numberOfAppearances;
         }
         
+        /**
+         * Checks if this partial sum is equal to the other one.
+         * 
+         * @param other
+         *      The other sum.
+         * @return 
+         *      True if they're equal.
+         */
         public boolean equals(TransferEntropyPartialSumObject other) {
             return (state.equals(other.state)) && (Math.abs(partialSum - other.partialSum) < 0.00001)
                 && (Math.abs(numberOfAppearances - other.numberOfAppearances) < 0.5);

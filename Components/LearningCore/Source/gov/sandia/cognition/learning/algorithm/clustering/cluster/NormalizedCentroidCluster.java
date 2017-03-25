@@ -20,6 +20,7 @@ import java.util.Collection;
  * a centroid cluster.
  *
  * @author nsingh
+ * @param <ClusterType> The type of cluster.
  */
 public class NormalizedCentroidCluster<ClusterType>
     extends CentroidCluster<ClusterType>

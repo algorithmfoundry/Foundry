@@ -208,14 +208,15 @@ public final class IntArrayList
         return true;
     }
 
-    @PublicationReference(type = PublicationType.WebPage, title
-        = "Fisher-Yates Suffle: The modern algorithm", year = 2016, url
-        = "https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm",
-        author = "Wikipedia")
+    
     /**
      * Takes the elements of this and alters their order to a random order
      * (using a variant of Fisher-Yates shuffle called Durstenfeld shuffle).
      */
+    @PublicationReference(type = PublicationType.WebPage, 
+        title = "Fisher-Yates Suffle: The modern algorithm", year = 2016, 
+        url = "https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm",
+        author = "Wikipedia")
     public void randomizeOrder()
     {
         randomizeOrder(ThreadLocalRandom.current());

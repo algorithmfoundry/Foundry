@@ -1,3 +1,15 @@
+/*
+ * File:                MatrixVectorMultiplierWithPreconditioner.java
+ * Authors:             Jeremy D. Wendt
+ * Company:             Sandia National Laboratories
+ * Project:             Cognitive Foundry
+ * 
+ * Copyright 2016, Sandia Corporation.
+ * Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+ * license for use of this work by or on behalf of the U.S. Government. 
+ * Export of this program may require a license from the United States
+ * Government. See CopyrightHistory.txt for complete details.
+ */
 
 package gov.sandia.cognition.learning.algorithm.minimization.matrix;
 
@@ -11,6 +23,7 @@ import gov.sandia.cognition.math.matrix.Vector;
  * interface that must be followed by them.
  * 
  * @author Jeremy D. Wendt
+ * @since 4.0.0
  */
 @PublicationReference(author = "Jonathan Richard Shewchuk",
     title = "An Introduction to the Conjugate Gradient Method Without the Agonizing Pain",

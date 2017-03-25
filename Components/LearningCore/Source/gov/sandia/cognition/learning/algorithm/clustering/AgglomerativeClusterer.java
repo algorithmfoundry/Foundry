@@ -644,6 +644,12 @@ public class AgglomerativeClusterer
         return this.getMaxDistance();
     }
     
+    /**
+     * Sets the maximum distance.
+     * 
+     * @param maxMinDistance The maximum distance.
+     * @deprecated Use setMaxDistance
+     */
     @Deprecated
     public void setMaxMinDistance(
         final double maxMinDistance)

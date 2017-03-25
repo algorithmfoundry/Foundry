@@ -402,6 +402,12 @@ public class MiniBatchKMeansClusterer<DataType extends Vector>
                 random);
         }
 
+        /**
+         * Builds the clusterer.
+         * 
+         * @return 
+         *      The newly built clusterer.
+         */
         public MiniBatchKMeansClusterer<DataType> build()
         {
             MiniBatchKMeansClusterer<DataType> clusterer

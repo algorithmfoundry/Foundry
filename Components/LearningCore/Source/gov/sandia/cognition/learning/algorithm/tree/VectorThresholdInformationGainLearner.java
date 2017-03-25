@@ -49,8 +49,13 @@ public class VectorThresholdInformationGainLearner<OutputType>
     extends AbstractVectorThresholdMaximumGainLearner<OutputType>
     implements PriorWeightedNodeLearner<OutputType>
 {
+    /** The categories for the prior. */
     protected ArrayList<OutputType> categories = null;
+    
+    /** The priors for each category. */
     protected double[] categoryPriors = null;
+    
+    /** The counts for each category. */
     protected int[] categoryCounts = null;
 
     /** Following is scratch space used when computing weighted

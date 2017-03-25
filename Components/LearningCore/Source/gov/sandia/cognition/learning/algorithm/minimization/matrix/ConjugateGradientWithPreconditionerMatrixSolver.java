@@ -1,3 +1,15 @@
+/*
+ * File:                ConjugateGradientWithPreconditionerMatrixSolver.java
+ * Authors:             Jeremy D. Wendt
+ * Company:             Sandia National Laboratories
+ * Project:             Cognitive Foundry
+ * 
+ * Copyright 2016, Sandia Corporation.
+ * Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+ * license for use of this work by or on behalf of the U.S. Government. 
+ * Export of this program may require a license from the United States
+ * Government. See CopyrightHistory.txt for complete details.
+ */
 
 package gov.sandia.cognition.learning.algorithm.minimization.matrix;
 
@@ -9,9 +21,10 @@ import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.util.CloneableSerializable;
 
 /**
- * 
+ * Implements a matrix solver using Conjugate Gradient with a preconditioner.
  * 
  * @author Jeremy D. Wendt
+ * @since  4.0.0
  */
 @PublicationReference(author = "Jonathan Richard Shewchuk",
     title = "An Introduction to the Conjugate Gradient Method Without the Agonizing Pain",
@@ -134,10 +147,6 @@ public class ConjugateGradientWithPreconditionerMatrixSolver
         this.delta = copy.delta;
     }
 
-    /**
-     * @see
-     * IterativeMatrixSolver#initializeSolver(gov.sandia.cognition.learning.algorithm.minimization.matrix.MatrixVectorMultiplier)
-     */
     @Override
     final protected void initializeSolver(
         MatrixVectorMultiplierWithPreconditioner function)
@@ -149,9 +158,6 @@ public class ConjugateGradientWithPreconditionerMatrixSolver
         delta = residual.dotProduct(d);
     }
 
-    /**
-     * @see IterativeMatrixSolver#iterate()
-     */
     @Override
     final protected double iterate()
     {
@@ -175,9 +181,6 @@ public class ConjugateGradientWithPreconditionerMatrixSolver
         return delta;
     }
 
-    /**
-     * @see IterativeMatrixSolver#completeSolver()
-     */
     @Override
     final protected InputOutputPair<Vector, Vector> completeSolver()
     {
@@ -191,18 +194,12 @@ public class ConjugateGradientWithPreconditionerMatrixSolver
         return result;
     }
 
-    /**
-     * @see IterativeMatrixSolver#clone()
-     */
     @Override
     final public CloneableSerializable clone()
     {
         return new ConjugateGradientWithPreconditionerMatrixSolver(this);
     }
 
-    /**
-     * @see Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object o)
     {
@@ -251,10 +248,7 @@ public class ConjugateGradientWithPreconditionerMatrixSolver
 
         return super.equals(o);
     }
-
-    /**
-     * @see Object#hashCode()
-     */
+    
     @Override
     public int hashCode()
     {

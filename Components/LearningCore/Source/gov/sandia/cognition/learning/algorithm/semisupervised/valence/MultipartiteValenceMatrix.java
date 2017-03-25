@@ -415,6 +415,7 @@ public class MultipartiteValenceMatrix
      *
      * @param input The vector to multiply by the implicit represetation of the
      * matrix
+     * @return The result of the function.
      */
     @Override
     public Vector evaluate(Vector input)

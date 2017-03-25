@@ -29,8 +29,15 @@ public class WithinClusterDivergenceWrapper<ClusterType extends Cluster<DataType
     implements WithinClusterDivergence<ClusterType, DataType>
 {
 
+    /** The divergence function. */
     protected DivergenceFunction<? super ClusterType, ? super DataType> divergenceFunction;
 
+    /**
+     * Creates a new {@link WithinClusterDivergenceWrapper}.
+     * 
+     * @param divergenceFunction 
+     *      The divergence function to use.
+     */
     public WithinClusterDivergenceWrapper(
         DivergenceFunction<? super ClusterType, ? super DataType> divergenceFunction)
     {

@@ -536,9 +536,8 @@ public class KDTree<VectorType extends Vectorizable, DataType, PairType extends 
      *
      * @param key Vector to find the nearest neighbors of.
      * @param radius Radius of desired neighborhood.
-     * @param metric Metric to use to evaluate the nearness of other points.
      * @param neighborhood PriorityQueue to store the neighbors.
-     * @return Collection of points within a given distance to the "key" query.
+     * @param metric Metric to use to evaluate the nearness of other points.
      */
     protected void findNearestWithinRadius(
         VectorType key,

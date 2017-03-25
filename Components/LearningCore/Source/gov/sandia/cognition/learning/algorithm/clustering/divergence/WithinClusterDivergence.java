@@ -30,6 +30,15 @@ public interface WithinClusterDivergence<ClusterType extends Cluster<DataType>, 
     extends Cloneable, CloneableSerializable, Serializable
 {
 
-    public double evaluate(ClusterType cluster);
+    /**
+     * Evaluates the divergence within a cluster.
+     * 
+     * @param   cluster
+     *      Cluster to evaluate the divergence for.
+     * @return 
+     *      The divergence for the cluster.
+     */
+    public double evaluate(
+        ClusterType cluster);
 
 }

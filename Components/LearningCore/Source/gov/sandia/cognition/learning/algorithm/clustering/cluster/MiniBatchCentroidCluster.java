@@ -49,11 +49,23 @@ public class MiniBatchCentroidCluster
         this.updateCluster(initialPoints);
     }
 
+    /**
+     * Updates the cluster for the given point.
+     * 
+     * @param dataPoint 
+     *      The example to update for.
+     */
     public void updateCluster(Vector dataPoint)
     {
         updateCluster(Collections.singletonList(dataPoint));
     }
 
+    /**
+     * Updates the clusters for all the given points.
+     * 
+     * @param dataPoints 
+     *      The examples to update.
+     */
     public void updateCluster(Collection<? extends Vector> dataPoints)
     {
         int initNumUpdates = numUpdates;

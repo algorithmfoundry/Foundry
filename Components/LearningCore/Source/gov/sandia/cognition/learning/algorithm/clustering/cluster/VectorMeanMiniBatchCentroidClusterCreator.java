@@ -32,8 +32,7 @@ import java.util.Collection;
     title = "Parallel Mini-Batch k-means Clustering",
     type = PublicationType.Conference,
     year = 2016,
-    publication
-    = "to appear",
+    publication = "to appear",
     url = "to appear"
 )
 public class VectorMeanMiniBatchCentroidClusterCreator
@@ -43,9 +42,13 @@ public class VectorMeanMiniBatchCentroidClusterCreator
 
     private static final long serialVersionUID = 1512395430699067693L;
 
+    /** An instance of this class. */
     public static final VectorMeanMiniBatchCentroidClusterCreator INSTANCE
         = new VectorMeanMiniBatchCentroidClusterCreator();
 
+    /**
+     * Creates a new {@link VectorMeanMiniBatchCentroidClusterCreator}.
+     */
     public VectorMeanMiniBatchCentroidClusterCreator()
     {
         super();

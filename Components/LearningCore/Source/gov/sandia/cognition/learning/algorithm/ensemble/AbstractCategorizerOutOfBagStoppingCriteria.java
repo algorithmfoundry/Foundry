@@ -117,6 +117,16 @@ public abstract class AbstractCategorizerOutOfBagStoppingCriteria<InputType, Cat
         this.smoothingBuffer = null;
     }
 
+    /**
+     * Gets the out-of-bag estimate distribution across categories for the
+     * training example with the given index.
+     * 
+     * @param index
+     *      The 0-based index for the training example.
+     * @return 
+     *      The distribution over output categories for the out-of-bag
+     *      estimate for the example at that index. May be empty.
+     */
     public abstract DataDistribution<CategoryType> getOutOfBagEstimate(
         final int index);
     

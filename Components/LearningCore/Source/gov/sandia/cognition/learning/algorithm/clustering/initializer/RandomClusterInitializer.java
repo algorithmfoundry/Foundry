@@ -17,7 +17,7 @@ package gov.sandia.cognition.learning.algorithm.clustering.initializer;
 import gov.sandia.cognition.learning.algorithm.clustering.cluster.Cluster;
 import gov.sandia.cognition.learning.algorithm.clustering.cluster.ClusterCreator;
 import gov.sandia.cognition.statistics.DiscreteSamplingUtil;
-import gov.sandia.cognition.util.AbstractCloneableSerializable;
+import gov.sandia.cognition.util.AbstractRandomized;
 import gov.sandia.cognition.util.ObjectUtil;
 import gov.sandia.cognition.util.Randomized;
 import java.util.ArrayList;
@@ -39,13 +39,12 @@ import java.util.stream.Collectors;
  * @since 4.0.0
  */
 public class RandomClusterInitializer<ClusterType extends Cluster<DataType>, DataType>
-    extends AbstractCloneableSerializable
-    implements FixedClusterInitializer<ClusterType, DataType>, Randomized
+    extends AbstractRandomized
+    implements FixedClusterInitializer<ClusterType, DataType>
 {
 
+    /** The creator for new clusters. */
     protected ClusterCreator<ClusterType, DataType> creator;
-
-    protected Random random;
 
     /**
      * Creates a new random cluster creator.
@@ -57,8 +56,8 @@ public class RandomClusterInitializer<ClusterType extends Cluster<DataType>, Dat
         final ClusterCreator<ClusterType, DataType> creator,
         final Random random)
     {
+        super(random);
         this.creator = creator;
-        this.random = random;
     }
 
     @SuppressWarnings("unchecked")
@@ -85,18 +84,6 @@ public class RandomClusterInitializer<ClusterType extends Cluster<DataType>, Dat
             .map(point -> creator.createCluster(Arrays.asList(point)))
             .collect(Collectors.toCollection(ArrayList::new));
         return clusters;
-    }
-
-    @Override
-    public Random getRandom()
-    {
-        return random;
-    }
-
-    @Override
-    public void setRandom(Random random)
-    {
-        this.random = random;
     }
 
 }

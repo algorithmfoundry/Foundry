@@ -1,3 +1,15 @@
+/*
+ * File:                IterativeMatrixSolver.java
+ * Authors:             Jeremy D. Wendt
+ * Company:             Sandia National Laboratories
+ * Project:             Cognitive Foundry
+ * 
+ * Copyright 2016, Sandia Corporation.
+ * Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+ * license for use of this work by or on behalf of the U.S. Government. 
+ * Export of this program may require a license from the United States
+ * Government. See CopyrightHistory.txt for complete details.
+ */
 
 package gov.sandia.cognition.learning.algorithm.minimization.matrix;
 
@@ -16,6 +28,8 @@ import java.util.Set;
  * basic iterative logic and the function minimizer interface.
  * 
  * @author Jeremy D. Wendt
+ * @since 4.0.0
+ * @param <Operator> The operator for the solver.
  */
 @PublicationReference(author = "Jonathan Richard Shewchuk",
     title = "An Introduction to the Conjugate Gradient Method Without the Agonizing Pain",
@@ -366,9 +380,6 @@ abstract public class IterativeMatrixSolver<Operator extends MatrixVectorMultipl
         return (!shouldStop) && (iterationCounter < maxIterations);
     }
 
-    /**
-     * @see Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object o)
     {
