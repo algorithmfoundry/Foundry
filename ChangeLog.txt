@@ -2,6 +2,39 @@ This file contains the change log for the Cognitive Foundry.
 
 Changes since last release:
 
+Release 4.0.0 (2017-03-24):
+  * General:
+    * Added new custom matrix package implementation. MTJ-based implementation is still default and the two should interoperate, though sticking to one implementation is generally more efficient.
+    * Added new Graph package containing several graph algorithms.
+  * Common:
+    * New custom matrix package implementation in gov.sandia.cognition.math.matrix.custom. Contains both sparse and dense implementations of Vector and Matrix. It is optimized for certain use-cases around sparse matrices and dynamically switching between sparse and dense.
+    * Added default implementations to scalar function interfaces. Makes them easier to use as lambdas.
+    * Improved interoperability between matrix/vector implementations through abstract class implementations.
+    * Added method to get vector and matrix factories from those objects.
+    * Added methods create uniform or Gaussian random vectors and matrices.
+    * Added method to check for multiplication dimensions matching for matrices.
+    * Added method to count non-zeros in a vector.
+    * Added methods to get max and min value from a VectorSpace, which includes implementations on vectors.
+    * Added primitive ArrayList implementations: DoubleArrayList, IntArrayList.
+    * CollectionUtil: Added collection equality checkers.
+    * Added equals and hashCode implementations to DefaultKeyValuePair.
+    * Indexer and DefaultIndexer: Added a clear method.
+    * KDTree: Added method to find within a given radius.
+  * Learning:
+    * Changed implementation of Gamma distribution sampling algorithm to greatly improve performance. Also improves performance of Beta and Dirichlet distribution sampling.
+    * Added DBSCAN clustering implementation.
+    * Added mini-batch k-means clustering implementation.
+    * Improvements to K-means and partitional cluster performance.
+    * Added normalized centroid cluster creator, within-cluster divergence, and random cluster initializer.
+    * Added implementation of Burrows Delta algorithm.
+    * Added out-of-bag stopping criteria for bagging and refactored it for IVoting.
+    * Improved memory use of IVoting by removing redundant allocation.
+    * Added several conjugate gradient matrix solvers and matrix-vector solvers, also with preconditioning.
+    * Added multi-partite valance algorithm.
+    * Added hard sigmoid and hard tanh activation functions.
+  * Text:
+    * Added valance spreading implementation.
+
 Release 3.4.3 (2016-03-21):
   * General:
     * Updated to Java 1.8.
