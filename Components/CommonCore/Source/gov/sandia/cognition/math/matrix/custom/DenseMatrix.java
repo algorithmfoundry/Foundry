@@ -1103,7 +1103,7 @@ public class DenseMatrix
      * operation). Also, note that V is returned, not V^t.
      *
      * @return The three matrices U, Sigma, and V from the SVD of this
-     * @throw IllegalStateException if LAPACK fails to decompose this for an
+     * @throws IllegalStateException if LAPACK fails to decompose this for an
      * unknown reason.
      */
     final public SVD svdDecompose()
