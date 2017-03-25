@@ -21,7 +21,7 @@ import gov.sandia.cognition.math.matrix.MatrixFactory;
  * constructors that are available to the outside caller.
  * 
  * @author Jeremy D. Wendt
- * @since   3.4.4
+ * @since   4.0.0
  */
 public class CustomDenseMatrixFactory
     extends MatrixFactory<DenseMatrix>

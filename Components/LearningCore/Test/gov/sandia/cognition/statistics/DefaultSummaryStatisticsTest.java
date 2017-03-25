@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  * Unit tests for class {@link DefaultSummaryStatistics}.
  * 
  * @author  Justin Basilico
- * @since   3.4.4
+ * @since   4.0.0
  */
 public class DefaultSummaryStatisticsTest
     extends Object

@@ -27,7 +27,7 @@ import java.util.ArrayList;
  *      learn.
  * 
  * @author  Justin Basilico
- * @since   3.4.4
+ * @since   4.0.0
  */
 public abstract class AbstractCategorizerOutOfBagStoppingCriteria<InputType, CategoryType>
     extends AbstractIterativeAlgorithmListener

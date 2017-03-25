@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  * Unit tests for class {@link HardTanHFunction}.
  * 
  * @author  Justin Basilico
- * @since   3.4.4
+ * @since   4.0.0
  */
 public class HardTanHFunctionTest
     extends Object

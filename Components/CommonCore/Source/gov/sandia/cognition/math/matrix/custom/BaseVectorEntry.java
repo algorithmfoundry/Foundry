@@ -20,7 +20,7 @@ import gov.sandia.cognition.math.matrix.VectorEntry;
  * iterators.
  *
  * @author Jeremy D. Wendt
- * @since 3.4.4
+ * @since 4.0.0
  */
 class BaseVectorEntry
     implements VectorEntry

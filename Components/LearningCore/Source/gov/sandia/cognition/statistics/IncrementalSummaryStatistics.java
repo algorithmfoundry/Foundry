@@ -18,7 +18,7 @@ import gov.sandia.cognition.util.ArgumentChecker;
  * data in a single pass with a fixed amount of memory.
  *
  * @author  Justin Basilico
- * @since   3.4.4
+ * @since   4.0.0
  */
 public class IncrementalSummaryStatistics 
     extends AbstractCloneableSerializable

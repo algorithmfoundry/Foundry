@@ -24,7 +24,7 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
  * Generates Sparse Vectors with all settings initialized properly
  * 
  * @author Jeremy D. Wendt
- * @since 3.4.4
+ * @since 4.0.0
  */
 public class CustomSparseVectorFactory
     extends VectorFactory<SparseVector>

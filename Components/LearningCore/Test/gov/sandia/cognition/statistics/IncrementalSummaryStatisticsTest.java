@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
  * Unit tests for class {@link IncrementalSummaryStatistics}.
  * 
  * @author Justin Basilico
- * @since   3.4.4
+ * @since   4.0.0
  */
 public class IncrementalSummaryStatisticsTest
     extends Object

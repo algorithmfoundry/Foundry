@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * @param <DataType> The algorithm operates on a {@link Collection<DataType>},
  * so {@code DataType} will be something like Vector or String.
  * @author Jeff Piersol
- * @since 3.4.4
+ * @since 4.0.0
  */
 public class RandomClusterInitializer<ClusterType extends Cluster<DataType>, DataType>
     extends AbstractCloneableSerializable

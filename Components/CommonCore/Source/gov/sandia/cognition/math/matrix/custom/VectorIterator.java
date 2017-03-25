@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
  * Small helper class that iterates over all values from this vector.
  * 
  * @author Jeremy D. Wendt
- * @since 3.4.4
+ * @since 4.0.0
  */
 public class VectorIterator
     implements Iterator<VectorEntry>

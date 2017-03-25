@@ -24,7 +24,7 @@ import java.util.Collection;
  *      learn.
  * 
  * @author  Justin Basilico
- * @since   3.4.4
+ * @since   4.0.0
  */
 public interface BagBasedCategorizerEnsembleLearner<InputType, CategoryType>
     extends AnytimeBatchLearner<Collection<? extends InputOutputPair<? extends InputType, CategoryType>>, WeightedVotingCategorizerEnsemble<InputType, CategoryType, Evaluator<? super InputType, ? extends CategoryType>>>

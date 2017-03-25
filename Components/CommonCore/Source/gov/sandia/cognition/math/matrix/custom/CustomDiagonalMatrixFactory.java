@@ -20,7 +20,7 @@ import gov.sandia.cognition.math.matrix.MatrixFactory;
  * Factory for diagonal matrices.
  * 
  * @author Jeremy D. Wendt
- * @since   3.4.4
+ * @since   4.0.0
  */
 public class CustomDiagonalMatrixFactory
     extends MatrixFactory<DiagonalMatrix>

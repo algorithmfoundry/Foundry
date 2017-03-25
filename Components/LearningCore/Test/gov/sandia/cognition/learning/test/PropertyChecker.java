@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  * Utility class for asserting aspects of bean properties.
  * 
  * @author Justin Basilico
- * @since 3.4.4
+ * @since 4.0.0
  */
 public class PropertyChecker
     extends Object

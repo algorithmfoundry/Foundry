@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
  * @param <ClusterType> The type of {@code Cluster} created by the algorithm.
  * This is typically defined by the cluster creator function used.
  * @author Quinn McNamara
- * @since 3.4.4
+ * @since 4.0.0
  */
 @PublicationReference(
     author =

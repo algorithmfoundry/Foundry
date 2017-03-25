@@ -16,7 +16,7 @@ import gov.sandia.cognition.util.ArgumentChecker;
  * the various values for the summary statistics.
  * 
  * @author  Justin Basilico
- * @since   3.4.4
+ * @since   4.0.0
  */
 public class DefaultSummaryStatistics
     extends AbstractCloneableSerializable

@@ -23,7 +23,7 @@ import gov.sandia.cognition.math.matrix.Vector;
  * vector-type-specific (dense, sparse) version of the basic math method.
  *
  * @author Jeremy D. Wendt
- * @since 3.4.4
+ * @since 4.0.0
  */
 abstract class BaseVector
     extends AbstractVector

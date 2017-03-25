@@ -19,7 +19,7 @@ package gov.sandia.cognition.statistics;
  *
  * @author  jdwendt
  * @author  Justin Basilico
- * @since   3.4.4
+ * @since   4.0.0
  */
 public interface SummaryStatistics
 {

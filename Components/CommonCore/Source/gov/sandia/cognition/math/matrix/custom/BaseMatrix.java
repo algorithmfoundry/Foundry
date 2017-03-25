@@ -28,7 +28,7 @@ import java.util.Iterator;
  * method.
  *
  * @author Jeremy D. Wendt
- * @since 3.4.4
+ * @since 4.0.0
  */
 abstract class BaseMatrix
     extends AbstractMatrix

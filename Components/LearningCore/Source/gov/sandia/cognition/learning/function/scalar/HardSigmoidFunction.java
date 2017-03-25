@@ -20,7 +20,7 @@ import gov.sandia.cognition.math.AbstractDifferentiableUnivariateScalarFunction;
  * The functional form is: f(x) = min(1.0, max(0.0, 0.2 * x + 0.5))
  * 
  * @author  Justin Basilico
- * @since   3.4.4
+ * @since   4.0.0
  * @see     SigmoidFunction
  */
 public class HardSigmoidFunction

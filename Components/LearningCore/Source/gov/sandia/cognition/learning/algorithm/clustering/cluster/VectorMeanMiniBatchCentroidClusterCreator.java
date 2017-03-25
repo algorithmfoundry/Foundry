@@ -25,7 +25,7 @@ import java.util.Collection;
  * clustering.
  *
  * @author Jeff Piersol
- * @since 3.4.4
+ * @since 4.0.0
  */
 @PublicationReference(
     author = "Jeff Piersol",

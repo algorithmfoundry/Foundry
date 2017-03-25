@@ -20,7 +20,7 @@ import gov.sandia.cognition.math.AbstractDifferentiableUnivariateScalarFunction;
  * The functional form is: f(x) = min(1.0, max(-1.0, x))
  * 
  * @author  Justin Basilico
- * @since   3.4.4
+ * @since   4.0.0
  * @see     TanHFunction
  */
 public class HardTanHFunction

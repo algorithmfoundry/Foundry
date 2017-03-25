@@ -17,7 +17,7 @@
  * Delta algorithm. Also provides two implementations: original Burrows' Delta and 
  * Cosine Delta.
  * @author  Alex Killian
- * @since   ???
+ * @since   4.0.0
  */
 @gov.sandia.cognition.annotation.Documentation
 package gov.sandia.cognition.learning.algorithm.delta;

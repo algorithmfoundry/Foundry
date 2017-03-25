@@ -25,7 +25,7 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
  * public so this need not be called.
  *
  * @author Jeremy D. Wendt
- * @since   3.4.4
+ * @since   4.0.0
  */
 public class CustomDenseVectorFactory
     extends VectorFactory<DenseVector>

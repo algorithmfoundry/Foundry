@@ -16,7 +16,7 @@
  * and sparse classes.
  *
  * @author Jeremy D. Wendt
- * @since 3.4.4
+ * @since 4.0.0
  */
 @gov.sandia.cognition.annotation.Documentation
 package gov.sandia.cognition.math.matrix.custom;
