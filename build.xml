@@ -80,6 +80,8 @@
         <ant antfile="${project.Cognitive_Foundry_Framework_Learning}/build.xml" inheritall="false" target="test"/>
         <ant antfile="${project.Cognitive_Foundry_Learning_Core}/build.xml" inheritall="false" target="test"/>
         <ant antfile="${project.Cognitive_Foundry_Learning_Examples}/build.xml" inheritall="false" target="test"/>
+        <ant antfile="${project.Cognitive_Foundry_Graph_Core}/build.xml" inheritall="false" target="test"/>
+        <ant antfile="${project.Cognitive_Foundry_Graph_Examples}/build.xml" inheritall="false" target="test"/>
     </target>
 
     <target depends="init" name="package-binary" description="Package binary as zip.">
@@ -136,6 +138,10 @@
                 <fileset dir="Components/TextExamples/Source" includes="**" />
                 <globmapper from="*" to="${dist.binary.name}/Examples/*" />
             </mappedresources>
+            <mappedresources>
+                <fileset dir="Components/GraphExamples/Source" includes="**" />
+                <globmapper from="*" to="${dist.binary.name}/Examples/*" />
+            </mappedresources>
             
         </zip>
     </target>
@@ -161,6 +167,7 @@
             <fileset dir="${project.Cognitive_Foundry_Framework_Core}/Source" includes="**/*.java"/>
             <fileset dir="${project.Cognitive_Foundry_Framework_Learning}/Source" includes="**/*.java"/>
             <fileset dir="${project.Cognitive_Foundry_Text_Core}/Source" includes="**/*.java"/>
+            <fileset dir="${project.Cognitive_Foundry_Graph_Core}/Source" includes="**/*.java"/>
             <link href="${reference.jdk.javadoc}" />
         </javadoc>
     </target>

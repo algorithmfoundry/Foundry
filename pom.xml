@@ -68,6 +68,7 @@
         <module>Components/CommonData</module>
         <module>Components/LearningCore</module>
         <module>Components/TextCore</module>
+        <module>Components/GraphCore</module>
         <module>Components/FrameworkCore</module>
         <module>Components/FrameworkLearning</module>
         <module>Tools/PackageAll</module>

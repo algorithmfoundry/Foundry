@@ -88,6 +88,7 @@ The Foundry has four main packages some of which have multiple modules. Each mod
   * ```common-data``` - Contains utilities for handling data.
   * ```learning-core``` - Contains algorithms and components for machine learning and statistics.
   * ```text-core``` - Contains algorithms and components for text analysis and Information Retrieval.
+  * ```graph-core``` - Contains algorithms and components for graphs.
   * ```framework-core``` - Contains a framework for multi-level models.
   * ```framework-learning``` - Contains adapters for Machine Learning in the framework.
 
