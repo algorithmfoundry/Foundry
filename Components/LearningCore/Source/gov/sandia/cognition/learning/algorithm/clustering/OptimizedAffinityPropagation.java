@@ -6,15 +6,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.stream.DoubleStream;
-import org.apache.log4j.Logger;
 
 public class OptimizedAffinityPropagation<T>
     extends AffinityPropagation<T>
 {
 
   private static final long serialVersionUID = 7170610951827891277L;
-
-  private static final Logger LOG = Logger.getLogger(OptimizedAffinityPropagation.class);
 
   OptimizedAffinityPropagation(
       DivergenceFunction<? super T, ? super T> divergence)
@@ -142,7 +139,7 @@ public class OptimizedAffinityPropagation<T>
     }
   }
 
-  public double computeMedian(double[] divergenciesArray) {
+  private double computeMedian(double[] divergenciesArray) {
 
     double[] doubles = Arrays.stream(divergenciesArray)
         .flatMap(DoubleStream::of)
