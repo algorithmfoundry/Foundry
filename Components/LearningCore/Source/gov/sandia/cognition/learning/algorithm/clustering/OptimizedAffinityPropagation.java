@@ -1,4 +1,4 @@
-package com.sistemaits.optima.statisticalforecast.api.core.clusteringalgorithms;
+package gov.sandia.cognition.learning.algorithm.clustering;
 
 import gov.sandia.cognition.learning.algorithm.clustering.AffinityPropagation;
 import gov.sandia.cognition.math.DivergenceFunction;
