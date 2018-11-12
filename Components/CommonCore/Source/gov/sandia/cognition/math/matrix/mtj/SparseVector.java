@@ -123,12 +123,18 @@ public class SparseVector
         // in there already!
         // (This is to prevent us from adding zeros into the SparseVector
         // unnecessarily)
-        double existing = this.getElement( index );
-        if( existing != value )
+        if (value == 0.0)
         {
-            super.setElement( index, value );
+            final double existing = this.getElement(index);
+            if (existing != 0.0)
+            {
+                super.setElement(index, value);
+            }
         }
-        
+        else
+        {
+            super.setElement(index, value);
+        }
     }
     
     @Override
