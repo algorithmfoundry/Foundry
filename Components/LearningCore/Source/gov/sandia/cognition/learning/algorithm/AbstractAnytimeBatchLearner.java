@@ -103,6 +103,7 @@ public abstract class AbstractAnytimeBatchLearner<DataType, ResultType>
         return result;
     }
 
+    @Override
     public ResultType learn(
         DataType data)
     {

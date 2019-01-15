@@ -70,7 +70,7 @@ public class DBSCANClustererTest
     public DBSCANClusterer<Vector, DefaultCluster<Vector>> createClusterer()
     {
         return new DBSCANClusterer<Vector, DefaultCluster<Vector>>(
-            1.0, 1, this.metric, this.creator);
+            1.0, 2, this.metric, this.creator);
     }
 
     /**
@@ -123,6 +123,7 @@ public class DBSCANClustererTest
         Vector2 v2 = new Vector2(1.0, 1.2);
         Vector2 v3 = new Vector2(-1.0, 4.0);
         Vector2 v4 = new Vector2(-1.0, 4.2);
+        Vector2 v5 = new Vector2(100.0, 100.0);
 
         clusters = dbscan.learn(elements);
         assertNull(clusters);
@@ -130,10 +131,11 @@ public class DBSCANClustererTest
         // Add a vector to the list of elements.
         elements.add(v1);
 
-        // Should give a noise cluster and a cluster with the single point.
+        // Should give a noise cluster only.
+        dbscan = this.createClusterer();
         clusters = dbscan.learn(elements);
         assertNotNull(clusters);
-        assertEquals(2, clusters.size());
+        assertEquals(1, clusters.size());
 
         // Add some more elements.
         elements.add(v2);
@@ -141,19 +143,41 @@ public class DBSCANClustererTest
         elements.add(v4);
 
         // Should give two content clusters and one noise cluster
+        dbscan = this.createClusterer();
         clusters = dbscan.learn(elements);
         assertNotNull(clusters);
         assertEquals(3, clusters.size());
 
         DefaultCluster<Vector> cluster1 = dbscan.getCluster(0);
         DefaultCluster<Vector> cluster2 = dbscan.getCluster(1);
-        DefaultCluster<Vector> cluster3 = dbscan.getCluster(1);
+        DefaultCluster<Vector> cluster3 = dbscan.getCluster(2);
 
         // v1 and v2 should be clustered, v3 and v4 should be clustered
         assertNotNull(cluster1);
         assertNotNull(cluster2);
         assertNotNull(cluster3);
         assertEquals(0, cluster1.getMembers().size());
+        assertEquals(2, cluster2.getMembers().size());
+        assertEquals(2, cluster3.getMembers().size());
+
+        // test DBSCAN with a noise point
+        dbscan = this.createClusterer();
+        elements.add(v5);
+
+        // Should give two content clusters and one noise cluster
+        clusters = dbscan.learn(elements);
+        assertNotNull(clusters);
+        assertEquals(3, clusters.size());
+
+        cluster1 = dbscan.getCluster(0);
+        cluster2 = dbscan.getCluster(1);
+        cluster3 = dbscan.getCluster(2);
+
+        // v1 and v2 should be clustered, v3 and v4 should be clustered
+        assertNotNull(cluster1);
+        assertNotNull(cluster2);
+        assertNotNull(cluster3);
+        assertEquals(1, cluster1.getMembers().size());
         assertEquals(2, cluster2.getMembers().size());
         assertEquals(2, cluster3.getMembers().size());
     }

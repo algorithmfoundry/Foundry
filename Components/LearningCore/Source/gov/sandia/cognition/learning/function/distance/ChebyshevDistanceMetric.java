@@ -32,6 +32,10 @@ public class ChebyshevDistanceMetric
     extends AbstractCloneableSerializable
     implements Metric<Vectorizable>
 {
+     /** An instance of the {@code ChebyshevDistanceMetric} to use since this
+     *  class has no internal data. */
+    public static final ChebyshevDistanceMetric INSTANCE = 
+        new ChebyshevDistanceMetric();
 
     /**
      * Creates a new {@code ChebyshevDistanceMetric}.
