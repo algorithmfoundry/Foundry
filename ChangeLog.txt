@@ -2,6 +2,10 @@ This file contains the change log for the Cognitive Foundry.
 
 Changes since last release:
 
+Release 4.0.1 (2019-03-05):
+  * Common:
+    * Performance improvement to SparseVector set method to avoid a double lookup.
+
 Release 4.0.0 (2017-03-24):
   * General:
     * Added new custom matrix package implementation. MTJ-based implementation is still default and the two should interoperate, though sticking to one implementation is generally more efficient.

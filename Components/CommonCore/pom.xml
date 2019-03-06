@@ -4,7 +4,7 @@
     <parent>
         <groupId>gov.sandia.foundry</groupId>
         <artifactId>gov-sandia-foundry</artifactId>
-        <version>4.0.0</version>
+        <version>4.0.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>gov-sandia-cognition-common-core</artifactId>
