@@ -14,6 +14,7 @@
 package gov.sandia.cognition.math.matrix.custom;
 
 import gov.sandia.cognition.collection.ArrayUtil;
+import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
@@ -128,6 +129,38 @@ public class DenseVector
         return result;
     }
 
+    
+    @Override
+    public boolean equals(
+        final Vector other,
+        final double effectiveZero)
+    {
+        if (!this.checkSameDimensionality(other))
+        {
+            return false;
+        }
+        
+        // Determine if all entries are within effectiveZero of each other.
+        // If we find a single entry larger than effectiveZero, we know that
+        // the vectors aren't equal, so just return false.  However, if we loop
+        // over all entries and still don't find a large difference, then
+        // we consider the vectors "equal".
+        //
+        // Please note: this structure does not exploit ANY type of sparseness
+        // in either vector.
+        final int dimensionality = this.getDimensionality();
+        for (int i = 0; i < dimensionality; i++)
+        {
+            // Use a NaN-safe comparison.
+            if (!MathUtil.equals(this.values[i], other.get(i), effectiveZero))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    
     @Override
     public void scaledPlusEquals(
         final DenseVector other,

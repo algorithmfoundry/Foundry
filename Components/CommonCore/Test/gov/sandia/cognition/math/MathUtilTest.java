@@ -439,5 +439,80 @@ public class MathUtilTest
             }
         }
     }
+        
+    /**
+     * Test of equals method of class MathUtil.
+     */
+    public void testEquals()
+    {
+        assertTrue(MathUtil.equals(0.0, 0.0));
+        assertFalse(MathUtil.equals(0.0, 1.0));
+        assertFalse(MathUtil.equals(0.0, -1.1));
+        assertTrue(MathUtil.equals(Double.NaN, Double.NaN));
+        assertTrue(MathUtil.equals(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY));
+        assertTrue(MathUtil.equals(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY));
+        
+        assertFalse(MathUtil.equals(0.0, Double.NaN));
+        assertFalse(MathUtil.equals(0.0, Double.POSITIVE_INFINITY));
+        assertFalse(MathUtil.equals(0.0, Double.NEGATIVE_INFINITY));
+        assertFalse(MathUtil.equals(Double.NaN, 0.0));
+        assertFalse(MathUtil.equals(Double.POSITIVE_INFINITY, 0.0));
+        assertFalse(MathUtil.equals(Double.NEGATIVE_INFINITY, 0.0));
+        
+        double v = this.RANDOM.nextGaussian();
+        assertTrue(MathUtil.equals(v, v));
+        assertFalse(MathUtil.equals(v, Double.NaN));
+        assertFalse(MathUtil.equals(v, Double.POSITIVE_INFINITY));
+        assertFalse(MathUtil.equals(v, Double.NEGATIVE_INFINITY));
+        assertFalse(MathUtil.equals(Double.NaN, v));
+        assertFalse(MathUtil.equals(Double.POSITIVE_INFINITY, v));
+        assertFalse(MathUtil.equals(Double.NEGATIVE_INFINITY, v));
+        
+        for (double x : this.getGoodValues())
+        {
+            assertTrue(MathUtil.equals(x, x));
+        }
+    }
     
+    /**
+     * Test of equals(double, double, double) method of class MathUtil.
+     */
+    public void testEqualsWithEffectiveZero()
+    {
+        assertTrue(MathUtil.equals(1.0, 1.1, 0.2));
+        
+        double eps = 1e-5;
+        assertTrue(MathUtil.equals(0.0, 0.0, eps));
+        assertFalse(MathUtil.equals(0.0, 1.0, eps));
+        assertFalse(MathUtil.equals(0.0, -1.1, eps));
+        assertTrue(MathUtil.equals(Double.NaN, Double.NaN, eps));
+        assertTrue(MathUtil.equals(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, eps));
+        assertTrue(MathUtil.equals(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, eps));
+        
+        assertFalse(MathUtil.equals(0.0, Double.NaN, eps));
+        assertFalse(MathUtil.equals(0.0, Double.POSITIVE_INFINITY, eps));
+        assertFalse(MathUtil.equals(0.0, Double.NEGATIVE_INFINITY, eps));
+        assertFalse(MathUtil.equals(Double.NaN, 0.0, eps));
+        assertFalse(MathUtil.equals(Double.POSITIVE_INFINITY, 0.0, eps));
+        assertFalse(MathUtil.equals(Double.NEGATIVE_INFINITY, 0.0, eps));
+        
+        double v = this.RANDOM.nextGaussian();
+        assertTrue(MathUtil.equals(v, v, eps));
+        assertFalse(MathUtil.equals(v, Double.NaN, eps));
+        assertFalse(MathUtil.equals(v, Double.POSITIVE_INFINITY, eps));
+        assertFalse(MathUtil.equals(v, Double.NEGATIVE_INFINITY, eps));
+        assertFalse(MathUtil.equals(Double.NaN, v, eps));
+        assertFalse(MathUtil.equals(Double.POSITIVE_INFINITY, v, eps));
+        assertFalse(MathUtil.equals(Double.NEGATIVE_INFINITY, v, eps));
+        
+        assertTrue(MathUtil.equals(v, v + eps / 2.0, eps));
+        assertTrue(MathUtil.equals(v, v + eps / 2.0, eps));
+        assertFalse(MathUtil.equals(v, v + eps * 2.0, eps));
+        assertFalse(MathUtil.equals(v, v + eps * 2.0, eps));
+        
+        for (double x : this.getGoodValues())
+        {
+            assertTrue(MathUtil.equals(x, x, eps));
+        }
+    }
 }

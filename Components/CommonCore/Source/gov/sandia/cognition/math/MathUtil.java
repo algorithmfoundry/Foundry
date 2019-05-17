@@ -786,4 +786,47 @@ public class MathUtil
         }
     }
 
+    /**
+     * Compares two double values to see if they are equal. It is safe on values
+     * such as NaN in that if you pass two NaN values they will be equal.
+     * 
+     * @param   x 
+     *      A double.
+     * @param   y 
+     *      Another double.
+     * @return 
+     *      True if x is equal to y.
+     */
+    public static boolean equals(
+        final double x,
+        final double y)
+    {
+        // This comparison method is used to detect if NaNs are equal.
+        return Double.compare(x, y) == 0;
+    }
+    
+    /**
+     * Compares two double values to see if they are equal within the given
+     * bounds for effective zero. It is safe on values
+     * such as NaN in that if you pass two NaN values they will be equal.
+     * 
+     * @param   x 
+     *      A double.
+     * @param   y 
+     *      Another double.
+     * @param   effectiveZero 
+     *      The effective value for zero. Should be non-negative.
+     *      If a value of 0 (or less) is given then it requires strict equality.
+     * @return 
+     *      True if x is equal to y within a value of effectiveZero.
+     */
+    public static boolean equals(
+        final double x,
+        final double y,
+        final double effectiveZero)
+    {
+        // This comparison method is used to detect if NaNs are equal.
+        // But fail when there is a NaN in one but not the other.
+        return (Double.compare(x, y) == 0) || (Math.abs(x - y) <= effectiveZero);
+    }
 }

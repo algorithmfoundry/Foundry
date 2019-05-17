@@ -229,15 +229,7 @@ public abstract class AbstractVectorSpace<VectorType extends VectorSpace<VectorT
     {
         return Math.abs(this.norm2() - 1.0) <= tolerance;
     }
-
-    @Override
-    public boolean equals(
-        final VectorType other,
-        final double effectiveZero)
-    {
-        return this.euclideanDistance(other) <= effectiveZero;
-    }
-
+    
     @Override
     public void scaleEquals(
         final double scaleFactor)

@@ -551,6 +551,35 @@ abstract public class VectorTestHarness
     }
     
     /**
+     * Test of equals method with NaNs, of class Vector.
+     */
+    public void testEqualsWithNaN()
+    {
+        System.out.println("equals with NaN");
+
+        Vector v1 = this.createRandom();
+        int M = v1.getDimensionality();
+        assertEquals(v1, v1);
+
+        int index = RANDOM.nextInt( M );
+        
+        Vector v2 = v1.clone();
+        v2.setElement(index, Double.NaN);
+        assertFalse(v1.equals(v2));
+        assertFalse(v2.equals(v1));
+        assertEquals(v2, v2);
+        assertEquals(v2, v2.clone());
+        
+        Vector v3 = this.createVector(M);
+        v3.setElement(index, Double.NaN);
+        assertFalse(v1.equals(v3));
+        assertFalse(v2.equals(v3));
+        assertFalse(v3.equals(v1));
+        assertFalse(v3.equals(v2));
+        assertEquals(v3, v3);
+    }
+    
+    /**
      * Test of hashCode method, of class gov.sandia.isrc.math.matrix.Vector.
      */
     public void testHashCode()
