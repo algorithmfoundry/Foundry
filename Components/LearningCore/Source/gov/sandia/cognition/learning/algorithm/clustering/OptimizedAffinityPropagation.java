@@ -15,8 +15,11 @@
 
   package gov.sandia.cognition.learning.algorithm.clustering;
 
-  import gov.sandia.cognition.learning.algorithm.clustering.AffinityPropagation;
   import gov.sandia.cognition.math.DivergenceFunction;
+  import gov.sandia.cognition.math.matrix.Vector;
+  import gov.sandia.cognition.math.matrix.VectorEntry;
+  import gov.sandia.cognition.math.matrix.VectorFactory;
+
   import java.util.ArrayList;
   import java.util.Arrays;
   import java.util.HashMap;
@@ -47,7 +50,7 @@
    * Moreover it adds the computation of the median of similarities if the "selfDivergence"
    * parameter is not specified in input by the client.
    * @author  Marco Pezzulla
-   * @since   2.0
+   * @since   4.0.1
    */
   public class OptimizedAffinityPropagation<T>
       extends AffinityPropagation<T>
@@ -55,9 +58,17 @@
 
     private static final long serialVersionUID = 7170610951827891277L;
 
-    OptimizedAffinityPropagation(){this(null, DEFAULT_SELF_DIVERGENCE);}
+    public OptimizedAffinityPropagation(){
+      this(null, DEFAULT_SELF_DIVERGENCE);
+    }
 
-    OptimizedAffinityPropagation(
+    /**
+     * Creates a new instance of OptimizedAffinityPropagation.
+     * the @divergence
+     * @param divergence the divergence function to use to determine the
+     *      *         divergence between two examples.
+     */
+    public OptimizedAffinityPropagation(
         DivergenceFunction<? super T, ? super T> divergence)
     {
       this(divergence, Double.NaN);
@@ -191,7 +202,7 @@
 
     private double computeMedian(double[] divergenciesArray)
     {
-
+      //TODO: This seems like it could be cleaned up a bit and added to UnivariateStatisticsUtil.
       double[] doubles = Arrays.stream(divergenciesArray)
           .flatMap(DoubleStream::of)
           .distinct()
@@ -219,7 +230,6 @@
     @Override
     protected void updateResponsibilities()
     {
-
       for(int i = 0 ; i < exampleCount; i++) {
         double[] rowArray = createSumArray(availabilities[i], similarities[i]);
         MaxResult maxResult = computeMax(rowArray);
@@ -262,34 +272,40 @@
     @Override
     protected void updateAvailabilities()
     {
-      ColumnArray rp = new ColumnArray(exampleCount);
+      Vector vector = VectorFactory.getDefault().createVector(exampleCount);
       for (int j = 0; j < exampleCount; j++) {
-        removeNegativeValues(rp, responsibilities, j);
-        rp.array[j] = responsibilities[j][j];
-        rp.sum += responsibilities[j][j];
-        updateAvailabilitiesMatrix(j, rp, availabilities);
+        removeNegativeValues(vector, responsibilities, j);
+        vector.set(j, responsibilities[j][j]);
+        updateAvailabilitiesMatrix(j, vector, availabilities);
       }
     }
 
-    private void updateAvailabilitiesMatrix(int j, ColumnArray rp, double[][] availabilities)
+    private void updateAvailabilitiesMatrix(int j, Vector columnVector, double[][] availabilities)
     {
-      double old;
+      double oldValue;
       for (int i = 0; i < availabilities[0].length; i++) {
-        old = availabilities[i][j];
-        availabilities[i][j] = rp.sum - rp.array[i];
+        oldValue = availabilities[i][j];
+        double newValue = sum(columnVector) - columnVector.get(i);
         if(i != j){
-          availabilities[i][j] = Math.min(availabilities[i][j], 0);
+          newValue = Math.min(newValue, 0);
         }
-        availabilities[i][j] = oneMinusDampingFactor * availabilities[i][j] + dampingFactor * old;
+        availabilities[i][j] = oneMinusDampingFactor * newValue + dampingFactor * oldValue;
       }
     }
 
-    private void removeNegativeValues(ColumnArray columnArray, double[][] matrix, int j)
+    private double sum(Vector columnVector) {
+      double sum = 0;
+      for(VectorEntry value : columnVector){
+        sum += value.getValue();
+      }
+      return sum;
+    }
+
+    private void removeNegativeValues(Vector columnVector, double[][] matrix, int j)
     {
-      columnArray.sum = 0;
       for (int i = 0; i < matrix.length; i++) {
-        columnArray.array[i] = Math.max(matrix[i][j], 0);
-        columnArray.sum += columnArray.array[i];
+        double positiveValue = Math.max(matrix[i][j], 0);
+        columnVector.set(i, positiveValue);
       }
     }
 
@@ -305,14 +321,4 @@
       }
     }
 
-    class ColumnArray
-    {
-      double[] array;
-      double sum;
-
-      ColumnArray(int size){
-        array = new double[size];
-        sum = 0.;
-      }
-    }
   }
