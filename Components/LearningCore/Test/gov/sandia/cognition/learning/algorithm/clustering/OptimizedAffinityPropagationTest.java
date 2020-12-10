@@ -24,9 +24,14 @@ import gov.sandia.cognition.math.matrix.mtj.Vector2;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 import junit.framework.TestCase;
+import org.junit.Assert;
 
-/**
+  /**
  * This class implements JUnit tests for the following classes:
  *
  *     OptimizedAffinityPropagation
@@ -139,6 +144,82 @@ public class OptimizedAffinityPropagationTest
             assertTrue( index >= 0 );
             assertEquals( membershipCounts[index], cluster.getMembers().size() );
         }
+    }
+
+    public void testLearnRandomComparisonWithNotOptimizedAffinityPropagationAlgorithm()
+    {
+        for(int i=1; i<= 100; i++) {
+
+            Vector[] data = generateRandomVector();
+
+            OptimizedAffinityPropagation<Vectorizable> optimizedAffinityPropagation =
+                new OptimizedAffinityPropagation<Vectorizable>(
+                    EuclideanDistanceSquaredMetric.INSTANCE, 1);
+
+            long time = System.currentTimeMillis();
+            Collection<CentroidCluster<Vectorizable>> clustersFromOptimizedAffinityPropagation =
+                optimizedAffinityPropagation.learn(Arrays.asList(data));
+            long deltaOptimized = System.currentTimeMillis() - time;
+
+            AffinityPropagation<Vectorizable> affinityPropagation =
+                new AffinityPropagation<Vectorizable>(
+                    EuclideanDistanceSquaredMetric.INSTANCE, 1);
+
+            time = System.currentTimeMillis();
+            Collection<CentroidCluster<Vectorizable>> clustersFromAffinityPropagation =
+                affinityPropagation.learn(Arrays.asList(data));
+            long delta = System.currentTimeMillis() - time;
+
+            Assert.assertTrue(delta >= deltaOptimized);
+            checkThatClustersAreEqual(clustersFromAffinityPropagation, clustersFromOptimizedAffinityPropagation);
+        }
+
+    }
+
+    private void checkThatClustersAreEqual(
+        Collection<CentroidCluster<Vectorizable>> clustersFromAffinityPropagation,
+        Collection<CentroidCluster<Vectorizable>> clustersFromOptimizedAffinityPropagation) {
+
+        Assert.assertEquals(clustersFromAffinityPropagation.size(), clustersFromOptimizedAffinityPropagation.size());
+
+        List<Vector> clustersFromAffinityPropagationList = clustersFromAffinityPropagation
+            .stream()
+            .map(vectorizableCentroidCluster ->
+                vectorizableCentroidCluster
+                    .getCentroid()
+                    .convertToVector())
+            .collect(Collectors.toList());
+
+        List<Vector> clustersFromOptimizedAffinityPropagationList = clustersFromOptimizedAffinityPropagation
+            .stream()
+            .map(vectorizableCentroidCluster ->
+                vectorizableCentroidCluster
+                    .getCentroid()
+                    .convertToVector())
+            .collect(Collectors.toList());
+
+        for(int i = 0; i<clustersFromAffinityPropagationList.size(); i++){
+            Vector vector1 = clustersFromAffinityPropagationList.get(i);
+            Vector vector2 = clustersFromOptimizedAffinityPropagationList.get(i);
+            Assert.assertEquals(vector1, vector2);
+        }
+
+    }
+
+
+    private Vector[] generateRandomVector() {
+
+        List<Vector> vectors = new ArrayList<>();
+        for(int i = 1 ; i <= 100; i++){
+            vectors.add(new Vector2( generateRandomDoubleInRange(-5, 5), generateRandomDoubleInRange(-5, 5) ));
+        }
+        Vector[] vectorsArray = new Vector[vectors.size()];
+        return vectors.toArray(vectorsArray);
+    }
+
+    private double generateRandomDoubleInRange(double rangeMin, double rangeMax ) {
+        Random r = new Random();
+        return rangeMin + (rangeMax - rangeMin) * r.nextDouble();
     }
 
     /**

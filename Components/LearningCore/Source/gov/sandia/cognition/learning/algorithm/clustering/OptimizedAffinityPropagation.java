@@ -82,7 +82,7 @@
      * @param  selfDivergence The maxValue for self-divergence to use, which
      *         controls the number of clusters created.
      */
-    OptimizedAffinityPropagation(
+    public OptimizedAffinityPropagation(
         DivergenceFunction<? super T, ? super T> divergence,
         double selfDivergence)
     {
@@ -142,14 +142,14 @@
       setResponsibilities(new double[exampleCount][exampleCount]);
       setAvailabilities(new double[exampleCount][exampleCount]);
 
-      double[] divergenciesArray = new double[exampleCount * (exampleCount+1)/2];
+      double[] divergenceArray = new double[exampleCount * (exampleCount+1)/2];
       boolean computeSelfDivergence = Double.isNaN(getSelfDivergence());
 
       // Compute the similarity matrix.
-      fillSimilarityStructures(divergenciesArray);
+      fillSimilarityStructures(divergenceArray);
 
       if(computeSelfDivergence) {
-        double median = computeMedian(divergenciesArray);
+        double median = computeMedian(divergenceArray);
         setSelfDivergence(median);
       }
 
@@ -180,7 +180,7 @@
       }
     }
 
-    private void fillSimilarityStructures(double[] divergenciesArray)
+    private void fillSimilarityStructures(double[] divergencesArray)
     {
       for (int i = 0; i < exampleCount; i++)
       {
@@ -195,7 +195,7 @@
               exampleI, exampleJ);
           similarities[i][j] = similarity;
           similarities[j][i] = similarity;
-          divergenciesArray[i * (i+1) / 2 + j] = -similarity;
+          divergencesArray[i * (i+1) / 2 + j] = -similarity;
         }
       }
     }
@@ -231,30 +231,17 @@
     protected void updateResponsibilities()
     {
       for(int i = 0 ; i < exampleCount; i++) {
+        //We could think to use the Vector class, but we would like to stick with
+        //the old implementation
         double[] rowArray = createSumArray(availabilities[i], similarities[i]);
-        MaxResult maxResult = computeMax(rowArray);
+        MaxResult maxResult = new MaxResult();
+        maxResult.computeMax(rowArray);
         for (int j = 0; j < exampleCount; j++) {
           double maxToSubtract = j != maxResult.maxIndex ? maxResult.maxValue : maxResult.secondMaxValue;
           responsibilities[i][j] = oneMinusDampingFactor * (similarities[i][j] - maxToSubtract) + dampingFactor * responsibilities[i][j];
         }
       }
     }
-
-    private MaxResult computeMax(double[] rowArray)
-    {
-      MaxResult maxResult = new MaxResult();
-      for (int i = 0; i < rowArray.length; i++) {
-        if(rowArray[i] > maxResult.maxValue){
-          maxResult.secondMaxValue = maxResult.maxValue;
-          maxResult.maxValue = rowArray[i];
-          maxResult.maxIndex = i;
-        }else if(rowArray[i] > maxResult.secondMaxValue){
-          maxResult.secondMaxValue = rowArray[i];
-        }
-      }
-      return maxResult;
-    }
-
 
     private double[] createSumArray(double[] availability, double[] similarity)
     {
@@ -285,7 +272,7 @@
       double oldValue;
       for (int i = 0; i < availabilities[0].length; i++) {
         oldValue = availabilities[i][j];
-        double newValue = sum(columnVector) - columnVector.get(i);
+        double newValue = columnVector.sum() - columnVector.get(i);
         if(i != j){
           newValue = Math.min(newValue, 0);
         }
@@ -319,6 +306,20 @@
         secondMaxValue = Double.NEGATIVE_INFINITY;
         maxIndex = -1;
       }
+
+      private void computeMax(double[] rowArray)
+      {
+        for (int i = 0; i < rowArray.length; i++) {
+          if(rowArray[i] > maxValue){
+            secondMaxValue = maxValue;
+            maxValue = rowArray[i];
+            maxIndex = i;
+          }else if(rowArray[i] > secondMaxValue){
+            secondMaxValue = rowArray[i];
+          }
+        }
+      }
+
     }
 
   }
