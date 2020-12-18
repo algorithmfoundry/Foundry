@@ -18,6 +18,7 @@ import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.CodeReviewResponse;
 import gov.sandia.cognition.annotation.PublicationReference;
 import gov.sandia.cognition.annotation.PublicationType;
+import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.UnivariateScalarFunction;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorEntry;
@@ -214,7 +215,7 @@ public class DenseVector
     @Override
     public boolean equals(
         final Vector other,
-        double effectiveZero)
+        final double effectiveZero)
     {
         if (!this.checkSameDimensionality(other))
         {
@@ -231,17 +232,16 @@ public class DenseVector
         // in either vector.
         final double[] values = this.getArray();
         final int dimensionality = this.getDimensionality();
-        for( int i = 0; i < dimensionality; i++ )
+        for (int i = 0; i < dimensionality; i++)
         {
-            double difference = values[i] - other.getElement( i );
-            if( Math.abs( difference ) > effectiveZero )
+            // Use a NaN-safe comparison.
+            if (!MathUtil.equals(values[i], other.get(i), effectiveZero))
             {
                 return false;
             }
         }
 
         return true;
-
     }
 
     @Override

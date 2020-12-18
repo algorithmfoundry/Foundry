@@ -16,9 +16,11 @@ package gov.sandia.cognition.math.matrix;
 
 import gov.sandia.cognition.annotation.CodeReview;
 import gov.sandia.cognition.annotation.CodeReviews;
+import gov.sandia.cognition.math.MathUtil;
 import gov.sandia.cognition.math.UnivariateScalarFunction;
 import java.text.NumberFormat;
 import java.util.AbstractList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -87,12 +89,22 @@ public abstract class AbstractVector
         {
             return false;
         }
-        else
+        
+        // Loop through all the defined entries of the two vectors.
+        final Iterator<TwoVectorEntry> iterator = new VectorUnionIterator(
+            this, other);
+        while (iterator.hasNext())
         {
-            return super.equals( other, effectiveZero );
+            final TwoVectorEntry entry = iterator.next();
+            if (!MathUtil.equals(entry.getFirstValue(), entry.getSecondValue(), effectiveZero))
+            {
+                return false;
+            }
         }
+        
+        return true;
     }
-
+ 
     @Override
     public int hashCode()
     {
@@ -235,11 +247,16 @@ public abstract class AbstractVector
         // This is a generic implementation to support interoperability. 
         // Sub-classes should make custom ones for performance.
         this.assertSameDimensionality(other);
+        
+        // Go through all the defined entries in both vectors.
         double result = 0.0;
-        for (final VectorEntry entry : this)
+        final Iterator<TwoVectorEntry> iterator = new VectorUnionIterator(
+            this, other);
+        while (iterator.hasNext())
         {
+            final TwoVectorEntry entry = iterator.next();
             final double difference = 
-                entry.getValue() - other.get(entry.getIndex());
+                entry.getFirstValue() - entry.getSecondValue();
             result += difference * difference;
         }
         return result;
