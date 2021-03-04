@@ -21,6 +21,7 @@ import gov.sandia.cognition.learning.algorithm.clustering.cluster.Cluster;
 import gov.sandia.cognition.learning.algorithm.clustering.cluster.ClusterCreator;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
+import gov.sandia.cognition.learning.function.distance.CosineDistanceMetric;
 import gov.sandia.cognition.math.Metric;
 import gov.sandia.cognition.math.Semimetric;
 import gov.sandia.cognition.math.geometry.KDTree;
@@ -193,7 +194,7 @@ public class DBSCANClusterer<DataType extends Vectorizable, ClusterType extends 
     {
         super(DEFAULT_MAX_ITERATIONS);
 
-        this.setNeighborhoodRadius(eps);
+        this.setNeighborhoodRadius(eps, metric);
         this.setMinSamples(minSamples);
         this.setMetric(metric);
         this.setCreator(creator);
@@ -350,6 +351,7 @@ public class DBSCANClusterer<DataType extends Vectorizable, ClusterType extends 
 
     protected void cleanupAlgorithm()
     {
+        this.clusters.set(0, this.creator.createCluster(this.noiseCluster));
     }
 
     public ArrayList<ClusterType> getResult()
@@ -371,10 +373,11 @@ public class DBSCANClusterer<DataType extends Vectorizable, ClusterType extends 
      * Sets the neighborhood radius.
      *
      * @param eps The eps.
+     * @param metric The distance metric used.
      */
-    public void setNeighborhoodRadius(double eps)
+    public void setNeighborhoodRadius(double eps, Semimetric<? super DataType> metric)
     {
-        if (eps < 0.0 || eps > 1.0)
+        if( metric instanceof CosineDistanceMetric && (eps < 0.0 || eps > 1.0))
         {
             throw new IllegalArgumentException(
                 "The eps must be between 0.0 and 1.0.");
